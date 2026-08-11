@@ -12,7 +12,7 @@ export default function PremiumCTA() {
       >
         <div className="flex items-start gap-3">
           <div
-            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
             style={{
               background: `linear-gradient(to bottom right, var(--premium-icon-from), var(--premium-icon-to))`,
             }}
@@ -20,10 +20,10 @@ export default function PremiumCTA() {
             <Sparkles className="h-5 w-5 text-white" />
           </div>
           <div>
-            <p className="text-sm font-bold text-foreground">
+            <p className="text-base font-extrabold text-foreground">
               Unlock all learning with Premium
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm font-semibold text-foreground">
               to get smarter, faster
             </p>
           </div>

@@ -1,53 +1,68 @@
-import { Link } from '@tanstack/react-router'
-import BetterAuthHeader from '../integrations/better-auth/header-user.tsx'
+import { Link, useLocation } from '@tanstack/react-router'
 import ThemeToggle from './ThemeToggle'
-import { Flame } from 'lucide-react'
+import { Flame, Zap, Menu, Home, BookOpen } from 'lucide-react'
 
 export default function Header() {
+  const location = useLocation()
+  const isActive = (path: string) => location.pathname === path
+
   return (
-    <header className="sticky top-0 z-50 border-b border-border bg-header-bg backdrop-blur-lg">
-      <nav className="page-wrap flex flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3 sm:px-6 sm:py-3.5">
-        <Link to="/" className="flex items-center gap-2.5 no-underline">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary font-bold text-white text-sm">
-            V
-          </div>
-          <span className="text-base font-bold tracking-tight text-foreground">
+    <header className="sticky top-0 z-50 border-b border-border bg-card">
+      <nav className="page-wrap flex items-center gap-8 px-6 py-4">
+        <Link to="/" className="flex items-center gap-2 no-underline">
+          <span className="text-3xl font-bold tracking-tight text-foreground">
             Verselab
           </span>
         </Link>
 
-        <div className="order-3 flex w-full flex-wrap items-center gap-x-5 gap-y-1 pb-1 text-sm font-semibold sm:order-0 sm:w-auto sm:flex-nowrap sm:pb-0">
+        <div className="flex items-center gap-8">
           <Link
             to="/"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
+            className={`group relative flex items-center gap-2 text-base font-medium transition-colors ${
+              isActive('/') ? 'text-primary' : 'text-muted hover:text-primary'
+            }`}
           >
+            <Home className="h-5 w-5" />
             Home
+            {isActive('/') && (
+              <div className="absolute -bottom-4 left-0 w-full h-0.5 bg-primary" />
+            )}
           </Link>
+
           <Link
             to="/about"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
+            className={`group relative flex items-center gap-2 text-base font-medium transition-colors ${
+              isActive('/about') ? 'text-primary' : 'text-muted hover:text-primary'
+            }`}
           >
+            <BookOpen className="h-5 w-5" />
             Courses
+            {isActive('/about') && (
+              <div className="absolute -bottom-4 left-0 w-full h-0.5 bg-primary" />
+            )}
           </Link>
-          <a
-            href="https://docs.verselab.id"
-            className="nav-link"
-            target="_blank"
-            rel="noreferrer"
-          >
-            About
-          </a>
         </div>
 
-        <div className="ml-auto flex items-center gap-2">
-          <div className="hidden items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-semibold text-foreground sm:flex">
-            <Flame className="h-4 w-4 text-primary" />
-            <span>0</span>
+        <div className="ml-auto flex items-center gap-3">
+          <button className="rounded-full border-2 border-primary bg-linear-to-r from-primary to-accent px-5 py-2 text-sm font-semibold text-white transition hover:brightness-110">
+            Go Premium
+          </button>
+
+          <div className="flex items-center gap-1.5 rounded-full border-2 border-border px-4 py-2 text-base font-semibold text-foreground">
+            <span>2</span>
+            <Flame className="h-5 w-5 text-secondary" />
           </div>
-          <BetterAuthHeader />
+
+          <div className="flex items-center gap-1.5 rounded-full border-2 border-border px-4 py-2 text-base font-semibold text-foreground">
+            <span>0</span>
+            <Zap className="h-5 w-5 text-border" />
+          </div>
+
           <ThemeToggle />
+
+          <button className="p-2 text-muted hover:text-foreground">
+            <Menu className="h-6 w-6" />
+          </button>
         </div>
       </nav>
     </header>

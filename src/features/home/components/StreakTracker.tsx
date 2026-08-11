@@ -1,30 +1,53 @@
-import { Flame } from 'lucide-react'
+import { Zap } from 'lucide-react'
 import { Card, CardContent } from '#/components/ui/card'
 
 const DAYS = ['T', 'W', 'Th', 'F', 'S']
 
 export default function StreakTracker() {
+  const streak = 1
+  const activeDay = 0
+
   return (
-    <Card>
-      <CardContent className="p-5">
-        <div className="mb-3 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-3xl font-bold text-foreground">0</span>
-            <Flame className="h-5 w-5 text-primary" />
+    <Card className="p-5">
+      <CardContent className="p-0">
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-1">
+            <span className="text-4xl font-black text-(--color-text)">{streak}</span>
+            <Zap className="h-7 w-7 fill-(--color-secondary) text-(--color-secondary)" />
+          </div>
+          <div className="flex items-center gap-1">
+            <div className="flex h-6 w-4 items-center justify-center rounded-sm bg-(--color-secondary)">
+              <Zap className="h-3 w-3 text-(--color-text)" />
+            </div>
+            <div className="flex h-6 w-4 items-center justify-center rounded-sm border border-(--color-border)" />
           </div>
         </div>
 
-        <p className="mb-4 text-sm text-muted-foreground">
-          Solve <span className="font-semibold text-foreground">3 problems</span> to start a streak
-        </p>
-
-        <div className="flex items-center justify-between gap-1">
-          {DAYS.map((day) => (
-            <div key={day} className="flex flex-col items-center gap-1.5">
-              <div className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-border bg-muted">
-                <Flame className="h-4 w-4 text-muted-foreground/40" />
+        <div className="flex items-end justify-between gap-2">
+          {DAYS.map((day, i) => (
+            <div key={day} className="flex flex-col items-center gap-2">
+              <div
+                className={`flex h-12 w-12 items-center justify-center rounded-full border-2 ${
+                  i === activeDay
+                    ? 'border-(--color-secondary) bg-(--color-secondary)'
+                    : 'border-(--color-border) bg-transparent'
+                }`}
+              >
+                <Zap
+                  className={`h-6 w-6 ${
+                    i === activeDay
+                      ? 'fill-(--color-text) text-(--color-text)'
+                      : 'fill-(--color-border) text-(--color-border)'
+                  }`}
+                />
               </div>
-              <span className="text-xs font-medium text-muted-foreground">{day}</span>
+              <span
+                className={`text-sm font-semibold ${
+                  i === activeDay ? 'text-(--color-text)' : 'text-(--color-muted)'
+                }`}
+              >
+                {day}
+              </span>
             </div>
           ))}
         </div>

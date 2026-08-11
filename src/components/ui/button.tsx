@@ -10,16 +10,16 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "relative overflow-hidden bg-gradient-to-r from-[var(--btn-from)] via-[var(--btn-via)] to-[var(--btn-to)] text-[var(--btn-text)] hover:brightness-105 active:scale-[0.98]",
+          "relative overflow-hidden bg-linear-to-r from-(--btn-from) to-(--btn-to) text-(--btn-text) shadow-[0_5px_0_0_var(--btn-shadow),0_6px_16px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_var(--btn-shadow),0_5px_12px_rgba(0,0,0,0.12)] hover:brightness-105 active:translate-y-[3px] active:shadow-[0_2px_0_0_var(--btn-shadow),0_3px_8px_rgba(0,0,0,0.1)]",
         destructive:
-          "relative overflow-hidden bg-gradient-to-r from-[var(--btn-destructive-from)] via-[var(--btn-destructive-via)] to-[var(--btn-destructive-to)] text-[var(--btn-destructive-text)] hover:brightness-105 active:scale-[0.98]",
+          "relative overflow-hidden bg-linear-to-r from-(--btn-destructive-from) via-(--btn-destructive-via) to-(--btn-destructive-to) text-(--btn-destructive-text) shadow-[0_5px_0_0_var(--btn-destructive-shadow),0_6px_16px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_var(--btn-destructive-shadow),0_5px_12px_rgba(0,0,0,0.12)] hover:brightness-105 active:translate-y-[3px] active:shadow-[0_2px_0_0_var(--btn-destructive-shadow),0_3px_8px_rgba(0,0,0,0.1)]",
         outline:
-          "relative overflow-hidden border-2 border-[var(--btn-outline-border)] bg-gradient-to-r from-[var(--btn-outline-from)] to-[var(--btn-outline-to)] text-[var(--btn-outline-text)] hover:border-[var(--btn-outline-border)]/60 active:scale-[0.98]",
+          "relative overflow-hidden border-2 border-(--btn-outline-border) bg-linear-to-r from-(--btn-outline-from) to-(--btn-outline-to) text-(--btn-outline-text) hover:border-(--btn-outline-border)/60 active:scale-[0.98]",
         secondary:
-          "bg-muted text-muted-foreground hover:bg-muted/80 active:scale-[0.98]",
+          "relative overflow-hidden bg-linear-to-r from-(--btn-secondary-from) via-(--btn-secondary-via) to-(--btn-secondary-to) text-(--btn-secondary-text) shadow-[0_4px_0_0_var(--btn-shadow),0_4px_12px_rgba(0,0,0,0.06)] hover:shadow-[0_3px_0_0_var(--btn-shadow),0_4px_10px_rgba(0,0,0,0.06)] hover:brightness-103 active:translate-y-[2px] active:shadow-[0_1px_0_0_var(--btn-shadow),0_2px_6px_rgba(0,0,0,0.06)]",
         ghost:
-          "text-[var(--btn-ghost-text)] hover:bg-[var(--btn-ghost-hover)] hover:text-[var(--btn-ghost-hover-text)] active:bg-[var(--btn-ghost-active)]",
-        link: "text-[var(--btn-ghost-text)] underline-offset-4 hover:underline hover:text-[var(--btn-ghost-hover-text)]",
+          "text-(--btn-ghost-text) hover:bg-(--btn-ghost-hover) hover:text-(--btn-ghost-hover-text) active:bg-(--btn-ghost-active)",
+        link: "text-(--btn-ghost-text) underline-offset-4 hover:underline hover:text-(--btn-ghost-hover-text)",
       },
       size: {
         default: "h-11 px-6 py-2.5 has-[>svg]:px-5",
@@ -52,7 +52,7 @@ function Button({
   }) {
   const Comp = asChild ? Slot.Root : "button"
 
-  const hasGlow = variant === "default" || variant === "destructive"
+  const hasShimmer = variant === "default" || variant === "destructive" || variant === "secondary"
 
   return (
     <Comp
@@ -62,14 +62,14 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
-      {hasGlow && (
+      {hasShimmer && (
         <>
           <span
             className="pointer-events-none absolute inset-0 z-10 overflow-hidden rounded-full"
             aria-hidden="true"
           >
             <span
-              className="absolute inset-y-0 -left-full w-full bg-gradient-to-r from-transparent via-white/25 to-transparent"
+              className="absolute inset-y-0 -left-full w-full bg-linear-to-r from-transparent via-(--color-primary-soft)/30 to-transparent"
               style={{ animation: "btn-shimmer 3s ease-in-out infinite" }}
             />
           </span>

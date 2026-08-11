@@ -11,23 +11,19 @@ export default function HomePage() {
 
   return (
     <main className="page-wrap px-4 pb-16 pt-8">
-      <div className="mb-6">
-        <SearchBar />
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+      <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
         <div className="space-y-4">
+          <SearchBar />
           <StreakTracker />
           <PremiumCTA />
           <ComebackCard />
         </div>
 
-        <div>
+        <div className="flex flex-col items-center">
           <CourseCard onStart={() => select('warmup')} />
+          <CourseGrid />
         </div>
       </div>
-
-      <CourseGrid />
     </main>
   )
 }

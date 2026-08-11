@@ -1,32 +1,78 @@
-import { BarChart3, PieChart, Target, Lightbulb, Briefcase } from 'lucide-react'
-import { Button } from '#/components/ui/button'
+import {
+  BarChart3,
+  PieChart,
+  Target,
+  Lightbulb,
+  Briefcase,
+  Check,
+} from "lucide-react";
+import { Card } from "#/components/ui/card";
 
 const courses = [
-  { title: 'Project Management', icon: Briefcase, color: 'from-primary/15 to-primary/5', iconColor: 'text-primary' },
-  { title: 'Financial Accounting', icon: PieChart, color: 'from-accent/15 to-accent/5', iconColor: 'text-accent' },
-  { title: 'Data Analysis', icon: BarChart3, color: 'from-[#F97316]/15 to-[#F97316]/5', iconColor: 'text-[#F97316]' },
-  { title: 'Strategic Planning', icon: Target, color: 'from-[#8B5CF6]/15 to-[#8B5CF6]/5', iconColor: 'text-[#8B5CF6]' },
-  { title: 'Creative Thinking', icon: Lightbulb, color: 'from-[#EAB308]/15 to-[#EAB308]/5', iconColor: 'text-[#EAB308]' },
-]
+  {
+    title: "Web Dev",
+    icon: Briefcase,
+    color: "text-(--color-accent)",
+    bg: "bg-(--color-accent/10)",
+    active: true,
+    completed: true,
+  },
+  {
+    title: "Finance",
+    icon: PieChart,
+    color: "text-(--color-pink)",
+    bg: "bg-(--color-muted)",
+    active: false,
+    completed: false,
+  },
+  {
+    title: "Strategy",
+    icon: Target,
+    color: "text-(--color-primary)",
+    bg: "bg-(--color-muted)",
+    active: false,
+    completed: false,
+  },
+  {
+    title: "Data",
+    icon: BarChart3,
+    color: "text-(--color-secondary)",
+    bg: "bg-(--color-muted)",
+    active: false,
+    completed: false,
+  },
+  {
+    title: "Creative",
+    icon: Lightbulb,
+    color: "text-(--color-accent)",
+    bg: "bg-(--color-muted)",
+    active: false,
+    completed: false,
+  },
+];
 
 export default function CourseGrid() {
   return (
     <section className="mt-8">
-      <h2 className="mb-4 text-lg font-bold text-foreground">Continue Learning</h2>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+      <div className="flex justify-center gap-3">
         {courses.map((course) => (
-          <Button
+          <Card
             key={course.title}
-            variant="ghost"
-            className="feature-card flex h-auto flex-col items-center gap-3 rounded-2xl border-2 border-border p-4 text-center transition hover:-translate-y-0.5"
+            className={`relative flex h-20 w-24 cursor-pointer flex-col items-center justify-center gap-1 border-2 p-2 transition hover:-translate-y-0.5 bg-card ${
+              course.active
+                ? "border-accent"
+                : "border-border"
+            }`}
           >
-            <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br ${course.color}`}>
-              <course.icon className={`h-7 w-7 ${course.iconColor}`} />
-            </div>
-            <span className="text-xs font-semibold">{course.title}</span>
-          </Button>
+            {course.completed && (
+              <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent">
+                <Check className="h-3 w-3 text-white" />
+              </div>
+            )}
+            <course.icon className={`h-7 w-7 ${course.color}`} />
+          </Card>
         ))}
       </div>
     </section>
-  )
+  );
 }

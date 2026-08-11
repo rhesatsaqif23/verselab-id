@@ -27,7 +27,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <HeadContent />
       </head>
-      <body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(249,115,22,0.2)]">
+      <body className="font-sans antialiased wrap-anywhere selection:bg-accent/20">
         <Header />
         {children}
         <Footer />
