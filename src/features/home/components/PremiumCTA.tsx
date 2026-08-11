@@ -1,11 +1,22 @@
 import { Sparkles } from 'lucide-react'
+import { Button } from '#/components/ui/button'
 
 export default function PremiumCTA() {
   return (
-    <div className="island-shell overflow-hidden rounded-2xl">
-      <div className="relative bg-gradient-to-br from-[#F3E8FF] via-[#FFF1E6] to-[#FFE8D6] p-5 dark:from-[#2D1B4E] dark:via-[#3D2015] dark:to-[#2D1B15]">
+    <div className="overflow-hidden rounded-2xl border-2 border-border bg-card">
+      <div
+        className="relative p-5"
+        style={{
+          background: `linear-gradient(to bottom right, var(--premium-card-from), var(--premium-card-via), var(--premium-card-to))`,
+        }}
+      >
         <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#9333EA] to-[#F97316]">
+          <div
+            className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl"
+            style={{
+              background: `linear-gradient(to bottom right, var(--premium-icon-from), var(--premium-icon-to))`,
+            }}
+          >
             <Sparkles className="h-5 w-5 text-white" />
           </div>
           <div>
@@ -18,9 +29,9 @@ export default function PremiumCTA() {
           </div>
         </div>
 
-        <button className="mt-4 h-11 w-full rounded-full bg-gradient-to-r from-[#9333EA] via-[#EC4899] to-[#F97316] text-sm font-bold text-white shadow-lg transition hover:brightness-110 active:scale-[0.98]">
+        <Button className="mt-4 w-full" size="lg">
           Explore Premium
-        </button>
+        </Button>
       </div>
     </div>
   )

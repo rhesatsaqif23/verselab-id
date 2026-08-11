@@ -1,14 +1,26 @@
-import { Search } from 'lucide-react'
+import { Search, Paperclip } from 'lucide-react'
+import { Input } from '#/components/ui/input'
+import { Button } from '#/components/ui/button'
 
 export default function SearchBar() {
   return (
-    <div className="relative">
-      <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-      <input
+    <div className="flex items-center gap-2 rounded-full border-2 border-border bg-card p-1.5 transition focus-within:border-primary/40">
+      <Search className="ml-3 h-4 w-4 flex-shrink-0 text-muted-foreground" />
+      <Input
         type="text"
-        placeholder="What do you want to learn?"
-        className="h-11 w-full rounded-full border border-border bg-card pl-10 pr-4 text-sm text-foreground placeholder:text-muted-foreground/60 shadow-sm transition focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+        placeholder="We're learning about systems"
+        className="h-9 flex-1 border-0 bg-transparent px-2 text-sm shadow-none placeholder:text-muted-foreground/50 focus-visible:ring-0"
       />
+      <button
+        type="button"
+        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-muted-foreground transition hover:bg-muted"
+        aria-label="Attach file"
+      >
+        <Paperclip className="h-4 w-4" />
+      </button>
+      <Button variant="secondary" size="sm" className="rounded-full px-5">
+        Ask
+      </Button>
     </div>
   )
 }

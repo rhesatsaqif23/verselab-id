@@ -26,8 +26,8 @@
   --destructive: oklch(0.58 0.22 25);
   --destructive-foreground: oklch(0.98 0 0);
 
-  --border: oklch(0.91 0.008 80);
-  --input: oklch(0.91 0.008 80);
+  --border: oklch(0.88 0.005 80);
+  --input: oklch(0.88 0.005 80);
   --ring: oklch(0.78 0.16 55);
 
   --chart-1: oklch(0.78 0.16 55);
@@ -46,6 +46,37 @@
   --sidebar-accent-foreground: oklch(0.22 0.01 60);
   --sidebar-border: oklch(0.91 0.008 80);
   --sidebar-ring: oklch(0.78 0.16 55);
+
+  --btn-from: #C9A8F0;
+  --btn-via: #E8A878;
+  --btn-to: #E8C878;
+  --btn-text: #4A3560;
+
+  --btn-destructive-from: #E88A8A;
+  --btn-destructive-via: #E8A090;
+  --btn-destructive-to: #E8B898;
+  --btn-destructive-text: #5C3030;
+
+  --btn-outline-border: #D4A870;
+  --btn-outline-from: rgba(201, 168, 240, 0.10);
+  --btn-outline-to: rgba(232, 200, 120, 0.10);
+  --btn-outline-text: #8A6A40;
+
+  --btn-secondary-from: #F0E4F8;
+  --btn-secondary-via: #FAE8E0;
+  --btn-secondary-to: #F8F0D8;
+  --btn-secondary-text: #7A5A40;
+
+  --btn-ghost-text: #C08050;
+  --btn-ghost-hover: rgba(201, 168, 240, 0.12);
+  --btn-ghost-active: rgba(201, 168, 240, 0.18);
+  --btn-ghost-hover-text: #A06840;
+
+  --premium-card-from: #F3E8FF;
+  --premium-card-via: #FFF1E6;
+  --premium-card-to: #FFE8D6;
+  --premium-icon-from: #9333EA;
+  --premium-icon-to: #F97316;
 }
 
 .dark {
@@ -94,6 +125,37 @@
   --sidebar-accent-foreground: oklch(0.96 0.003 80);
   --sidebar-border: oklch(0.28 0.01 60);
   --sidebar-ring: oklch(0.80 0.16 55);
+
+  --btn-from: #8A6CB8;
+  --btn-via: #C08860;
+  --btn-to: #C8A860;
+  --btn-text: #F0E8FF;
+
+  --btn-destructive-from: #C07070;
+  --btn-destructive-via: #C88878;
+  --btn-destructive-to: #C8A080;
+  --btn-destructive-text: #FFE8E8;
+
+  --btn-outline-border: #B89060;
+  --btn-outline-from: rgba(138, 108, 184, 0.15);
+  --btn-outline-to: rgba(200, 168, 96, 0.15);
+  --btn-outline-text: #D0B880;
+
+  --btn-secondary-from: #2A2030;
+  --btn-secondary-via: #302828;
+  --btn-secondary-to: #2C2820;
+  --btn-secondary-text: #D0B880;
+
+  --btn-ghost-text: #D0A870;
+  --btn-ghost-hover: rgba(138, 108, 184, 0.15);
+  --btn-ghost-active: rgba(138, 108, 184, 0.22);
+  --btn-ghost-hover-text: #E0C090;
+
+  --premium-card-from: #2D1B4E;
+  --premium-card-via: #3D2015;
+  --premium-card-to: #2D1B15;
+  --premium-icon-from: #9333EA;
+  --premium-icon-to: #F97316;
 }
 
 @theme inline {
