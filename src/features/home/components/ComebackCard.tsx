@@ -1,0 +1,17 @@
+import { Trophy } from 'lucide-react'
+
+export default function ComebackCard() {
+  return (
+    <div className="island-shell rounded-2xl p-5 text-center">
+      <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-primary/15 to-accent/15">
+        <Trophy className="h-7 w-7 text-primary" />
+      </div>
+      <h3 className="mb-1 text-base font-bold text-foreground">
+        It's comeback time
+      </h3>
+      <p className="text-sm text-muted-foreground">
+        Continue where you left off and keep your momentum going
+      </p>
+    </div>
+  )
+}
