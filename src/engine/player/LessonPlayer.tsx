@@ -1,8 +1,9 @@
-import { useState, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { cn } from '#/lib/utils.ts'
 import { Button } from '#/components/ui/button.tsx'
 import { Progress } from '#/components/ui/progress.tsx'
 import type { Screen } from '#/engine/types.ts'
+import { useLessonStore } from './lessonStore.ts'
 
 export type AnswerResult = {
   screen: Screen
@@ -24,41 +25,49 @@ export default function LessonPlayer({
   onExit,
   onComplete,
 }: LessonPlayerProps) {
-  const [index, setIndex] = useState(0)
-  const [answer, setAnswer] = useState<unknown>(null)
-  const [phase, setPhase] = useState<'answering' | 'checked'>('answering')
-  const [results, setResults] = useState<AnswerResult[]>([])
+  const index = useLessonStore((s) => s.index)
+  const answers = useLessonStore((s) => s.answers)
+  const results = useLessonStore((s) => s.results)
+  const setAnswer = useLessonStore((s) => s.setAnswer)
+  const checkResult = useLessonStore((s) => s.checkResult)
+  const next = useLessonStore((s) => s.next)
+  const clear = useLessonStore((s) => s.clear)
 
   const screen = screens[index]
   const total = screens.length
+  const answer = answers[index]
   const hasAnswer = answer !== null && answer !== undefined
   const lastResult = results[index]
+  const phase = lastResult ? 'checked' : 'answering'
 
   function handleCheck() {
     const correct = checkAnswer(screen, answer)
-    setResults((prev) => {
-      const next = [...prev]
-      next[index] = { screen, correct }
-      return next
-    })
-    setPhase('checked')
+    checkResult(index, correct)
   }
 
   function handleContinue() {
     const nextIndex = index + 1
     if (nextIndex >= total) {
-      onComplete(results)
+      const finalResults = screens.map((s, i) => ({
+        screen: s,
+        correct: results[i]?.correct ?? false,
+      }))
+      onComplete(finalResults)
+      clear()
       return
     }
-    setAnswer(null)
-    setPhase('answering')
-    setIndex(nextIndex)
+    next()
+  }
+
+  function handleExit() {
+    onExit()
+    clear()
   }
 
   return (
     <div className="page-wrap flex min-h-screen flex-col px-4 pb-16 pt-6">
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={onExit} aria-label="Keluar">
+        <Button variant="ghost" size="icon" onClick={handleExit} aria-label="Keluar">
           ✕
         </Button>
         <span className="shrink-0 text-sm text-muted">
@@ -68,7 +77,7 @@ export default function LessonPlayer({
       </div>
 
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col py-8">
-        <div key={index}>{renderScreen(screen, setAnswer)}</div>
+        <div key={index}>{renderScreen(screen, (a) => setAnswer(index, a))}</div>
 
         <div className="mt-auto flex min-h-28 flex-col gap-3 pt-6">
           {phase === 'checked' && lastResult && (

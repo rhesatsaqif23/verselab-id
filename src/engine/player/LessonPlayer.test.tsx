@@ -1,8 +1,9 @@
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import LessonPlayer from './LessonPlayer'
+import { useLessonStore } from './lessonStore'
 import type { Screen } from '#/engine/types.ts'
 
 const screens: Screen[] = [
@@ -50,6 +51,10 @@ function checkAnswer(screen: Screen, answer: unknown): boolean {
 }
 
 describe('LessonPlayer', () => {
+  beforeEach(() => {
+    useLessonStore.getState().clear()
+  })
+
   it('shows 1 / N and a progress bar at start', () => {
     render(
       <LessonPlayer
