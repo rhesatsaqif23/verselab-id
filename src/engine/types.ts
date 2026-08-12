@@ -27,3 +27,9 @@ export type Screen =
         rule: AllocationRule
         explain: string
     }
+
+export type Lesson = {
+    id: string
+    title: string
+    screens: readonly Screen[]
+}
