@@ -10,7 +10,7 @@ Single app: TanStack Start + React + Vite. No backend, no database, no login. Al
 
 ## Architecture: engine / domain split
 
-This is the single most important concept in the project (PRD section 3.2). Code is split into two strictly separated parts:
+This is the single most important concept in the project (PRD section 3.2). See [CONCEPT.md](CONCEPT.md) for a detailed explanation and glossary of terms (Screen, Lesson, Unit, Renderer, Mastery, XP).
 
 ```
 src/

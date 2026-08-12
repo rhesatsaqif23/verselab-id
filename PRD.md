@@ -13,6 +13,8 @@ Dokumen ini dibaca dari atas ke bawah. Bagian 1 sampai 3 itu konteks, wajib diba
 
 Kalau ada yang gak jelas atau kelihatan kontradiktif, tanya dulu, jangan ditebak. Salah tebak di awal biayanya mahal karena harus dibongkar.
 
+Untuk ringkasan arsitektur dan istilah-istilah yang dipakai di task, lihat [CONCEPT.md](CONCEPT.md).
+
 ---
 
 ## 1. Kita lagi bikin apa
