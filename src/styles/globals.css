@@ -20,6 +20,8 @@
   --color-accent-foreground: #ffffff;
   --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
+  --color-success: #22c55e;
+  --color-success-foreground: #ffffff;
   --color-input: #e5e7eb;
   --color-ring: #2C5EAD;
   --color-chart-1: #2C5EAD;
@@ -99,6 +101,8 @@
   --color-accent-foreground: #1a1a1a;
   --color-destructive: #f87171;
   --color-destructive-foreground: #1a1a1a;
+  --color-success: #4ade80;
+  --color-success-foreground: #1a1a1a;
   --color-input: #374151;
   --color-ring: #4BB8FA;
   --color-chart-1: #4BB8FA;
@@ -174,6 +178,8 @@
   --color-accent-foreground: var(--color-accent-foreground);
   --color-destructive: var(--color-destructive);
   --color-destructive-foreground: var(--color-destructive-foreground);
+  --color-success: var(--color-success);
+  --color-success-foreground: var(--color-success-foreground);
   --color-border: var(--color-border);
   --color-input: var(--color-input);
   --color-ring: var(--color-ring);

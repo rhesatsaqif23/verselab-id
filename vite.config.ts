@@ -46,6 +46,7 @@ const config = defineConfig({
       test: {
         name: 'unit',
         environment: 'jsdom',
+        globals: true,
         include: ['src/**/*.test.ts', 'src/**/*.test.tsx']
       }
     }]
