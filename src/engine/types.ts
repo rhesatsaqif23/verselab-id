@@ -1,0 +1,29 @@
+export type AllocationRule = {
+    category: string
+    min?: number
+    max?: number
+}
+
+export type Screen =
+    | { type: 'concept'; prompt: string; explain: string }
+    | {
+        type: 'choice'
+        prompt: string
+        options: { id: string; label: string }[]
+        correctId: string
+        explain: string
+    }
+    | {
+        type: 'numeric'
+        prompt: string
+        unit: string
+        acceptRange: [number, number]
+        explain: string
+    }
+    | {
+        type: 'allocation'
+        prompt: string
+        categories: string[]
+        rule: AllocationRule
+        explain: string
+    }

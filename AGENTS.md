@@ -1,3 +1,122 @@
+# AGENTS.md
+
+## Project
+
+Verselab (verselab.id) is a gamified interactive-learning web app inspired by Brilliant.org / Duolingo. Users learn through short interactive screens (choice, numeric, allocation, concept), earning XP and streaks to keep them returning daily.
+
+The product is NOT a finance app. It is a learning engine — personal finance is only the first material because numeric questions are cheap to build and check. The engine must be reusable for any future domain without rewriting it.
+
+Single app: TanStack Start + React + Vite. No backend, no database, no login. All progress is stored in the browser via `localStorage` (PRD section 8.3).
+
+## Architecture: engine / domain split
+
+This is the single most important concept in the project (PRD section 3.2). Code is split into two strictly separated parts:
+
+```
+src/
+├── engine/                  Must never know the subject matter
+│   ├── player/              Lesson UI: progress bar, buttons, feedback panel
+│   ├── progress/            XP, streak, mastery, daily goal
+│   ├── path/                Unit ordering and unlock rules
+│   └── types.ts             Screen type definitions (union type)
+├── domains/
+│   └── personal-finance/
+│       ├── math.ts          All finance calculations
+│       ├── screens/         Components for each screen type
+│       └── components/      Charts and other visual components
+├── content/                 Lesson data as JSON
+└── components/              Shared UI components (Button, etc.)
+```
+
+Rules:
+
+- If code mentions money, interest, salary, or installments → `domains/personal-finance/`. Otherwise → `engine/`.
+- The engine passes one screen's data to the domain; the domain renders it and calls back `onAnswer(true)` or `onAnswer(false)`.
+- The engine never knows what a question is about — only that it was answered right or wrong.
+- If you find yourself writing `if (material === 'keuangan')` inside `engine/`, something is wrong. Stop and ask.
+
+## Screen types
+
+There are 4 screen types in v1 (PRD section 4). Each has its own renderer component and typed data. The `Screen` type in `src/engine/types.ts` is a union type, so TypeScript narrows the available fields per type.
+
+- `concept` — introduces a concept name after the user has felt its effect. Max 1 per lesson.
+- `choice` — multiple choice; cards with a blue border on selection. Max 30% of screens per lesson.
+- `numeric` — user types a number; answers checked by range, not exact value. Correct answer is computed from `math.ts`, never hardcoded.
+- `allocation` — sliders summing to 100%; checked against a rule (e.g. savings min 20%).
+
+## Commands
+
+```sh
+npm run dev                  # Vite dev server on port 3000
+npm run build                # production build
+npm run preview              # preview the production build
+npm run generate-routes      # tsr generate (route tree)
+npm run storybook            # Storybook dev server on port 6006
+npm run build-storybook      # Storybook build
+```
+
+There is no lint or test script configured. Typecheck with:
+
+```sh
+npx tsc --noEmit
+```
+
+Drizzle scripts (`db:generate`, `db:migrate`, `db:push`, `db:pull`, `db:studio`) exist from the starter template but the app has no backend — do not use them for product code.
+
+## Package manager
+
+Use npm only. There is an existing `package-lock.json`; do not add bun/yarn/pnpm lockfiles.
+
+## Styling: Tailwind v4
+
+Tailwind v4 is configured in CSS via `@theme`, not in a `tailwind.config.js`.
+
+- Theme and all brand colors live as semantic CSS variables in `src/styles/globals.css`, imported by `src/styles.css`. Never hardcode hex colors in components.
+- Use Tailwind canonical classes only — keep the IntelliSense `suggestCanonicalClasses` panel clean:
+  - `bg-linear-to-*`, not `bg-gradient-to-*`
+  - `shrink-0`, not `flex-shrink-0`
+  - `(--var)` shorthand, not `[var(--var)]`
+  - `wrap-anywhere`, not `[overflow-wrap:anywhere]`
+  - Semantic classes `text-primary` / `bg-card` / `border-border` / `text-accent` / `text-muted`, not `text-(--color-primary)`
+
+## Path aliases
+
+- `#/*` and `@/*` both map to `./src/*`.
+- shadcn/ui aliases: `#/components/ui`, `#/lib/utils`, `#/lib`, `#/hooks`.
+
+## shadcn/ui
+
+Shared UI components live in `src/components/ui/` (new-york style, lucide icons). Add new ones with:
+
+```sh
+npx shadcn@latest add <component>
+```
+
+## State
+
+Use Zustand for client state (XP, streak, answers, selected unit). Persist to `localStorage` with Zustand's `persist` middleware — do not write manual save/load logic.
+
+## Routing
+
+File-based routing in `src/routes/`. Keep route files thin: a route defines the loader/component and delegates rendering to a feature. Feature implementation belongs under `src/features/<feature>/`.
+
+## TypeScript
+
+- Strict mode, `noUnusedLocals`, `noUnusedParameters`, `verbatimModuleSyntax`, `noEmit`.
+- Prefer inferred return types for simple functions; add explicit types for public contracts (e.g. the `Screen` union, stores).
+- Avoid `any`.
+
+## Commit convention
+
+Follow `docs/CONVENTIONAL_COMMITS.md`: Conventional Commits, no quotes, no emoji, scope for context.
+
+## What not to add
+
+- No ESLint/Prettier configs (not set up in this project).
+- No backend/server/database code in the product (PRD 8.3 — everything is localStorage).
+- No engine code that knows the subject matter, and no domain logic in `engine/`.
+- No `tailwind.config.js` — colors are defined in `src/styles/globals.css`.
+
 <!-- intent-skills:start -->
 # TanStack Intent - before editing files, run the matching guidance command.
 tanstackIntent:
