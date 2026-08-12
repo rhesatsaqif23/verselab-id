@@ -1,78 +1,38 @@
-import {
-  BarChart3,
-  PieChart,
-  Target,
-  Lightbulb,
-  Briefcase,
-  Check,
-} from "lucide-react";
-import { Card } from "#/components/ui/card";
-
-const courses = [
-  {
-    title: "Web Dev",
-    icon: Briefcase,
-    color: "text-(--color-accent)",
-    bg: "bg-(--color-accent/10)",
-    active: true,
-    completed: true,
-  },
-  {
-    title: "Finance",
-    icon: PieChart,
-    color: "text-(--color-pink)",
-    bg: "bg-(--color-muted)",
-    active: false,
-    completed: false,
-  },
-  {
-    title: "Strategy",
-    icon: Target,
-    color: "text-(--color-primary)",
-    bg: "bg-(--color-muted)",
-    active: false,
-    completed: false,
-  },
-  {
-    title: "Data",
-    icon: BarChart3,
-    color: "text-(--color-secondary)",
-    bg: "bg-(--color-muted)",
-    active: false,
-    completed: false,
-  },
-  {
-    title: "Creative",
-    icon: Lightbulb,
-    color: "text-(--color-accent)",
-    bg: "bg-(--color-muted)",
-    active: false,
-    completed: false,
-  },
-];
+import { useNavigate } from '@tanstack/react-router'
+import { Card } from '#/components/ui/card'
+import { Progress } from '#/components/ui/progress'
+import { units } from '#/content/index.ts'
+import { useProgressStore } from '#/engine/progress/progressStore.ts'
 
 export default function CourseGrid() {
+  const navigate = useNavigate()
+  const mastery = useProgressStore((s) => s.mastery)
+
   return (
     <section className="mt-8">
-      <div className="flex justify-center gap-3">
-        {courses.map((course) => (
-          <Card
-            key={course.title}
-            className={`relative flex h-20 w-24 cursor-pointer flex-col items-center justify-center gap-1 border-2 p-2 transition hover:-translate-y-0.5 bg-card ${
-              course.active
-                ? "border-accent"
-                : "border-border"
-            }`}
-          >
-            {course.completed && (
-              <div className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent">
-                <Check className="h-3 w-3 text-white" />
+      <div className="flex flex-col gap-3">
+        {units.map((unit) => {
+          const value = mastery[unit.id] ?? 0
+          return (
+            <Card
+              key={unit.id}
+              className="cursor-pointer border-2 bg-card p-5 transition hover:-translate-y-0.5"
+              onClick={() =>
+                navigate({
+                  to: '/lesson/$lessonId',
+                  params: { lessonId: unit.lessons[0].id },
+                })
+              }
+            >
+              <div className="mb-2 flex items-center justify-between gap-3">
+                <p className="text-base font-bold text-(--color-text)">{unit.title}</p>
+                <span className="shrink-0 text-sm font-bold text-muted">{value}%</span>
               </div>
-            )}
-            <course.icon className={`h-7 w-7 ${course.color}`} />
-          </Card>
-        ))}
+              <Progress value={value} className="h-2" />
+            </Card>
+          )
+        })}
       </div>
     </section>
-  );
+  )
 }

@@ -33,3 +33,9 @@ export type Lesson = {
     title: string
     screens: readonly Screen[]
 }
+
+export type Unit = {
+    id: string
+    title: string
+    lessons: readonly Lesson[]
+}
