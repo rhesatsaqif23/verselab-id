@@ -39,6 +39,7 @@ export default function LessonPlayer({
   const hasAnswer = answer !== null && answer !== undefined
   const lastResult = results[index]
   const phase = lastResult ? 'checked' : 'answering'
+  const isConcept = screen.type === 'concept'
 
   function handleCheck() {
     const correct = checkAnswer(screen, answer)

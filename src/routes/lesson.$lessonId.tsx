@@ -1,9 +1,20 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, redirect } from '@tanstack/react-router'
+import LessonPage from '../features/lesson'
+import { findLesson } from '../content'
+import { useLessonStore } from '../engine/player/lessonStore'
 
 export const Route = createFileRoute('/lesson/$lessonId')({
-  component: LessonPlaceholder,
+  beforeLoad: ({ params }) => {
+    const found = findLesson(params.lessonId)
+    if (!found) {
+      throw redirect({ to: '/' })
+    }
+    useLessonStore.getState().startLesson(found.lesson.screens.length)
+  },
+  component: LessonRoute,
 })
 
-function LessonPlaceholder() {
-  return null
+function LessonRoute() {
+  const { lessonId } = Route.useParams()
+  return <LessonPage lessonId={lessonId} />
 }
