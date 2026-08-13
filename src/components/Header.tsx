@@ -25,7 +25,7 @@ export default function Header() {
               }`}
           >
             <Home className="h-5 w-5" />
-            Home
+            Beranda
             {isActive('/') && (
               <div className="absolute -bottom-4 left-0 w-full h-0.5 bg-primary" />
             )}
@@ -37,7 +37,7 @@ export default function Header() {
               }`}
           >
             <BookOpen className="h-5 w-5" />
-            Courses
+            Materi
             {isActive('/about') && (
               <div className="absolute -bottom-4 left-0 w-full h-0.5 bg-primary" />
             )}
