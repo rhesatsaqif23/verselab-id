@@ -20,8 +20,11 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
 
   const found = findLesson(lessonId)
   if (!found) {
-    navigate({ to: '/' })
-    return null
+    return (
+      <div className="page-wrap flex min-h-screen items-center justify-center px-4">
+        <p className="text-lg text-muted">Lesson tidak ditemukan</p>
+      </div>
+    )
   }
 
   const { unit, lesson } = found

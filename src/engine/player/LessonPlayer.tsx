@@ -81,7 +81,16 @@ export default function LessonPlayer({
         <div key={index}>{renderScreen(screen, (a) => setAnswer(index, a))}</div>
 
         <div className="mt-auto flex min-h-28 flex-col gap-3 pt-6">
-          {phase === 'checked' && lastResult && (
+          {isConcept ? (
+            <Button
+              variant="default"
+              size="lg"
+              onClick={handleContinue}
+              className="w-full"
+            >
+              Lanjut
+            </Button>
+          ) : phase === 'checked' && lastResult ? (
             <div
               role="status"
               className={cn(
@@ -96,9 +105,9 @@ export default function LessonPlayer({
               </p>
               <p className="mt-1 text-muted">{screen.explain}</p>
             </div>
-          )}
+          ) : null}
 
-          {phase === 'answering' ? (
+          {!isConcept && (phase === 'answering' ? (
             <Button
               variant="default"
               size="lg"
@@ -112,7 +121,7 @@ export default function LessonPlayer({
             <Button variant="default" size="lg" onClick={handleContinue} className="w-full">
               Continue
             </Button>
-          )}
+          ))}
         </div>
       </div>
     </div>

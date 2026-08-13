@@ -1,14 +1,16 @@
 import { CheckCircle2, TrendingUp, XCircle } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { Card, CardContent } from '#/components/ui/card'
 import { useLessonCompleteStore } from './lessonCompleteStore'
+import { nextLesson, units } from '#/content/index.ts'
+import { useProgressStore } from '#/engine/progress/progressStore.ts'
 
-type LessonCompletePageProps = {
-  onBackHome: () => void
-}
-
-export default function LessonCompletePage({ onBackHome }: LessonCompletePageProps) {
+export default function LessonCompletePage() {
   const summary = useLessonCompleteStore((s) => s.summary)
+  const mastery = useProgressStore((s) => s.mastery)
+
+  const next = nextLesson(units, mastery)
 
   if (!summary) {
     return (
@@ -16,9 +18,16 @@ export default function LessonCompletePage({ onBackHome }: LessonCompletePagePro
         <Card className="mx-auto max-w-xl p-8">
           <CardContent className="p-0 text-center">
             <p className="text-lg font-semibold text-muted">Belum ada lesson yang selesai</p>
-            <Button onClick={onBackHome} size="lg" className="mt-6 w-full">
-              Kembali ke beranda
-            </Button>
+            <div className="mt-6 flex flex-col gap-3">
+              <Button asChild size="lg" className="w-full">
+                <Link to="/lesson/$lessonId" params={{ lessonId: next.lesson.id }}>
+                  Lanjut ke lesson berikutnya
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="w-full">
+                <Link to="/">Kembali ke beranda</Link>
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </main>
@@ -31,7 +40,7 @@ export default function LessonCompletePage({ onBackHome }: LessonCompletePagePro
       : 0
 
   return (
-    <main className="page-wrap px-4 pb-16 pt-8">
+    <main className="page-wrap px-4 pb-32 pt-8">
       <div className="mx-auto flex w-full max-w-xl flex-col gap-6">
         <Card className="p-8">
           <CardContent className="p-0 text-center">
@@ -101,9 +110,16 @@ export default function LessonCompletePage({ onBackHome }: LessonCompletePagePro
           </Card>
         )}
 
-        <Button onClick={onBackHome} size="lg" className="w-full">
-          Kembali ke beranda
-        </Button>
+        <div className="flex flex-col gap-3">
+          <Button asChild size="lg" className="w-full">
+            <Link to="/lesson/$lessonId" params={{ lessonId: next.lesson.id }}>
+              Lanjut ke lesson berikutnya
+            </Link>
+          </Button>
+          <Button asChild variant="outline" size="lg" className="w-full">
+            <Link to="/">Kembali ke beranda</Link>
+          </Button>
+        </div>
       </div>
     </main>
   )

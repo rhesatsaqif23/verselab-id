@@ -1,5 +1,5 @@
 import { PlayCircle } from 'lucide-react'
-import { useNavigate } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { Card, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
@@ -7,14 +7,8 @@ import { units, nextLesson } from '#/content/index.ts'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
 
 export default function CourseCard() {
-  const navigate = useNavigate()
   const mastery = useProgressStore((s) => s.mastery)
-
   const next = nextLesson(units, mastery)
-
-  function handleStart() {
-    navigate({ to: '/lesson/$lessonId', params: { lessonId: next.lesson.id } })
-  }
 
   return (
     <Card className="p-8">
@@ -39,8 +33,10 @@ export default function CourseCard() {
           </div>
         </div>
 
-        <Button onClick={handleStart} size="lg" className="w-full">
-          Lanjut ke lesson berikutnya
+        <Button asChild size="lg" className="w-full">
+          <Link to="/lesson/$lessonId" params={{ lessonId: next.lesson.id }}>
+            Lanjut ke lesson berikutnya
+          </Link>
         </Button>
       </CardContent>
     </Card>

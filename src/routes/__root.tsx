@@ -1,6 +1,4 @@
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
-import { TanStackDevtools } from '@tanstack/react-devtools'
+import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
 import Footer from '../components/Footer'
 import Header from '../components/Header'
 
@@ -18,9 +16,19 @@ export const Route = createRootRoute({
     links: [{ rel: 'stylesheet', href: appCss }],
   }),
   shellComponent: RootDocument,
+  notFoundComponent: NotFound,
 })
 
-function RootDocument({ children }: { children: React.ReactNode }) {
+function NotFound() {
+  return (
+    <main className="page-wrap flex min-h-screen flex-col items-center justify-center px-4">
+      <h1 className="text-4xl font-bold text-foreground">404</h1>
+      <p className="mt-4 text-lg text-muted">Halaman tidak ditemukan</p>
+    </main>
+  )
+}
+
+function RootDocument() {
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
@@ -29,15 +37,8 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </head>
       <body className="font-sans antialiased wrap-anywhere selection:bg-accent/20">
         <Header />
-        {children}
+        <Outlet />
         <Footer />
-        <TanStackDevtools
-          config={{ position: 'bottom-right' }}
-          plugins={[{
-            name: 'Tanstack Router',
-            render: <TanStackRouterDevtoolsPanel />,
-          }]}
-        />
         <Scripts />
       </body>
     </html>

@@ -14,6 +14,18 @@ const { navigateMock } = vi.hoisted(() => ({ navigateMock: vi.fn() }))
 
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => navigateMock,
+  Link: ({ to, params, children }: { to: string; params?: Record<string, string>; children: React.ReactNode }) => (
+    <a
+      href={params ? `${to}/${params.lessonId}` : to}
+      onClick={(e) => {
+        e.preventDefault()
+        if (params) navigateMock({ to, params })
+        else navigateMock({ to })
+      }}
+    >
+      {children}
+    </a>
+  ),
 }))
 
 beforeEach(() => {
@@ -45,12 +57,12 @@ describe('DailyGoalCard', () => {
 })
 
 describe('CourseCard', () => {
-  it('renders the next lesson title and a continue button', () => {
+  it('renders the next lesson title and a continue link', () => {
     setMastery(0)
     render(<CourseCard />)
     expect(screen.getByText('Kenapa nabung lebih awal jauh lebih untung')).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: /lanjut ke lesson berikutnya/i })
+      screen.getByRole('link', { name: /lanjut ke lesson berikutnya/i })
     ).toBeInTheDocument()
   })
 
@@ -58,7 +70,7 @@ describe('CourseCard', () => {
     setMastery(0)
     render(<CourseCard />)
     const user = userEvent.setup()
-    await user.click(screen.getByRole('button', { name: /lanjut ke lesson berikutnya/i }))
+    await user.click(screen.getByRole('link', { name: /lanjut ke lesson berikutnya/i }))
     expect(navigateMock).toHaveBeenCalledWith({
       to: '/lesson/$lessonId',
       params: { lessonId: 'why-save-early' },

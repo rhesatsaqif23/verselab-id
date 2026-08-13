@@ -1,9 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import LessonCompletePage from './index'
 import { useLessonCompleteStore, type LessonCompleteSummary } from './lessonCompleteStore'
+
+vi.mock('@tanstack/react-router', () => ({
+  Link: ({ to, params, children }: { to: string; params?: Record<string, string>; children: React.ReactNode }) => (
+    <a href={params ? `${to}/${params.lessonId}` : to}>{children}</a>
+  ),
+}))
 
 const summary: LessonCompleteSummary = {
   unitId: 'saving-basics',
@@ -18,8 +23,8 @@ const summary: LessonCompleteSummary = {
   masteryAfter: 52,
 }
 
-function renderPage(onBackHome = vi.fn()) {
-  return render(<LessonCompletePage onBackHome={onBackHome} />)
+function renderPage() {
+  return render(<LessonCompletePage />)
 }
 
 beforeEach(() => {
@@ -37,11 +42,11 @@ describe('lessonCompleteStore', () => {
 })
 
 describe('LessonCompletePage', () => {
-  it('renders the completion header and back button', () => {
+  it('renders the completion header and back link', () => {
     useLessonCompleteStore.getState().setSummary(summary)
     renderPage()
     expect(screen.getByText('Lesson selesai!')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /kembali ke beranda/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /kembali ke beranda/i })).toBeInTheDocument()
   })
 
   it('shows the XP earned', () => {
@@ -81,12 +86,10 @@ describe('LessonCompletePage', () => {
     expect(screen.getByText('Belum ada lesson yang selesai')).toBeInTheDocument()
   })
 
-  it('calls onBackHome when the back button is clicked', async () => {
+  it('has a back link to home', () => {
     useLessonCompleteStore.getState().setSummary(summary)
-    const onBackHome = vi.fn()
-    renderPage(onBackHome)
-    const user = userEvent.setup()
-    await user.click(screen.getByRole('button', { name: /kembali ke beranda/i }))
-    expect(onBackHome).toHaveBeenCalledTimes(1)
+    renderPage()
+    const backLink = screen.getByRole('link', { name: /kembali ke beranda/i })
+    expect(backLink).toHaveAttribute('href', '/')
   })
 })

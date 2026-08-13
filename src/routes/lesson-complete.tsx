@@ -1,4 +1,4 @@
-import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import LessonCompletePage from "../features/lesson-complete";
 import { useLessonCompleteStore } from "../features/lesson-complete/lessonCompleteStore";
 
@@ -8,10 +8,5 @@ export const Route = createFileRoute("/lesson-complete")({
       throw redirect({ to: "/" });
     }
   },
-  component: LessonCompleteRoute,
+  component: LessonCompletePage,
 });
-
-function LessonCompleteRoute() {
-  const navigate = useNavigate();
-  return <LessonCompletePage onBackHome={() => navigate({ to: "/" })} />;
-}
