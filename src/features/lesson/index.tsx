@@ -7,9 +7,10 @@ import {
   useProgressStore,
 } from '#/engine/progress/progressStore.ts'
 import { useLessonCompleteStore } from '#/features/lesson-complete/lessonCompleteStore.ts'
-import { findLesson } from '#/content/index.ts'
+import { findLesson, todayString } from '#/content/index.ts'
 import { checkAnswer } from './checkAnswer.ts'
 import { renderScreen } from './renderScreen.tsx'
+import { masteryForDisplay } from '#/engine/progress/masteryRead.ts'
 
 type LessonPageProps = {
   lessonId: string
@@ -28,6 +29,10 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
   }
 
   const { unit, lesson } = found
+  const mastery = useProgressStore((s) => s.mastery)
+  const updatedAt = useProgressStore((s) => s.masteryUpdatedAt)
+  const today = todayString()
+  const displayMastery = masteryForDisplay(unit.id, mastery, updatedAt, today)
 
   function handleExit() {
     useLessonStore.getState().clear()
@@ -72,6 +77,7 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
       checkAnswer={checkAnswer}
       onExit={handleExit}
       onComplete={handleComplete}
+      mastery={displayMastery}
     />
   )
 }

@@ -44,6 +44,7 @@ vi.mock('#/content/index.ts', () => ({
     unit: { id: 'unit-test', title: 'Unit Test', lessons: [] },
     lesson: { id: 'test-lesson', title: 'Test Lesson', screens: fixtureScreens },
   }),
+  todayString: () => '2026-08-13',
 }))
 
 vi.mock('./renderScreen.tsx', () => ({
@@ -109,16 +110,16 @@ describe('LessonPage award flow', () => {
 
     // Screen 0: choice — answer correctly
     await user.click(screen.getByRole('button', { name: 'A' }))
-    await user.click(screen.getByRole('button', { name: /check/i }))
-    await user.click(screen.getByRole('button', { name: /continue/i }))
+    await user.click(screen.getByRole('button', { name: /cek jawaban/i }))
+    await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     // Screen 1: concept — auto-advance
     await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     // Screen 2: numeric — answer correctly
     await user.click(screen.getByRole('button', { name: 'Jawab 5' }))
-    await user.click(screen.getByRole('button', { name: /check/i }))
-    await user.click(screen.getByRole('button', { name: /continue/i }))
+    await user.click(screen.getByRole('button', { name: /cek jawaban/i }))
+    await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     // Assertions
     expect(navigateMock).toHaveBeenCalledWith({ to: '/lesson-complete' })
@@ -148,16 +149,16 @@ describe('LessonPage award flow', () => {
 
     // Screen 0: choice — answer wrong
     await user.click(screen.getByRole('button', { name: 'B' }))
-    await user.click(screen.getByRole('button', { name: /check/i }))
-    await user.click(screen.getByRole('button', { name: /continue/i }))
+    await user.click(screen.getByRole('button', { name: /cek jawaban/i }))
+    await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     // Screen 1: concept — auto-advance
     await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     // Screen 2: numeric — answer wrong (99 outside range)
     await user.click(screen.getByRole('button', { name: 'Jawab 99' }))
-    await user.click(screen.getByRole('button', { name: /check/i }))
-    await user.click(screen.getByRole('button', { name: /continue/i }))
+    await user.click(screen.getByRole('button', { name: /cek jawaban/i }))
+    await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     const summary = useLessonCompleteStore.getState().summary
     expect(summary).not.toBeNull()

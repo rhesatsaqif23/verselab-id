@@ -133,12 +133,13 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={() => {}}
+        mastery={50}
       />
     )
     expect(screen.getByText('1 / 2')).toBeInTheDocument()
   })
 
-  it('starts with the Check button disabled', () => {
+  it('starts with the Cek Jawaban button disabled', () => {
     render(
       <LessonPlayer
         screens={screens}
@@ -146,12 +147,13 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={() => {}}
+        mastery={50}
       />
     )
-    expect(screen.getByRole('button', { name: /check/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /cek jawaban/i })).toBeDisabled()
   })
 
-  it('enables Check after an answer is selected', async () => {
+  it('enables Cek Jawaban after an answer is selected', async () => {
     render(
       <LessonPlayer
         screens={screens}
@@ -159,14 +161,15 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={() => {}}
+        mastery={50}
       />
     )
     const user = userEvent.setup()
     await user.click(screen.getByRole('button', { name: /opsi a/i }))
-    expect(screen.getByRole('button', { name: /check/i })).toBeEnabled()
+    expect(screen.getByRole('button', { name: /cek jawaban/i })).toBeEnabled()
   })
 
-  it('shows the feedback panel with explain text after Check', async () => {
+  it('shows the feedback panel with explain text after Cek Jawaban', async () => {
     render(
       <LessonPlayer
         screens={screens}
@@ -174,15 +177,16 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={() => {}}
+        mastery={50}
       />
     )
     const user = userEvent.setup()
     await user.click(screen.getByRole('button', { name: /opsi a/i }))
-    await user.click(screen.getByRole('button', { name: /check/i }))
+    await user.click(screen.getByRole('button', { name: /cek jawaban/i }))
     expect(screen.getByText(/karena a benar/i)).toBeInTheDocument()
   })
 
-  it('switches the button to Continue in the same position after Check', async () => {
+  it('switches the button to Lanjut in the same position after Cek Jawaban', async () => {
     render(
       <LessonPlayer
         screens={screens}
@@ -190,16 +194,17 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={() => {}}
+        mastery={50}
       />
     )
     const user = userEvent.setup()
     await user.click(screen.getByRole('button', { name: /opsi a/i }))
-    await user.click(screen.getByRole('button', { name: /check/i }))
-    expect(screen.getByRole('button', { name: /continue/i })).toBeInTheDocument()
-    expect(screen.queryByRole('button', { name: /check/i })).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /cek jawaban/i }))
+    expect(screen.getByRole('button', { name: /lanjut/i })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /cek jawaban/i })).not.toBeInTheDocument()
   })
 
-  it('advances to the next screen on Continue', async () => {
+  it('advances to the next screen on Lanjut', async () => {
     render(
       <LessonPlayer
         screens={screens}
@@ -207,12 +212,13 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={() => {}}
+        mastery={50}
       />
     )
     const user = userEvent.setup()
     await user.click(screen.getByRole('button', { name: /opsi a/i }))
-    await user.click(screen.getByRole('button', { name: /check/i }))
-    await user.click(screen.getByRole('button', { name: /continue/i }))
+    await user.click(screen.getByRole('button', { name: /cek jawaban/i }))
+    await user.click(screen.getByRole('button', { name: /lanjut/i }))
     expect(screen.getByText('2 / 2')).toBeInTheDocument()
     expect(screen.getByText('Pertanyaan kedua')).toBeInTheDocument()
   })
@@ -226,17 +232,18 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={onComplete}
+        mastery={50}
       />
     )
     const user = userEvent.setup()
 
     await user.click(screen.getByRole('button', { name: /opsi a/i }))
-    await user.click(screen.getByRole('button', { name: /check/i }))
-    await user.click(screen.getByRole('button', { name: /continue/i }))
+    await user.click(screen.getByRole('button', { name: /cek jawaban/i }))
+    await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     await user.click(screen.getByRole('button', { name: /opsi c/i }))
-    await user.click(screen.getByRole('button', { name: /check/i }))
-    await user.click(screen.getByRole('button', { name: /continue/i }))
+    await user.click(screen.getByRole('button', { name: /cek jawaban/i }))
+    await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     expect(onComplete).toHaveBeenCalledTimes(1)
     expect(onComplete).toHaveBeenCalledWith(
@@ -256,6 +263,7 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={onExit}
         onComplete={() => {}}
+        mastery={50}
       />
     )
     const user = userEvent.setup()
@@ -278,19 +286,20 @@ describe('LessonPlayer mixed lesson (choice + concept + numeric)', () => {
         checkAnswer={checkMixedAnswer}
         onExit={() => {}}
         onComplete={onComplete}
+        mastery={50}
       />
     )
     const user = userEvent.setup()
 
     await user.click(screen.getByRole('button', { name: /opsi a/i }))
-    await user.click(screen.getByRole('button', { name: /check/i }))
-    await user.click(screen.getByRole('button', { name: /continue/i }))
+    await user.click(screen.getByRole('button', { name: /cek jawaban/i }))
+    await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     await user.click(screen.getByRole('button', { name: /jawab 5/i }))
-    await user.click(screen.getByRole('button', { name: /check/i }))
-    await user.click(screen.getByRole('button', { name: /continue/i }))
+    await user.click(screen.getByRole('button', { name: /cek jawaban/i }))
+    await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     expect(onComplete).toHaveBeenCalledTimes(1)
     const payload = onComplete.mock.calls[0][0]
@@ -311,19 +320,20 @@ describe('LessonPlayer mixed lesson (choice + concept + numeric)', () => {
         checkAnswer={checkMixedAnswer}
         onExit={() => {}}
         onComplete={onComplete}
+        mastery={50}
       />
     )
     const user = userEvent.setup()
 
     await user.click(screen.getByRole('button', { name: /opsi b/i }))
-    await user.click(screen.getByRole('button', { name: /check/i }))
-    await user.click(screen.getByRole('button', { name: /continue/i }))
+    await user.click(screen.getByRole('button', { name: /cek jawaban/i }))
+    await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     await user.click(screen.getByRole('button', { name: /jawab 5/i }))
-    await user.click(screen.getByRole('button', { name: /check/i }))
-    await user.click(screen.getByRole('button', { name: /continue/i }))
+    await user.click(screen.getByRole('button', { name: /cek jawaban/i }))
+    await user.click(screen.getByRole('button', { name: /lanjut/i }))
 
     const payload = onComplete.mock.calls[0][0]
     const wrong = payload.filter(

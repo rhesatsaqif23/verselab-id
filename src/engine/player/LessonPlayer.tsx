@@ -14,6 +14,7 @@ type LessonPlayerProps = {
   checkAnswer: (screen: Screen, answer: unknown) => boolean
   onExit: () => void
   onComplete: (results: readonly AnswerResult[]) => void
+  mastery: number
 }
 
 export default function LessonPlayer({
@@ -22,6 +23,7 @@ export default function LessonPlayer({
   checkAnswer,
   onExit,
   onComplete,
+  mastery,
 }: LessonPlayerProps) {
   const index = useLessonStore((s) => s.index)
   const answers = useLessonStore((s) => s.answers)
@@ -64,8 +66,8 @@ export default function LessonPlayer({
 
   return (
     <div className="page-wrap flex min-h-screen flex-col px-4 pb-16 pt-6">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={handleExit} aria-label="Keluar">
+      <div className="flex items-center justify-between gap-4">
+        <Button variant="ghost" size="icon" onClick={handleExit} aria-label="Keluar" className="shrink-0">
           ✕
         </Button>
         <div className="flex-1 flex flex-col gap-2">
@@ -82,6 +84,9 @@ export default function LessonPlayer({
           <span className="text-center text-lg font-bold text-muted">
             {index + 1} / {total}
           </span>
+        </div>
+        <div className="shrink-0 rounded-full border-2 border-border px-4 py-2 text-base font-bold text-foreground">
+          {mastery}%
         </div>
       </div>
 
@@ -121,13 +126,13 @@ export default function LessonPlayer({
               size="lg"
               disabled={!hasAnswer}
               onClick={handleCheck}
-              className="w-full"
+              className="w-full disabled:opacity-100"
             >
-              Check
+              Cek Jawaban
             </Button>
           ) : (
             <Button variant="default" size="lg" onClick={handleContinue} className="w-full">
-              Continue
+              Lanjut
             </Button>
           ))}
         </div>
