@@ -3,14 +3,17 @@ import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { Card, CardContent } from '#/components/ui/card'
 import { useLessonCompleteStore } from './lessonCompleteStore'
-import { nextLesson, units } from '#/content/index.ts'
+import { nextLesson, units, todayString } from '#/content/index.ts'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
+import { decayedMastery } from '#/engine/progress/decay.ts'
 
 export default function LessonCompletePage() {
   const summary = useLessonCompleteStore((s) => s.summary)
   const mastery = useProgressStore((s) => s.mastery)
+  const updatedAt = useProgressStore((s) => s.masteryUpdatedAt)
+  const today = todayString()
 
-  const next = nextLesson(units, mastery)
+  const next = nextLesson(units, mastery, updatedAt, today)
 
   if (!summary) {
     return (
@@ -34,10 +37,15 @@ export default function LessonCompletePage() {
     )
   }
 
-  const masteryDelta =
-    summary.masteryBefore != null && summary.masteryAfter != null
-      ? summary.masteryAfter - summary.masteryBefore
-      : 0
+  const unitId = summary.unitId
+  const displayBefore =
+    summary.masteryBefore != null
+      ? decayedMastery(summary.masteryBefore, updatedAt[unitId], today)
+      : null
+  const displayAfter =
+    summary.masteryAfter != null
+      ? decayedMastery(summary.masteryAfter, updatedAt[unitId], today)
+      : null
 
   return (
     <main className="page-wrap px-4 pb-32 pt-8">
@@ -69,11 +77,11 @@ export default function LessonCompletePage() {
                 </p>
               </div>
               <p className="mt-1 text-3xl font-black text-(--color-text)">
-                {summary.masteryBefore ?? summary.masteryAfter}
+                {displayBefore ?? displayAfter}
                 <span className="mx-2 text-lg text-muted">→</span>
-                {summary.masteryAfter}
-                {masteryDelta > 0 && (
-                  <span className="ml-2 text-lg font-bold text-success">+{masteryDelta}</span>
+                {displayAfter}
+                {displayBefore != null && displayAfter != null && displayAfter - displayBefore > 0 && (
+                  <span className="ml-2 text-lg font-bold text-success">+{displayAfter - displayBefore}</span>
                 )}
               </p>
             </div>
