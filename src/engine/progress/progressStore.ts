@@ -18,6 +18,7 @@ type ProgressState = {
   streakFreeze: number
   lastActiveDate: string | null
   mastery: Record<string, number>
+  masteryUpdatedAt: Record<string, string>
 }
 
 type ProgressActions = {
@@ -48,22 +49,30 @@ export const useProgressStore = create<ProgressState & ProgressActions>()(
       streakFreeze: 0,
       lastActiveDate: null,
       mastery: {},
+      masteryUpdatedAt: {},
 
       awardXp: (amount) =>
         set((state) => ({ xp: Math.max(0, state.xp + amount) })),
 
       awardScreenResult: (unitId, correct) =>
-        set((state) => ({
-          xp: state.xp + (correct ? XP_PER_SCREEN : 0),
-          mastery: {
-            ...state.mastery,
-            [unitId]: clamp(
-              (state.mastery[unitId] ?? 50) + (correct ? MASTERY_CORRECT : -MASTERY_WRONG),
-              MASTERY_MIN,
-              MASTERY_MAX
-            ),
-          },
-        })),
+        set((state) => {
+          const started = state.mastery[unitId] ?? 0
+          return {
+            xp: state.xp + (correct ? XP_PER_SCREEN : 0),
+            mastery: {
+              ...state.mastery,
+              [unitId]: clamp(
+                started + (correct ? MASTERY_CORRECT : -MASTERY_WRONG),
+                MASTERY_MIN,
+                MASTERY_MAX
+              ),
+            },
+            masteryUpdatedAt: {
+              ...state.masteryUpdatedAt,
+              [unitId]: todayString(),
+            },
+          }
+        }),
 
       awardLessonCompletion: (unitId) =>
         set((state) => {
@@ -81,6 +90,10 @@ export const useProgressStore = create<ProgressState & ProgressActions>()(
             streakFreeze: result.streakFreeze,
             lastActiveDate: result.lastActiveDate,
             mastery: { ...state.mastery, [unitId]: state.mastery[unitId] ?? 50 },
+            masteryUpdatedAt: {
+              ...state.masteryUpdatedAt,
+              [unitId]: todayString(),
+            },
           }
         }),
 

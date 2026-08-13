@@ -10,6 +10,7 @@ export function resetProgress() {
     streakFreeze: 0,
     lastActiveDate: null,
     mastery: {},
+    masteryUpdatedAt: {},
   })
 }
 
