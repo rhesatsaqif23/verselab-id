@@ -49,10 +49,9 @@ export default function LessonPlayer({
   function handleContinue() {
     const nextIndex = index + 1
     if (nextIndex >= total) {
-      const finalResults = screens.map((s, i) => ({
-        screen: s,
-        correct: results[i]?.correct ?? false,
-      }))
+      const finalResults = screens.flatMap((s, i) =>
+        results[i] ? [{ screen: s, correct: results[i]!.correct }] : [],
+      )
       onComplete(finalResults)
       clear()
       return
