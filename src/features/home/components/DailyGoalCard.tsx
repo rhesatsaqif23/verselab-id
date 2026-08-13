@@ -1,11 +1,15 @@
 import { Target } from 'lucide-react'
 import { Card, CardContent } from '#/components/ui/card'
-import { useProgressStore } from '#/engine/progress/progressStore.ts'
+import { Button } from '#/components/ui/button.tsx'
+import { useProgressStore, type DailyGoalMinutes } from '#/engine/progress/progressStore.ts'
 import { todayString } from '#/content/index.ts'
+
+const GOAL_OPTIONS: DailyGoalMinutes[] = [3, 10, 20]
 
 export default function DailyGoalCard() {
   const dailyGoalMinutes = useProgressStore((s) => s.dailyGoalMinutes)
   const lastActiveDate = useProgressStore((s) => s.lastActiveDate)
+  const setDailyGoal = useProgressStore((s) => s.setDailyGoal)
 
   const reached = lastActiveDate === todayString()
 
@@ -21,6 +25,21 @@ export default function DailyGoalCard() {
             <p className="text-sm font-semibold text-muted">{dailyGoalMinutes} menit</p>
           </div>
         </div>
+
+        <div className="mb-3 flex gap-2">
+          {GOAL_OPTIONS.map((minutes) => (
+            <Button
+              key={minutes}
+              variant={minutes === dailyGoalMinutes ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setDailyGoal(minutes)}
+              className="flex-1"
+            >
+              {minutes} menit
+            </Button>
+          ))}
+        </div>
+
         <p
           className={
             reached

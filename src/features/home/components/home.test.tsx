@@ -52,7 +52,28 @@ describe('DailyGoalCard', () => {
     useProgressStore.setState({ dailyGoalMinutes: 10, lastActiveDate: null })
     render(<DailyGoalCard />)
     expect(screen.getByText('Belum tercapai')).toBeInTheDocument()
-    expect(screen.getByText('10 menit')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '10 menit' })).toBeInTheDocument()
+  })
+
+  it('renders the three goal options', () => {
+    render(<DailyGoalCard />)
+    expect(screen.getByRole('button', { name: '3 menit' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '10 menit' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '20 menit' })).toBeInTheDocument()
+  })
+
+  it('highlights the current goal', () => {
+    useProgressStore.setState({ dailyGoalMinutes: 20 })
+    render(<DailyGoalCard />)
+    const active = screen.getByRole('button', { name: '20 menit' })
+    expect(active.className).toContain('from-(--btn-from)')
+  })
+
+  it('calls setDailyGoal when a goal button is clicked', async () => {
+    render(<DailyGoalCard />)
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('button', { name: '20 menit' }))
+    expect(useProgressStore.getState().dailyGoalMinutes).toBe(20)
   })
 })
 
