@@ -49,7 +49,7 @@ export default function StreakTracker() {
 
           {/* Streak info */}
           <div>
-            <p className="text-sm font-semibold text-muted">Streak harian</p>
+            <p className="text-base font-bold">Streak harian</p>
             <div className="flex items-baseline gap-1.5">
               <span className="text-4xl font-black text-foreground leading-none">{streak}</span>
               <span className="text-sm font-medium text-muted">hari berturut-turut</span>
@@ -95,7 +95,7 @@ export default function StreakTracker() {
         </div>
 
         {/* Footer message */}
-        <p className="mt-4 text-sm font-medium text-muted">
+        <p className="mt-4 text-sm font-medium">
           Belajar setiap hari untuk menjaga streak!
         </p>
       </CardContent>

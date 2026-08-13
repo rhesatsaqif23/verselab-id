@@ -1,54 +1,62 @@
-import { Target } from 'lucide-react'
+import { Target, ChevronRight } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
 import { Card, CardContent } from '#/components/ui/card'
-import { Button } from '#/components/ui/button.tsx'
-import { useProgressStore, type DailyGoalMinutes } from '#/engine/progress/progressStore.ts'
+import { useProgressStore } from '#/engine/progress/progressStore.ts'
 import { todayString } from '#/content/index.ts'
-
-const GOAL_OPTIONS: DailyGoalMinutes[] = [3, 10, 20]
 
 export default function DailyGoalCard() {
   const dailyGoalMinutes = useProgressStore((s) => s.dailyGoalMinutes)
   const lastActiveDate = useProgressStore((s) => s.lastActiveDate)
-  const setDailyGoal = useProgressStore((s) => s.setDailyGoal)
 
   const reached = lastActiveDate === todayString()
+  // For now, minutes done today = goal if reached, else 0
+  const minutesDone = reached ? dailyGoalMinutes : 0
+  const progress = Math.min(minutesDone / dailyGoalMinutes, 1)
 
   return (
-    <Card className="p-5">
+    <Card className="border-2 border-border p-5">
       <CardContent className="p-0">
-        <div className="mb-3 flex items-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/15">
-            <Target className="h-5 w-5 text-accent" />
+        {/* Header row */}
+        <div className="flex items-start gap-4">
+          {/* Target icon badge */}
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
+            <Target className="h-7 w-7 text-primary" />
           </div>
+
+          {/* Goal info */}
           <div>
-            <p className="text-base font-bold text-foreground">Goal harian</p>
-            <p className="text-sm font-semibold text-muted">{dailyGoalMinutes} menit</p>
+            <p className="text-base font-bold">Goal harian</p>
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-4xl font-black text-foreground leading-none">{minutesDone}</span>
+              <span className="text-sm font-medium text-muted">/ {dailyGoalMinutes} menit</span>
+            </div>
+
           </div>
         </div>
 
-        <div className="mb-3 flex gap-2">
-          {GOAL_OPTIONS.map((minutes) => (
-            <Button
-              key={minutes}
-              variant={minutes === dailyGoalMinutes ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setDailyGoal(minutes)}
-              className="flex-1"
-            >
-              {minutes} menit
-            </Button>
-          ))}
+        {/* Progress bar */}
+        <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-border">
+          <div
+            className="h-full rounded-full bg-primary transition-all duration-500"
+            style={{ width: `${progress * 100}%` }}
+          />
         </div>
 
-        <p
-          className={
-            reached
-              ? 'text-base font-bold text-success'
-              : 'text-base font-bold text-muted'
-          }
-        >
-          {reached ? 'Tercapai hari ini' : 'Belum tercapai'}
+        <p className={reached ? 'mt-3 text-sm font-semibold' : 'mt-2 text-sm font-medium text-muted'}>
+          {reached ? 'Tercapai hari ini 🎉' : 'Belum tercapai'}
         </p>
+
+        {/* Divider */}
+        <div className="mt-3 border-t border-border" />
+
+        {/* Link to profile */}
+        <Link
+          to="/profile"
+          className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary"
+        >
+          Atur goal harian
+          <ChevronRight className="h-4 w-4" />
+        </Link>
       </CardContent>
     </Card>
   )
