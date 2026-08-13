@@ -45,7 +45,7 @@ export default function LessonCompletePage() {
 
   return (
     <main className="page-wrap flex min-h-screen flex-col items-center justify-center px-4 pb-16 pt-8">
-      <div className="mx-auto flex w-full max-w-md flex-col items-center gap-8">
+      <div className="mx-auto flex w-full max-w-xl flex-col items-center gap-8">
         {/* Celebratory icon */}
         <div className="relative">
           <div className="absolute inset-0 flex items-center justify-center">
@@ -61,7 +61,7 @@ export default function LessonCompletePage() {
           <h1 className="text-3xl font-black text-foreground">
             Lesson selesai!
           </h1>
-          <p className="mt-1 text-sm font-semibold text-muted">
+          <p className="mt-1 text-base font-semibold text-muted">
             {summary.unitName}
           </p>
         </div>
@@ -120,7 +120,7 @@ export default function LessonCompletePage() {
         {summary.wrongScreens.length > 0 && (
           <Card className="w-full border-2 border-destructive/20 bg-destructive/5 p-4">
             <CardContent className="p-0">
-              <h2 className="mb-3 text-sm font-bold uppercase tracking-widest text-destructive">
+              <h2 className="mb-3 text-sm font-bold uppercase tracking-wider">
                 Perlu diulang
               </h2>
               <div className="flex flex-col gap-2">

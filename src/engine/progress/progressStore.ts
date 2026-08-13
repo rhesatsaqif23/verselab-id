@@ -17,6 +17,7 @@ type ProgressState = {
   streak: number
   streakFreeze: number
   lastActiveDate: string | null
+  activeDays: string[]
   mastery: Record<string, number>
   masteryUpdatedAt: Record<string, string>
 }
@@ -48,6 +49,7 @@ export const useProgressStore = create<ProgressState & ProgressActions>()(
       streak: 0,
       streakFreeze: 0,
       lastActiveDate: null,
+      activeDays: [],
       mastery: {},
       masteryUpdatedAt: {},
 
@@ -76,23 +78,28 @@ export const useProgressStore = create<ProgressState & ProgressActions>()(
 
       awardLessonCompletion: (unitId) =>
         set((state) => {
+          const today = todayString()
           const result = streakOnActivity(
             {
               streak: state.streak,
               streakFreeze: state.streakFreeze,
               lastActiveDate: state.lastActiveDate,
             },
-            todayString()
+            today
           )
+          const activeDays = state.activeDays.includes(today)
+            ? state.activeDays
+            : [...state.activeDays, today]
           return {
             xp: state.xp + XP_PER_LESSON,
             streak: result.streak,
             streakFreeze: result.streakFreeze,
             lastActiveDate: result.lastActiveDate,
+            activeDays,
             mastery: { ...state.mastery, [unitId]: state.mastery[unitId] ?? 50 },
             masteryUpdatedAt: {
               ...state.masteryUpdatedAt,
-              [unitId]: todayString(),
+              [unitId]: today,
             },
           }
         }),
