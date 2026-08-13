@@ -35,13 +35,15 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
   }
 
   function handleComplete(results: readonly AnswerResult[]) {
-    const correctCount = results.filter((r) => r.correct).length
-    const wrongScreens = results
+    const answerResults = results.filter((r) => r.screen.type !== 'concept')
+
+    const correctCount = answerResults.filter((r) => r.correct).length
+    const wrongScreens = answerResults
       .filter((r) => !r.correct)
       .map((r) => ({ prompt: r.screen.prompt, explain: r.screen.explain }))
 
     const masteryBefore = useProgressStore.getState().mastery[unit.id] ?? null
-    for (const result of results) {
+    for (const result of answerResults) {
       useProgressStore.getState().awardScreenResult(unit.id, result.correct)
     }
     useProgressStore.getState().awardLessonCompletion(unit.id)
@@ -53,7 +55,7 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
     useLessonCompleteStore.getState().setSummary({
       unitId: unit.id,
       unitName: unit.title,
-      totalScreens: results.length,
+      totalScreens: answerResults.length,
       correctCount,
       wrongScreens,
       xpEarned,
