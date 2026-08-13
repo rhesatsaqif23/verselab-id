@@ -5,10 +5,13 @@ import { Card, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { units, nextLesson } from '#/content/index.ts'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
+import { todayString } from '#/content/index.ts'
 
 export default function CourseCard() {
   const mastery = useProgressStore((s) => s.mastery)
-  const next = nextLesson(units, mastery)
+  const updatedAt = useProgressStore((s) => s.masteryUpdatedAt)
+  const today = todayString()
+  const next = nextLesson(units, mastery, updatedAt, today)
 
   return (
     <Card className="p-8">

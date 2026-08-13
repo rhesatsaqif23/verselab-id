@@ -3,15 +3,19 @@ import { Card } from '#/components/ui/card'
 import { Progress } from '#/components/ui/progress'
 import { units } from '#/content/index.ts'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
+import { masteryForDisplay } from '#/engine/progress/masteryRead.ts'
+import { todayString } from '#/content/index.ts'
 
 export default function CourseGrid() {
   const mastery = useProgressStore((s) => s.mastery)
+  const updatedAt = useProgressStore((s) => s.masteryUpdatedAt)
+  const today = todayString()
 
   return (
     <section className="mt-8">
       <div className="flex flex-col gap-3">
         {units.map((unit) => {
-          const value = mastery[unit.id] ?? 0
+          const value = masteryForDisplay(unit.id, mastery, updatedAt, today)
           return (
             <Link
               key={unit.id}

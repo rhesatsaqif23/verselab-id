@@ -28,7 +28,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
+a:not([data-slot="button"]) {
   color: var(--primary);
   text-decoration-color: rgba(249, 115, 22, 0.35);
   text-decoration-thickness: 1px;
