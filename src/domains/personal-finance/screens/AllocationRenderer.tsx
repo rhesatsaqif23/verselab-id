@@ -62,7 +62,7 @@ export default function AllocationRenderer({ screen, onChange }: AllocationRende
 
   const chartData = screen.categories.map((cat) => ({
     label: cat,
-    value: allocation[cat] ?? 0,
+    value: Math.round(allocation[cat] ?? 0),
   }))
 
   return (
@@ -74,10 +74,10 @@ export default function AllocationRenderer({ screen, onChange }: AllocationRende
           <div key={category} className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">{category}</span>
-              <span className="text-sm text-muted">{allocation[category] ?? 0}%</span>
+              <span className="text-sm text-muted">{Math.round(allocation[category] ?? 0)}%</span>
             </div>
             <Slider
-              value={[allocation[category] ?? 0]}
+              value={[Math.round(allocation[category] ?? 0)]}
               min={0}
               max={100}
               step={1}

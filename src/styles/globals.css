@@ -57,10 +57,10 @@
   --btn-destructive-text: #ffffff;
   --btn-destructive-shadow: #b91c1c;
 
-  --btn-outline-border: var(--color-primary);
-  --btn-outline-from: rgba(44, 94, 173, 0.08);
-  --btn-outline-to: rgba(21, 145, 220, 0.08);
-  --btn-outline-text: var(--color-primary);
+  --btn-outline-border: var(--border);
+  --btn-outline-from: transparent;
+  --btn-outline-to: transparent;
+  --btn-outline-text: var(--foreground);
 
   --btn-secondary-from: #f3f4f6;
   --btn-secondary-via: #fafafa;
@@ -138,10 +138,10 @@
   --btn-destructive-text: #1a1a1a;
   --btn-destructive-shadow: #7f1d1d;
 
-  --btn-outline-border: var(--color-primary);
-  --btn-outline-from: rgba(75, 184, 250, 0.12);
-  --btn-outline-to: rgba(21, 145, 220, 0.12);
-  --btn-outline-text: var(--color-primary);
+  --btn-outline-border: var(--border);
+  --btn-outline-from: transparent;
+  --btn-outline-to: transparent;
+  --btn-outline-text: var(--foreground);
 
   --btn-secondary-from: #2d2d2d;
   --btn-secondary-via: #1f1f1f;

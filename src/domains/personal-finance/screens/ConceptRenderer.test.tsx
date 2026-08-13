@@ -1,7 +1,6 @@
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import ConceptRenderer from './ConceptRenderer'
 
 const demoScreen = {
@@ -13,26 +12,12 @@ const demoScreen = {
 
 describe('ConceptRenderer', () => {
   it('renders the prompt text', () => {
-    render(<ConceptRenderer screen={demoScreen} onContinue={() => {}} />)
+    render(<ConceptRenderer screen={demoScreen} />)
     expect(screen.getByText(demoScreen.prompt)).toBeInTheDocument()
   })
 
-  it('renders a Lanjut button', () => {
-    render(<ConceptRenderer screen={demoScreen} onContinue={() => {}} />)
-    expect(screen.getByRole('button', { name: /lanjut/i })).toBeInTheDocument()
-  })
-
-  it('calls onContinue when Lanjut is pressed', async () => {
-    const onContinue = vi.fn()
-    render(<ConceptRenderer screen={demoScreen} onContinue={onContinue} />)
-    const user = userEvent.setup()
-
-    await user.click(screen.getByRole('button', { name: /lanjut/i }))
-    expect(onContinue).toHaveBeenCalledTimes(1)
-  })
-
-  it('keeps the button enabled', () => {
-    render(<ConceptRenderer screen={demoScreen} onContinue={() => {}} />)
-    expect(screen.getByRole('button', { name: /lanjut/i })).toBeEnabled()
+  it('does not render a button (player owns the Lanjut button)', () => {
+    render(<ConceptRenderer screen={demoScreen} />)
+    expect(screen.queryByRole('button', { name: /lanjut/i })).not.toBeInTheDocument()
   })
 })

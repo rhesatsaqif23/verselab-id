@@ -11,7 +11,7 @@ export function renderScreen(
 ): ReactNode {
   switch (screen.type) {
     case 'concept':
-      return <ConceptRenderer screen={screen} onContinue={() => onChange(null)} />
+      return <ConceptRenderer screen={screen} />
     case 'choice':
       return <ChoiceRenderer screen={screen} onSelect={(id) => onChange(id)} />
     case 'numeric':

@@ -26,10 +26,10 @@ export default function ChoiceRenderer({ screen, onSelect }: ChoiceRendererProps
             variant="outline"
             onClick={() => handleClick(option.id)}
             className={cn(
-              'w-full justify-start rounded-2xl border-2 px-4 py-3 text-left font-normal',
+              'w-full justify-start rounded-lg border-2 px-4 py-4 text-left font-medium text-foreground bg-card shadow-xs transition-all duration-150',
               selected === option.id
-                ? 'border-primary bg-primary/5'
-                : 'border-border hover:border-primary/40'
+                ? 'border-primary text-foreground ring-2 ring-primary/20'
+                : 'border-border text-foreground hover:border-primary/50 hover:bg-accent/5'
             )}
           >
             {option.label}

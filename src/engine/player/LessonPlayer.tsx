@@ -76,10 +76,12 @@ export default function LessonPlayer({
         <Progress value={((index + 1) / total) * 100} className="h-2" />
       </div>
 
-      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col py-8">
-        <div key={index}>{renderScreen(screen, (a) => setAnswer(index, a))}</div>
+      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col py-6">
+        <div key={index} className="my-auto flex w-full flex-col justify-center py-4">
+          {renderScreen(screen, (a) => setAnswer(index, a))}
+        </div>
 
-        <div className="mt-auto flex min-h-28 flex-col gap-3 pt-6">
+        <div className="w-full flex min-h-20 flex-col gap-3 pt-4">
           {isConcept ? (
             <Button
               variant="default"
@@ -93,16 +95,18 @@ export default function LessonPlayer({
             <div
               role="status"
               className={cn(
-                'rounded-2xl border-2 px-4 py-3 text-sm',
+                'rounded-2xl border-2 p-4 sm:p-5',
                 lastResult.correct
                   ? 'border-success bg-success/10 text-success'
                   : 'border-destructive/40 bg-destructive/10 text-destructive'
               )}
             >
-              <p className="font-bold">
+              <p className="text-base font-bold">
                 {lastResult.correct ? 'Benar!' : 'Belum tepat'}
               </p>
-              <p className="mt-1 text-muted">{screen.explain}</p>
+              <p className="mt-1.5 text-base font-medium leading-relaxed text-foreground">
+                {screen.explain}
+              </p>
             </div>
           ) : null}
 

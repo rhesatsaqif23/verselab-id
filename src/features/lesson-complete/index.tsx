@@ -102,7 +102,7 @@ export default function LessonCompletePage() {
                       <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-destructive" />
                       <div>
                         <p className="text-sm font-semibold text-(--color-text)">{wrong.prompt}</p>
-                        <p className="mt-1 text-sm text-muted">{wrong.explain}</p>
+                        <p className="mt-1 text-base font-medium text-foreground">{wrong.explain}</p>
                       </div>
                     </div>
                   </div>
