@@ -11,18 +11,7 @@ export function findLesson(
   return undefined
 }
 
-export function nextLesson(
-  unitList: readonly Unit[],
-  mastery: Record<string, number>,
-): { unit: Unit; lesson: Lesson } {
-  for (const unit of unitList) {
-    if ((mastery[unit.id] ?? 0) < 100) {
-      return { unit, lesson: unit.lessons[0] }
-    }
-  }
-  const first = unitList[0]
-  return { unit: first, lesson: first.lessons[0] }
-}
+export { nextLesson } from '#/engine/path/nextLesson.ts'
 
 export function todayString(): string {
   const d = new Date()
