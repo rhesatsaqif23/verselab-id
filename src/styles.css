@@ -35,7 +35,7 @@ a {
   text-underline-offset: 2px;
 }
 
-a:hover {
+a:hover:not([data-slot="button"]) {
   color: oklch(0.70 0.16 55);
 }
 

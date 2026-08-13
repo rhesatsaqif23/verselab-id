@@ -9,22 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AboutRouteImport } from './routes/about'
+import { Route as HomeRouteImport } from './routes/_home'
 import { Route as LessonCompleteRouteImport } from './routes/lesson-complete'
-import { Route as DemoBetterAuthRouteImport } from './routes/demo/better-auth'
-import { Route as DemoDrizzleRouteImport } from './routes/demo/drizzle'
+import { Route as HomeIndexRouteImport } from './routes/_home/index'
+import { Route as HomeAboutRouteImport } from './routes/_home/about'
 import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
+const HomeRoute = HomeRouteImport.update({
+  id: '/_home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LessonCompleteRoute = LessonCompleteRouteImport.update({
@@ -32,109 +24,69 @@ const LessonCompleteRoute = LessonCompleteRouteImport.update({
   path: '/lesson-complete',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DemoBetterAuthRoute = DemoBetterAuthRouteImport.update({
-  id: '/demo/better-auth',
-  path: '/demo/better-auth',
-  getParentRoute: () => rootRouteImport,
+const HomeIndexRoute = HomeIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => HomeRoute,
 } as any)
-const DemoDrizzleRoute = DemoDrizzleRouteImport.update({
-  id: '/demo/drizzle',
-  path: '/demo/drizzle',
-  getParentRoute: () => rootRouteImport,
+const HomeAboutRoute = HomeAboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => HomeRoute,
 } as any)
 const LessonLessonIdRoute = LessonLessonIdRouteImport.update({
   id: '/lesson/$lessonId',
   path: '/lesson/$lessonId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/': typeof HomeIndexRoute
   '/lesson-complete': typeof LessonCompleteRoute
-  '/demo/better-auth': typeof DemoBetterAuthRoute
-  '/demo/drizzle': typeof DemoDrizzleRoute
+  '/about': typeof HomeAboutRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
   '/lesson-complete': typeof LessonCompleteRoute
-  '/demo/better-auth': typeof DemoBetterAuthRoute
-  '/demo/drizzle': typeof DemoDrizzleRoute
+  '/about': typeof HomeAboutRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/': typeof HomeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/about': typeof AboutRoute
+  '/_home': typeof HomeRouteWithChildren
   '/lesson-complete': typeof LessonCompleteRoute
-  '/demo/better-auth': typeof DemoBetterAuthRoute
-  '/demo/drizzle': typeof DemoDrizzleRoute
+  '/_home/about': typeof HomeAboutRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
-  '/api/auth/$': typeof ApiAuthSplatRoute
+  '/_home/': typeof HomeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    | '/'
-    | '/about'
-    | '/lesson-complete'
-    | '/demo/better-auth'
-    | '/demo/drizzle'
-    | '/lesson/$lessonId'
-    | '/api/auth/$'
+  fullPaths: '/' | '/lesson-complete' | '/about' | '/lesson/$lessonId'
   fileRoutesByTo: FileRoutesByTo
-  to:
-    | '/'
-    | '/about'
-    | '/lesson-complete'
-    | '/demo/better-auth'
-    | '/demo/drizzle'
-    | '/lesson/$lessonId'
-    | '/api/auth/$'
+  to: '/lesson-complete' | '/about' | '/lesson/$lessonId' | '/'
   id:
     | '__root__'
-    | '/'
-    | '/about'
+    | '/_home'
     | '/lesson-complete'
-    | '/demo/better-auth'
-    | '/demo/drizzle'
+    | '/_home/about'
     | '/lesson/$lessonId'
-    | '/api/auth/$'
+    | '/_home/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  AboutRoute: typeof AboutRoute
+  HomeRoute: typeof HomeRouteWithChildren
   LessonCompleteRoute: typeof LessonCompleteRoute
-  DemoBetterAuthRoute: typeof DemoBetterAuthRoute
-  DemoDrizzleRoute: typeof DemoDrizzleRoute
   LessonLessonIdRoute: typeof LessonLessonIdRoute
-  ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
+    '/_home': {
+      id: '/_home'
+      path: ''
       fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
+      preLoaderRoute: typeof HomeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lesson-complete': {
@@ -144,19 +96,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LessonCompleteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/demo/better-auth': {
-      id: '/demo/better-auth'
-      path: '/demo/better-auth'
-      fullPath: '/demo/better-auth'
-      preLoaderRoute: typeof DemoBetterAuthRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_home/': {
+      id: '/_home/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof HomeIndexRouteImport
+      parentRoute: typeof HomeRoute
     }
-    '/demo/drizzle': {
-      id: '/demo/drizzle'
-      path: '/demo/drizzle'
-      fullPath: '/demo/drizzle'
-      preLoaderRoute: typeof DemoDrizzleRouteImport
-      parentRoute: typeof rootRouteImport
+    '/_home/about': {
+      id: '/_home/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof HomeAboutRouteImport
+      parentRoute: typeof HomeRoute
     }
     '/lesson/$lessonId': {
       id: '/lesson/$lessonId'
@@ -165,24 +117,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LessonLessonIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
+interface HomeRouteChildren {
+  HomeAboutRoute: typeof HomeAboutRoute
+  HomeIndexRoute: typeof HomeIndexRoute
+}
+
+const HomeRouteChildren: HomeRouteChildren = {
+  HomeAboutRoute: HomeAboutRoute,
+  HomeIndexRoute: HomeIndexRoute,
+}
+
+const HomeRouteWithChildren = HomeRoute._addFileChildren(HomeRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  AboutRoute: AboutRoute,
+  HomeRoute: HomeRouteWithChildren,
   LessonCompleteRoute: LessonCompleteRoute,
-  DemoBetterAuthRoute: DemoBetterAuthRoute,
-  DemoDrizzleRoute: DemoDrizzleRoute,
   LessonLessonIdRoute: LessonLessonIdRoute,
-  ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

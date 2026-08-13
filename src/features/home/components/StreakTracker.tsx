@@ -20,8 +20,12 @@ export default function StreakTracker() {
             <div className="flex h-6 w-4 items-center justify-center rounded-sm border border-border" />
           </div>
         </div>
-        <p className="mt-2 text-sm font-semibold text-muted">hari berturut-turut</p>
+        <p className="mt-2 text-base font-semibold text-muted">hari berturut-turut</p>
       </CardContent>
     </Card>
   )
 }
+
+
+
+

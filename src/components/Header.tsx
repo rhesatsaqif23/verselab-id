@@ -18,9 +18,8 @@ export default function Header() {
         <div className="flex items-center gap-8">
           <Link
             to="/"
-            className={`group relative flex items-center gap-2 text-base font-medium transition-colors ${
-              isActive('/') ? 'text-primary' : 'text-muted hover:text-primary'
-            }`}
+            className={`group relative flex items-center gap-2 text-base font-medium transition-colors ${isActive('/') ? 'text-primary' : 'text-muted hover:text-primary'
+              }`}
           >
             <Home className="h-5 w-5" />
             Home
@@ -31,9 +30,8 @@ export default function Header() {
 
           <Link
             to="/about"
-            className={`group relative flex items-center gap-2 text-base font-medium transition-colors ${
-              isActive('/about') ? 'text-primary' : 'text-muted hover:text-primary'
-            }`}
+            className={`group relative flex items-center gap-2 text-base font-medium transition-colors ${isActive('/about') ? 'text-primary' : 'text-muted hover:text-primary'
+              }`}
           >
             <BookOpen className="h-5 w-5" />
             Courses
@@ -44,10 +42,6 @@ export default function Header() {
         </div>
 
         <div className="ml-auto flex items-center gap-3">
-          <button className="rounded-full border-2 border-primary bg-linear-to-r from-primary to-accent px-5 py-2 text-sm font-semibold text-white transition hover:brightness-110">
-            Go Premium
-          </button>
-
           <div className="flex items-center gap-1.5 rounded-full border-2 border-border px-4 py-2 text-base font-semibold text-foreground">
             <span>2</span>
             <Flame className="h-5 w-5 text-secondary" />

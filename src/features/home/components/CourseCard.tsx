@@ -15,7 +15,7 @@ export default function CourseCard() {
       <CardContent className="p-0 text-center">
         <Badge
           variant="secondary"
-          className="mb-4 rounded-full bg-accent/15 px-4 py-1 text-xs font-bold uppercase tracking-wider text-accent"
+          className="mb-4 rounded-full bg-accent/15 px-4 py-1 text-sm font-bold uppercase tracking-wider text-accent"
         >
           Lanjut belajar
         </Badge>
@@ -23,7 +23,7 @@ export default function CourseCard() {
         <h2 className="display-title mb-2 text-2xl font-bold text-foreground sm:text-3xl">
           {next.lesson.title}
         </h2>
-        <p className="mb-6 text-sm font-bold uppercase tracking-widest text-accent">
+        <p className="mb-6 text-base font-bold uppercase tracking-widest text-accent">
           {next.unit.title}
         </p>
 

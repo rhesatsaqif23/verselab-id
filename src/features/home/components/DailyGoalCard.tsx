@@ -17,15 +17,15 @@ export default function DailyGoalCard() {
             <Target className="h-5 w-5 text-accent" />
           </div>
           <div>
-            <p className="text-sm font-bold text-foreground">Goal harian</p>
-            <p className="text-xs font-semibold text-muted">{dailyGoalMinutes} menit</p>
+            <p className="text-base font-bold text-foreground">Goal harian</p>
+            <p className="text-sm font-semibold text-muted">{dailyGoalMinutes} menit</p>
           </div>
         </div>
         <p
           className={
             reached
-              ? 'text-sm font-bold text-success'
-              : 'text-sm font-bold text-muted'
+              ? 'text-base font-bold text-success'
+              : 'text-base font-bold text-muted'
           }
         >
           {reached ? 'Tercapai hari ini' : 'Belum tercapai'}

@@ -1,6 +1,4 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router'
-import Footer from '../components/Footer'
-import Header from '../components/Header'
 
 import appCss from '../styles.css?url'
 
@@ -36,9 +34,7 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body className="font-sans antialiased wrap-anywhere selection:bg-accent/20">
-        <Header />
         <Outlet />
-        <Footer />
         <Scripts />
       </body>
     </html>
