@@ -1,10 +1,13 @@
 import { Link, useLocation } from '@tanstack/react-router'
 import ThemeToggle from './ThemeToggle'
+import { useProgressStore } from '#/engine/progress/progressStore.ts'
 import { Flame, Zap, Menu, Home, BookOpen } from 'lucide-react'
 
 export default function Header() {
   const location = useLocation()
   const isActive = (path: string) => location.pathname === path
+  const streak = useProgressStore((s) => s.streak)
+  const xp = useProgressStore((s) => s.xp)
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card">
@@ -43,12 +46,12 @@ export default function Header() {
 
         <div className="ml-auto flex items-center gap-3">
           <div className="flex items-center gap-1.5 rounded-full border-2 border-border px-4 py-2 text-base font-semibold text-foreground">
-            <span>2</span>
+            <span>{streak}</span>
             <Flame className="h-5 w-5 text-secondary" />
           </div>
 
           <div className="flex items-center gap-1.5 rounded-full border-2 border-border px-4 py-2 text-base font-semibold text-foreground">
-            <span>0</span>
+            <span>{xp}</span>
             <Zap className="h-5 w-5 text-border" />
           </div>
 
