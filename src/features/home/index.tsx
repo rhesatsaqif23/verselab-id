@@ -12,7 +12,7 @@ export default function HomePage() {
           <DailyGoalCard />
         </div>
 
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col gap-4">
           <CourseCard />
           <CourseGrid />
         </div>
