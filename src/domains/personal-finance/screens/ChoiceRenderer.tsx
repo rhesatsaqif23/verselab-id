@@ -63,7 +63,7 @@ export default function ChoiceRenderer({ screen, onSelect, checked }: ChoiceRend
               onClick={() => handleClick(option.id)}
               disabled={checked !== null}
               className={cn(
-                'w-full justify-start rounded-xl border-2 px-4 py-4 text-left font-medium bg-card shadow-xs transition-all duration-150',
+                'w-full justify-start rounded-xl border-2 px-4 py-4 text-left font-medium bg-card shadow-xs transition-all duration-150 disabled:opacity-100',
                 getOptionStyle(option.id),
               )}
             >

@@ -105,6 +105,7 @@ export default function AllocationRenderer({ screen, onChange, checked }: Alloca
                 step={1}
                 onValueChange={(values) => handleChange(category, values[0])}
                 disabled={checked !== null}
+                className="disabled:opacity-100"
               />
             </div>
           ))}

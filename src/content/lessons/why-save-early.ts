@@ -35,7 +35,7 @@ export const whySaveEarlyLesson: Lesson = {
     },
     {
       type: 'numeric',
-      prompt: 'Soal yang sama persis, tapi kamu baru mulai 5 tahun kemudian. Jadi berapa?',
+      prompt: 'Kamu nabung 500 ribu per bulan dengan bunga 6% per tahun. Tapi kamu baru mulai 5 tahun lebih telat. Setelah 10 tahun, total tabungan kamu jadi berapa?',
       unit: 'juta',
       acceptRange: [33, 36],
       explain:

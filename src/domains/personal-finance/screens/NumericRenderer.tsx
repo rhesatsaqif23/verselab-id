@@ -85,7 +85,7 @@ export default function NumericRenderer({ screen, onChange, checked }: NumericRe
             onChange={handleInput}
             disabled={checked !== null}
             className={cn(
-              'h-12 px-4 text-base font-bold sm:text-lg',
+              'h-12 px-4 text-base font-bold sm:text-lg disabled:opacity-100',
               inputBorder,
             )}
           />
