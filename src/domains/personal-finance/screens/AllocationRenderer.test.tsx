@@ -18,7 +18,7 @@ function sumAllocation(allocation: Record<string, number>): number {
 
 describe('AllocationRenderer', () => {
   it('renders the prompt and all category labels', () => {
-    render(<AllocationRenderer screen={demoScreen} onChange={() => {}} />)
+    render(<AllocationRenderer screen={demoScreen} onChange={() => {}} checked={null} />)
     expect(screen.getByText(demoScreen.prompt)).toBeInTheDocument()
     expect(screen.getAllByText('Kebutuhan').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Keinginan').length).toBeGreaterThan(0)
@@ -26,13 +26,13 @@ describe('AllocationRenderer', () => {
   })
 
   it('renders a BarChart', () => {
-    render(<AllocationRenderer screen={demoScreen} onChange={() => {}} />)
+    render(<AllocationRenderer screen={demoScreen} onChange={() => {}} checked={null} />)
     expect(document.querySelectorAll('.bg-chart-1')).toHaveLength(3)
   })
 
   it('keeps the total at 100 when a slider moves', () => {
     const onChange = vi.fn()
-    render(<AllocationRenderer screen={demoScreen} onChange={onChange} />)
+    render(<AllocationRenderer screen={demoScreen} onChange={onChange} checked={null} />)
 
     const sliders = screen.getAllByRole('slider')
     expect(sliders).toHaveLength(3)
@@ -48,7 +48,7 @@ describe('AllocationRenderer', () => {
 
   it('sends a Record<category, number> to onChange', () => {
     const onChange = vi.fn()
-    render(<AllocationRenderer screen={demoScreen} onChange={onChange} />)
+    render(<AllocationRenderer screen={demoScreen} onChange={onChange} checked={null} />)
 
     fireEvent.keyDown(screen.getAllByRole('slider')[1], { key: 'ArrowRight' })
 

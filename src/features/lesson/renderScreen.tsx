@@ -8,19 +8,21 @@ import AllocationRenderer from '#/domains/personal-finance/screens/AllocationRen
 export function renderScreen(
   screen: Screen,
   onChange: (answer: unknown) => void,
+  checked: boolean | null,
 ): ReactNode {
   switch (screen.type) {
     case 'concept':
       return <ConceptRenderer screen={screen} />
     case 'choice':
-      return <ChoiceRenderer screen={screen} onSelect={(id) => onChange(id)} />
+      return <ChoiceRenderer screen={screen} onSelect={(id) => onChange(id)} checked={checked} />
     case 'numeric':
-      return <NumericRenderer screen={screen} onChange={(value) => onChange(value)} />
+      return <NumericRenderer screen={screen} onChange={(value) => onChange(value)} checked={checked} />
     case 'allocation':
       return (
         <AllocationRenderer
           screen={screen}
           onChange={(allocation) => onChange(allocation)}
+          checked={checked}
         />
       )
   }

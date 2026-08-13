@@ -18,20 +18,20 @@ const demoScreen = {
 
 describe('ChoiceRenderer', () => {
   it('renders all option cards', () => {
-    render(<ChoiceRenderer screen={demoScreen} onSelect={() => {}} />)
+    render(<ChoiceRenderer screen={demoScreen} onSelect={() => {}} checked={null} />)
     expect(screen.getByRole('button', { name: /bunga ditambah pokok/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /bunga dihitung/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /bunga tetap/i })).toBeInTheDocument()
   })
 
   it('renders the prompt', () => {
-    render(<ChoiceRenderer screen={demoScreen} onSelect={() => {}} />)
+    render(<ChoiceRenderer screen={demoScreen} onSelect={() => {}} checked={null} />)
     expect(screen.getByText(demoScreen.prompt)).toBeInTheDocument()
   })
 
   it('calls onSelect with the correct id when an option is clicked', async () => {
     const onSelect = vi.fn()
-    render(<ChoiceRenderer screen={demoScreen} onSelect={onSelect} />)
+    render(<ChoiceRenderer screen={demoScreen} onSelect={onSelect} checked={null} />)
     const user = userEvent.setup()
 
     await user.click(screen.getByRole('button', { name: /bunga dihitung/i }))
@@ -40,7 +40,7 @@ describe('ChoiceRenderer', () => {
 
   it('updates selection when a different option is clicked', async () => {
     const onSelect = vi.fn()
-    render(<ChoiceRenderer screen={demoScreen} onSelect={onSelect} />)
+    render(<ChoiceRenderer screen={demoScreen} onSelect={onSelect} checked={null} />)
     const user = userEvent.setup()
 
     await user.click(screen.getByRole('button', { name: /bunga ditambah pokok/i }))
@@ -50,7 +50,7 @@ describe('ChoiceRenderer', () => {
   })
 
   it('applies selected styling to the clicked option', async () => {
-    render(<ChoiceRenderer screen={demoScreen} onSelect={() => {}} />)
+    render(<ChoiceRenderer screen={demoScreen} onSelect={() => {}} checked={null} />)
     const user = userEvent.setup()
 
     const btn = screen.getByRole('button', { name: /bunga ditambah pokok/i })

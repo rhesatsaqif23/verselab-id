@@ -1,7 +1,5 @@
 import type { ReactNode } from 'react'
-import { cn } from '#/lib/utils.ts'
 import { Button } from '#/components/ui/button.tsx'
-import { Progress } from '#/components/ui/progress.tsx'
 import type { Screen } from '#/engine/types.ts'
 import { useLessonStore } from './lessonStore.ts'
 
@@ -12,7 +10,7 @@ export type AnswerResult = {
 
 type LessonPlayerProps = {
   screens: readonly Screen[]
-  renderScreen: (screen: Screen, onChange: (answer: unknown) => void) => ReactNode
+  renderScreen: (screen: Screen, onChange: (answer: unknown) => void, checked: boolean | null) => ReactNode
   checkAnswer: (screen: Screen, answer: unknown) => boolean
   onExit: () => void
   onComplete: (results: readonly AnswerResult[]) => void
@@ -70,15 +68,30 @@ export default function LessonPlayer({
         <Button variant="ghost" size="icon" onClick={handleExit} aria-label="Keluar">
           ✕
         </Button>
-        <span className="shrink-0 text-sm text-muted">
-          {index + 1} / {total}
-        </span>
-        <Progress value={((index + 1) / total) * 100} className="h-2" />
+        <div className="flex-1 flex flex-col gap-2">
+          <div className="flex gap-1.5">
+            {screens.map((_, i) => (
+              <div
+                key={i}
+                className={`h-3 flex-1 rounded-full transition-colors ${
+                  i <= index ? 'bg-primary' : 'bg-border'
+                }`}
+              />
+            ))}
+          </div>
+          <span className="text-center text-lg font-bold text-muted">
+            {index + 1} / {total}
+          </span>
+        </div>
       </div>
 
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col py-6">
         <div key={index} className="my-auto flex w-full flex-col justify-center py-4">
-          {renderScreen(screen, (a) => setAnswer(index, a))}
+          {renderScreen(
+            screen,
+            (a) => setAnswer(index, a),
+            phase === 'checked' && lastResult ? lastResult.correct : null,
+          )}
         </div>
 
         <div className="w-full flex min-h-20 flex-col gap-3 pt-4">
@@ -94,17 +107,9 @@ export default function LessonPlayer({
           ) : phase === 'checked' && lastResult ? (
             <div
               role="status"
-              className={cn(
-                'rounded-2xl border-2 p-4 sm:p-5',
-                lastResult.correct
-                  ? 'border-success bg-success/10 text-success'
-                  : 'border-destructive/40 bg-destructive/10 text-destructive'
-              )}
+              className="rounded-2xl border-2 border-border bg-card p-4 sm:p-5"
             >
-              <p className="text-base font-bold">
-                {lastResult.correct ? 'Benar!' : 'Belum tepat'}
-              </p>
-              <p className="mt-1.5 text-base font-medium leading-relaxed text-foreground">
+              <p className="text-base font-medium leading-relaxed text-foreground">
                 {screen.explain}
               </p>
             </div>

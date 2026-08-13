@@ -83,7 +83,7 @@ function Button({
             aria-hidden="true"
           >
             <span
-              className="absolute inset-y-0 -left-full w-full bg-linear-to-r from-transparent via-(--color-primary-soft)/30 to-transparent"
+              className="absolute inset-y-0 -left-full w-1/2 bg-linear-to-r from-transparent via-(--color-primary-soft)/30 to-transparent"
               style={{ animation: "btn-shimmer 3s ease-in-out infinite" }}
             />
           </span>

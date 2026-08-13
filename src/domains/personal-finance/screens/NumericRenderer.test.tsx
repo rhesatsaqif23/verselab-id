@@ -16,14 +16,14 @@ const demoScreen: Extract<Screen, { type: 'numeric' }> = {
 
 describe('NumericRenderer', () => {
   it('renders the prompt and the unit text', () => {
-    render(<NumericRenderer screen={demoScreen} onChange={() => {}} />)
+    render(<NumericRenderer screen={demoScreen} onChange={() => {}} checked={null} />)
     expect(screen.getByText(demoScreen.prompt)).toBeInTheDocument()
     expect(screen.getByText('juta rupiah')).toBeInTheDocument()
   })
 
   it('calls onChange with the parsed number when typing', async () => {
     const onChange = vi.fn()
-    render(<NumericRenderer screen={demoScreen} onChange={onChange} />)
+    render(<NumericRenderer screen={demoScreen} onChange={onChange} checked={null} />)
     const user = userEvent.setup()
 
     await user.type(screen.getByRole('textbox'), '82')
@@ -32,7 +32,7 @@ describe('NumericRenderer', () => {
 
   it('calls onChange(null) when the input is cleared', async () => {
     const onChange = vi.fn()
-    render(<NumericRenderer screen={demoScreen} onChange={onChange} />)
+    render(<NumericRenderer screen={demoScreen} onChange={onChange} checked={null} />)
     const user = userEvent.setup()
 
     await user.type(screen.getByRole('textbox'), '82')
@@ -42,7 +42,7 @@ describe('NumericRenderer', () => {
 
   it('parses numbers with thousands separators', async () => {
     const onChange = vi.fn()
-    render(<NumericRenderer screen={demoScreen} onChange={onChange} />)
+    render(<NumericRenderer screen={demoScreen} onChange={onChange} checked={null} />)
     const user = userEvent.setup()
 
     await user.type(screen.getByRole('textbox'), '81.939')
@@ -51,7 +51,7 @@ describe('NumericRenderer', () => {
 
   it('parses comma as decimal separator', async () => {
     const onChange = vi.fn()
-    render(<NumericRenderer screen={demoScreen} onChange={onChange} />)
+    render(<NumericRenderer screen={demoScreen} onChange={onChange} checked={null} />)
     const user = userEvent.setup()
 
     await user.type(screen.getByRole('textbox'), '82,5')
@@ -60,7 +60,7 @@ describe('NumericRenderer', () => {
 
   it('ignores non-numeric input', async () => {
     const onChange = vi.fn()
-    render(<NumericRenderer screen={demoScreen} onChange={onChange} />)
+    render(<NumericRenderer screen={demoScreen} onChange={onChange} checked={null} />)
     const user = userEvent.setup()
 
     await user.type(screen.getByRole('textbox'), 'abc')

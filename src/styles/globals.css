@@ -4,7 +4,7 @@
   --color-primary-bright: #4BB8FA;
   --color-primary-soft: #C4E2F5;
   --color-secondary: #dbe756;
-  --color-bg: #faf8f5;
+  --color-bg: #f4f9fd;
   --color-surface: #ffffff;
   --color-text: #1a1a1a;
   --color-muted: #6b7280;
@@ -38,9 +38,9 @@
   --color-sidebar-border: #e5e7eb;
   --color-sidebar-ring: #2C5EAD;
   --radius: 0.75rem;
-  --bg-base: #faf8f5;
+  --bg-base: #f4f9fd;
   --header-bg: rgba(255, 255, 255, 0.88);
-  --background: #faf8f5;
+  --background: #f4f9fd;
   --foreground: #1a1a1a;
   --border: #e5e7eb;
   --input: #e5e7eb;
