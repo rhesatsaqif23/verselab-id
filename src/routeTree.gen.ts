@@ -13,6 +13,7 @@ import { Route as HomeRouteImport } from './routes/_home'
 import { Route as LessonCompleteRouteImport } from './routes/lesson-complete'
 import { Route as HomeIndexRouteImport } from './routes/_home/index'
 import { Route as HomeAboutRouteImport } from './routes/_home/about'
+import { Route as HomeProfileRouteImport } from './routes/_home/profile'
 import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
 
 const HomeRoute = HomeRouteImport.update({
@@ -34,6 +35,11 @@ const HomeAboutRoute = HomeAboutRouteImport.update({
   path: '/about',
   getParentRoute: () => HomeRoute,
 } as any)
+const HomeProfileRoute = HomeProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => HomeRoute,
+} as any)
 const LessonLessonIdRoute = LessonLessonIdRouteImport.update({
   id: '/lesson/$lessonId',
   path: '/lesson/$lessonId',
@@ -44,11 +50,13 @@ export interface FileRoutesByFullPath {
   '/': typeof HomeIndexRoute
   '/lesson-complete': typeof LessonCompleteRoute
   '/about': typeof HomeAboutRoute
+  '/profile': typeof HomeProfileRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/lesson-complete': typeof LessonCompleteRoute
   '/about': typeof HomeAboutRoute
+  '/profile': typeof HomeProfileRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/': typeof HomeIndexRoute
 }
@@ -57,19 +65,22 @@ export interface FileRoutesById {
   '/_home': typeof HomeRouteWithChildren
   '/lesson-complete': typeof LessonCompleteRoute
   '/_home/about': typeof HomeAboutRoute
+  '/_home/profile': typeof HomeProfileRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/_home/': typeof HomeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/lesson-complete' | '/about' | '/lesson/$lessonId'
+  fullPaths:
+    '/' | '/lesson-complete' | '/about' | '/profile' | '/lesson/$lessonId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/lesson-complete' | '/about' | '/lesson/$lessonId' | '/'
+  to: '/lesson-complete' | '/about' | '/profile' | '/lesson/$lessonId' | '/'
   id:
     | '__root__'
     | '/_home'
     | '/lesson-complete'
     | '/_home/about'
+    | '/_home/profile'
     | '/lesson/$lessonId'
     | '/_home/'
   fileRoutesById: FileRoutesById
@@ -110,6 +121,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeAboutRouteImport
       parentRoute: typeof HomeRoute
     }
+    '/_home/profile': {
+      id: '/_home/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof HomeProfileRouteImport
+      parentRoute: typeof HomeRoute
+    }
     '/lesson/$lessonId': {
       id: '/lesson/$lessonId'
       path: '/lesson/$lessonId'
@@ -122,11 +140,13 @@ declare module '@tanstack/react-router' {
 
 interface HomeRouteChildren {
   HomeAboutRoute: typeof HomeAboutRoute
+  HomeProfileRoute: typeof HomeProfileRoute
   HomeIndexRoute: typeof HomeIndexRoute
 }
 
 const HomeRouteChildren: HomeRouteChildren = {
   HomeAboutRoute: HomeAboutRoute,
+  HomeProfileRoute: HomeProfileRoute,
   HomeIndexRoute: HomeIndexRoute,
 }
 

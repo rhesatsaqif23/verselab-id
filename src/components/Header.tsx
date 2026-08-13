@@ -1,7 +1,7 @@
 import { Link, useLocation } from '@tanstack/react-router'
 import ThemeToggle from './ThemeToggle'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
-import { Flame, Zap, Menu, Home, BookOpen } from 'lucide-react'
+import { Flame, Zap, User, Home, BookOpen } from 'lucide-react'
 
 export default function Header() {
   const location = useLocation()
@@ -42,6 +42,18 @@ export default function Header() {
               <div className="absolute -bottom-4 left-0 w-full h-0.5 bg-primary" />
             )}
           </Link>
+
+          <Link
+            to="/profile"
+            className={`group relative flex items-center gap-2 text-base font-medium transition-colors ${isActive('/profile') ? 'text-primary' : 'text-muted hover:text-primary'
+              }`}
+          >
+            <User className="h-5 w-5" />
+            Profil
+            {isActive('/profile') && (
+              <div className="absolute -bottom-4 left-0 w-full h-0.5 bg-primary" />
+            )}
+          </Link>
         </div>
 
         <div className="ml-auto flex items-center gap-3">
@@ -56,10 +68,6 @@ export default function Header() {
           </div>
 
           <ThemeToggle />
-
-          <button className="p-2 text-muted hover:text-foreground">
-            <Menu className="h-6 w-6" />
-          </button>
         </div>
       </nav>
     </header>
