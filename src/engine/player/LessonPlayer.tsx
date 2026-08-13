@@ -14,7 +14,7 @@ type LessonPlayerProps = {
   checkAnswer: (screen: Screen, answer: unknown) => boolean
   onExit: () => void
   onComplete: (results: readonly AnswerResult[]) => void
-  mastery: number
+  xpEarned: number
 }
 
 export default function LessonPlayer({
@@ -23,7 +23,7 @@ export default function LessonPlayer({
   checkAnswer,
   onExit,
   onComplete,
-  mastery,
+  xpEarned,
 }: LessonPlayerProps) {
   const index = useLessonStore((s) => s.index)
   const answers = useLessonStore((s) => s.answers)
@@ -85,8 +85,9 @@ export default function LessonPlayer({
             {index + 1} / {total}
           </span>
         </div>
-        <div className="shrink-0 rounded-full border-2 border-border px-4 py-2 text-base font-bold text-foreground">
-          {mastery}%
+        <div className="shrink-0 flex items-center gap-1.5 rounded-full border-2 border-border px-4 py-2 text-base font-bold text-foreground">
+          <span>{xpEarned}</span>
+          <span className="text-sm font-bold text-muted">XP</span>
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 import { Link, useLocation } from '@tanstack/react-router'
 import ThemeToggle from './ThemeToggle'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
-import { Flame, Zap, User, Home, BookOpen } from 'lucide-react'
+import { Flame, User, Home, BookOpen } from 'lucide-react'
 
 export default function Header() {
   const location = useLocation()
@@ -64,7 +64,7 @@ export default function Header() {
 
           <div className="flex items-center gap-1.5 rounded-full border-2 border-border px-4 py-2 text-base font-semibold text-foreground">
             <span>{xp}</span>
-            <Zap className="h-5 w-5 text-border" />
+            <span className="text-sm font-bold text-muted">XP</span>
           </div>
 
           <ThemeToggle />

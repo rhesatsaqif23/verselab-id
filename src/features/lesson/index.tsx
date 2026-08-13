@@ -7,10 +7,9 @@ import {
   useProgressStore,
 } from '#/engine/progress/progressStore.ts'
 import { useLessonCompleteStore } from '#/features/lesson-complete/lessonCompleteStore.ts'
-import { findLesson, todayString } from '#/content/index.ts'
+import { findLesson } from '#/content/index.ts'
 import { checkAnswer } from './checkAnswer.ts'
 import { renderScreen } from './renderScreen.tsx'
-import { masteryForDisplay } from '#/engine/progress/masteryRead.ts'
 
 type LessonPageProps = {
   lessonId: string
@@ -29,10 +28,10 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
   }
 
   const { unit, lesson } = found
-  const mastery = useProgressStore((s) => s.mastery)
-  const updatedAt = useProgressStore((s) => s.masteryUpdatedAt)
-  const today = todayString()
-  const displayMastery = masteryForDisplay(unit.id, mastery, updatedAt, today)
+  const results = useLessonStore((s) => s.results)
+  const xpEarned = Object.values(results)
+    .filter((r) => r?.correct)
+    .reduce((sum) => sum + XP_PER_SCREEN, 0)
 
   function handleExit() {
     useLessonStore.getState().clear()
@@ -54,7 +53,7 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
     useProgressStore.getState().awardLessonCompletion(unit.id)
     const masteryAfter = useProgressStore.getState().mastery[unit.id] ?? null
 
-    const xpEarned =
+    const totalXpEarned =
       correctCount * XP_PER_SCREEN + XP_PER_LESSON
 
     useLessonCompleteStore.getState().setSummary({
@@ -63,7 +62,7 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
       totalScreens: answerResults.length,
       correctCount,
       wrongScreens,
-      xpEarned,
+      xpEarned: totalXpEarned,
       masteryBefore,
       masteryAfter,
     })
@@ -77,7 +76,7 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
       checkAnswer={checkAnswer}
       onExit={handleExit}
       onComplete={handleComplete}
-      mastery={displayMastery}
+      xpEarned={xpEarned}
     />
   )
 }

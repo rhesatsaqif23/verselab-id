@@ -52,18 +52,17 @@ describe('LessonCompletePage', () => {
   it('shows the XP earned', () => {
     useLessonCompleteStore.getState().setSummary(summary)
     renderPage()
-    expect(screen.getByText(/\+80/)).toBeInTheDocument()
-    expect(screen.getAllByText('XP').length).toBeGreaterThan(0)
+    expect(screen.getByText('80')).toBeInTheDocument()
+    expect(screen.getByText('XP')).toBeInTheDocument()
+    expect(screen.getByText('Total')).toBeInTheDocument()
   })
 
-  it('shows mastery before and after with the delta', () => {
+  it('shows the score', () => {
     useLessonCompleteStore.getState().setSummary(summary)
     renderPage()
-    const mastery = screen.getByText((_, element) =>
-      Boolean(element?.classList.contains('text-3xl'))
-    )
-    expect(mastery.textContent).toMatch(/50\s*→\s*52/)
-    expect(mastery.textContent).toContain('+2')
+    expect(screen.getByText('3')).toBeInTheDocument()
+    expect(screen.getByText('/4')).toBeInTheDocument()
+    expect(screen.getByText('Score')).toBeInTheDocument()
   })
 
   it('lists the wrong screens with prompt and explain', () => {
@@ -74,10 +73,9 @@ describe('LessonCompletePage', () => {
     expect(screen.getByText('Perlu diulang')).toBeInTheDocument()
   })
 
-  it('shows the all-correct state when no screens were wrong', () => {
+  it('hides wrong screens section when all correct', () => {
     useLessonCompleteStore.getState().setSummary({ ...summary, wrongScreens: [] })
     renderPage()
-    expect(screen.getByText('Semua benar!')).toBeInTheDocument()
     expect(screen.queryByText('Perlu diulang')).not.toBeInTheDocument()
   })
 

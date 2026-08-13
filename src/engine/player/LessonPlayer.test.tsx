@@ -133,7 +133,7 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={() => {}}
-        mastery={50}
+        xpEarned={0}
       />
     )
     expect(screen.getByText('1 / 2')).toBeInTheDocument()
@@ -147,7 +147,7 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={() => {}}
-        mastery={50}
+        xpEarned={0}
       />
     )
     expect(screen.getByRole('button', { name: /cek jawaban/i })).toBeDisabled()
@@ -161,7 +161,7 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={() => {}}
-        mastery={50}
+        xpEarned={0}
       />
     )
     const user = userEvent.setup()
@@ -177,7 +177,7 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={() => {}}
-        mastery={50}
+        xpEarned={0}
       />
     )
     const user = userEvent.setup()
@@ -194,7 +194,7 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={() => {}}
-        mastery={50}
+        xpEarned={0}
       />
     )
     const user = userEvent.setup()
@@ -212,7 +212,7 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={() => {}}
-        mastery={50}
+        xpEarned={0}
       />
     )
     const user = userEvent.setup()
@@ -232,7 +232,7 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={() => {}}
         onComplete={onComplete}
-        mastery={50}
+        xpEarned={0}
       />
     )
     const user = userEvent.setup()
@@ -263,7 +263,7 @@ describe('LessonPlayer', () => {
         checkAnswer={checkAnswer}
         onExit={onExit}
         onComplete={() => {}}
-        mastery={50}
+        xpEarned={0}
       />
     )
     const user = userEvent.setup()
@@ -286,7 +286,7 @@ describe('LessonPlayer mixed lesson (choice + concept + numeric)', () => {
         checkAnswer={checkMixedAnswer}
         onExit={() => {}}
         onComplete={onComplete}
-        mastery={50}
+        xpEarned={0}
       />
     )
     const user = userEvent.setup()
@@ -320,7 +320,7 @@ describe('LessonPlayer mixed lesson (choice + concept + numeric)', () => {
         checkAnswer={checkMixedAnswer}
         onExit={() => {}}
         onComplete={onComplete}
-        mastery={50}
+        xpEarned={0}
       />
     )
     const user = userEvent.setup()

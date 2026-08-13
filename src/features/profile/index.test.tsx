@@ -42,21 +42,20 @@ describe('ProfilePage', () => {
     useProgressStore.setState({ xp: 250 })
     render(<ProfilePage />)
     expect(screen.getByText('250')).toBeInTheDocument()
-    expect(screen.getByText('Total XP')).toBeInTheDocument()
+    expect(screen.getByText('XP')).toBeInTheDocument()
   })
 
   it('shows streak and freeze count', () => {
     useProgressStore.setState({ streak: 7, streakFreeze: 1 })
     render(<ProfilePage />)
     expect(screen.getByText('7')).toBeInTheDocument()
-    expect(screen.getByText('(1)')).toBeInTheDocument()
-    expect(screen.getByText('Streak + Freeze')).toBeInTheDocument()
+    expect(screen.getByText(/Streak \(1\)/)).toBeInTheDocument()
   })
 
   it('shows zero for a fresh user', () => {
     render(<ProfilePage />)
     expect(screen.getAllByText('0')).toHaveLength(2)
-    expect(screen.getByText('Total XP')).toBeInTheDocument()
+    expect(screen.getByText('XP')).toBeInTheDocument()
   })
 
   it('renders per-unit mastery bars with decayed values', () => {

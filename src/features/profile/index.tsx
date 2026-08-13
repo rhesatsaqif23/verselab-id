@@ -1,4 +1,5 @@
 import { Link } from '@tanstack/react-router'
+import { Flame, Star } from 'lucide-react'
 import { Card } from '#/components/ui/card'
 import { Progress } from '#/components/ui/progress'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
@@ -19,25 +20,26 @@ export default function ProfilePage() {
         <div className="flex gap-4">
           <Card className="flex-1 p-5 text-center">
             <p className="text-3xl font-black text-(--color-text)">{xp}</p>
-            <p className="text-sm font-semibold text-muted">Total XP</p>
+            <p className="text-sm font-bold text-muted">XP</p>
           </Card>
           <Card className="flex-1 p-5 text-center">
-            <p className="text-3xl font-black text-(--color-text)">
-              {streak}
-              {streakFreeze > 0 && (
-                <span className="ml-1 text-lg font-bold text-muted">
-                  ({streakFreeze})
-                </span>
-              )}
-            </p>
-            <p className="text-sm font-semibold text-muted">
-              Streak{streakFreeze > 0 ? ' + Freeze' : ''}
+            <div className="flex items-center justify-center gap-1">
+              <p className="text-3xl font-black text-(--color-text)">
+                {streak}
+              </p>
+              <Flame className="h-6 w-6 fill-secondary text-secondary" />
+            </div>
+            <p className="mt-1 text-sm font-semibold text-muted">
+              Streak{streakFreeze > 0 ? ` (${streakFreeze})` : ''}
             </p>
           </Card>
         </div>
 
         <section>
-          <h2 className="mb-3 text-lg font-bold text-foreground">Mastery per unit</h2>
+          <div className="mb-3 flex items-center gap-1.5">
+            <Star className="h-4 w-4 fill-accent text-accent" />
+            <h2 className="text-lg font-bold text-foreground">Mastery per unit</h2>
+          </div>
           <div className="flex flex-col gap-3">
             {units.map((unit) => {
               const value = masteryForDisplay(unit.id, mastery, updatedAt, today)
