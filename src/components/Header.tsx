@@ -1,4 +1,6 @@
+import { useState } from 'react'
 import { Link, useLocation } from '@tanstack/react-router'
+import { motion } from 'framer-motion'
 import ThemeToggle from './ThemeToggle'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
 import { Flame, User, Home, BookOpen } from 'lucide-react'
@@ -8,6 +10,47 @@ const navItems = [
   { to: '/about', label: 'Materi', icon: BookOpen },
   { to: '/profile', label: 'Profil', icon: User },
 ]
+
+function NavItem({
+  to,
+  label,
+  icon: Icon,
+  isActive,
+}: {
+  to: string
+  label: string
+  icon: React.ComponentType<{ className?: string }>
+  isActive: boolean
+}) {
+  const [isHovered, setIsHovered] = useState(false)
+
+  return (
+    <Link
+      to={to}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`group relative flex h-full items-center gap-2 text-base font-medium transition-colors ${
+        isActive ? 'text-primary hover:text-primary' : 'text-muted hover:text-primary'
+      }`}
+    >
+      <Icon className="h-5 w-5" />
+      {label}
+      <motion.div
+        className="absolute bottom-0 left-0 w-full bg-primary origin-bottom"
+        initial={false}
+        animate={{
+          height: isActive ? 2 : isHovered ? 2 : 0.5,
+          scaleY: isActive ? 1 : isHovered ? 1 : 0.25,
+          opacity: isActive ? 1 : isHovered ? 0.5 : 0,
+        }}
+        transition={{
+          duration: 0.35,
+          ease: [0.16, 1, 0.3, 1],
+        }}
+      />
+    </Link>
+  )
+}
 
 export default function Header() {
   const location = useLocation()
@@ -25,26 +68,15 @@ export default function Header() {
         </Link>
 
         <div className="flex h-full items-center gap-8">
-          {navItems.map(({ to, label, icon: Icon }) => {
-            const active = isActive(to)
-            return (
-              <Link
-                key={to}
-                to={to}
-                className={`group relative flex h-full items-center gap-2 text-base font-medium transition-colors ${active ? 'text-primary' : 'text-muted hover:text-primary'
-                  }`}
-              >
-                <Icon className="h-5 w-5" />
-                {label}
-                <div
-                  className={`absolute bottom-0 left-0 h-0.5 w-full transition-opacity duration-150 ${active
-                      ? 'bg-primary opacity-100'
-                      : 'bg-primary opacity-0 group-hover:opacity-50'
-                    }`}
-                />
-              </Link>
-            )
-          })}
+          {navItems.map(({ to, label, icon }) => (
+            <NavItem
+              key={to}
+              to={to}
+              label={label}
+              icon={icon}
+              isActive={isActive(to)}
+            />
+          ))}
         </div>
 
         <div className="ml-auto flex items-center gap-3">
@@ -64,4 +96,5 @@ export default function Header() {
     </header>
   )
 }
+
 

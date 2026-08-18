@@ -1,8 +1,7 @@
-import { Flame, Check } from 'lucide-react'
+import { Flame } from 'lucide-react'
 import { Card, CardContent } from '#/components/ui/card'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
 import { cn } from '#/lib/utils.ts'
-
 
 function getWeekDates(today: Date): Date[] {
   // Week starts on Monday (ISO)
@@ -27,12 +26,17 @@ function toDateString(d: Date): string {
 export default function StreakTracker() {
   const streak = useProgressStore((s) => s.streak)
   const activeDays = useProgressStore((s) => s.activeDays)
+  const lastActiveDate = useProgressStore((s) => s.lastActiveDate)
 
   const today = new Date()
   today.setHours(0, 0, 0, 0)
   const todayStr = toDateString(today)
   const weekDates = getWeekDates(today)
-  const activeDaySet = new Set(activeDays)
+  const activeDaySet = new Set([
+    ...activeDays,
+    // If today's streak is active (lastActiveDate === today), mark today as done
+    ...(lastActiveDate === todayStr && streak > 0 ? [todayStr] : []),
+  ])
 
   // Day labels in Indonesian week order: Mon–Sun
   const dayLabels = ['S', 'S', 'R', 'K', 'J', 'S', 'M']
@@ -81,13 +85,15 @@ export default function StreakTracker() {
                   className={cn(
                     'flex h-8 w-8 items-center justify-center rounded-full border-2 transition-colors',
                     isDone
-                      ? 'border-orange-400 bg-orange-400'
+                      ? 'border-orange-500 bg-orange-100 dark:bg-orange-950/40 dark:border-orange-500'
                       : isToday
                         ? 'border-primary bg-primary/10'
                         : 'border-border bg-transparent',
                   )}
                 >
-                  {isDone && <Check className="h-4 w-4 text-white" strokeWidth={3} />}
+                  {isDone && (
+                    <Flame className="h-4 w-4 fill-orange-500 text-orange-500" />
+                  )}
                 </div>
               </div>
             )

@@ -8,16 +8,39 @@
 
 @import './styles/globals.css';
 
+@font-face {
+  font-family: 'CoFo Brilliant';
+  src: local('CoFo Brilliant'), local('CoFoBrilliant'),
+       url('/fonts/CoFoBrilliant.woff2') format('woff2'),
+       url('/fonts/CoFoBrilliant.woff') format('woff'),
+       url('/fonts/CoFoBrilliant.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 html,
 body,
-#app {
+#app,
+button,
+input,
+select,
+textarea,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.display-title {
   min-height: 100%;
+  font-family: 'CoFo Brilliant', var(--font-sans), sans-serif;
 }
 
 body {
   margin: 0;
   color: var(--foreground);
-  font-family: var(--font-sans);
+  font-family: 'CoFo Brilliant', var(--font-sans), sans-serif;
   background-color: var(--bg-base);
   background:
     radial-gradient(1200px 600px at -5% -8%, rgba(21, 145, 220, 0.06), transparent 55%),
@@ -29,13 +52,8 @@ body {
 }
 
 a:not([data-slot="button"]) {
-  color: inherit;
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
-}
-
-a:hover:not([data-slot="button"]) {
-  color: var(--color-primary-light);
 }
 
 code {
@@ -68,7 +86,7 @@ pre code {
 }
 
 .display-title {
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: 'CoFo Brilliant', var(--font-sans), sans-serif;
 }
 
 .island-shell {
