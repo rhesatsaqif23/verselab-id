@@ -1,3 +1,4 @@
+// Storybook story for the Slider shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Slider } from '#/components/ui/slider'
 

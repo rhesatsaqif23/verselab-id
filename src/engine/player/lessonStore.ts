@@ -1,3 +1,4 @@
+// Lesson session store: current screen index, answers, and per-screen results.
 import { create } from 'zustand'
 
 export type LessonResult = {

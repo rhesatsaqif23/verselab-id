@@ -1,3 +1,4 @@
+// Content units: ordered list of units and their lessons for the learning path.
 import type { Unit } from '#/engine/types.ts'
 import { whySaveEarlyLesson } from './lessons/why-save-early.ts'
 

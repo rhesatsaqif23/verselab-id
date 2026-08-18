@@ -1,3 +1,4 @@
+// Storybook story for the Tabs shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
 

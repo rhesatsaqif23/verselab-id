@@ -1,7 +1,8 @@
+// shadcn/ui progress component.
 import * as React from "react"
 import { Progress as ProgressPrimitive } from "radix-ui"
 
-import { cn } from "#/lib/utils.ts"
+import { cn } from "#/libs/utils.ts"
 
 function Progress({
   className,

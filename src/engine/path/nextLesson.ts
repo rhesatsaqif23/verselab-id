@@ -1,3 +1,4 @@
+// Path logic: picks the next unit/lesson the learner should open.
 import type { Lesson, Unit } from '#/engine/types.ts'
 import { masteryForDisplay } from '#/engine/progress/masteryRead.ts'
 

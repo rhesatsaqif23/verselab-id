@@ -1,3 +1,4 @@
+// Storybook story for the Badge shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Badge } from '#/components/ui/badge'
 

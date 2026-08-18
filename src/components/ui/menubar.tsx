@@ -1,10 +1,11 @@
+// shadcn/ui menubar component.
 "use client"
 
 import * as React from "react"
 import { CheckIcon, ChevronRightIcon, CircleIcon } from "lucide-react"
 import { Menubar as MenubarPrimitive } from "radix-ui"
 
-import { cn } from "#/lib/utils"
+import { cn } from "#/libs/utils"
 
 function Menubar({
   className,

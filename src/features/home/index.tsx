@@ -1,3 +1,4 @@
+// HomePage: dashboard layout combining streak, goal, and course cards.
 import StreakTracker from './components/StreakTracker'
 import DailyGoalCard from './components/DailyGoalCard'
 import CourseCard from './components/CourseCard'

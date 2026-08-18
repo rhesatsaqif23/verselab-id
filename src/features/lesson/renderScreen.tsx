@@ -1,3 +1,4 @@
+// Screen dispatcher: maps any engine Screen to the matching domain renderer.
 import type { ReactNode } from 'react'
 import type { Screen } from '#/engine/types.ts'
 import ChoiceRenderer from '#/domains/personal-finance/screens/ChoiceRenderer.tsx'

@@ -1,10 +1,11 @@
+// shadcn/ui command component.
 "use client"
 
 import * as React from "react"
 import { Command as CommandPrimitive } from "cmdk"
 import { SearchIcon } from "lucide-react"
 
-import { cn } from "#/lib/utils.ts"
+import { cn } from "#/libs/utils.ts"
 import {
   Dialog,
   DialogContent,

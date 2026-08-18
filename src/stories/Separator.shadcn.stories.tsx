@@ -1,3 +1,4 @@
+// Storybook story for the Separator shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Separator } from '#/components/ui/separator'
 

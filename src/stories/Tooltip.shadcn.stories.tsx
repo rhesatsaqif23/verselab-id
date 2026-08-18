@@ -1,3 +1,4 @@
+// Storybook story for the Tooltip shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import {
   Tooltip,

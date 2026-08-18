@@ -1,3 +1,4 @@
+// Storybook story for the Card shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import {
   Card,

@@ -1,5 +1,6 @@
+// NumericRenderer: number input with Indonesian decimal formatting and feedback.
 import { useState } from 'react'
-import { cn } from '#/lib/utils.ts'
+import { cn } from '#/libs/utils.ts'
 import { Input } from '#/components/ui/input.tsx'
 import { Check, X } from 'lucide-react'
 import type { Screen } from '#/engine/types.ts'

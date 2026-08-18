@@ -24,8 +24,23 @@ src/
 │       ├── math.ts          All finance calculations
 │       ├── screens/         Components for each screen type
 │       └── components/      Charts and other visual components
-├── content/                 Lesson data as JSON
-└── components/              Shared UI components (Button, etc.)
+├── features/                Feature-scoped modules around the engine/domains core
+│   ├── layout/              App chrome: Header, Footer, ThemeToggle (+ constants)
+│   ├── home/                Dashboard cards and streak widget (+ constants)
+│   ├── lesson/              Lesson page wiring: renderScreen, checkAnswer
+│   ├── lesson-complete/     Completion summary page + store/
+│   ├── profile/             Profile stats page
+│   └── about/               Static about page
+├── libs/                    Subject-agnostic shared app code
+│   ├── utils.ts             cn() class merge helper
+│   ├── date.ts              Date helpers: todayString, addDays, daysBetween, ...
+│   ├── theme.ts             Theme mode types, init script, apply helpers
+│   └── hooks/               use-mobile, use-theme
+├── content/                 Lesson data as JSON/TS
+├── components/ui/           shadcn/ui primitives
+├── routes/                  Thin route files delegating to features
+└── styles/                  globals.css
+tests/                       Unit tests mirroring src/ (root tests/ dir)
 ```
 
 Rules:

@@ -1,3 +1,4 @@
+// Home route: renders the home dashboard page.
 import { createFileRoute } from '@tanstack/react-router'
 import HomePage from '../../features/home'
 

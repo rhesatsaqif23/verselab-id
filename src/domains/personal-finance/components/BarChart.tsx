@@ -1,3 +1,4 @@
+// BarChart: simple vertical bar chart used inside finance screen renderers.
 export type BarDatum = {
   label: string
   value: number

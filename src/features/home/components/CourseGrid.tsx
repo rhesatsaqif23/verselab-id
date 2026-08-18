@@ -1,8 +1,10 @@
+// CourseGrid: grid of units showing mastery, unlock state, and play buttons.
 import { Lock, BookOpen, PlayCircle } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Card } from '#/components/ui/card'
-import { units, nextLesson, todayString } from '#/content/index.ts'
+import { units, nextLesson } from '#/content/index.ts'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
+import { todayString } from '#/libs/date.ts'
 import { masteryForDisplay } from '#/engine/progress/masteryRead.ts'
 
 export default function CourseGrid() {

@@ -1,3 +1,4 @@
+// Mastery reads: started checks and decayed display values for the UI.
 import { decayedMastery } from './decay.ts'
 
 export function isUnitStarted(

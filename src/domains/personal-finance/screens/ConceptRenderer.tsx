@@ -1,3 +1,4 @@
+// ConceptRenderer: plain text block that introduces a concept.
 import type { Screen } from '#/engine/types.ts'
 
 type ConceptRendererProps = {

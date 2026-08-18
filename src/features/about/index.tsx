@@ -1,3 +1,4 @@
+// AboutPage: static overview of what Verselab teaches.
 export default function AboutPage() {
   return (
     <main className="page-wrap px-4 py-12">

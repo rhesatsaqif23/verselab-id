@@ -1,8 +1,9 @@
+// DailyGoalCard: shows today's daily goal progress and links to settings.
 import { Target, ChevronRight } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Card, CardContent } from '#/components/ui/card'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
-import { todayString } from '#/content/index.ts'
+import { todayString } from '#/libs/date.ts'
 
 export default function DailyGoalCard() {
   const dailyGoalMinutes = useProgressStore((s) => s.dailyGoalMinutes)

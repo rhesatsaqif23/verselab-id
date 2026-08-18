@@ -1,3 +1,4 @@
+// ProgressBar: segmented progress indicators and the current/total counter.
 type ProgressBarProps = {
   current: number
   total: number

@@ -1,3 +1,4 @@
+// LessonPage: wires a lesson's screens to the player and awards progress on completion.
 import { useNavigate } from '@tanstack/react-router'
 import LessonPlayer, { type AnswerResult } from '#/engine/player/LessonPlayer.tsx'
 import { useLessonStore } from '#/engine/player/lessonStore.ts'
@@ -6,7 +7,7 @@ import {
   XP_PER_SCREEN,
   useProgressStore,
 } from '#/engine/progress/progressStore.ts'
-import { useLessonCompleteStore } from '#/features/lesson-complete/lessonCompleteStore.ts'
+import { useLessonCompleteStore } from '#/features/lesson-complete/store/lessonCompleteStore.ts'
 import { findLesson } from '#/content/index.ts'
 import { checkAnswer } from './checkAnswer.ts'
 import { renderScreen } from './renderScreen.tsx'

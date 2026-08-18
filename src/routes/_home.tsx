@@ -1,6 +1,7 @@
+// Home layout route: wraps child pages with the app header and footer.
 import { Outlet, createFileRoute } from '@tanstack/react-router'
-import Header from '#/components/Header'
-import Footer from '#/components/Footer'
+import Header from '#/features/layout/components/Header'
+import Footer from '#/features/layout/components/Footer'
 
 export const Route = createFileRoute('/_home')({
   component: HomeLayout,

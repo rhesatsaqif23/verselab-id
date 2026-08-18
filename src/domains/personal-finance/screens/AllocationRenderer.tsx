@@ -1,5 +1,6 @@
+// AllocationRenderer: sliders summing to 100% with a live bar chart preview.
 import { useState } from 'react'
-import { cn } from '#/lib/utils.ts'
+import { cn } from '#/libs/utils.ts'
 import { Slider } from '#/components/ui/slider.tsx'
 import { Check, X } from 'lucide-react'
 import BarChart from '../components/BarChart'
@@ -68,12 +69,7 @@ export default function AllocationRenderer({ screen, onChange, checked }: Alloca
     value: Math.round(allocation[cat] ?? 0),
   }))
 
-  const wrapperClass =
-    checked === null
-      ? ''
-      : checked
-        ? 'rounded-2xl bg-success/10 p-4'
-        : 'rounded-2xl bg-destructive/10 p-4'
+  const wrapperClass = 'rounded-2xl p-4'
 
   const icon =
     checked === null ? null : checked ? (

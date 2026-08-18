@@ -1,7 +1,8 @@
+// shadcn/ui popover component.
 import * as React from "react"
 import { Popover as PopoverPrimitive } from "radix-ui"
 
-import { cn } from "#/lib/utils.ts"
+import { cn } from "#/libs/utils.ts"
 
 function Popover({
   ...props

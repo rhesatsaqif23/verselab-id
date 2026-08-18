@@ -1,5 +1,7 @@
+// Global progress store: XP, streak, mastery, and daily goal in localStorage.
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { todayString } from '#/libs/date.ts'
 import { streakOnActivity } from './streak.ts'
 
 export type DailyGoalMinutes = 3 | 10 | 20
@@ -28,13 +30,6 @@ type ProgressActions = {
   awardLessonCompletion: (unitId: string) => void
   setDailyGoal: (minutes: DailyGoalMinutes) => void
   registerActivity: (date?: string) => void
-}
-
-function todayString(): string {
-  const d = new Date()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${d.getFullYear()}-${m}-${day}`
 }
 
 function clamp(value: number, min: number, max: number): number {

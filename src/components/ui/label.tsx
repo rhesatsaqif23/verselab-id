@@ -1,7 +1,8 @@
+// shadcn/ui label component.
 import * as React from "react"
 import { Label as LabelPrimitive } from "radix-ui"
 
-import { cn } from "#/lib/utils.ts"
+import { cn } from "#/libs/utils.ts"
 
 function Label({
   className,

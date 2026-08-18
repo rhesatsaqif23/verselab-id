@@ -1,10 +1,12 @@
+// ProfilePage: XP/streak stats and per-unit mastery bars.
 import { Link } from '@tanstack/react-router'
 import { Flame, Star } from 'lucide-react'
 import { Card } from '#/components/ui/card'
 import { Progress } from '#/components/ui/progress'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
-import { units, todayString } from '#/content/index.ts'
+import { units } from '#/content/index.ts'
 import { masteryForDisplay } from '#/engine/progress/masteryRead.ts'
+import { todayString } from '#/libs/date.ts'
 
 export default function ProfilePage() {
   const xp = useProgressStore((s) => s.xp)

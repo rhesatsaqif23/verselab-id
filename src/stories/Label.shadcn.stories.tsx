@@ -1,3 +1,4 @@
+// Storybook story for the Label shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Label } from '#/components/ui/label'
 

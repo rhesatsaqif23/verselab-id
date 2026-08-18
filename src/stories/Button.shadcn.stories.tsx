@@ -1,3 +1,4 @@
+// Storybook story for the Button shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Button } from '#/components/ui/button'
 

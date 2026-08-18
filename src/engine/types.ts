@@ -1,3 +1,4 @@
+// Engine core types: the Screen union and Lesson/Unit containers used everywhere.
 export type AllocationRule = {
     category: string
     min?: number

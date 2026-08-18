@@ -1,3 +1,4 @@
+// Answer checker: decides whether a submitted answer is correct per screen type.
 import type { Screen } from '#/engine/types.ts'
 
 export function checkAnswer(screen: Screen, answer: unknown): boolean {

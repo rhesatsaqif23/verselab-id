@@ -1,3 +1,4 @@
+// Storybook story for the Input shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Input } from '#/components/ui/input'
 import { Label } from '#/components/ui/label'

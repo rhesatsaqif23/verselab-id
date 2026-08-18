@@ -1,8 +1,9 @@
+// shadcn/ui radio-group component.
 import * as React from "react"
 import { CircleIcon } from "lucide-react"
 import { RadioGroup as RadioGroupPrimitive } from "radix-ui"
 
-import { cn } from "#/lib/utils.ts"
+import { cn } from "#/libs/utils.ts"
 
 function RadioGroup({
   className,

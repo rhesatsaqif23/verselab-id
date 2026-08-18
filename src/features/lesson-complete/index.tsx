@@ -1,11 +1,13 @@
+// LessonCompletePage: celebratory summary of the finished lesson with next steps.
 import { Star, Trophy } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { Card, CardContent } from '#/components/ui/card'
-import { useLessonCompleteStore } from './lessonCompleteStore'
-import { nextLesson, units, todayString } from '#/content/index.ts'
+import { useLessonCompleteStore } from './store/lessonCompleteStore'
+import { nextLesson, units } from '#/content/index.ts'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
 import { decayedMastery } from '#/engine/progress/decay.ts'
+import { todayString } from '#/libs/date.ts'
 
 export default function LessonCompletePage() {
   const summary = useLessonCompleteStore((s) => s.summary)

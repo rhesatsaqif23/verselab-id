@@ -1,3 +1,4 @@
+// Storybook story for the Textarea shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Textarea } from '#/components/ui/textarea'
 import { Label } from '#/components/ui/label'

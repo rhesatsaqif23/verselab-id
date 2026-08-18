@@ -1,3 +1,4 @@
+// Storybook story for the Checkbox shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Checkbox } from '#/components/ui/checkbox'
 import { Label } from '#/components/ui/label'

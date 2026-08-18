@@ -1,3 +1,4 @@
+// Storybook story for the Alert shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Alert, AlertDescription, AlertTitle } from '#/components/ui/alert'
 import { AlertCircle, CheckCircle2, Info } from 'lucide-react'

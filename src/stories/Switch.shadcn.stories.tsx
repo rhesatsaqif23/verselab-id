@@ -1,3 +1,4 @@
+// Storybook story for the Switch shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Switch } from '#/components/ui/switch'
 import { Label } from '#/components/ui/label'

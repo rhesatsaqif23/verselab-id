@@ -1,3 +1,4 @@
+// shadcn/ui pagination component.
 import * as React from "react"
 import {
   ChevronLeftIcon,
@@ -5,7 +6,7 @@ import {
   MoreHorizontalIcon,
 } from "lucide-react"
 
-import { cn } from "#/lib/utils.ts"
+import { cn } from "#/libs/utils.ts"
 import { buttonVariants, type Button } from "#/components/ui/button.tsx"
 
 function Pagination({ className, ...props }: React.ComponentProps<"nav">) {

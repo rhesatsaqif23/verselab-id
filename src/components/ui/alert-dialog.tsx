@@ -1,9 +1,10 @@
+// shadcn/ui alert-dialog component.
 "use client"
 
 import * as React from "react"
 import { AlertDialog as AlertDialogPrimitive } from "radix-ui"
 
-import { cn } from "#/lib/utils.ts"
+import { cn } from "#/libs/utils.ts"
 import { Button } from "#/components/ui/button.tsx"
 
 function AlertDialog({

@@ -1,3 +1,4 @@
+// Storybook story for the Skeleton shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Skeleton } from '#/components/ui/skeleton'
 

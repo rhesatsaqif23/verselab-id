@@ -1,27 +1,10 @@
+// StreakTracker: shows current streak and a Mon–Sun weekly activity checklist.
 import { Flame } from 'lucide-react'
 import { Card, CardContent } from '#/components/ui/card'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
-import { cn } from '#/lib/utils.ts'
-
-function getWeekDates(today: Date): Date[] {
-  // Week starts on Monday (ISO)
-  const day = today.getDay() // 0 = Sun, 1 = Mon, ...
-  const monday = new Date(today)
-  monday.setDate(today.getDate() - ((day + 6) % 7))
-  monday.setHours(0, 0, 0, 0)
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = new Date(monday)
-    d.setDate(monday.getDate() + i)
-    return d
-  })
-}
-
-function toDateString(d: Date): string {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
-}
+import { getWeekDates, toDateString } from '#/libs/date.ts'
+import { cn } from '#/libs/utils.ts'
+import { WEEKDAY_LABELS } from '../constants.ts'
 
 export default function StreakTracker() {
   const streak = useProgressStore((s) => s.streak)
@@ -39,7 +22,7 @@ export default function StreakTracker() {
   ])
 
   // Day labels in Indonesian week order: Mon–Sun
-  const dayLabels = ['S', 'S', 'R', 'K', 'J', 'S', 'M']
+  const dayLabels = WEEKDAY_LABELS
 
   return (
     <Card className="border-2 border-border p-5">

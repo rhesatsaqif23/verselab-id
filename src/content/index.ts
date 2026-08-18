@@ -1,3 +1,4 @@
+// Content registry: unit/lesson lookup helpers and next-lesson wiring.
 import type { Lesson, Unit } from '#/engine/types.ts'
 import { units } from './units.ts'
 
@@ -12,12 +13,5 @@ export function findLesson(
 }
 
 export { nextLesson } from '#/engine/path/nextLesson.ts'
-
-export function todayString(): string {
-  const d = new Date()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${d.getFullYear()}-${m}-${day}`
-}
 
 export { units }

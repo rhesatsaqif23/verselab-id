@@ -1,3 +1,4 @@
+// Storybook story for the Progress shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Progress } from '#/components/ui/progress'
 

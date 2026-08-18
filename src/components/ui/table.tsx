@@ -1,8 +1,9 @@
+// shadcn/ui table component.
 "use client"
 
 import * as React from "react"
 
-import { cn } from "#/lib/utils.ts"
+import { cn } from "#/libs/utils.ts"
 
 function Table({ className, ...props }: React.ComponentProps<"table">) {
   return (

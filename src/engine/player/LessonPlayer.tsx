@@ -1,14 +1,10 @@
+// LessonPlayer: subject-agnostic lesson UI wiring screens, answers, and completion.
 import { useState } from 'react'
 import type { ReactNode } from 'react'
-import { Button } from '#/components/ui/button.tsx'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '#/components/ui/dialog.tsx'
 import type { Screen } from '#/engine/types.ts'
-import ProgressBar from './ProgressBar.tsx'
+import ExplanationDialog from './ExplanationDialog.tsx'
+import LessonControls from './LessonControls.tsx'
+import LessonHeader from './LessonHeader.tsx'
 import { useLessonStore } from './lessonStore.ts'
 
 export type AnswerResult = {
@@ -77,16 +73,12 @@ export default function LessonPlayer({
 
   return (
     <div className="flex min-h-screen w-full flex-col px-6 py-6">
-      <div className="flex gap-4 md:gap-16">
-        <Button variant="ghost" size="icon" onClick={handleExit} aria-label="Keluar" className="shrink-0">
-          ✕
-        </Button>
-        <ProgressBar current={index + 1} total={total} />
-        <div className="shrink-0 flex items-center gap-1 rounded-full border-2 border-border px-3 py-1.5 text-md font-bold text-foreground">
-          <span>{xpEarned}</span>
-          <span className="text-sm font-bold text-muted">XP</span>
-        </div>
-      </div>
+      <LessonHeader
+        current={index + 1}
+        total={total}
+        xpEarned={xpEarned}
+        onExit={handleExit}
+      />
 
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col py-6">
         <div key={index} className="my-auto flex w-full flex-col justify-center py-4">
@@ -97,63 +89,21 @@ export default function LessonPlayer({
           )}
         </div>
 
-        <div className="mx-auto w-full max-w-md flex min-h-20 flex-col gap-3 pt-4">
-          {isConcept ? (
-            <Button
-              variant="default"
-              size="lg"
-              onClick={handleContinue}
-              className="w-full"
-            >
-              Lanjut
-            </Button>
-          ) : phase === 'answering' ? (
-            <Button
-              variant="default"
-              size="lg"
-              disabled={!hasAnswer}
-              onClick={handleCheck}
-              className="w-full disabled:opacity-60"
-            >
-              Cek Jawaban
-            </Button>
-          ) : (
-            <div className="flex gap-3">
-              {screen.explain && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => setExplainOpen(true)}
-                  className="shrink-0"
-                >
-                  Kenapa?
-                </Button>
-              )}
-              <Button
-                variant="default"
-                size="lg"
-                onClick={handleContinue}
-                className="flex-1"
-              >
-                Lanjut
-              </Button>
-            </div>
-          )}
-        </div>
+        <LessonControls
+          mode={isConcept ? 'concept' : phase}
+          hasAnswer={hasAnswer}
+          hasExplain={Boolean(screen.explain)}
+          onCheck={handleCheck}
+          onContinue={handleContinue}
+          onExplain={() => setExplainOpen(true)}
+        />
       </div>
 
-      {/* Explanation Dialog */}
-      <Dialog open={explainOpen} onOpenChange={setExplainOpen}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle>Penjelasan</DialogTitle>
-          </DialogHeader>
-          <p className="text-base leading-relaxed text-foreground">
-            {screen.explain}
-          </p>
-        </DialogContent>
-      </Dialog>
+      <ExplanationDialog
+        open={explainOpen}
+        onOpenChange={setExplainOpen}
+        text={screen.explain ?? ''}
+      />
     </div>
   )
 }
-

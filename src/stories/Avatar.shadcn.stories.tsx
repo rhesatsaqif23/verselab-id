@@ -1,3 +1,4 @@
+// Storybook story for the Avatar shadcn/ui component.
 import type { Meta, StoryObj } from '@storybook/tanstack-react'
 import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
 

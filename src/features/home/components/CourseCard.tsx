@@ -1,3 +1,4 @@
+// CourseCard: hero card for the next lesson with mastery progress and CTA.
 import { PlayCircle } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
@@ -5,7 +6,7 @@ import { Card, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
 import { units, nextLesson } from '#/content/index.ts'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
-import { todayString } from '#/content/index.ts'
+import { todayString } from '#/libs/date.ts'
 import { decayedMastery } from '#/engine/progress/decay.ts'
 
 export default function CourseCard() {

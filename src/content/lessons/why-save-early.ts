@@ -1,3 +1,4 @@
+// First lesson content: why saving early beats saving more, later.
 import type { Lesson } from '#/engine/types.ts'
 
 export const whySaveEarlyLesson: Lesson = {

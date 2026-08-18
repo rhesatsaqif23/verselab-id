@@ -1,5 +1,6 @@
+// ChoiceRenderer: multiple-choice cards with correct/wrong feedback icons.
 import { useState } from 'react'
-import { cn } from '#/lib/utils.ts'
+import { cn } from '#/libs/utils.ts'
 import { Button } from '#/components/ui/button.tsx'
 import { Check, X } from 'lucide-react'
 import type { Screen } from '#/engine/types.ts'

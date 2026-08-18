@@ -1,3 +1,4 @@
+// shadcn/ui aspect-ratio component.
 "use client"
 
 import { AspectRatio as AspectRatioPrimitive } from "radix-ui"

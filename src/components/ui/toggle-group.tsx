@@ -1,10 +1,11 @@
+// shadcn/ui toggle-group component.
 "use client"
 
 import * as React from "react"
 import { type VariantProps } from "class-variance-authority"
 import { ToggleGroup as ToggleGroupPrimitive } from "radix-ui"
 
-import { cn } from "#/lib/utils.ts"
+import { cn } from "#/libs/utils.ts"
 import { toggleVariants } from "#/components/ui/toggle.tsx"
 
 const ToggleGroupContext = React.createContext<

@@ -1,3 +1,4 @@
+// shadcn/ui calendar component.
 import * as React from "react"
 import {
   ChevronDownIcon,
@@ -10,7 +11,7 @@ import {
   type DayButton,
 } from "react-day-picker"
 
-import { cn } from "#/lib/utils.ts"
+import { cn } from "#/libs/utils.ts"
 import { Button, buttonVariants } from "#/components/ui/button.tsx"
 
 function Calendar({

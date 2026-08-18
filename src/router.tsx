@@ -1,3 +1,4 @@
+// Router factory: creates the app router from the generated route tree.
 import { createRouter as createTanStackRouter } from '@tanstack/react-router'
 import { routeTree } from './routeTree.gen'
 

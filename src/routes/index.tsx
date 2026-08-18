@@ -1,3 +1,4 @@
+// Landing page route: marketing hero and feature highlights.
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { ArrowRight, BookOpen, BrainCircuit, Target, Trophy } from 'lucide-react'
 import { Button } from '#/components/ui/button'

@@ -1,3 +1,4 @@
+// shadcn/ui form component.
 "use client"
 
 import * as React from "react"
@@ -13,7 +14,7 @@ import {
   type FieldValues,
 } from "react-hook-form"
 
-import { cn } from "#/lib/utils.ts"
+import { cn } from "#/libs/utils.ts"
 import { Label } from "#/components/ui/label.tsx"
 
 const Form = FormProvider
