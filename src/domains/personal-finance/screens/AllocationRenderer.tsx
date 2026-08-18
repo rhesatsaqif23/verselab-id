@@ -72,8 +72,8 @@ export default function AllocationRenderer({ screen, onChange, checked }: Alloca
     checked === null
       ? ''
       : checked
-        ? 'rounded-2xl border-2 border-success bg-success/10 p-4'
-        : 'rounded-2xl border-2 border-destructive/40 bg-destructive/10 p-4'
+        ? 'rounded-2xl bg-success/10 p-4'
+        : 'rounded-2xl bg-destructive/10 p-4'
 
   const icon =
     checked === null ? null : checked ? (

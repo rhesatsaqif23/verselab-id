@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from '#/components/ui/dialog.tsx'
 import type { Screen } from '#/engine/types.ts'
+import ProgressBar from './ProgressBar.tsx'
 import { useLessonStore } from './lessonStore.ts'
 
 export type AnswerResult = {
@@ -75,28 +76,15 @@ export default function LessonPlayer({
   }
 
   return (
-    <div className="page-wrap flex min-h-screen flex-col pb-16 pt-6">
-      <div className="flex items-center gap-4 md:gap-16">
+    <div className="flex min-h-screen w-full flex-col px-6 py-6">
+      <div className="flex gap-4 md:gap-16">
         <Button variant="ghost" size="icon" onClick={handleExit} aria-label="Keluar" className="shrink-0">
           ✕
         </Button>
-        <div className="flex-1 flex flex-col gap-1.5">
-          <div className="flex gap-1.5">
-            {screens.map((_, i) => (
-              <div
-                key={i}
-                className={`h-3 min-w-0 flex-1 rounded-full transition-colors ${i <= index ? 'bg-primary' : 'bg-border'
-                  }`}
-              />
-            ))}
-          </div>
-          <span className="text-center text-lg font-bold text-muted">
-            {index + 1} / {total}
-          </span>
-        </div>
-        <div className="shrink-0 flex items-center gap-1 rounded-full border-2 border-border px-3 py-1.5 text-sm font-bold text-foreground">
+        <ProgressBar current={index + 1} total={total} />
+        <div className="shrink-0 flex items-center gap-1 rounded-full border-2 border-border px-3 py-1.5 text-md font-bold text-foreground">
           <span>{xpEarned}</span>
-          <span className="text-xs font-bold text-muted">XP</span>
+          <span className="text-sm font-bold text-muted">XP</span>
         </div>
       </div>
 
@@ -109,7 +97,7 @@ export default function LessonPlayer({
           )}
         </div>
 
-        <div className="w-full flex min-h-20 flex-col gap-3 pt-4">
+        <div className="mx-auto w-full max-w-md flex min-h-20 flex-col gap-3 pt-4">
           {isConcept ? (
             <Button
               variant="default"
