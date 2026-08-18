@@ -61,7 +61,7 @@ export default function CourseCard() {
           </div>
 
           {/* CTA button */}
-          <Button asChild size="lg" className="relative w-full rounded-xl mt-2">
+          <Button asChild size="lg" className="relative w-full mt-2">
             <Link to="/lesson/$lessonId" params={{ lessonId: next.lesson.id }}>
               <PlayCircle className="mr-2 h-5 w-5" />
               Lanjut ke lesson berikutnya

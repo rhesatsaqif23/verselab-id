@@ -59,20 +59,24 @@ function DialogContent({
       <DialogPrimitive.Content
         data-slot="dialog-content"
         className={cn(
-          "fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border bg-background p-6 shadow-lg duration-200 outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:max-w-lg",
+          "fixed top-[50%] left-[50%] z-50 flex w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] flex-col gap-4 rounded-lg border bg-white p-6 shadow-lg duration-200 outline-none data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 sm:max-w-xl",
           className
         )}
         {...props}
       >
-        {children}
-        {showCloseButton && (
-          <DialogPrimitive.Close
-            data-slot="dialog-close"
-            className="absolute top-4 right-4 rounded-xs opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-          >
-            <XIcon />
-            <span className="sr-only">Close</span>
-          </DialogPrimitive.Close>
+        {showCloseButton ? (
+          <div data-slot="dialog-content-inner" className="flex items-start justify-between gap-4">
+            <div className="flex flex-1 flex-col gap-4">{children}</div>
+            <DialogPrimitive.Close
+              data-slot="dialog-close"
+              className="shrink-0 cursor-pointer rounded-full text-foreground transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5"
+            >
+              <XIcon />
+              <span className="sr-only">Close</span>
+            </DialogPrimitive.Close>
+          </div>
+        ) : (
+          children
         )}
       </DialogPrimitive.Content>
     </DialogPortal>
@@ -123,7 +127,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       data-slot="dialog-title"
-      className={cn("text-lg leading-none font-semibold", className)}
+      className={cn("text-xl leading-none font-bold", className)}
       {...props}
     />
   )

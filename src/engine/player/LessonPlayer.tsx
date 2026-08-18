@@ -1,5 +1,12 @@
+import { useState } from 'react'
 import type { ReactNode } from 'react'
 import { Button } from '#/components/ui/button.tsx'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '#/components/ui/dialog.tsx'
 import type { Screen } from '#/engine/types.ts'
 import { useLessonStore } from './lessonStore.ts'
 
@@ -33,6 +40,8 @@ export default function LessonPlayer({
   const next = useLessonStore((s) => s.next)
   const clear = useLessonStore((s) => s.clear)
 
+  const [explainOpen, setExplainOpen] = useState(false)
+
   const screen = screens[index]
   const total = screens.length
   const answer = answers[index]
@@ -47,6 +56,7 @@ export default function LessonPlayer({
   }
 
   function handleContinue() {
+    setExplainOpen(false)
     const nextIndex = index + 1
     if (nextIndex >= total) {
       const finalResults = screens.flatMap((s, i) =>
@@ -109,18 +119,7 @@ export default function LessonPlayer({
             >
               Lanjut
             </Button>
-          ) : phase === 'checked' && lastResult ? (
-            <div
-              role="status"
-              className="rounded-2xl border-2 border-border bg-card p-4 sm:p-5"
-            >
-              <p className="text-base font-medium leading-relaxed text-foreground">
-                {screen.explain}
-              </p>
-            </div>
-          ) : null}
-
-          {!isConcept && (phase === 'answering' ? (
+          ) : phase === 'answering' ? (
             <Button
               variant="default"
               size="lg"
@@ -131,12 +130,42 @@ export default function LessonPlayer({
               Cek Jawaban
             </Button>
           ) : (
-            <Button variant="default" size="lg" onClick={handleContinue} className="w-full">
-              Lanjut
-            </Button>
-          ))}
+            <div className="flex gap-3">
+              {screen.explain && (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() => setExplainOpen(true)}
+                  className="shrink-0"
+                >
+                  Kenapa?
+                </Button>
+              )}
+              <Button
+                variant="default"
+                size="lg"
+                onClick={handleContinue}
+                className="flex-1"
+              >
+                Lanjut
+              </Button>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Explanation Dialog */}
+      <Dialog open={explainOpen} onOpenChange={setExplainOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Penjelasan</DialogTitle>
+          </DialogHeader>
+          <p className="text-base leading-relaxed text-foreground">
+            {screen.explain}
+          </p>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
+
