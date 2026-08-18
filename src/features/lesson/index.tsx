@@ -35,7 +35,7 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
 
   function handleExit() {
     useLessonStore.getState().clear()
-    navigate({ to: '/' })
+    navigate({ to: '/home' })
   }
 
   function handleComplete(results: readonly AnswerResult[]) {

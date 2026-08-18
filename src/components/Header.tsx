@@ -3,6 +3,12 @@ import ThemeToggle from './ThemeToggle'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
 import { Flame, User, Home, BookOpen } from 'lucide-react'
 
+const navItems = [
+  { to: '/home', label: 'Beranda', icon: Home },
+  { to: '/about', label: 'Materi', icon: BookOpen },
+  { to: '/profile', label: 'Profil', icon: User },
+]
+
 export default function Header() {
   const location = useLocation()
   const isActive = (path: string) => location.pathname === path
@@ -11,49 +17,34 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card">
-      <nav className="page-wrap flex items-center gap-8 px-6 py-4">
-        <Link to="/" className="flex items-center gap-2 no-underline">
+      <nav className="page-wrap flex h-16 items-center gap-8 px-6">
+        <Link to="/home" className="flex items-center gap-2 no-underline">
           <span className="text-3xl font-bold tracking-tight text-foreground">
             Verselab
           </span>
         </Link>
 
-        <div className="flex items-center gap-8">
-          <Link
-            to="/"
-            className={`group relative flex items-center gap-2 text-base font-medium transition-colors ${isActive('/') ? 'text-primary' : 'text-muted hover:text-primary'
-              }`}
-          >
-            <Home className="h-5 w-5" />
-            Beranda
-            {isActive('/') && (
-              <div className="absolute -bottom-4 left-0 w-full h-0.5 bg-primary" />
-            )}
-          </Link>
-
-          <Link
-            to="/about"
-            className={`group relative flex items-center gap-2 text-base font-medium transition-colors ${isActive('/about') ? 'text-primary' : 'text-muted hover:text-primary'
-              }`}
-          >
-            <BookOpen className="h-5 w-5" />
-            Materi
-            {isActive('/about') && (
-              <div className="absolute -bottom-4 left-0 w-full h-0.5 bg-primary" />
-            )}
-          </Link>
-
-          <Link
-            to="/profile"
-            className={`group relative flex items-center gap-2 text-base font-medium transition-colors ${isActive('/profile') ? 'text-primary' : 'text-muted hover:text-primary'
-              }`}
-          >
-            <User className="h-5 w-5" />
-            Profil
-            {isActive('/profile') && (
-              <div className="absolute -bottom-4 left-0 w-full h-0.5 bg-primary" />
-            )}
-          </Link>
+        <div className="flex h-full items-center gap-8">
+          {navItems.map(({ to, label, icon: Icon }) => {
+            const active = isActive(to)
+            return (
+              <Link
+                key={to}
+                to={to}
+                className={`group relative flex h-full items-center gap-2 text-base font-medium transition-colors ${active ? 'text-primary' : 'text-muted hover:text-primary'
+                  }`}
+              >
+                <Icon className="h-5 w-5" />
+                {label}
+                <div
+                  className={`absolute bottom-0 left-0 h-0.5 w-full transition-opacity duration-150 ${active
+                      ? 'bg-primary opacity-100'
+                      : 'bg-primary opacity-0 group-hover:opacity-50'
+                    }`}
+                />
+              </Link>
+            )
+          })}
         </div>
 
         <div className="ml-auto flex items-center gap-3">
@@ -73,3 +64,4 @@ export default function Header() {
     </header>
   )
 }
+

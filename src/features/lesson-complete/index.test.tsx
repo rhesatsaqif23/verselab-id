@@ -88,6 +88,6 @@ describe('LessonCompletePage', () => {
     useLessonCompleteStore.getState().setSummary(summary)
     renderPage()
     const backLink = screen.getByRole('link', { name: /kembali ke beranda/i })
-    expect(backLink).toHaveAttribute('href', '/')
+    expect(backLink).toHaveAttribute('href', '/home')
   })
 })

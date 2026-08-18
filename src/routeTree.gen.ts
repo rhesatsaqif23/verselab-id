@@ -9,13 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as HomeRouteImport } from './routes/_home'
 import { Route as LessonCompleteRouteImport } from './routes/lesson-complete'
-import { Route as HomeIndexRouteImport } from './routes/_home/index'
 import { Route as HomeAboutRouteImport } from './routes/_home/about'
+import { Route as HomeHomeRouteImport } from './routes/_home/home'
 import { Route as HomeProfileRouteImport } from './routes/_home/profile'
 import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/_home',
   getParentRoute: () => rootRouteImport,
@@ -25,14 +31,14 @@ const LessonCompleteRoute = LessonCompleteRouteImport.update({
   path: '/lesson-complete',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HomeIndexRoute = HomeIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => HomeRoute,
-} as any)
 const HomeAboutRoute = HomeAboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => HomeRoute,
+} as any)
+const HomeHomeRoute = HomeHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
   getParentRoute: () => HomeRoute,
 } as any)
 const HomeProfileRoute = HomeProfileRouteImport.update({
@@ -47,45 +53,61 @@ const LessonLessonIdRoute = LessonLessonIdRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof HomeIndexRoute
+  '/': typeof IndexRoute
   '/lesson-complete': typeof LessonCompleteRoute
   '/about': typeof HomeAboutRoute
+  '/home': typeof HomeHomeRoute
   '/profile': typeof HomeProfileRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
 }
 export interface FileRoutesByTo {
+  '/': typeof IndexRoute
   '/lesson-complete': typeof LessonCompleteRoute
   '/about': typeof HomeAboutRoute
+  '/home': typeof HomeHomeRoute
   '/profile': typeof HomeProfileRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
-  '/': typeof HomeIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
   '/_home': typeof HomeRouteWithChildren
   '/lesson-complete': typeof LessonCompleteRoute
   '/_home/about': typeof HomeAboutRoute
+  '/_home/home': typeof HomeHomeRoute
   '/_home/profile': typeof HomeProfileRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
-  '/_home/': typeof HomeIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/lesson-complete' | '/about' | '/profile' | '/lesson/$lessonId'
+    | '/'
+    | '/lesson-complete'
+    | '/about'
+    | '/home'
+    | '/profile'
+    | '/lesson/$lessonId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/lesson-complete' | '/about' | '/profile' | '/lesson/$lessonId' | '/'
+  to:
+    | '/'
+    | '/lesson-complete'
+    | '/about'
+    | '/home'
+    | '/profile'
+    | '/lesson/$lessonId'
   id:
     | '__root__'
+    | '/'
     | '/_home'
     | '/lesson-complete'
     | '/_home/about'
+    | '/_home/home'
     | '/_home/profile'
     | '/lesson/$lessonId'
-    | '/_home/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  IndexRoute: typeof IndexRoute
   HomeRoute: typeof HomeRouteWithChildren
   LessonCompleteRoute: typeof LessonCompleteRoute
   LessonLessonIdRoute: typeof LessonLessonIdRoute
@@ -93,6 +115,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_home': {
       id: '/_home'
       path: ''
@@ -107,18 +136,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LessonCompleteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_home/': {
-      id: '/_home/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof HomeIndexRouteImport
-      parentRoute: typeof HomeRoute
-    }
     '/_home/about': {
       id: '/_home/about'
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof HomeAboutRouteImport
+      parentRoute: typeof HomeRoute
+    }
+    '/_home/home': {
+      id: '/_home/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof HomeHomeRouteImport
       parentRoute: typeof HomeRoute
     }
     '/_home/profile': {
@@ -140,19 +169,20 @@ declare module '@tanstack/react-router' {
 
 interface HomeRouteChildren {
   HomeAboutRoute: typeof HomeAboutRoute
+  HomeHomeRoute: typeof HomeHomeRoute
   HomeProfileRoute: typeof HomeProfileRoute
-  HomeIndexRoute: typeof HomeIndexRoute
 }
 
 const HomeRouteChildren: HomeRouteChildren = {
   HomeAboutRoute: HomeAboutRoute,
+  HomeHomeRoute: HomeHomeRoute,
   HomeProfileRoute: HomeProfileRoute,
-  HomeIndexRoute: HomeIndexRoute,
 }
 
 const HomeRouteWithChildren = HomeRoute._addFileChildren(HomeRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
+  IndexRoute: IndexRoute,
   HomeRoute: HomeRouteWithChildren,
   LessonCompleteRoute: LessonCompleteRoute,
   LessonLessonIdRoute: LessonLessonIdRoute,

@@ -29,14 +29,13 @@ body {
 }
 
 a:not([data-slot="button"]) {
-  color: var(--primary);
-  text-decoration-color: rgba(249, 115, 22, 0.35);
+  color: inherit;
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
 }
 
 a:hover:not([data-slot="button"]) {
-  color: oklch(0.70 0.16 55);
+  color: var(--color-primary-light);
 }
 
 code {

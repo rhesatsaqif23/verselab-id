@@ -28,7 +28,7 @@ export default function LessonCompletePage() {
                 </Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="w-full">
-                <Link to="/">Kembali ke beranda</Link>
+                <Link to="/home">Kembali ke beranda</Link>
               </Button>
             </div>
           </CardContent>
@@ -146,7 +146,7 @@ export default function LessonCompletePage() {
         </Button>
 
         <Button asChild variant="outline" size="lg" className="w-full">
-          <Link to="/">Kembali ke beranda</Link>
+          <Link to="/home">Kembali ke beranda</Link>
         </Button>
       </div>
     </main>

@@ -7,7 +7,7 @@ export const Route = createFileRoute('/lesson/$lessonId')({
   beforeLoad: ({ params }) => {
     const found = findLesson(params.lessonId)
     if (!found) {
-      throw redirect({ to: '/' })
+      throw redirect({ to: '/home' })
     }
     useLessonStore.getState().startLesson(found.lesson.screens.length)
   },
