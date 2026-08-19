@@ -60,12 +60,12 @@ describe('ProfilePage', () => {
   })
 
   it('renders per-unit mastery bars with decayed values', () => {
-    useProgressStore.setState({
-      mastery: { 'bunga-berbunga': 60 },
-      masteryUpdatedAt: { 'bunga-berbunga': '2026-08-13' },
+useProgressStore.setState({
+      mastery: { keuangan: 60 },
+      masteryUpdatedAt: { keuangan: '2026-08-13' },
     })
     render(<ProfilePage />)
-    expect(screen.getByText('Bunga berbunga')).toBeInTheDocument()
+    expect(screen.getByText('Keuangan')).toBeInTheDocument()
     expect(screen.getByText('60%')).toBeInTheDocument()
   })
 
@@ -74,10 +74,10 @@ describe('ProfilePage', () => {
     expect(screen.getByText('0%')).toBeInTheDocument()
   })
 
-  it('navigates to the unit lesson when clicked', async () => {
+it('navigates to the unit lesson when clicked', async () => {
     render(<ProfilePage />)
     const user = userEvent.setup()
-    await user.click(screen.getByText('Bunga berbunga'))
+    await user.click(screen.getByText('Keuangan'))
     expect(navigateMock).toHaveBeenCalledWith({
       to: '/lesson/$lessonId',
       params: { lessonId: 'why-save-early' },

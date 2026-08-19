@@ -4,10 +4,10 @@ import { findLesson } from '#/content/index.ts'
 import { todayString } from '#/libs/date.ts'
 
 describe('content helpers', () => {
-  it('findLesson resolves the why-save-early lesson with its unit', () => {
+it('findLesson resolves the why-save-early lesson with its keuangan unit', () => {
     const found = findLesson('why-save-early')
     expect(found?.lesson.id).toBe('why-save-early')
-    expect(found?.unit.id).toBe('bunga-berbunga')
+    expect(found?.unit.id).toBe('keuangan')
   })
 
   it('findLesson returns undefined for an unknown lesson', () => {

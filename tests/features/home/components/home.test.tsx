@@ -104,7 +104,7 @@ describe('CourseGrid', () => {
   it('renders unit titles and mastery percentages', () => {
     setMastery(35)
     render(<CourseGrid />)
-    expect(screen.getByText('Bunga berbunga')).toBeInTheDocument()
+expect(screen.getByText('Keuangan')).toBeInTheDocument()
     expect(screen.getByText('35%')).toBeInTheDocument()
   })
 
@@ -118,7 +118,7 @@ describe('CourseGrid', () => {
     setMastery(0)
     render(<CourseGrid />)
     const user = userEvent.setup()
-    await user.click(screen.getByText('Bunga berbunga'))
+await user.click(screen.getByText('Keuangan'))
     expect(navigateMock).toHaveBeenCalledWith({
       to: '/lesson/$lessonId',
       params: { lessonId: 'why-save-early' },
