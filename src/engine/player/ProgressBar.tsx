@@ -11,10 +11,15 @@ export default function ProgressBar({ current, total }: ProgressBarProps) {
         {Array.from({ length: total }, (_, i) => (
           <div
             key={i}
-            className={`h-3 min-w-0 flex-1 rounded-full transition-colors ${
+            className={`h-3 min-w-0 flex-1 rounded-full transition-colors animate-progress-fill ${
               i < current ? 'bg-primary' : 'bg-border'
             }`}
-          />
+            style={{ animationDelay: `${i * 60}ms` }}
+          >
+            {i === current - 1 && (
+              <div className="h-full w-full animate-pulse rounded-full bg-primary" />
+            )}
+          </div>
         ))}
       </div>
       <span className="text-center text-lg font-bold text-muted">

@@ -10,23 +10,23 @@ Single app: TanStack Start + React + Vite. No backend, no database, no login. Al
 
 ## Architecture: engine / domain split
 
-This is the single most important concept in the project (PRD section 3.2). See [CONCEPT.md](CONCEPT.md) for a detailed explanation and glossary of terms (Screen, Lesson, Unit, Renderer, Mastery, XP).
+This is the single most important concept in the project (PRD section 3.2). See [CONCEPT.md](CONCEPT.md) for a detailed explanation and glossary of terms (Screen, Lesson, Unit, Renderer, Mastery, XP), and [ARCHITECTURE.md](ARCHITECTURE.md) for the full technical deep-dive.
 
 ```
 src/
 ├── engine/                  Must never know the subject matter
-│   ├── player/              Lesson UI: progress bar, buttons, feedback panel
-│   ├── progress/            XP, streak, mastery, daily goal
-│   ├── path/                Unit ordering and unlock rules
-│   └── types.ts             Screen type definitions (union type)
+│   ├── player/              Lesson UI: LessonPlayer, LessonHeader, LessonControls, ProgressBar, ExplanationDialog, lessonStore
+│   ├── progress/            XP, streak, mastery, daily goal: progressStore, streak, decay, masteryRead
+│   ├── path/                nextLesson: unit ordering and unlock rules
+│   └── types.ts             Screen (union), Lesson, Unit type definitions
 ├── domains/
 │   └── personal-finance/
-│       ├── math.ts          All finance calculations
-│       ├── screens/         Components for each screen type
-│       └── components/      Charts and other visual components
+│       ├── math.ts          All finance calculations (futureValue, monthlyPayment, monthsToTarget)
+│       ├── screens/         Renderer per screen type: Choice, Numeric, Allocation, Concept
+│       └── components/      Charts and other visual components (BarChart)
 ├── features/                Feature-scoped modules around the engine/domains core
 │   ├── layout/              App chrome: Header, Footer, ThemeToggle (+ constants)
-│   ├── home/                Dashboard cards and streak widget (+ constants)
+│   ├── home/                Dashboard: CourseCard, CourseGrid, StreakTracker, DailyGoalCard (+ constants)
 │   ├── lesson/              Lesson page wiring: renderScreen, checkAnswer
 │   ├── lesson-complete/     Completion summary page + store/
 │   ├── profile/             Profile stats page
@@ -35,10 +35,11 @@ src/
 │   ├── utils.ts             cn() class merge helper
 │   ├── date.ts              Date helpers: todayString, addDays, daysBetween, ...
 │   ├── theme.ts             Theme mode types, init script, apply helpers
-│   └── hooks/               use-mobile, use-theme
-├── content/                 Lesson data as JSON/TS
+│   └── hooks/               use-mobile
+├── content/                 Lesson data as TS: units.ts, index.ts, lessons/
 ├── components/ui/           shadcn/ui primitives
 ├── routes/                  Thin route files delegating to features
+├── stories/                 Storybook stories (shadcn primitives)
 └── styles/                  globals.css
 tests/                       Unit tests mirroring src/ (root tests/ dir)
 ```
