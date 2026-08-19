@@ -26,10 +26,12 @@ export default function ChoiceRenderer({ screen, onSelect, checked }: ChoiceRend
         : 'border-border text-foreground hover:border-primary/50 hover:bg-accent/5'
     }
     if (screen.correctId === optionId) {
-      return 'border-success bg-success/10 text-success'
+      return selected === optionId
+        ? 'border-success bg-success/10 text-success animate-pulse-glow'
+        : 'border-success text-success'
     }
     if (selected === optionId && !checked) {
-      return 'border-destructive/40 bg-destructive/10 text-destructive'
+      return 'border-destructive bg-destructive/10 text-destructive animate-shake'
     }
     return 'border-border text-muted opacity-50'
   }

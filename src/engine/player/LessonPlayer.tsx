@@ -1,6 +1,7 @@
 // LessonPlayer: subject-agnostic lesson UI wiring screens, answers, and completion.
 import { useState } from 'react'
 import type { ReactNode } from 'react'
+import { cn } from '#/libs/utils.ts'
 import type { Screen } from '#/engine/types.ts'
 import ExplanationDialog from './ExplanationDialog.tsx'
 import LessonControls from './LessonControls.tsx'
@@ -38,6 +39,7 @@ export default function LessonPlayer({
   const clear = useLessonStore((s) => s.clear)
 
   const [explainOpen, setExplainOpen] = useState(false)
+  const [feedbackState, setFeedbackState] = useState<'idle' | 'correct' | 'wrong'>('idle')
 
   const screen = screens[index]
   const total = screens.length
@@ -50,10 +52,12 @@ export default function LessonPlayer({
   function handleCheck() {
     const correct = checkAnswer(screen, answer)
     checkResult(index, correct)
+    setFeedbackState(correct ? 'correct' : 'wrong')
   }
 
   function handleContinue() {
     setExplainOpen(false)
+    setFeedbackState('idle')
     const nextIndex = index + 1
     if (nextIndex >= total) {
       const finalResults = screens.flatMap((s, i) =>
@@ -67,12 +71,13 @@ export default function LessonPlayer({
   }
 
   function handleExit() {
+    setFeedbackState('idle')
     onExit()
     clear()
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col px-6 py-6">
+    <div className="flex min-h-screen w-full flex-col gap-4 px-6 py-6">
       <LessonHeader
         current={index + 1}
         total={total}
@@ -80,23 +85,37 @@ export default function LessonPlayer({
         onExit={handleExit}
       />
 
-      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col py-6">
-        <div key={index} className="my-auto flex w-full flex-col justify-center py-4">
-          {renderScreen(
-            screen,
-            (a) => setAnswer(index, a),
-            phase === 'checked' && lastResult ? lastResult.correct : null,
-          )}
-        </div>
+      <div
+        className={cn(
+          'flex w-full flex-1 flex-col border-2 rounded-2xl py-6 transition-colors duration-300',
+          feedbackState === 'correct'
+            ? 'border-success animate-pulse-glow'
+            : feedbackState === 'wrong'
+              ? 'border-destructive animate-shake'
+              : 'border-border',
+        )}
+      >
+        <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col">
+          <div
+            key={index}
+            className="my-auto flex w-full flex-col justify-center px-6 py-4 animate-slide-in-right"
+          >
+            {renderScreen(
+              screen,
+              (a) => setAnswer(index, a),
+              phase === 'checked' && lastResult ? lastResult.correct : null,
+            )}
+          </div>
 
-        <LessonControls
-          mode={isConcept ? 'concept' : phase}
-          hasAnswer={hasAnswer}
-          hasExplain={Boolean(screen.explain)}
-          onCheck={handleCheck}
-          onContinue={handleContinue}
-          onExplain={() => setExplainOpen(true)}
-        />
+          <LessonControls
+            mode={isConcept ? 'concept' : phase}
+            hasAnswer={hasAnswer}
+            hasExplain={Boolean(screen.explain)}
+            onCheck={handleCheck}
+            onContinue={handleContinue}
+            onExplain={() => setExplainOpen(true)}
+          />
+        </div>
       </div>
 
       <ExplanationDialog
