@@ -1,5 +1,5 @@
-// CourseGrid: grid of units showing mastery, unlock state, and play buttons.
-import { Lock, BookOpen, PlayCircle } from 'lucide-react'
+// CourseGrid: grid of units showing icon and title.
+import { BookOpen } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Card } from '#/components/ui/card'
 import { units, nextLesson } from '#/content/index.ts'
@@ -16,75 +16,36 @@ export default function CourseGrid() {
 
   return (
     <section className="w-full">
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 items-center gap-3 lg:grid-cols-4">
         {units.map((unit, i) => {
-          const value = masteryForDisplay(unit.id, mastery, updatedAt, today)
-          // Unit is unlocked if it's the first, or the previous unit has mastery >= 100
           const prevMastery = i === 0 ? 100 : masteryForDisplay(units[i - 1].id, mastery, updatedAt, today)
           const isUnlocked = prevMastery >= 100 || i === 0
           const isActive = unit.id === next.unit.id
-          const lessonCount = unit.lessons.reduce((acc, l) => acc + l.screens.length, 0)
 
           return (
             <Link
               key={unit.id}
               to="/lesson/$lessonId"
               params={{ lessonId: unit.lessons[0].id }}
-              className="block"
+              className="block h-full"
               disabled={!isUnlocked}
               aria-disabled={!isUnlocked}
               onClick={(e) => { if (!isUnlocked) e.preventDefault() }}
             >
               <Card
                 className={[
-                  'flex flex-col justify-between border-2 p-2.5 transition-all duration-150',
+                  'flex h-full flex-col items-center justify-center gap-3 border-2 p-5 transition-all duration-150',
                   isActive
                     ? 'border-primary/30 bg-primary/5 shadow-sm'
-                    : isUnlocked
-                      ? 'border-border hover:-translate-y-0.5'
-                      : 'border-border opacity-60',
+                    : 'border-border hover:-translate-y-0.5',
                 ].join(' ')}
               >
-                {/* Top row: icon + lock */}
-                <div className="flex items-start justify-between">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10">
-                    <BookOpen className="h-4.5 w-4.5 text-primary" />
-                  </div>
-                  {!isUnlocked && (
-                    <Lock className="h-4 w-4 text-muted/70" />
-                  )}
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  <BookOpen className="h-6 w-6 text-primary" />
                 </div>
-
-                {/* Title + meta */}
-                <div>
-                  <p className="text-sm capitalize font-bold leading-tight text-foreground">
-                    {unit.title}
-                  </p>
-                  <p className="mt-0.5 text-xs font-medium text-muted">
-                    Lesson {i + 1} · {lessonCount} screen
-                  </p>
-                </div>
-
-                {/* Bottom: progress or locked */}
-                <div>
-                  {isUnlocked ? (
-                    <div className="flex items-center gap-2">
-                      {/* Mini progress bar */}
-                      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-border">
-                        <div
-                          className="h-full rounded-full bg-primary transition-all duration-500"
-                          style={{ width: `${value}%` }}
-                        />
-                      </div>
-                      {/* Play button */}
-                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary">
-                        <PlayCircle className="h-3.5 w-3.5 text-white" />
-                      </div>
-                    </div>
-                  ) : (
-                    <p className="text-xs font-medium text-muted/70">Terkunci</p>
-                  )}
-                </div>
+                <p className="text-center text-sm font-bold leading-tight text-foreground">
+                  {unit.title}
+                </p>
               </Card>
             </Link>
           )
