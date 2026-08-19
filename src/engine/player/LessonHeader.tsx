@@ -1,4 +1,5 @@
 // LessonHeader: top bar with exit button, progress bar, and live XP badge.
+import { X } from 'lucide-react'
 import { Button } from '#/components/ui/button.tsx'
 import ProgressBar from './ProgressBar.tsx'
 
@@ -17,8 +18,14 @@ export default function LessonHeader({
 }: LessonHeaderProps) {
   return (
     <div className="flex gap-4 md:gap-16">
-      <Button variant="ghost" size="icon" onClick={onExit} aria-label="Keluar" className="shrink-0">
-        ✕
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={onExit}
+        aria-label="Keluar"
+        className="shrink-0 text-foreground/70 hover:text-foreground [&_svg]:size-6"
+      >
+        <X className="size-6 stroke-2" />
       </Button>
       <ProgressBar current={current} total={total} />
       <div

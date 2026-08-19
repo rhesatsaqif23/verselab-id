@@ -17,12 +17,12 @@ export default function BarChart({ data }: BarChartProps) {
     <div className="flex h-40 items-end gap-4">
       {data.map((d) => (
         <div key={d.label} className="flex h-full flex-1 flex-col items-center justify-end gap-2">
-          <span className="text-xs text-muted">{formatter.format(Math.round(d.value))}</span>
+          <span className="text-sm font-semibold text-muted">{formatter.format(Math.round(d.value))}</span>
           <div
-            className="w-full rounded-t-md bg-chart-1"
+            className="w-full rounded-t-md bg-linear-to-r from-(--btn-from) to-(--btn-to)"
             style={{ height: `${(d.value / maxValue) * 100}%` }}
           />
-          <span className="text-xs text-muted">{d.label}</span>
+          <span className="text-sm font-semibold text-muted">{d.label}</span>
         </div>
       ))}
     </div>

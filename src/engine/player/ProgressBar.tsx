@@ -7,7 +7,7 @@ type ProgressBarProps = {
 export default function ProgressBar({ current, total }: ProgressBarProps) {
   return (
     <div className="flex w-full flex-1 flex-col gap-1.5 px-8">
-      <div className="mx-auto flex w-full max-w-md gap-1.5">
+      <div className="mx-auto flex w-full max-w-lg gap-1.5">
         {Array.from({ length: total }, (_, i) => {
           // Completed steps (before current index) are filled
           const isFilled = i < current - 1

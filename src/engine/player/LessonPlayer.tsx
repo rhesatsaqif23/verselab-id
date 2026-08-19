@@ -77,7 +77,7 @@ export default function LessonPlayer({
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col gap-4 px-6 py-6">
+    <div className="flex min-h-screen w-full flex-col gap-4 px-8 py-8">
       <LessonHeader
         current={index + 1}
         total={total}
@@ -87,7 +87,7 @@ export default function LessonPlayer({
 
       <div
         className={cn(
-          'flex w-full flex-1 flex-col border-2 rounded-2xl py-6 transition-colors duration-300',
+          'flex w-full flex-1 flex-col border-2 rounded-3xl py-6 transition-colors duration-300',
           feedbackState === 'correct'
             ? 'border-success animate-pulse-glow'
             : feedbackState === 'wrong'
