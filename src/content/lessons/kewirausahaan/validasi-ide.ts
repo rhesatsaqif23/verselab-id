@@ -1,8 +1,8 @@
 // Entrepreneurship lesson 4: validating an idea before building.
 import type { Lesson } from '#/engine/types.ts'
 
-export const wirausahaValidasiLesson: Lesson = {
-  id: 'wirausaha-validasi-1',
+export const validasiIdeLesson: Lesson = {
+  id: 'validasi-ide',
   title: 'Validasi ide sebelum mengeluarkan uang',
   screens: [
     {

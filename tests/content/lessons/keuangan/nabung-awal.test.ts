@@ -1,12 +1,12 @@
-// Structure and correctness tests for the first lesson.
+// Structure and correctness tests for the first finance lesson.
 import { describe, expect, it } from 'vitest'
-import { whySaveEarlyLesson } from '#/content/lessons/why-save-early.ts'
+import { nabungAwalLesson } from '#/content/lessons/keuangan/nabung-awal.ts'
 import { futureValue } from '#/domains/personal-finance/math.ts'
 import type { Screen } from '#/engine/types.ts'
 
-const screens = whySaveEarlyLesson.screens
+const screens = nabungAwalLesson.screens
 
-describe('why-save-early lesson', () => {
+describe('nabung-awal lesson', () => {
   it('has exactly six screens', () => {
     expect(screens).toHaveLength(6)
   })

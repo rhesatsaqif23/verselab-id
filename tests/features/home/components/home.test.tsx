@@ -46,35 +46,26 @@ describe('DailyGoalCard', () => {
   it('shows reached when lastActiveDate is today', () => {
     useProgressStore.setState({ dailyGoalMinutes: 10, lastActiveDate: todayString() })
     render(<DailyGoalCard />)
-    expect(screen.getByText('Tercapai hari ini')).toBeInTheDocument()
+    expect(screen.getByText(/Tercapai hari ini/)).toBeInTheDocument()
   })
 
   it('shows not reached when lastActiveDate is not today', () => {
     useProgressStore.setState({ dailyGoalMinutes: 10, lastActiveDate: null })
     render(<DailyGoalCard />)
     expect(screen.getByText('Belum tercapai')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '10 menit' })).toBeInTheDocument()
+    expect(screen.getByText('Goal harian')).toBeInTheDocument()
   })
 
-  it('renders the three goal options', () => {
+  it('shows the minutes done against the daily goal', () => {
+    useProgressStore.setState({ dailyGoalMinutes: 10, lastActiveDate: todayString() })
     render(<DailyGoalCard />)
-    expect(screen.getByRole('button', { name: '3 menit' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '10 menit' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '20 menit' })).toBeInTheDocument()
+    expect(screen.getByText('10')).toBeInTheDocument()
+    expect(screen.getByText('/ 10 menit')).toBeInTheDocument()
   })
 
-  it('highlights the current goal', () => {
-    useProgressStore.setState({ dailyGoalMinutes: 20 })
+  it('links to the profile page to set the daily goal', () => {
     render(<DailyGoalCard />)
-    const active = screen.getByRole('button', { name: '20 menit' })
-    expect(active.className).toContain('from-(--btn-from)')
-  })
-
-  it('calls setDailyGoal when a goal button is clicked', async () => {
-    render(<DailyGoalCard />)
-    const user = userEvent.setup()
-    await user.click(screen.getByRole('button', { name: '20 menit' }))
-    expect(useProgressStore.getState().dailyGoalMinutes).toBe(20)
+    expect(screen.getByRole('link', { name: /atur goal harian/i })).toHaveAttribute('href', '/profile')
   })
 })
 
@@ -95,33 +86,29 @@ describe('CourseCard', () => {
     await user.click(screen.getByRole('link', { name: /lanjut ke lesson berikutnya/i }))
     expect(navigateMock).toHaveBeenCalledWith({
       to: '/lesson/$lessonId',
-      params: { lessonId: 'why-save-early' },
+      params: { lessonId: 'nabung-awal' },
     })
   })
 })
 
 describe('CourseGrid', () => {
-  it('renders unit titles and mastery percentages', () => {
+  it('renders unit titles', () => {
     setMastery(35)
     render(<CourseGrid />)
-expect(screen.getByText('Keuangan')).toBeInTheDocument()
-    expect(screen.getByText('35%')).toBeInTheDocument()
-  })
-
-  it('shows 0% when a unit has no mastery yet', () => {
-    setMastery(0)
-    render(<CourseGrid />)
-    expect(screen.getByText('0%')).toBeInTheDocument()
+    expect(screen.getByText('Keuangan')).toBeInTheDocument()
+    expect(screen.getByText('Akuntansi')).toBeInTheDocument()
+    expect(screen.getByText('Manajemen Produk')).toBeInTheDocument()
+    expect(screen.getByText('Kewirausahaan')).toBeInTheDocument()
   })
 
   it('navigates to the unit first lesson when clicked', async () => {
     setMastery(0)
     render(<CourseGrid />)
     const user = userEvent.setup()
-await user.click(screen.getByText('Keuangan'))
+    await user.click(screen.getByText('Keuangan'))
     expect(navigateMock).toHaveBeenCalledWith({
       to: '/lesson/$lessonId',
-      params: { lessonId: 'why-save-early' },
+      params: { lessonId: 'nabung-awal' },
     })
   })
 })

@@ -1,8 +1,8 @@
 // Accounting lesson 4: cash flow vs profit.
 import type { Lesson } from '#/engine/types.ts'
 
-export const akuntansiArusKasLesson: Lesson = {
-  id: 'akuntansi-arus-kas-1',
+export const arusKasLesson: Lesson = {
+  id: 'arus-kas',
   title: 'Arus kas: uang yang benar-benar masuk dan keluar',
   screens: [
     {

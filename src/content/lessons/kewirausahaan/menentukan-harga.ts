@@ -1,8 +1,8 @@
 // Entrepreneurship lesson 3: pricing strategy.
 import type { Lesson } from '#/engine/types.ts'
 
-export const wirausahaHargaLesson: Lesson = {
-  id: 'wirausaha-harga-1',
+export const menentukanHargaLesson: Lesson = {
+  id: 'menentukan-harga',
   title: 'Menentukan harga jual',
   screens: [
     {

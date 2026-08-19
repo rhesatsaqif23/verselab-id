@@ -28,7 +28,7 @@ describe('AllocationRenderer', () => {
 
   it('renders a BarChart', () => {
     render(<AllocationRenderer screen={demoScreen} onChange={() => {}} checked={null} />)
-    expect(document.querySelectorAll('.bg-chart-1')).toHaveLength(3)
+    expect(document.querySelectorAll('[data-testid="bar-chart-bar"]')).toHaveLength(3)
   })
 
   it('keeps the total at 100 when a slider moves', () => {

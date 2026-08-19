@@ -10,7 +10,7 @@ const data = [
 ]
 
 function getBars(): HTMLElement[] {
-  return Array.from(document.querySelectorAll('.bg-chart-1')) as HTMLElement[]
+  return Array.from(document.querySelectorAll('[data-testid="bar-chart-bar"]')) as HTMLElement[]
 }
 
 describe('BarChart', () => {

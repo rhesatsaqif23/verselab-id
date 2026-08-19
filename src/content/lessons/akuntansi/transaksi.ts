@@ -1,8 +1,8 @@
 // Accounting lesson 2: recording transactions, debit and credit.
 import type { Lesson } from '#/engine/types.ts'
 
-export const akuntansiTransaksiLesson: Lesson = {
-  id: 'akuntansi-transaksi-1',
+export const transaksiLesson: Lesson = {
+  id: 'transaksi',
   title: 'Mencatat transaksi: debit dan kredit',
   screens: [
     {

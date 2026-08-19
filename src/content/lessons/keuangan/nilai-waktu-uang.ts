@@ -2,7 +2,7 @@
 import type { Lesson } from '#/engine/types.ts'
 
 export const nilaiWaktuUangLesson: Lesson = {
-  id: 'nilai-waktu-uang-1',
+  id: 'nilai-waktu-uang',
   title: 'Uang sekarang vs masa depan',
   screens: [
     {

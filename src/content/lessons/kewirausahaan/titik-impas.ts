@@ -1,8 +1,8 @@
 // Entrepreneurship lesson 2: break-even point.
 import type { Lesson } from '#/engine/types.ts'
 
-export const wirausahaBreakEvenLesson: Lesson = {
-  id: 'wirausaha-break-even-1',
+export const titikImpasLesson: Lesson = {
+  id: 'titik-impas',
   title: 'Titik impas (break-even)',
   screens: [
     {

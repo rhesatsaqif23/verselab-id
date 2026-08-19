@@ -4,9 +4,9 @@ import { findLesson } from '#/content/index.ts'
 import { todayString } from '#/libs/date.ts'
 
 describe('content helpers', () => {
-it('findLesson resolves the why-save-early lesson with its keuangan unit', () => {
-    const found = findLesson('why-save-early')
-    expect(found?.lesson.id).toBe('why-save-early')
+it('findLesson resolves the nabung-awal lesson with its keuangan unit', () => {
+    const found = findLesson('nabung-awal')
+    expect(found?.lesson.id).toBe('nabung-awal')
     expect(found?.unit.id).toBe('keuangan')
   })
 

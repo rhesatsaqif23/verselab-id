@@ -1,8 +1,8 @@
 // Accounting lesson 3: the income statement (untung vs rugi).
 import type { Lesson } from '#/engine/types.ts'
 
-export const akuntansiLabaRugiLesson: Lesson = {
-  id: 'akuntansi-laba-rugi-1',
+export const labaRugiLesson: Lesson = {
+  id: 'laba-rugi',
   title: 'Laporan laba rugi: untung atau rugi',
   screens: [
     {

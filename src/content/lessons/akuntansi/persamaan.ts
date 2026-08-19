@@ -1,8 +1,8 @@
 // Accounting lesson 1: the fundamental equation Aset = Liabilitas + Ekuitas.
 import type { Lesson } from '#/engine/types.ts'
 
-export const akuntansiPersamaanLesson: Lesson = {
-  id: 'akuntansi-persamaan-1',
+export const persamaanLesson: Lesson = {
+  id: 'persamaan',
   title: 'Persamaan dasar: aset, utang, dan modal',
   screens: [
     {

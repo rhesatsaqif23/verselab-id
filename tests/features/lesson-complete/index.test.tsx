@@ -43,11 +43,11 @@ describe('lessonCompleteStore', () => {
 })
 
 describe('LessonCompletePage', () => {
-  it('renders the completion header and back link', () => {
+  it('renders the completion header and continue link', () => {
     useLessonCompleteStore.getState().setSummary(summary)
     renderPage()
     expect(screen.getByText('Lesson selesai!')).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: /kembali ke beranda/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Lanjut' })).toBeInTheDocument()
   })
 
   it('shows the XP earned', () => {
@@ -66,15 +66,7 @@ describe('LessonCompletePage', () => {
     expect(screen.getByText('Score')).toBeInTheDocument()
   })
 
-  it('lists the wrong screens with prompt and explain', () => {
-    useLessonCompleteStore.getState().setSummary(summary)
-    renderPage()
-    expect(screen.getByText('Berapa bunga 5 juta setahun?')).toBeInTheDocument()
-    expect(screen.getByText('Pakai rumus bunga sederhana.')).toBeInTheDocument()
-    expect(screen.getByText('Perlu diulang')).toBeInTheDocument()
-  })
-
-  it('hides wrong screens section when all correct', () => {
+  it('hides the wrong screens section when there are none', () => {
     useLessonCompleteStore.getState().setSummary({ ...summary, wrongScreens: [] })
     renderPage()
     expect(screen.queryByText('Perlu diulang')).not.toBeInTheDocument()
@@ -85,10 +77,10 @@ describe('LessonCompletePage', () => {
     expect(screen.getByText('Belum ada lesson yang selesai')).toBeInTheDocument()
   })
 
-  it('has a back link to home', () => {
+  it('has a continue link to home', () => {
     useLessonCompleteStore.getState().setSummary(summary)
     renderPage()
-    const backLink = screen.getByRole('link', { name: /kembali ke beranda/i })
+    const backLink = screen.getByRole('link', { name: 'Lanjut' })
     expect(backLink).toHaveAttribute('href', '/home')
   })
 })

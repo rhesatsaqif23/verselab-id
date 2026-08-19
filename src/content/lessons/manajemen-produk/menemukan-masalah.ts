@@ -1,8 +1,8 @@
 // Product Management lesson 1: start from the customer problem, not the solution.
 import type { Lesson } from '#/engine/types.ts'
 
-export const produkMasalahLesson: Lesson = {
-  id: 'produk-masalah-1',
+export const menemukanMasalahLesson: Lesson = {
+  id: 'menemukan-masalah',
   title: 'Mulai dari masalah, bukan dari fitur',
   screens: [
     {

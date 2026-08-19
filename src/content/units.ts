@@ -1,28 +1,28 @@
 // Content units: ordered list of units and their lessons for the learning path.
 import type { Unit } from '#/engine/types.ts'
-import { whySaveEarlyLesson } from './lessons/why-save-early.ts'
-import { nilaiWaktuUangLesson } from './lessons/nilai-waktu-uang.ts'
-import { anggaranBulananLesson } from './lessons/anggaran-bulanan.ts'
-import { hutangCicilanLesson } from './lessons/hutang-cicilan.ts'
-import { akuntansiPersamaanLesson } from './lessons/akuntansi-persamaan.ts'
-import { akuntansiTransaksiLesson } from './lessons/akuntansi-transaksi.ts'
-import { akuntansiLabaRugiLesson } from './lessons/akuntansi-laba-rugi.ts'
-import { akuntansiArusKasLesson } from './lessons/akuntansi-arus-kas.ts'
-import { produkMasalahLesson } from './lessons/produk-masalah.ts'
-import { produkPrioritasLesson } from './lessons/produk-prioritas.ts'
-import { produkMetrikLesson } from './lessons/produk-metrik.ts'
-import { produkMvpLesson } from './lessons/produk-mvp.ts'
-import { wirausahaUnitEkonomiLesson } from './lessons/wirausaha-unit-ekonomi.ts'
-import { wirausahaBreakEvenLesson } from './lessons/wirausaha-break-even.ts'
-import { wirausahaHargaLesson } from './lessons/wirausaha-harga.ts'
-import { wirausahaValidasiLesson } from './lessons/wirausaha-validasi.ts'
+import { nabungAwalLesson } from './lessons/keuangan/nabung-awal.ts'
+import { nilaiWaktuUangLesson } from './lessons/keuangan/nilai-waktu-uang.ts'
+import { anggaranBulananLesson } from './lessons/keuangan/anggaran-bulanan.ts'
+import { hutangCicilanLesson } from './lessons/keuangan/hutang-cicilan.ts'
+import { persamaanLesson } from './lessons/akuntansi/persamaan.ts'
+import { transaksiLesson } from './lessons/akuntansi/transaksi.ts'
+import { labaRugiLesson } from './lessons/akuntansi/laba-rugi.ts'
+import { arusKasLesson } from './lessons/akuntansi/arus-kas.ts'
+import { menemukanMasalahLesson } from './lessons/manajemen-produk/menemukan-masalah.ts'
+import { prioritasFiturLesson } from './lessons/manajemen-produk/prioritas-fitur.ts'
+import { metrikProdukLesson } from './lessons/manajemen-produk/metrik-produk.ts'
+import { mvpValidasiLesson } from './lessons/manajemen-produk/mvp-validasi.ts'
+import { unitEkonomiLesson } from './lessons/kewirausahaan/unit-ekonomi.ts'
+import { titikImpasLesson } from './lessons/kewirausahaan/titik-impas.ts'
+import { menentukanHargaLesson } from './lessons/kewirausahaan/menentukan-harga.ts'
+import { validasiIdeLesson } from './lessons/kewirausahaan/validasi-ide.ts'
 
 export const units = [
   {
     id: 'keuangan',
     title: 'Keuangan',
     lessons: [
-      whySaveEarlyLesson,
+      nabungAwalLesson,
       nilaiWaktuUangLesson,
       anggaranBulananLesson,
       hutangCicilanLesson,
@@ -32,30 +32,30 @@ export const units = [
     id: 'akuntansi',
     title: 'Akuntansi',
     lessons: [
-      akuntansiPersamaanLesson,
-      akuntansiTransaksiLesson,
-      akuntansiLabaRugiLesson,
-      akuntansiArusKasLesson,
+      persamaanLesson,
+      transaksiLesson,
+      labaRugiLesson,
+      arusKasLesson,
     ],
   },
   {
     id: 'manajemen-produk',
     title: 'Manajemen Produk',
     lessons: [
-      produkMasalahLesson,
-      produkPrioritasLesson,
-      produkMetrikLesson,
-      produkMvpLesson,
+      menemukanMasalahLesson,
+      prioritasFiturLesson,
+      metrikProdukLesson,
+      mvpValidasiLesson,
     ],
   },
   {
     id: 'kewirausahaan',
     title: 'Kewirausahaan',
     lessons: [
-      wirausahaUnitEkonomiLesson,
-      wirausahaBreakEvenLesson,
-      wirausahaHargaLesson,
-      wirausahaValidasiLesson,
+      unitEkonomiLesson,
+      titikImpasLesson,
+      menentukanHargaLesson,
+      validasiIdeLesson,
     ],
   },
 ] satisfies readonly Unit[]

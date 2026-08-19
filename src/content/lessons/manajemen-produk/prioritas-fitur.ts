@@ -1,8 +1,8 @@
 // Product Management lesson 2: prioritising features with impact and effort.
 import type { Lesson } from '#/engine/types.ts'
 
-export const produkPrioritasLesson: Lesson = {
-  id: 'produk-prioritas-1',
+export const prioritasFiturLesson: Lesson = {
+  id: 'prioritas-fitur',
   title: 'Memilih fitur yang paling penting dulu',
   screens: [
     {

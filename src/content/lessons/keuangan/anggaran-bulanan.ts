@@ -2,7 +2,7 @@
 import type { Lesson } from '#/engine/types.ts'
 
 export const anggaranBulananLesson: Lesson = {
-  id: 'anggaran-bulanan-1',
+  id: 'anggaran-bulanan',
   title: 'Membuat anggaran sederhana',
   screens: [
     {

@@ -1,8 +1,8 @@
 // Product Management lesson 4: MVP and the build-measure-learn loop.
 import type { Lesson } from '#/engine/types.ts'
 
-export const produkMvpLesson: Lesson = {
-  id: 'produk-mvp-1',
+export const mvpValidasiLesson: Lesson = {
+  id: 'mvp-validasi',
   title: 'MVP: menguji asumsi dengan usaha terkecil',
   screens: [
     {

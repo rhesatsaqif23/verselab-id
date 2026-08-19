@@ -1,8 +1,8 @@
 // Product Management lesson 3: north-star metrics, activation and retention.
 import type { Lesson } from '#/engine/types.ts'
 
-export const produkMetrikLesson: Lesson = {
-  id: 'produk-metrik-1',
+export const metrikProdukLesson: Lesson = {
+  id: 'metrik-produk',
   title: 'Metrik yang benar: aktivasi dan retensi',
   screens: [
     {

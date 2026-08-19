@@ -1,8 +1,8 @@
 // Entrepreneurship lesson 1: unit economics — margin per product.
 import type { Lesson } from '#/engine/types.ts'
 
-export const wirausahaUnitEkonomiLesson: Lesson = {
-  id: 'wirausaha-unit-ekonomi-1',
+export const unitEkonomiLesson: Lesson = {
+  id: 'unit-ekonomi',
   title: 'Unit ekonomi: untung dari setiap produk terjual',
   screens: [
     {

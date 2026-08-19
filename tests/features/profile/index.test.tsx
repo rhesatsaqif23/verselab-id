@@ -71,7 +71,7 @@ useProgressStore.setState({
 
   it('shows 0% for untouched units', () => {
     render(<ProfilePage />)
-    expect(screen.getByText('0%')).toBeInTheDocument()
+    expect(screen.getAllByText('0%').length).toBeGreaterThanOrEqual(4)
   })
 
 it('navigates to the unit lesson when clicked', async () => {
@@ -80,7 +80,7 @@ it('navigates to the unit lesson when clicked', async () => {
     await user.click(screen.getByText('Keuangan'))
     expect(navigateMock).toHaveBeenCalledWith({
       to: '/lesson/$lessonId',
-      params: { lessonId: 'why-save-early' },
+      params: { lessonId: 'nabung-awal' },
     })
   })
 })
