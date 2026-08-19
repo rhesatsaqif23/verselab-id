@@ -77,7 +77,7 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
     >
-      {hasShimmer && (
+      {hasShimmer && !props.disabled && (
         <>
           <span
             className="pointer-events-none absolute inset-0 z-10 overflow-hidden rounded-full"

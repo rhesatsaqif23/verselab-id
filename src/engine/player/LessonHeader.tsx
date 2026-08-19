@@ -21,7 +21,10 @@ export default function LessonHeader({
         ✕
       </Button>
       <ProgressBar current={current} total={total} />
-      <div className="shrink-0 flex items-center gap-1 rounded-full border-2 border-border px-3 py-1.5 text-md font-bold text-foreground">
+      <div
+        key={xpEarned}
+        className="shrink-0 flex items-center gap-1 rounded-full border-2 border-border px-3 py-1.5 text-md font-bold text-foreground animate-bounce-in"
+      >
         <span>{xpEarned}</span>
         <span className="text-sm font-bold text-muted">XP</span>
       </div>

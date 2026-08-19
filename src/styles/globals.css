@@ -81,7 +81,8 @@
   --lesson-border-idle: var(--border);
   --lesson-border-correct: var(--color-success);
   --lesson-border-wrong: var(--color-destructive);
-  --lesson-btn-disabled-bg: var(--btn-secondary-from);
+  --lesson-btn-disabled-bg: #e5e7eb;
+  --lesson-btn-disabled-shadow: #9ca3af;
   --lesson-btn-disabled-text: var(--color-muted);
 }
 
@@ -168,7 +169,8 @@
   --lesson-border-idle: var(--border);
   --lesson-border-correct: var(--color-success);
   --lesson-border-wrong: var(--color-destructive);
-  --lesson-btn-disabled-bg: var(--btn-secondary-from);
+  --lesson-btn-disabled-bg: #374151;
+  --lesson-btn-disabled-shadow: #0f0f0f;
   --lesson-btn-disabled-text: var(--color-muted);
 }
 

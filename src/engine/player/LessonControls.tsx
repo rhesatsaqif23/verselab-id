@@ -22,25 +22,27 @@ export default function LessonControls({
     <div className="mx-auto w-full max-w-md flex min-h-20 flex-col gap-3 pt-4">
       {mode === 'concept' ? (
         <Button
+          key={mode}
           variant="default"
           size="lg"
           onClick={onContinue}
-          className="w-full"
+          className="w-full animate-slide-up-enter"
         >
           Lanjut
         </Button>
       ) : mode === 'answering' ? (
         <Button
+          key={mode}
           variant="default"
           size="lg"
           disabled={!hasAnswer}
           onClick={onCheck}
-          className="w-full disabled:opacity-60"
+          className="w-full animate-slide-up-enter disabled:bg-none disabled:bg-(--lesson-btn-disabled-bg) disabled:text-(--lesson-btn-disabled-text) disabled:opacity-50 disabled:shadow-[0_5px_0_0_var(--lesson-btn-disabled-shadow),0_6px_16px_rgba(0,0,0,0.12)]"
         >
           Cek Jawaban
         </Button>
       ) : (
-        <div className="flex gap-3">
+        <div key={mode} className="flex animate-slide-up-enter gap-3">
           {hasExplain && (
             <Button
               variant="outline"
