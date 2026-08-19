@@ -1,18 +1,9 @@
 // Content units: ordered list of units and their lessons for the learning path.
 import type { Unit } from '#/engine/types.ts'
 import { whySaveEarlyLesson } from './lessons/why-save-early.ts'
-
-const dummyLesson = (id: string, title: string) => ({
-  id,
-  title,
-  screens: [
-    {
-      type: 'concept' as const,
-      prompt: 'Konten segera hadir.',
-      explain: 'Lesson ini sedang dalam pengembangan.',
-    },
-  ],
-})
+import { nilaiWaktuUangLesson } from './lessons/nilai-waktu-uang.ts'
+import { anggaranBulananLesson } from './lessons/anggaran-bulanan.ts'
+import { hutangCicilanLesson } from './lessons/hutang-cicilan.ts'
 
 export const units = [
   {
@@ -23,16 +14,16 @@ export const units = [
   {
     id: 'nilai-waktu-uang',
     title: 'Nilai waktu uang',
-    lessons: [dummyLesson('nilai-waktu-uang-1', 'Uang sekarang vs masa depan')],
+    lessons: [nilaiWaktuUangLesson],
   },
   {
     id: 'anggaran-bulanan',
     title: 'Anggaran bulanan',
-    lessons: [dummyLesson('anggaran-bulanan-1', 'Membuat anggaran sederhana')],
+    lessons: [anggaranBulananLesson],
   },
   {
     id: 'hutang-cicilan',
     title: 'Hutang & cicilan',
-    lessons: [dummyLesson('hutang-cicilan-1', 'Memahami bunga pinjaman')],
+    lessons: [hutangCicilanLesson],
   },
 ] satisfies readonly Unit[]

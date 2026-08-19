@@ -1,5 +1,4 @@
 // LessonCompletePage: celebratory summary of the finished lesson with next steps.
-import { Star } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { Card, CardContent } from '#/components/ui/card'
