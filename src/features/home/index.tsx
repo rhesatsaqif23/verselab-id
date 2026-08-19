@@ -1,8 +1,8 @@
 // HomePage: dashboard layout combining streak, goal, and course cards.
 import StreakTracker from './components/StreakTracker'
 import DailyGoalCard from './components/DailyGoalCard'
-import CourseCard from './components/CourseCard'
-import CourseGrid from './components/CourseGrid'
+import UnitCard from './components/UnitCard'
+import UnitGrid from './components/UnitGrid'
 
 export default function HomePage() {
   return (
@@ -14,8 +14,8 @@ export default function HomePage() {
         </div>
 
         <div className="flex flex-col gap-4">
-          <CourseCard />
-          <CourseGrid />
+          <UnitCard />
+          <UnitGrid />
         </div>
       </div>
     </main>

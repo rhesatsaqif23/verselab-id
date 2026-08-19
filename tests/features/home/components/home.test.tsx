@@ -1,12 +1,13 @@
 // Tests for the home dashboard cards.
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import StreakTracker from '#/features/home/components/StreakTracker.tsx'
 import DailyGoalCard from '#/features/home/components/DailyGoalCard.tsx'
-import CourseCard from '#/features/home/components/CourseCard.tsx'
-import CourseGrid from '#/features/home/components/CourseGrid.tsx'
+import UnitCard from '#/features/home/components/UnitCard.tsx'
+import UnitGrid from '#/features/home/components/UnitGrid.tsx'
+import { useHomeStore } from '#/features/home/store.ts'
 import { resetProgress, setMastery } from '../test-utils'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
 import { todayString } from '#/libs/date.ts'
@@ -32,6 +33,7 @@ vi.mock('@tanstack/react-router', () => ({
 beforeEach(() => {
   resetProgress()
   navigateMock.mockReset()
+  useHomeStore.setState({ selectedUnitId: 'keuangan' })
 })
 
 describe('StreakTracker', () => {
@@ -69,10 +71,10 @@ describe('DailyGoalCard', () => {
   })
 })
 
-describe('CourseCard', () => {
+describe('UnitCard', () => {
   it('renders the next lesson title and a continue link', () => {
     setMastery(0)
-    render(<CourseCard />)
+    render(<UnitCard />)
     expect(screen.getByText('Kenapa nabung lebih awal jauh lebih untung')).toBeInTheDocument()
     expect(
       screen.getByRole('link', { name: /lanjut ke lesson berikutnya/i })
@@ -81,7 +83,7 @@ describe('CourseCard', () => {
 
   it('navigates to the next lesson when clicked', async () => {
     setMastery(0)
-    render(<CourseCard />)
+    render(<UnitCard />)
     const user = userEvent.setup()
     await user.click(screen.getByRole('link', { name: /lanjut ke lesson berikutnya/i }))
     expect(navigateMock).toHaveBeenCalledWith({
@@ -89,26 +91,39 @@ describe('CourseCard', () => {
       params: { lessonId: 'nabung-awal' },
     })
   })
+
+  it('reflects the unit selected in the grid', () => {
+    setMastery(100)
+    render(<UnitCard />)
+    act(() => useHomeStore.setState({ selectedUnitId: 'akuntansi' }))
+    expect(screen.getByText('Persamaan dasar: aset, utang, dan modal')).toBeInTheDocument()
+    expect(screen.getByText('Akuntansi')).toBeInTheDocument()
+  })
 })
 
-describe('CourseGrid', () => {
+describe('UnitGrid', () => {
   it('renders unit titles', () => {
     setMastery(35)
-    render(<CourseGrid />)
+    render(<UnitGrid />)
     expect(screen.getByText('Keuangan')).toBeInTheDocument()
     expect(screen.getByText('Akuntansi')).toBeInTheDocument()
     expect(screen.getByText('Manajemen Produk')).toBeInTheDocument()
     expect(screen.getByText('Kewirausahaan')).toBeInTheDocument()
   })
 
-  it('navigates to the unit first lesson when clicked', async () => {
-    setMastery(0)
-    render(<CourseGrid />)
+  it('selecting a unit changes the hero UnitCard', async () => {
+    setMastery(100)
+    render(
+      <>
+        <UnitCard />
+        <UnitGrid />
+      </>
+    )
     const user = userEvent.setup()
-    await user.click(screen.getByText('Keuangan'))
-    expect(navigateMock).toHaveBeenCalledWith({
-      to: '/lesson/$lessonId',
-      params: { lessonId: 'nabung-awal' },
-    })
+    await user.click(screen.getByText('Akuntansi'))
+    expect(useHomeStore.getState().selectedUnitId).toBe('akuntansi')
+    expect(
+      screen.getByRole('link', { name: /lanjut ke lesson berikutnya/i })
+    ).toHaveAttribute('href', '/lesson/$lessonId/persamaan')
   })
 })

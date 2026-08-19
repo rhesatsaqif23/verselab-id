@@ -1,18 +1,18 @@
-// CourseGrid: grid of units showing icon and title.
-import { BookOpen } from 'lucide-react'
-import { Link } from '@tanstack/react-router'
+// UnitGrid: grid of units with per-unit icons; selecting a unit changes the hero UnitCard.
 import { Card } from '#/components/ui/card'
-import { units, nextLesson } from '#/content/index.ts'
+import { units } from '#/content/index.ts'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
 import { todayString } from '#/libs/date.ts'
 import { masteryForDisplay } from '#/engine/progress/masteryRead.ts'
+import { useHomeStore } from '../store.ts'
+import { UNIT_ICONS } from '../constants.ts'
 
-export default function CourseGrid() {
+export default function UnitGrid() {
   const mastery = useProgressStore((s) => s.mastery)
   const updatedAt = useProgressStore((s) => s.masteryUpdatedAt)
+  const selectedUnitId = useHomeStore((s) => s.selectedUnitId)
+  const setSelectedUnit = useHomeStore((s) => s.setSelectedUnit)
   const today = todayString()
-
-  const next = nextLesson(units, mastery, updatedAt, today)
 
   return (
     <section className="w-full">
@@ -20,34 +20,34 @@ export default function CourseGrid() {
         {units.map((unit, i) => {
           const prevMastery = i === 0 ? 100 : masteryForDisplay(units[i - 1].id, mastery, updatedAt, today)
           const isUnlocked = prevMastery >= 100 || i === 0
-          const isActive = unit.id === next.unit.id
+          const isSelected = unit.id === selectedUnitId
+          const Icon = UNIT_ICONS[unit.id]
 
           return (
-            <Link
+            <button
               key={unit.id}
-              to="/lesson/$lessonId"
-              params={{ lessonId: unit.lessons[0].id }}
-              className="block h-full"
+              type="button"
+              onClick={() => setSelectedUnit(unit.id)}
               disabled={!isUnlocked}
-              aria-disabled={!isUnlocked}
-              onClick={(e) => { if (!isUnlocked) e.preventDefault() }}
+              aria-pressed={isSelected}
+              className="block h-full"
             >
               <Card
                 className={[
-                  'flex h-full flex-col items-center justify-center gap-3 border-2 p-5 transition-all duration-150',
-                  isActive
+                  'flex h-full flex-col items-center justify-center gap-3 border-2 p-3 transition-all duration-150',
+                  isSelected
                     ? 'border-primary/30 bg-primary/5 shadow-sm'
-                    : 'border-border hover:-translate-y-0.5',
+                    : 'border-border hover:-translate-y-0.5 hover:border-primary/40',
                 ].join(' ')}
               >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                  <BookOpen className="h-6 w-6 text-primary" />
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
+                  {Icon && <Icon className="h-6 w-6 text-primary" />}
                 </div>
                 <p className="text-center text-sm font-bold leading-tight text-foreground">
                   {unit.title}
                 </p>
               </Card>
-            </Link>
+            </button>
           )
         })}
       </div>

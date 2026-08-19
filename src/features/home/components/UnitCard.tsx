@@ -1,23 +1,25 @@
-// CourseCard: hero card for the next lesson with mastery progress and CTA.
+// UnitCard: hero card for the selected unit's next lesson with mastery progress and CTA.
 import { PlayCircle } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { Card, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
-import { units, nextLesson } from '#/content/index.ts'
+import { units } from '#/content/index.ts'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
 import { todayString } from '#/libs/date.ts'
 import { decayedMastery } from '#/engine/progress/decay.ts'
+import { useHomeStore } from '../store.ts'
 
-export default function CourseCard() {
+export default function UnitCard() {
   const mastery = useProgressStore((s) => s.mastery)
   const updatedAt = useProgressStore((s) => s.masteryUpdatedAt)
+  const selectedUnitId = useHomeStore((s) => s.selectedUnitId)
   const today = todayString()
-  const next = nextLesson(units, mastery, updatedAt, today)
 
-  const unitId = next.unit.id
-  const masteryValue = mastery[unitId] ?? 0
-  const masteryDisplay = decayedMastery(masteryValue, updatedAt[unitId], today)
+  const unit = units.find((u) => u.id === selectedUnitId) ?? units[0]
+  const lesson = unit.lessons[0]
+  const masteryValue = mastery[unit.id] ?? 0
+  const masteryDisplay = decayedMastery(masteryValue, updatedAt[unit.id], today)
 
   return (
     <Card className="overflow-hidden border-2 border-border p-0">
@@ -33,7 +35,7 @@ export default function CourseCard() {
 
           {/* Lesson title */}
           <h2 className="relative text-xl font-black leading-snug text-foreground sm:text-2xl">
-            {next.lesson.title}
+            {lesson.title}
           </h2>
 
           {/* Illustration */}
@@ -45,7 +47,7 @@ export default function CourseCard() {
 
           {/* Unit title */}
           <p className="relative text-base font-black uppercase tracking-widest text-primary">
-            {next.unit.title}
+            {unit.title}
           </p>
           {/* Progress bar */}
           <div className="relative w-full">
@@ -63,7 +65,7 @@ export default function CourseCard() {
 
           {/* CTA button */}
           <Button asChild size="lg" className="relative w-full mt-2">
-            <Link to="/lesson/$lessonId" params={{ lessonId: next.lesson.id }}>
+            <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }}>
               <PlayCircle className="size-6 mr-2" />
               Lanjut ke lesson berikutnya
             </Link>

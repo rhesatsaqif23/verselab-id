@@ -37,58 +37,57 @@ export default function LessonCompletePage() {
       : null
 
   return (
-    <main className="page-wrap flex min-h-screen flex-col items-center justify-center px-4 pb-16 pt-8">
-      <div className="mx-auto flex w-full max-w-sm flex-col items-center gap-8">
+    <main className="flex min-h-screen w-full flex-col px-8 py-8">
+      {/* Content — vertically centered like lesson screen renderer */}
+      <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col">
+        <div className="my-auto flex flex-col items-center gap-8 px-6 py-4 text-center">
 
-        {/* Celebratory star asset */}
-        <img
-          src="/lesson-complete-star.png"
-          alt="Lesson selesai"
-          className="h-28 w-28 object-contain"
-        />
+          {/* Celebratory star asset */}
+          <img
+            src="/lesson-complete-star.png"
+            alt="Lesson selesai"
+            className="h-28 w-28 object-contain"
+          />
 
-        {/* Title */}
-        <div className="text-center">
+          {/* Title */}
           <h1 className="text-4xl font-black text-foreground">Lesson selesai!</h1>
-        </div>
 
-        {/* Stats */}
-        <div className="flex w-full gap-4">
-          <Card className="flex-1 border-2 border-border p-6 text-center">
-            <CardContent className="p-0">
-              <div className="flex items-baseline justify-center gap-1">
-                <span className="text-5xl font-black text-foreground">{summary.xpEarned}</span>
-                <span className="text-base font-bold text-muted">XP</span>
-              </div>
-              <p className="mt-2 text-xs font-bold uppercase tracking-widest text-muted">Total</p>
-            </CardContent>
-          </Card>
+          {/* Stats */}
+          <div className="flex w-full max-w-md gap-4">
+            <Card className="flex-1 border-2 border-border p-6 text-center">
+              <CardContent className="p-0">
+                <div className="flex items-baseline justify-center gap-1">
+                  <span className="text-5xl font-black text-foreground">{summary.xpEarned}</span>
+                  <span className="text-base font-bold text-muted">XP</span>
+                </div>
+                <p className="mt-2 text-xs font-bold uppercase tracking-widest text-muted">Total</p>
+              </CardContent>
+            </Card>
 
-          <Card className="flex-1 border-2 border-border p-6 text-center">
-            <CardContent className="p-0">
-              <div className="flex items-baseline justify-center gap-0.5">
-                <span className="text-5xl font-black text-foreground">{summary.correctCount}</span>
-                <span className="text-xl font-bold text-muted">/{summary.totalScreens}</span>
-              </div>
-              <p className="mt-2 text-xs font-bold uppercase tracking-widest text-muted">Score</p>
-            </CardContent>
-          </Card>
-        </div>
+            <Card className="flex-1 border-2 border-border p-6 text-center">
+              <CardContent className="p-0">
+                <div className="flex items-baseline justify-center gap-0.5">
+                  <span className="text-5xl font-black text-foreground">{summary.correctCount}</span>
+                  <span className="text-xl font-bold text-muted">/{summary.totalScreens}</span>
+                </div>
+                <p className="mt-2 text-xs font-bold uppercase tracking-widest text-muted">Score</p>
+              </CardContent>
+            </Card>
+          </div>
 
-        {/* Mastery */}
-        {displayAfter != null && (
-          <Card className="w-full border-2 border-border p-4 text-center">
-            <CardContent className="p-0">
-              <div className="flex items-center justify-center gap-1.5">
+          {/* Mastery */}
+          {displayAfter != null && (
+            <Card className="w-full max-w-sm border-2 border-border p-4 text-center">
+              <CardContent className="p-0">
                 <p className="text-base font-bold text-muted">Mastery {summary.unitName}</p>
-              </div>
-              <p className="mt-2 text-4xl font-black text-foreground">{displayAfter}%</p>
-            </CardContent>
-          </Card>
-        )}
+                <p className="mt-2 text-4xl font-black text-foreground">{displayAfter}%</p>
+              </CardContent>
+            </Card>
+          )}
+        </div>
 
-        {/* Actions */}
-        <div className="flex w-full flex-col gap-3">
+        {/* Button — same position as LessonControls */}
+        <div className="mx-auto w-full max-w-md flex min-h-20 flex-col gap-3 pt-4">
           <Button asChild size="lg" className="w-full">
             <Link to="/home">Lanjut</Link>
           </Button>
