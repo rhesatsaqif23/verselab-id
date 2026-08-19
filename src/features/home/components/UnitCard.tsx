@@ -1,22 +1,23 @@
-// UnitCard: hero card for the selected unit's next lesson with mastery progress and CTA.
+// UnitCard: single card for one unit with next lesson, mastery progress, and CTA.
 import { PlayCircle } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { Button } from '#/components/ui/button'
 import { Card, CardContent } from '#/components/ui/card'
 import { Badge } from '#/components/ui/badge'
-import { units } from '#/content/index.ts'
+import type { Unit } from '#/engine/types.ts'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
 import { todayString } from '#/libs/date.ts'
 import { decayedMastery } from '#/engine/progress/decay.ts'
-import { useHomeStore } from '../store.ts'
 
-export default function UnitCard() {
+type UnitCardProps = {
+  unit: Unit
+}
+
+export default function UnitCard({ unit }: UnitCardProps) {
   const mastery = useProgressStore((s) => s.mastery)
   const updatedAt = useProgressStore((s) => s.masteryUpdatedAt)
-  const selectedUnitId = useHomeStore((s) => s.selectedUnitId)
   const today = todayString()
 
-  const unit = units.find((u) => u.id === selectedUnitId) ?? units[0]
   const lesson = unit.lessons[0]
   const masteryValue = mastery[unit.id] ?? 0
   const masteryDisplay = decayedMastery(masteryValue, updatedAt[unit.id], today)

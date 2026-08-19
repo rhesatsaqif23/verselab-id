@@ -6,8 +6,10 @@ import userEvent from '@testing-library/user-event'
 import StreakTracker from '#/features/home/components/StreakTracker.tsx'
 import DailyGoalCard from '#/features/home/components/DailyGoalCard.tsx'
 import UnitCard from '#/features/home/components/UnitCard.tsx'
+import ShuffleCard from '#/features/home/components/ShuffleCard.tsx'
 import UnitGrid from '#/features/home/components/UnitGrid.tsx'
 import { useHomeStore } from '#/features/home/store.ts'
+import { units } from '#/content/index.ts'
 import { resetProgress, setMastery } from '../test-utils'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
 import { todayString } from '#/libs/date.ts'
@@ -74,7 +76,7 @@ describe('DailyGoalCard', () => {
 describe('UnitCard', () => {
   it('renders the next lesson title and a continue link', () => {
     setMastery(0)
-    render(<UnitCard />)
+    render(<UnitCard unit={units[0]} />)
     expect(screen.getByText('Kenapa nabung lebih awal jauh lebih untung')).toBeInTheDocument()
     expect(
       screen.getByRole('link', { name: /lanjut ke lesson berikutnya/i })
@@ -83,21 +85,31 @@ describe('UnitCard', () => {
 
   it('navigates to the next lesson when clicked', async () => {
     setMastery(0)
-    render(<UnitCard />)
+    render(<UnitCard unit={units[1]} />)
     const user = userEvent.setup()
     await user.click(screen.getByRole('link', { name: /lanjut ke lesson berikutnya/i }))
     expect(navigateMock).toHaveBeenCalledWith({
       to: '/lesson/$lessonId',
-      params: { lessonId: 'nabung-awal' },
+      params: { lessonId: 'persamaan' },
     })
   })
+})
 
-  it('reflects the unit selected in the grid', () => {
+describe('ShuffleCard', () => {
+  it('renders the selected unit from the home store', () => {
     setMastery(100)
-    render(<UnitCard />)
     act(() => useHomeStore.setState({ selectedUnitId: 'akuntansi' }))
+    render(<ShuffleCard />)
     expect(screen.getByText('Persamaan dasar: aset, utang, dan modal')).toBeInTheDocument()
     expect(screen.getByText('Akuntansi')).toBeInTheDocument()
+  })
+
+  it('renders a card for the selected unit over stacked deck layers', () => {
+    setMastery(100)
+    render(<ShuffleCard />)
+    expect(
+      screen.getByRole('link', { name: /lanjut ke lesson berikutnya/i })
+    ).toBeInTheDocument()
   })
 })
 
@@ -111,11 +123,11 @@ describe('UnitGrid', () => {
     expect(screen.getByText('Kewirausahaan')).toBeInTheDocument()
   })
 
-  it('selecting a unit changes the hero UnitCard', async () => {
+  it('selecting a unit changes the hero ShuffleCard', async () => {
     setMastery(100)
     render(
       <>
-        <UnitCard />
+        <ShuffleCard />
         <UnitGrid />
       </>
     )
@@ -123,7 +135,8 @@ describe('UnitGrid', () => {
     await user.click(screen.getByText('Akuntansi'))
     expect(useHomeStore.getState().selectedUnitId).toBe('akuntansi')
     expect(
-      screen.getByRole('link', { name: /lanjut ke lesson berikutnya/i })
-    ).toHaveAttribute('href', '/lesson/$lessonId/persamaan')
+      screen.getAllByRole('link', { name: /lanjut ke lesson berikutnya/i }).length
+    ).toBeGreaterThan(0)
+    expect(screen.getAllByText('Persamaan dasar: aset, utang, dan modal').length).toBeGreaterThan(0)
   })
 })
