@@ -96,20 +96,39 @@ describe('UnitCard', () => {
 })
 
 describe('ShuffleCard', () => {
-  it('renders the selected unit from the home store', () => {
+  it('renders all unit cards in the carousel', () => {
     setMastery(100)
-    act(() => useHomeStore.setState({ selectedUnitId: 'akuntansi' }))
     render(<ShuffleCard />)
-    expect(screen.getByText('Persamaan dasar: aset, utang, dan modal')).toBeInTheDocument()
-    expect(screen.getByText('Akuntansi')).toBeInTheDocument()
+    expect(screen.getAllByText('Kenapa nabung lebih awal jauh lebih untung').length).toBe(1)
+    expect(screen.getAllByText('Persamaan dasar: aset, utang, dan modal').length).toBe(1)
+    expect(screen.getAllByText('Mulai dari masalah, bukan dari fitur').length).toBe(1)
+    expect(screen.getAllByText('Unit ekonomi: untung dari setiap produk terjual').length).toBe(1)
   })
 
-  it('renders a card for the selected unit over stacked deck layers', () => {
+  it('positions the selected card at the front (full opacity)', () => {
     setMastery(100)
+    act(() => useHomeStore.setState({ selectedUnitId: 'manajemen-produk' }))
     render(<ShuffleCard />)
-    expect(
-      screen.getByRole('link', { name: /lanjut ke lesson berikutnya/i })
-    ).toBeInTheDocument()
+    const allCards = screen.getAllByText('Mulai dari masalah, bukan dari fitur')
+    const frontCard = allCards[0].closest('[style]')
+    expect(frontCard).not.toBeNull()
+    expect(frontCard?.getAttribute('style')).toContain('opacity: 1')
+    expect(frontCard?.getAttribute('style')).toContain('z-index: 30')
+  })
+
+  it('stacks other cards behind with reduced opacity and offset', () => {
+    setMastery(100)
+    act(() => useHomeStore.setState({ selectedUnitId: 'keuangan' }))
+    render(<ShuffleCard />)
+    const keuanganCard = screen.getAllByText('Kenapa nabung lebih awal jauh lebih untung')[0]
+      .closest('[style]')
+    expect(keuanganCard?.getAttribute('style')).toContain('opacity: 1')
+    expect(keuanganCard?.getAttribute('style')).toContain('z-index: 30')
+
+    const akuntansiCard = screen.getAllByText('Persamaan dasar: aset, utang, dan modal')[0]
+      .closest('[style]')
+    expect(akuntansiCard?.getAttribute('style')).toContain('opacity: 0.7')
+    expect(akuntansiCard?.getAttribute('style')).toContain('translateY')
   })
 })
 
@@ -123,20 +142,15 @@ describe('UnitGrid', () => {
     expect(screen.getByText('Kewirausahaan')).toBeInTheDocument()
   })
 
-  it('selecting a unit changes the hero ShuffleCard', async () => {
+  it('selecting a unit changes the carousel front card', () => {
     setMastery(100)
-    render(
-      <>
-        <ShuffleCard />
-        <UnitGrid />
-      </>
-    )
-    const user = userEvent.setup()
-    await user.click(screen.getByText('Akuntansi'))
-    expect(useHomeStore.getState().selectedUnitId).toBe('akuntansi')
-    expect(
-      screen.getAllByRole('link', { name: /lanjut ke lesson berikutnya/i }).length
-    ).toBeGreaterThan(0)
-    expect(screen.getAllByText('Persamaan dasar: aset, utang, dan modal').length).toBeGreaterThan(0)
+    render(<ShuffleCard />)
+
+    act(() => useHomeStore.setState({ selectedUnitId: 'akuntansi' }))
+
+    const frontCard = screen.getAllByText('Persamaan dasar: aset, utang, dan modal')[0]
+      .closest('[style]')
+    expect(frontCard?.getAttribute('style')).toContain('opacity: 1')
+    expect(frontCard?.getAttribute('style')).toContain('z-index: 30')
   })
 })
