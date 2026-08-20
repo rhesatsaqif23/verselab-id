@@ -21,6 +21,7 @@ export const units = [
   {
     id: 'keuangan',
     title: 'Keuangan',
+    imageUrl: '/unit/keuangan.webp',
     lessons: [
       nabungAwalLesson,
       nilaiWaktuUangLesson,
@@ -31,6 +32,7 @@ export const units = [
   {
     id: 'akuntansi',
     title: 'Akuntansi',
+    imageUrl: '/unit/akuntansi.webp',
     lessons: [
       persamaanLesson,
       transaksiLesson,
@@ -41,6 +43,7 @@ export const units = [
   {
     id: 'manajemen-produk',
     title: 'Manajemen Produk',
+    imageUrl: '/unit/manajemen-produk.webp',
     lessons: [
       menemukanMasalahLesson,
       prioritasFiturLesson,
@@ -51,6 +54,7 @@ export const units = [
   {
     id: 'kewirausahaan',
     title: 'Kewirausahaan',
+    imageUrl: '/unit/kewirausahaan.webp',
     lessons: [
       unitEkonomiLesson,
       titikImpasLesson,

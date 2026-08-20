@@ -8,6 +8,7 @@ import type { Unit } from '#/engine/types.ts'
 import { useProgressStore } from '#/engine/progress/progressStore.ts'
 import { todayString } from '#/libs/date.ts'
 import { decayedMastery } from '#/engine/progress/decay.ts'
+import { units } from '#/content/index.ts'
 
 type UnitCardProps = {
   unit: Unit
@@ -22,6 +23,29 @@ export default function UnitCard({ unit }: UnitCardProps) {
   const masteryValue = mastery[unit.id] ?? 0
   const masteryDisplay = decayedMastery(masteryValue, updatedAt[unit.id], today)
 
+  // Find recommended unit: the first unlocked unit that is not fully mastered (mastery < 100).
+  const recommendedUnitId = (() => {
+    for (let i = 0; i < units.length; i++) {
+      const u = units[i]
+      const uMasteryValue = mastery[u.id] ?? 0
+      const uMastery = decayedMastery(uMasteryValue, updatedAt[u.id], today)
+      
+      const prevUnlocked = i === 0 || (() => {
+        const prevU = units[i - 1]
+        const prevMasteryValue = mastery[prevU.id] ?? 0
+        const prevMastery = decayedMastery(prevMasteryValue, updatedAt[prevU.id], today)
+        return prevMastery >= 100
+      })()
+
+      if (prevUnlocked && uMastery < 100) {
+        return u.id
+      }
+    }
+    return units[0]?.id
+  })()
+
+  const isRecommended = unit.id === recommendedUnitId
+
   return (
     <Card className="overflow-hidden border-2 border-border p-0">
       <CardContent className="p-0">
@@ -30,27 +54,26 @@ export default function UnitCard({ unit }: UnitCardProps) {
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(21,145,220,0.10)_0%,transparent_70%)]" />
 
           {/* Badge */}
-          <Badge className="relative rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold uppercase tracking-wider text-primary">
-            Lanjut belajar
-          </Badge>
+          {isRecommended ? (
+            <Badge className="relative rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-primary">
+              Rekomendasi
+            </Badge>
+          ) : (
+            <div className="h-2" /> // spacing placeholder when not recommended to keep heights balanced
+          )}
 
-          {/* Lesson title */}
-          <h2 className="relative line-clamp-2 h-14 text-xl font-black leading-snug text-foreground sm:text-2xl">
-            {lesson.title}
+          {/* Unit title */}
+          <h2 className="relative line-clamp-2 h-14 text-2xl font-black leading-snug text-foreground sm:text-2xl">
+            {unit.title}
           </h2>
 
           {/* Illustration */}
           <img
-            src="/course-illustration.png"
-            alt="Ilustrasi keuangan"
+            src={unit.imageUrl || "/course-illustration.png"}
+            alt={`Ilustrasi ${unit.title}`}
             draggable={false}
-            className="relative h-36 w-auto object-contain drop-shadow-md sm:h-40 pointer-events-none select-none"
+            className="relative h-36 w-auto object-contain sm:h-40 pointer-events-none select-none"
           />
-
-          {/* Unit title */}
-          <p className="relative text-base font-black uppercase tracking-widest text-primary">
-            {unit.title}
-          </p>
           {/* Progress bar */}
           <div className="relative w-full">
             <div className="mb-2 flex items-center justify-between">
