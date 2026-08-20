@@ -1,24 +1,19 @@
-// ShuffleCard: stacked card carousel; drag the front card left/right to cycle through units.
-import { useState } from 'react'
-import { motion, type PanInfo } from 'framer-motion'
+import { useCallback, useRef, useState } from 'react'
 import { units } from '#/content/index.ts'
 import { useHomeStore } from '../store.ts'
 import UnitCard from './UnitCard.tsx'
 
-const SWIPE_THRESHOLD = 90
+const SWIPE_THRESHOLD = 120
+const DRAG_DIVISOR = 400
 
-function stackStyle(distance: number) {
+function restStyle(distance: number) {
   if (distance === 0) {
-    return {
-      transform: 'translateX(0) translateY(0) scale(1) rotate(0deg)',
-      opacity: 1,
-      zIndex: 30,
-    }
+    return { transform: 'translateX(0) translateY(0) scale(1)', opacity: 1, zIndex: 30 }
   }
   const abs = Math.abs(distance)
   return {
-    transform: `translateX(${distance * 24}px) translateY(${-abs * 14}px) scale(${1 - abs * 0.05}) rotate(${distance > 0 ? -1.5 : 1.5}deg)`,
-    opacity: Math.max(0, 1 - abs * 0.3),
+    transform: `translateX(${abs * 10}px) translateY(${abs * 10}px) scale(1)`,
+    opacity: 1,
     zIndex: 30 - abs,
   }
 }
@@ -26,43 +21,71 @@ function stackStyle(distance: number) {
 export default function ShuffleCard() {
   const selectedUnitId = useHomeStore((s) => s.selectedUnitId)
   const setSelectedUnit = useHomeStore((s) => s.setSelectedUnit)
-  const [dragX, setDragX] = useState(0)
-
   const activeIndex = Math.max(0, units.findIndex((u) => u.id === selectedUnitId))
   const prevUnit = units[(activeIndex - 1 + units.length) % units.length]
   const nextUnit = units[(activeIndex + 1) % units.length]
 
-  function onDragEnd(_: unknown, info: PanInfo) {
-    const { offset, velocity } = info
-    if (offset.x < -SWIPE_THRESHOLD || velocity.x < -400) {
-      setSelectedUnit(nextUnit.id)
-    } else if (offset.x > SWIPE_THRESHOLD || velocity.x > 400) {
-      setSelectedUnit(prevUnit.id)
-    }
-    setDragX(0)
-  }
+  const [dragX, setDragX] = useState(0)
+  const [dragging, setDragging] = useState(false)
+  const startX = useRef(0)
+
+  const onPointerDown = useCallback((e: React.PointerEvent) => {
+    if (e.button !== 0) return
+      ; (e.target as HTMLElement).setPointerCapture(e.pointerId)
+    startX.current = e.clientX
+    setDragging(true)
+  }, [])
+
+  const onPointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!dragging) return
+      setDragX(e.clientX - startX.current)
+    },
+    [dragging],
+  )
+
+  const onPointerUp = useCallback(
+    (e: React.PointerEvent) => {
+      ; (e.target as HTMLElement).releasePointerCapture(e.pointerId)
+      setDragging(false)
+      if (dragX < -SWIPE_THRESHOLD) {
+        setSelectedUnit(nextUnit.id)
+      } else if (dragX > SWIPE_THRESHOLD) {
+        setSelectedUnit(prevUnit.id)
+      }
+      setDragX(0)
+    },
+    [dragX, nextUnit.id, prevUnit.id, setSelectedUnit],
+  )
+
+  const progress = Math.min(1, Math.abs(dragX) / DRAG_DIVISOR)
+  const sign = dragX < 0 ? -1 : dragX > 0 ? 1 : 0
 
   return (
-    <div className="relative overflow-hidden pb-4">
+    <div className="relative overflow-hidden px-6 pt-2 pb-8">
       {units.map((unit, i) => {
         const distance = ((i - activeIndex + units.length) % units.length)
         const isFront = distance === 0
 
         if (isFront) {
           return (
-            <motion.div
+            <div
               key={unit.id}
-              drag="x"
-              dragDirectionLock
-              dragElastic={0.15}
-              dragSnapToOrigin
-              onDragEnd={onDragEnd}
-              onDrag={(_, info) => setDragX(info.offset.x)}
-              style={{ ...stackStyle(0), x: dragX }}
-              className="relative cursor-grab active:cursor-grabbing"
+              onPointerDown={onPointerDown}
+              onPointerMove={onPointerMove}
+              onPointerUp={onPointerUp}
+              style={{
+                position: 'relative',
+                zIndex: 30,
+                transform: `translateX(${sign * progress * 45}%) scale(${1 - progress * 0.5})`,
+                transition: dragging ? 'none' : 'all 0.45s cubic-bezier(0.25, 0.1, 0.25, 1)',
+                cursor: dragging ? 'grabbing' : 'grab',
+                touchAction: 'pan-y',
+                userSelect: 'none',
+              }}
             >
               <UnitCard unit={unit} />
-            </motion.div>
+            </div>
           )
         }
 
@@ -70,10 +93,10 @@ export default function ShuffleCard() {
           <div
             key={unit.id}
             aria-hidden
-            className="absolute inset-x-0 top-0"
+            className="absolute inset-x-6 top-2"
             style={{
-              ...stackStyle(distance),
-              transition: 'all 0.4s cubic-bezier(0.25, 0.1, 0.25, 1)',
+              ...restStyle(distance),
+              transition: 'all 0.45s cubic-bezier(0.25, 0.1, 0.25, 1)',
             }}
           >
             <UnitCard unit={unit} />

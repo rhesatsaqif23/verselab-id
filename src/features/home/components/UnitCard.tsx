@@ -35,7 +35,7 @@ export default function UnitCard({ unit }: UnitCardProps) {
           </Badge>
 
           {/* Lesson title */}
-          <h2 className="relative text-xl font-black leading-snug text-foreground sm:text-2xl">
+          <h2 className="relative line-clamp-2 h-14 text-xl font-black leading-snug text-foreground sm:text-2xl">
             {lesson.title}
           </h2>
 
@@ -43,7 +43,8 @@ export default function UnitCard({ unit }: UnitCardProps) {
           <img
             src="/course-illustration.png"
             alt="Ilustrasi keuangan"
-            className="relative h-36 w-auto object-contain drop-shadow-md sm:h-40"
+            draggable={false}
+            className="relative h-36 w-auto object-contain drop-shadow-md sm:h-40 pointer-events-none select-none"
           />
 
           {/* Unit title */}
