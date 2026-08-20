@@ -1,25 +1,17 @@
 // UnitGrid: grid of units with per-unit icons; selecting a unit changes the hero UnitCard.
 import { Card } from '#/components/ui/card'
 import { units } from '#/content/index.ts'
-import { useProgressStore } from '#/engine/progress/progressStore.ts'
-import { todayString } from '#/libs/date.ts'
-import { masteryForDisplay } from '#/engine/progress/masteryRead.ts'
 import { useHomeStore } from '../store.ts'
 import { UNIT_ICONS } from '../constants.ts'
 
 export default function UnitGrid() {
-  const mastery = useProgressStore((s) => s.mastery)
-  const updatedAt = useProgressStore((s) => s.masteryUpdatedAt)
   const selectedUnitId = useHomeStore((s) => s.selectedUnitId)
   const setSelectedUnit = useHomeStore((s) => s.setSelectedUnit)
-  const today = todayString()
 
   return (
     <section className="w-full">
       <div className="grid grid-cols-2 items-center gap-3 lg:grid-cols-4">
-        {units.map((unit, i) => {
-          const prevMastery = i === 0 ? 100 : masteryForDisplay(units[i - 1].id, mastery, updatedAt, today)
-          const isUnlocked = prevMastery >= 100 || i === 0
+        {units.map((unit) => {
           const isSelected = unit.id === selectedUnitId
           const Icon = UNIT_ICONS[unit.id]
 
@@ -28,9 +20,8 @@ export default function UnitGrid() {
               key={unit.id}
               type="button"
               onClick={() => setSelectedUnit(unit.id)}
-              disabled={!isUnlocked}
               aria-pressed={isSelected}
-              className="block h-full"
+              className="block h-full cursor-pointer"
             >
               <Card
                 className={[

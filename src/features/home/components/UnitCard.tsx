@@ -54,13 +54,13 @@ export default function UnitCard({ unit }: UnitCardProps) {
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(21,145,220,0.10)_0%,transparent_70%)]" />
 
           {/* Badge */}
-          {isRecommended ? (
-            <Badge className="relative rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-primary">
-              Rekomendasi
-            </Badge>
-          ) : (
-            <div className="h-2" /> // spacing placeholder when not recommended to keep heights balanced
-          )}
+          <div className="flex h-6 items-center justify-center">
+            {isRecommended && (
+              <Badge className="relative rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-primary">
+                Rekomendasi
+              </Badge>
+            )}
+          </div>
 
           {/* Unit title */}
           <h2 className="relative line-clamp-2 h-14 text-2xl font-black leading-snug text-foreground sm:text-2xl">
