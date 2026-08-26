@@ -11,11 +11,15 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as HomeRouteImport } from './routes/_home'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as LessonCompleteRouteImport } from './routes/lesson-complete'
 import { Route as HomeAboutRouteImport } from './routes/_home/about'
 import { Route as HomeHomeRouteImport } from './routes/_home/home'
 import { Route as HomeProfileRouteImport } from './routes/_home/profile'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminUnitIdRouteImport } from './routes/admin.$unitId'
 import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
+import { Route as AdminUnitIdLessonIdRouteImport } from './routes/admin.$unitId.$lessonId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -24,6 +28,11 @@ const IndexRoute = IndexRouteImport.update({
 } as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/_home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LessonCompleteRoute = LessonCompleteRouteImport.update({
@@ -46,19 +55,38 @@ const HomeProfileRoute = HomeProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => HomeRoute,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminUnitIdRoute = AdminUnitIdRouteImport.update({
+  id: '/$unitId',
+  path: '/$unitId',
+  getParentRoute: () => AdminRoute,
+} as any)
 const LessonLessonIdRoute = LessonLessonIdRouteImport.update({
   id: '/lesson/$lessonId',
   path: '/lesson/$lessonId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminUnitIdLessonIdRoute = AdminUnitIdLessonIdRouteImport.update({
+  id: '/$lessonId',
+  path: '/$lessonId',
+  getParentRoute: () => AdminUnitIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/lesson-complete': typeof LessonCompleteRoute
   '/about': typeof HomeAboutRoute
   '/home': typeof HomeHomeRoute
   '/profile': typeof HomeProfileRoute
+  '/admin/$unitId': typeof AdminUnitIdRouteWithChildren
   '/lesson/$lessonId': typeof LessonLessonIdRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/$unitId/$lessonId': typeof AdminUnitIdLessonIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -66,27 +94,38 @@ export interface FileRoutesByTo {
   '/about': typeof HomeAboutRoute
   '/home': typeof HomeHomeRoute
   '/profile': typeof HomeProfileRoute
+  '/admin/$unitId': typeof AdminUnitIdRouteWithChildren
   '/lesson/$lessonId': typeof LessonLessonIdRoute
+  '/admin': typeof AdminIndexRoute
+  '/admin/$unitId/$lessonId': typeof AdminUnitIdLessonIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_home': typeof HomeRouteWithChildren
+  '/admin': typeof AdminRouteWithChildren
   '/lesson-complete': typeof LessonCompleteRoute
   '/_home/about': typeof HomeAboutRoute
   '/_home/home': typeof HomeHomeRoute
   '/_home/profile': typeof HomeProfileRoute
+  '/admin/$unitId': typeof AdminUnitIdRouteWithChildren
   '/lesson/$lessonId': typeof LessonLessonIdRoute
+  '/admin/': typeof AdminIndexRoute
+  '/admin/$unitId/$lessonId': typeof AdminUnitIdLessonIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/lesson-complete'
     | '/about'
     | '/home'
     | '/profile'
+    | '/admin/$unitId'
     | '/lesson/$lessonId'
+    | '/admin/'
+    | '/admin/$unitId/$lessonId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -94,21 +133,29 @@ export interface FileRouteTypes {
     | '/about'
     | '/home'
     | '/profile'
+    | '/admin/$unitId'
     | '/lesson/$lessonId'
+    | '/admin'
+    | '/admin/$unitId/$lessonId'
   id:
     | '__root__'
     | '/'
     | '/_home'
+    | '/admin'
     | '/lesson-complete'
     | '/_home/about'
     | '/_home/home'
     | '/_home/profile'
+    | '/admin/$unitId'
     | '/lesson/$lessonId'
+    | '/admin/'
+    | '/admin/$unitId/$lessonId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   HomeRoute: typeof HomeRouteWithChildren
+  AdminRoute: typeof AdminRouteWithChildren
   LessonCompleteRoute: typeof LessonCompleteRoute
   LessonLessonIdRoute: typeof LessonLessonIdRoute
 }
@@ -127,6 +174,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/lesson-complete': {
@@ -157,12 +211,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeProfileRouteImport
       parentRoute: typeof HomeRoute
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/$unitId': {
+      id: '/admin/$unitId'
+      path: '/$unitId'
+      fullPath: '/admin/$unitId'
+      preLoaderRoute: typeof AdminUnitIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/lesson/$lessonId': {
       id: '/lesson/$lessonId'
       path: '/lesson/$lessonId'
       fullPath: '/lesson/$lessonId'
       preLoaderRoute: typeof LessonLessonIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/admin/$unitId/$lessonId': {
+      id: '/admin/$unitId/$lessonId'
+      path: '/$lessonId'
+      fullPath: '/admin/$unitId/$lessonId'
+      preLoaderRoute: typeof AdminUnitIdLessonIdRouteImport
+      parentRoute: typeof AdminUnitIdRoute
     }
   }
 }
@@ -181,9 +256,34 @@ const HomeRouteChildren: HomeRouteChildren = {
 
 const HomeRouteWithChildren = HomeRoute._addFileChildren(HomeRouteChildren)
 
+interface AdminUnitIdRouteChildren {
+  AdminUnitIdLessonIdRoute: typeof AdminUnitIdLessonIdRoute
+}
+
+const AdminUnitIdRouteChildren: AdminUnitIdRouteChildren = {
+  AdminUnitIdLessonIdRoute: AdminUnitIdLessonIdRoute,
+}
+
+const AdminUnitIdRouteWithChildren = AdminUnitIdRoute._addFileChildren(
+  AdminUnitIdRouteChildren,
+)
+
+interface AdminRouteChildren {
+  AdminUnitIdRoute: typeof AdminUnitIdRouteWithChildren
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminUnitIdRoute: AdminUnitIdRouteWithChildren,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HomeRoute: HomeRouteWithChildren,
+  AdminRoute: AdminRouteWithChildren,
   LessonCompleteRoute: LessonCompleteRoute,
   LessonLessonIdRoute: LessonLessonIdRoute,
 }
