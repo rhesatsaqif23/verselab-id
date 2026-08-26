@@ -53,10 +53,10 @@ export function UnitList() {
         <table className="w-full">
           <thead>
             <tr className="border-b bg-card/50">
-              <th className="p-3 text-left text-sm font-medium text-card-foreground">Judul</th>
-              <th className="p-3 text-center text-sm font-medium text-card-foreground">Lesson</th>
-              <th className="p-3 text-center text-sm font-medium text-card-foreground">Urutan</th>
-              <th className="p-3 text-center text-sm font-medium text-card-foreground">Aksi</th>
+              <th className="p-3 text-left text-base font-bold text-card-foreground">Judul</th>
+              <th className="p-3 text-center text-base font-bold text-card-foreground">Lesson</th>
+              <th className="p-3 text-center text-base font-bold text-card-foreground">Urutan</th>
+              <th className="p-3 pr-12 text-right text-base font-bold text-card-foreground">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -79,7 +79,7 @@ export function UnitList() {
                 <td className="p-3">
                   <div className="flex items-center justify-center gap-1">
                     <Button
-                      variant="ghost"
+                      variant="shadowless"
                       size="icon-sm"
                       disabled={index === 0}
                       onClick={() => moveUnit(index, "up")}
@@ -88,7 +88,7 @@ export function UnitList() {
                       <ChevronUp className="size-4" />
                     </Button>
                     <Button
-                      variant="ghost"
+                      variant="shadowless"
                       size="icon-sm"
                       disabled={index === units.length - 1}
                       onClick={() => moveUnit(index, "down")}
@@ -101,11 +101,11 @@ export function UnitList() {
 
                 {/* Actions */}
                 <td className="p-3">
-                  <div className="flex items-center justify-center gap-1">
+                  <div className="flex items-center justify-end gap-1">
                     <Link
                       to="/admin/$unitId"
                       params={{ unitId: unit.id }}
-                      className={buttonVariants({ variant: "ghost", size: "icon-sm" })}
+                      className={buttonVariants({ variant: "shadowless", size: "icon-sm" })}
                       title="Lihat unit"
                       aria-label="Lihat unit"
                     >
@@ -114,7 +114,7 @@ export function UnitList() {
 
                     <UnitFormDialog
                       trigger={
-                        <Button variant="ghost" size="icon-sm" aria-label="Edit unit">
+                        <Button variant="shadowless" size="icon-sm" aria-label="Edit unit">
                           <Pencil className="size-4" />
                         </Button>
                       }
@@ -125,7 +125,7 @@ export function UnitList() {
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button
-                          variant="ghost"
+                          variant="shadowless"
                           size="icon-sm"
                           className="text-destructive hover:text-destructive"
                           aria-label="Hapus unit"

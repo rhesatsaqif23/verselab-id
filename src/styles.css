@@ -10,6 +10,12 @@
 
 html,
 body,
+#app {
+  min-height: 100%;
+}
+
+html,
+body,
 #app,
 button,
 input,
@@ -22,7 +28,6 @@ h4,
 h5,
 h6,
 .display-title {
-  min-height: 100%;
   font-family: var(--font-sans), sans-serif;
 }
 
@@ -89,7 +94,7 @@ pre code {
 }
 
 .feature-card {
-  background: var(--card);
+  background: var(--color-card);
   border: 2px solid var(--border);
   transition:
     transform 200ms ease,

@@ -51,7 +51,7 @@ export function ChoiceFields({ screen, onChange }: ChoiceFieldsProps) {
     <div className="space-y-4 border-t pt-2">
       <div className="flex items-center justify-between">
         <Label>Pilihan Jawaban</Label>
-        <Button variant="outline" size="sm" onClick={handleAddOption}>
+        <Button variant="shadowless" size="sm" onClick={handleAddOption}>
           <Plus className="mr-1 size-3.5" /> Tambah Pilihan
         </Button>
       </div>

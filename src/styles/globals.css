@@ -38,7 +38,8 @@
   --btn-destructive-to: #fca5a5;
   --btn-destructive-text: #ffffff;
   --btn-destructive-shadow: #b91c1c;
-  --btn-outline-border: var(--border);
+  --btn-outline-border: #d1d5db;
+  --btn-outline-shadow: #9ca3af;
   --btn-outline-from: transparent;
   --btn-outline-to: transparent;
   --btn-outline-text: var(--foreground);
@@ -50,6 +51,7 @@
   --btn-ghost-hover: rgba(44, 94, 173, 0.08);
   --btn-ghost-active: rgba(44, 94, 173, 0.14);
   --btn-ghost-hover-text: var(--color-primary);
+  --btn-ghost-shadow: #9ca3af;
 
   /* Premium card — used by index.tsx */
   --premium-card-from: rgba(44, 94, 173, 0.1);

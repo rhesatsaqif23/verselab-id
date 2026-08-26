@@ -44,6 +44,7 @@ export default function LessonPlayer({
 
   const [explainOpen, setExplainOpen] = useState(false);
   const [feedbackState, setFeedbackState] = useState<"idle" | "correct" | "wrong">("idle");
+  const [isCompleting, setIsCompleting] = useState(false);
 
   const screen = screens[index];
   const total = screens.length;
@@ -64,6 +65,7 @@ export default function LessonPlayer({
     setFeedbackState("idle");
     const nextIndex = index + 1;
     if (nextIndex >= total) {
+      setIsCompleting(true);
       const finalResults = screens.flatMap((s, i) =>
         results[i] ? [{ screen: s, correct: results[i]!.correct }] : [],
       );
@@ -78,6 +80,17 @@ export default function LessonPlayer({
     setFeedbackState("idle");
     onExit();
     clear();
+  }
+
+  if (isCompleting) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <p className="text-sm font-medium text-muted-foreground">Menyiapkan hasil...</p>
+        </div>
+      </div>
+    );
   }
 
   return (

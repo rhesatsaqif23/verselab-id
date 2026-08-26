@@ -62,11 +62,11 @@ export default function ChoiceRenderer({ screen, onSelect, checked }: ChoiceRend
         {screen.options.map((option) => (
           <div key={option.id} className="relative">
             <Button
-              variant="outline"
+              variant="shadowless"
               onClick={() => handleClick(option.id)}
               disabled={checked !== null}
               className={cn(
-                "w-full justify-start rounded-lg border-2 px-4 py-6 text-left font-medium bg-card shadow-xs transition-all duration-150 disabled:opacity-100",
+                "w-full justify-start rounded-lg border-2 px-4 py-6 text-left font-medium bg-card transition-all duration-150 disabled:opacity-100",
                 getOptionStyle(option.id),
               )}
             >

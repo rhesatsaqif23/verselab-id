@@ -14,7 +14,7 @@ export default function LessonHeader({ current, total, xpEarned, onExit }: Lesso
   return (
     <div className="flex gap-4 md:gap-16">
       <Button
-        variant="ghost"
+        variant="shadowless"
         size="icon"
         onClick={onExit}
         aria-label="Keluar"

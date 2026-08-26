@@ -128,7 +128,7 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
         {/* Left Column: Screen List */}
         <div className="space-y-2 md:col-span-5 lg:col-span-4">
           <div className="rounded-md border bg-card">
-            <div className="border-b p-3 text-sm font-medium text-card-foreground">
+            <div className="border-b p-3 text-sm font-bold text-card-foreground">
               Daftar Screen ({screens.length})
             </div>
             <div className="divide-y max-h-150 overflow-y-auto">
@@ -150,7 +150,7 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
                   >
                     <div className="flex min-w-0 flex-1 flex-col gap-1 pr-2">
                       <div className="flex items-center gap-2">
-                        <Badge variant="outline" className="font-mono text-xs uppercase">
+                        <Badge variant="secondary" className="border-0 text-xs uppercase">
                           {screen.type}
                         </Badge>
                         <span className="text-xs text-muted-foreground">#{index + 1}</span>
@@ -160,7 +160,7 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
 
                     <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
                       <Button
-                        variant="ghost"
+                        variant="shadowless"
                         size="icon"
                         className="size-6"
                         disabled={index === 0}
@@ -170,7 +170,7 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
                         <ChevronUp className="size-3.5" />
                       </Button>
                       <Button
-                        variant="ghost"
+                        variant="shadowless"
                         size="icon"
                         className="size-6"
                         disabled={index === screens.length - 1}
@@ -183,7 +183,7 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
-                            variant="ghost"
+                            variant="shadowless"
                             size="icon"
                             className="size-6 text-destructive hover:text-destructive"
                             aria-label="Hapus screen"
@@ -223,7 +223,7 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
             <div className="space-y-5 rounded-md border bg-card p-5">
               <div className="flex items-center justify-between border-b pb-3">
                 <h3 className="text-base font-semibold">Edit Screen</h3>
-                <Badge variant="secondary" className="font-mono uppercase">
+                <Badge variant="secondary" className="uppercase">
                   {activeScreen.type}
                 </Badge>
               </div>

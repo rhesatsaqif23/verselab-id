@@ -15,10 +15,12 @@ const buttonVariants = cva(
         destructive:
           "relative overflow-hidden bg-linear-to-r from-(--btn-destructive-from) via-(--btn-destructive-via) to-(--btn-destructive-to) text-(--btn-destructive-text) shadow-[0_5px_0_0_var(--btn-destructive-shadow),0_6px_16px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_0_0_var(--btn-destructive-shadow),0_5px_12px_rgba(0,0,0,0.12)] hover:brightness-105 active:translate-y-[3px] active:shadow-[0_2px_0_0_var(--btn-destructive-shadow),0_3px_8px_rgba(0,0,0,0.1)]",
         outline:
-          "relative overflow-hidden border-2 border-(--btn-outline-border) bg-card text-(--btn-outline-text) shadow-xs hover:border-primary/50 hover:bg-accent/5 active:scale-[0.98]",
+          "relative overflow-hidden border-2 border-(--btn-outline-border) bg-card text-(--btn-outline-text) shadow-[0_5px_0_0_var(--btn-outline-shadow),0_6px_16px_rgba(0,0,0,0.15)] hover:border-primary/50 hover:bg-accent/5 hover:shadow-[0_4px_0_0_var(--btn-outline-shadow),0_5px_12px_rgba(0,0,0,0.15)] active:translate-y-[3px] active:shadow-[0_2px_0_0_var(--btn-outline-shadow),0_3px_8px_rgba(0,0,0,0.12)]",
         secondary:
           "relative overflow-hidden bg-linear-to-r from-(--btn-secondary-from) via-(--btn-secondary-via) to-(--btn-secondary-to) text-(--btn-secondary-text) shadow-[0_4px_0_0_var(--btn-shadow),0_4px_12px_rgba(0,0,0,0.06)] hover:shadow-[0_3px_0_0_var(--btn-shadow),0_4px_10px_rgba(0,0,0,0.06)] hover:brightness-103 active:translate-y-[2px] active:shadow-[0_1px_0_0_var(--btn-shadow),0_2px_6px_rgba(0,0,0,0.06)]",
         ghost:
+          "text-(--btn-ghost-text) hover:bg-(--btn-ghost-hover) hover:text-(--btn-ghost-hover-text) hover:shadow-[0_4px_0_0_rgba(55,65,81,0.25),0_5px_12px_rgba(0,0,0,0.08)] active:translate-y-[3px] active:shadow-[0_2px_0_0_rgba(55,65,81,0.25),0_3px_8px_rgba(0,0,0,0.06)]",
+        shadowless:
           "text-(--btn-ghost-text) hover:bg-(--btn-ghost-hover) hover:text-(--btn-ghost-hover-text) active:bg-(--btn-ghost-active)",
         link: "text-(--btn-ghost-text) underline-offset-4 hover:underline hover:text-(--btn-ghost-hover-text)",
       },

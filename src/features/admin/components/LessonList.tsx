@@ -71,10 +71,10 @@ export function LessonList({ unitId }: LessonListProps) {
         <table className="w-full">
           <thead>
             <tr className="border-b bg-card/50">
-              <th className="p-3 text-left text-sm font-medium text-card-foreground">Judul</th>
-              <th className="p-3 text-center text-sm font-medium text-card-foreground">Screen</th>
-              <th className="p-3 text-center text-sm font-medium text-card-foreground">Urutan</th>
-              <th className="p-3 text-center text-sm font-medium text-card-foreground">Aksi</th>
+              <th className="p-3 text-left text-base font-bold text-card-foreground">Judul</th>
+              <th className="p-3 text-center text-base font-bold text-card-foreground">Screen</th>
+              <th className="p-3 text-center text-base font-bold text-card-foreground">Urutan</th>
+              <th className="p-3 pr-12 text-right text-base font-bold text-card-foreground">Aksi</th>
             </tr>
           </thead>
           <tbody>
@@ -99,7 +99,7 @@ export function LessonList({ unitId }: LessonListProps) {
                   <td className="p-3">
                     <div className="flex items-center justify-center gap-1">
                       <Button
-                        variant="ghost"
+                        variant="shadowless"
                         size="icon-sm"
                         disabled={index === 0}
                         onClick={() => moveLesson(index, "up")}
@@ -108,7 +108,7 @@ export function LessonList({ unitId }: LessonListProps) {
                         <ChevronUp className="size-4" />
                       </Button>
                       <Button
-                        variant="ghost"
+                        variant="shadowless"
                         size="icon-sm"
                         disabled={index === lessons.length - 1}
                         onClick={() => moveLesson(index, "down")}
@@ -121,12 +121,12 @@ export function LessonList({ unitId }: LessonListProps) {
 
                   {/* Actions */}
                   <td className="p-3">
-                    <div className="flex items-center justify-center gap-1">
+                    <div className="flex items-center justify-end gap-1">
                       <Link
                         to="/admin/$unitId/$lessonId"
                         params={{ unitId, lessonId: lesson.id }}
                         className={buttonVariants({
-                          variant: "ghost",
+                          variant: "shadowless",
                           size: "icon-sm",
                         })}
                         title="Lihat screen"
@@ -137,7 +137,7 @@ export function LessonList({ unitId }: LessonListProps) {
 
                       <LessonFormDialog
                         trigger={
-                          <Button variant="ghost" size="icon-sm" aria-label="Edit lesson">
+                          <Button variant="shadowless" size="icon-sm" aria-label="Edit lesson">
                             <Pencil className="size-4" />
                           </Button>
                         }
@@ -148,7 +148,7 @@ export function LessonList({ unitId }: LessonListProps) {
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
-                            variant="ghost"
+                            variant="shadowless"
                             size="icon-sm"
                             className="text-destructive hover:text-destructive"
                             aria-label="Hapus lesson"

@@ -26,7 +26,7 @@ export function LandingPage() {
     <div className="flex min-h-screen flex-col">
       <header className="page-wrap flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2 no-underline">
-          <span className="text-3xl font-bold tracking-tight text-foreground">Verselab</span>
+          <span className="text-3xl font-black tracking-tight text-foreground">Verselab</span>
         </Link>
         <Button asChild variant="default" size="sm">
           <Link to="/home">
@@ -38,8 +38,8 @@ export function LandingPage() {
 
       <main className="flex-1">
         <section className="page-wrap px-4 pb-16 pt-14 text-center sm:pt-20">
-          <p className="island-kicker mb-4">Interactive skill learning</p>
-          <h1 className="display-title mx-auto max-w-3xl text-4xl font-bold leading-tight text-foreground sm:text-6xl">
+          <p className="text-base font-bold mb-4 tracking-wider uppercase">Interactive skill learning</p>
+          <h1 className="display-title mx-auto max-w-3xl text-4xl font-black leading-tight text-foreground sm:text-6xl">
             Pelajari keterampilan baru dengan cara yang{" "}
             <span className="bg-linear-to-r from-(--btn-from) to-(--btn-to) bg-clip-text text-transparent">
               menyenangkan
@@ -71,7 +71,7 @@ export function LandingPage() {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-(--premium-icon-from) to-(--premium-icon-to)">
                 <Icon className="h-6 w-6 text-white" />
               </div>
-              <h2 className="mt-4 text-lg font-bold text-foreground">{title}</h2>
+              <h2 className="mt-4 text-lg font-black text-foreground">{title}</h2>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{desc}</p>
             </div>
           ))}
