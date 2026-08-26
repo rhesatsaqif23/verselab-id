@@ -30,8 +30,8 @@ export default function StreakTracker() {
         {/* Header row */}
         <div className="flex items-start gap-4">
           {/* Fire icon badge */}
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-orange-100">
-            <Flame className="h-7 w-7 fill-orange-500 text-orange-500" />
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-fire-light">
+            <Flame className="h-7 w-7 fill-fire text-fire" />
           </div>
 
           {/* Streak info */}
@@ -68,14 +68,14 @@ export default function StreakTracker() {
                   className={cn(
                     'flex h-8 w-8 items-center justify-center rounded-full border-2 transition-colors',
                     isDone
-                      ? 'border-orange-500 bg-orange-100 dark:bg-orange-950/40 dark:border-orange-500'
+                      ? 'border-fire bg-fire-light'
                       : isToday
                         ? 'border-primary bg-primary/10'
                         : 'border-border bg-transparent',
                   )}
                 >
                   {isDone && (
-                    <Flame className="h-4 w-4 fill-orange-500 text-orange-500" />
+                    <Flame className="h-4 w-4 fill-fire text-fire" />
                   )}
                 </div>
               </div>

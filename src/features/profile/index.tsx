@@ -21,15 +21,15 @@ export default function ProfilePage() {
       <div className="mx-auto max-w-xl space-y-6">
         <div className="flex gap-4">
           <Card className="flex-1 p-5 text-center">
-            <p className="text-3xl font-black text-(--color-text)">{xp}</p>
+            <p className="text-3xl font-black text-foreground">{xp}</p>
             <p className="text-sm font-bold text-muted">XP</p>
           </Card>
           <Card className="flex-1 p-5 text-center">
             <div className="flex items-center justify-center gap-1">
-              <p className="text-3xl font-black text-(--color-text)">
+              <p className="text-3xl font-black text-foreground">
                 {streak}
               </p>
-              <Flame className="h-6 w-6 fill-secondary text-secondary" />
+              <Flame className="h-6 w-6 fill-fire text-fire" />
             </div>
             <p className="mt-1 text-sm font-semibold text-muted">
               Streak{streakFreeze > 0 ? ` (${streakFreeze})` : ''}
@@ -54,7 +54,7 @@ export default function ProfilePage() {
                 >
                   <Card className="border-2 bg-card p-5 transition hover:-translate-y-0.5">
                     <div className="mb-2 flex items-center justify-between gap-3">
-                      <p className="text-lg font-bold text-(--color-text)">{unit.title}</p>
+                      <p className="text-lg font-bold text-foreground">{unit.title}</p>
                       <span className="shrink-0 text-base font-bold text-muted">{value}%</span>
                     </div>
                     <Progress value={value} className="h-2" />

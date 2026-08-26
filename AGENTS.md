@@ -88,6 +88,7 @@ Use npm only. There is an existing `package-lock.json`; do not add bun/yarn/pnpm
 Tailwind v4 is configured in CSS via `@theme`, not in a `tailwind.config.js`.
 
 - Theme and all brand colors live as semantic CSS variables in `src/styles/globals.css`, imported by `src/styles.css`. Never hardcode hex colors in components.
+- **Never use hardcoded Tailwind color utilities** like `bg-orange-500`, `text-blue-800`, `border-gray-600`, etc. Always use a CSS variable from `globals.css`. If the variable does not exist yet, add it there first (both light and dark values), expose it in `@theme inline`, then use it as `bg-fire`, `text-primary`, etc.
 - Use Tailwind canonical classes only — keep the IntelliSense `suggestCanonicalClasses` panel clean:
   - `bg-linear-to-*`, not `bg-gradient-to-*`
   - `shrink-0`, not `flex-shrink-0`

@@ -78,7 +78,7 @@ export default function Header() {
         <div className="ml-auto flex items-center gap-3">
           <div className="flex items-center gap-1.5 rounded-full border-2 border-border px-4 py-2 text-base font-semibold text-foreground">
             <span>{streak}</span>
-            <Flame className="h-5 w-5 text-secondary" />
+            <Flame className="h-5 w-5 fill-fire text-fire" />
           </div>
 
           <div className="flex items-center gap-1.5 rounded-full border-2 border-border px-4 py-2 text-base font-semibold text-foreground">

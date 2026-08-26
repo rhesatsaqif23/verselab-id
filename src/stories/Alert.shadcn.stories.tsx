@@ -45,7 +45,7 @@ export const Destructive: Story = {
 export const Success: Story = {
   render: () => (
     <Alert>
-      <CheckCircle2 className="h-4 w-4 text-green-500" />
+      <CheckCircle2 className="h-4 w-4 text-success" />
       <AlertTitle>Success</AlertTitle>
       <AlertDescription>
         Your changes have been saved successfully.

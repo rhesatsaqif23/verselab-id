@@ -41,11 +41,11 @@ body {
   margin: 0;
   color: var(--foreground);
   font-family: 'CoFo Brilliant', var(--font-sans), sans-serif;
-  background-color: var(--bg-base);
+  background-color: var(--background);
   background:
     radial-gradient(1200px 600px at -5% -8%, rgba(21, 145, 220, 0.06), transparent 55%),
     radial-gradient(1100px 600px at 108% -10%, rgba(75, 184, 250, 0.05), transparent 58%),
-    linear-gradient(180deg, #ffffff 0%, #f4f9fd 40%, var(--bg-base) 100%);
+    linear-gradient(180deg, color-mix(in srgb, var(--foreground) 2%, var(--background)) 0%, var(--background) 40%, var(--background) 100%);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -102,7 +102,7 @@ pre code {
 
 .feature-card:hover {
   transform: translateY(-2px);
-  border-color: oklch(0.82 0.005 80);
+  border-color: var(--color-feature-hover);
 }
 
 button,
