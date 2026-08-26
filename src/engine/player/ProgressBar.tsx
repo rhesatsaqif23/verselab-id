@@ -1,8 +1,8 @@
 // ProgressBar: segmented progress indicators and the current/total counter.
 type ProgressBarProps = {
-  current: number
-  total: number
-}
+  current: number;
+  total: number;
+};
 
 export default function ProgressBar({ current, total }: ProgressBarProps) {
   return (
@@ -10,7 +10,7 @@ export default function ProgressBar({ current, total }: ProgressBarProps) {
       <div className="mx-auto flex w-full max-w-lg gap-1.5">
         {Array.from({ length: total }, (_, i) => {
           // Completed steps (before current index) are filled
-          const isFilled = i < current - 1
+          const isFilled = i < current - 1;
 
           return (
             <div
@@ -20,17 +20,17 @@ export default function ProgressBar({ current, total }: ProgressBarProps) {
               <div
                 className="h-full w-full rounded-full bg-primary transition-transform duration-500 ease-out"
                 style={{
-                  transform: isFilled ? 'scaleX(1)' : 'scaleX(0)',
-                  transformOrigin: 'left',
+                  transform: isFilled ? "scaleX(1)" : "scaleX(0)",
+                  transformOrigin: "left",
                 }}
               />
             </div>
-          )
+          );
         })}
       </div>
       <span className="text-center text-lg font-bold text-muted">
         {current} / {total}
       </span>
     </div>
-  )
+  );
 }

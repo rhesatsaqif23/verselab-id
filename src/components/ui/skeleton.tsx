@@ -1,5 +1,5 @@
 // shadcn/ui skeleton component.
-import { cn } from "#/libs/utils.ts"
+import { cn } from "#/libs/utils.ts";
 
 function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -8,7 +8,7 @@ function Skeleton({ className, ...props }: React.ComponentProps<"div">) {
       className={cn("animate-pulse rounded-md bg-accent", className)}
       {...props}
     />
-  )
+  );
 }
 
-export { Skeleton }
+export { Skeleton };

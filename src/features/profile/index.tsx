@@ -1,20 +1,20 @@
 // ProfilePage: XP/streak stats and per-unit mastery bars.
-import { Link } from '@tanstack/react-router'
-import { Flame, Star } from 'lucide-react'
-import { Card } from '#/components/ui/card'
-import { Progress } from '#/components/ui/progress'
-import { useProgressStore } from '#/engine/progress/progressStore.ts'
-import { units } from '#/content/index.ts'
-import { masteryForDisplay } from '#/engine/progress/masteryRead.ts'
-import { todayString } from '#/libs/date.ts'
+import { Link } from "@tanstack/react-router";
+import { Flame, Star } from "lucide-react";
+import { Card } from "#/components/ui/card";
+import { Progress } from "#/components/ui/progress";
+import { useProgressStore } from "#/engine/progress/progressStore.ts";
+import { units } from "#/content/index.ts";
+import { masteryForDisplay } from "#/engine/progress/masteryRead.ts";
+import { todayString } from "#/libs/date.ts";
 
 export default function ProfilePage() {
-  const xp = useProgressStore((s) => s.xp)
-  const streak = useProgressStore((s) => s.streak)
-  const streakFreeze = useProgressStore((s) => s.streakFreeze)
-  const mastery = useProgressStore((s) => s.mastery)
-  const updatedAt = useProgressStore((s) => s.masteryUpdatedAt)
-  const today = todayString()
+  const xp = useProgressStore((s) => s.xp);
+  const streak = useProgressStore((s) => s.streak);
+  const streakFreeze = useProgressStore((s) => s.streakFreeze);
+  const mastery = useProgressStore((s) => s.mastery);
+  const updatedAt = useProgressStore((s) => s.masteryUpdatedAt);
+  const today = todayString();
 
   return (
     <main className="page-wrap px-4 pb-16 pt-8">
@@ -26,13 +26,11 @@ export default function ProfilePage() {
           </Card>
           <Card className="flex-1 p-5 text-center">
             <div className="flex items-center justify-center gap-1">
-              <p className="text-3xl font-black text-foreground">
-                {streak}
-              </p>
+              <p className="text-3xl font-black text-foreground">{streak}</p>
               <Flame className="h-6 w-6 fill-fire text-fire" />
             </div>
             <p className="mt-1 text-sm font-semibold text-muted">
-              Streak{streakFreeze > 0 ? ` (${streakFreeze})` : ''}
+              Streak{streakFreeze > 0 ? ` (${streakFreeze})` : ""}
             </p>
           </Card>
         </div>
@@ -44,7 +42,7 @@ export default function ProfilePage() {
           </div>
           <div className="flex flex-col gap-3">
             {units.map((unit) => {
-              const value = masteryForDisplay(unit.id, mastery, updatedAt, today)
+              const value = masteryForDisplay(unit.id, mastery, updatedAt, today);
               return (
                 <Link
                   key={unit.id}
@@ -60,11 +58,11 @@ export default function ProfilePage() {
                     <Progress value={value} className="h-2" />
                   </Card>
                 </Link>
-              )
+              );
             })}
           </div>
         </section>
       </div>
     </main>
-  )
+  );
 }

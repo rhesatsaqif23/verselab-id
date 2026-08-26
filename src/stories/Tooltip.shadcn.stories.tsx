@@ -1,21 +1,16 @@
 // Storybook story for the Tooltip shadcn/ui component.
-import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '#/components/ui/tooltip'
-import { Button } from '#/components/ui/button'
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "#/components/ui/tooltip";
+import { Button } from "#/components/ui/button";
 
 const meta = {
-  title: 'UI/Tooltip',
+  title: "UI/Tooltip",
   component: Tooltip,
-  tags: ['autodocs'],
-} satisfies Meta<typeof Tooltip>
+  tags: ["autodocs"],
+} satisfies Meta<typeof Tooltip>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
@@ -30,4 +25,4 @@ export const Default: Story = {
       </Tooltip>
     </TooltipProvider>
   ),
-}
+};

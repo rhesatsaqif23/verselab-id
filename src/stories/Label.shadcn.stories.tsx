@@ -1,19 +1,19 @@
 // Storybook story for the Label shadcn/ui component.
-import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import { Label } from '#/components/ui/label'
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { Label } from "#/components/ui/label";
 
 const meta = {
-  title: 'UI/Label',
+  title: "UI/Label",
   component: Label,
-  tags: ['autodocs'],
-} satisfies Meta<typeof Label>
+  tags: ["autodocs"],
+} satisfies Meta<typeof Label>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => <Label>Email</Label>,
-}
+};
 
 export const WithDescription: Story = {
   render: () => (
@@ -22,4 +22,4 @@ export const WithDescription: Story = {
       <p className="text-sm text-muted-foreground">This is your public display name.</p>
     </div>
   ),
-}
+};

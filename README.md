@@ -6,16 +6,16 @@ Verselab (verselab.id) is a gamified interactive-learning web app inspired by Br
 
 ## Tech stack
 
-| What         | How                                                            |
-| ------------ | -------------------------------------------------------------- |
-| Framework    | [TanStack Start](https://tanstack.com/start) (React 19)        |
-| Routing      | [TanStack Router](https://tanstack.com/router), file-based     |
-| Styling      | [Tailwind CSS v4](https://tailwindcss.com/) (CSS `@theme`)     |
-| State        | [Zustand](https://zustand.docs.pmnd.rs/) + `persist` middleware |
-| Persistence  | `localStorage` in the browser (no backend, no login)           |
-| UI          | [shadcn/ui](https://ui.shadcn.com/) (new-york, lucide icons)   |
-| Testing      | [Vitest](https://vitest.dev/) + Testing Library                |
-| Storybook    | [Storybook](https://storybook.js.org/) for shadcn primitives   |
+| What        | How                                                             |
+| ----------- | --------------------------------------------------------------- |
+| Framework   | [TanStack Start](https://tanstack.com/start) (React 19)         |
+| Routing     | [TanStack Router](https://tanstack.com/router), file-based      |
+| Styling     | [Tailwind CSS v4](https://tailwindcss.com/) (CSS `@theme`)      |
+| State       | [Zustand](https://zustand.docs.pmnd.rs/) + `persist` middleware |
+| Persistence | `localStorage` in the browser (no backend, no login)            |
+| UI          | [shadcn/ui](https://ui.shadcn.com/) (new-york, lucide icons)    |
+| Testing     | [Vitest](https://vitest.dev/) + Testing Library                 |
+| Storybook   | [Storybook](https://storybook.js.org/) for shadcn primitives    |
 
 ## Getting started
 

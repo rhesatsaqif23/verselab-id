@@ -1,18 +1,18 @@
 // DailyGoalCard: shows today's daily goal progress and links to settings.
-import { Target, ChevronRight } from 'lucide-react'
-import { Link } from '@tanstack/react-router'
-import { Card, CardContent } from '#/components/ui/card'
-import { useProgressStore } from '#/engine/progress/progressStore.ts'
-import { todayString } from '#/libs/date.ts'
+import { Target, ChevronRight } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Card, CardContent } from "#/components/ui/card";
+import { useProgressStore } from "#/engine/progress/progressStore.ts";
+import { todayString } from "#/libs/date.ts";
 
 export default function DailyGoalCard() {
-  const dailyGoalMinutes = useProgressStore((s) => s.dailyGoalMinutes)
-  const lastActiveDate = useProgressStore((s) => s.lastActiveDate)
+  const dailyGoalMinutes = useProgressStore((s) => s.dailyGoalMinutes);
+  const lastActiveDate = useProgressStore((s) => s.lastActiveDate);
 
-  const reached = lastActiveDate === todayString()
+  const reached = lastActiveDate === todayString();
   // For now, minutes done today = goal if reached, else 0
-  const minutesDone = reached ? dailyGoalMinutes : 0
-  const progress = Math.min(minutesDone / dailyGoalMinutes, 1)
+  const minutesDone = reached ? dailyGoalMinutes : 0;
+  const progress = Math.min(minutesDone / dailyGoalMinutes, 1);
 
   return (
     <Card className="border-2 border-border p-5">
@@ -28,10 +28,11 @@ export default function DailyGoalCard() {
           <div>
             <p className="text-base font-bold">Goal harian</p>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-4xl font-black text-foreground leading-none">{minutesDone}</span>
+              <span className="text-4xl font-black text-foreground leading-none">
+                {minutesDone}
+              </span>
               <span className="text-sm font-medium text-muted">/ {dailyGoalMinutes} menit</span>
             </div>
-
           </div>
         </div>
 
@@ -43,8 +44,10 @@ export default function DailyGoalCard() {
           />
         </div>
 
-        <p className={reached ? 'mt-3 text-sm font-semibold' : 'mt-2 text-sm font-medium text-muted'}>
-          {reached ? 'Tercapai hari ini 🎉' : 'Belum tercapai'}
+        <p
+          className={reached ? "mt-3 text-sm font-semibold" : "mt-2 text-sm font-medium text-muted"}
+        >
+          {reached ? "Tercapai hari ini 🎉" : "Belum tercapai"}
         </p>
 
         {/* Divider */}
@@ -60,5 +63,5 @@ export default function DailyGoalCard() {
         </Link>
       </CardContent>
     </Card>
-  )
+  );
 }

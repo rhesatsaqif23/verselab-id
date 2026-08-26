@@ -1,75 +1,73 @@
 // AllocationRenderer: sliders summing to 100% with a live bar chart preview.
-import { useState } from 'react'
-import { cn } from '#/libs/utils.ts'
-import { Slider } from '#/components/ui/slider.tsx'
-import { Check, X } from 'lucide-react'
-import BarChart from '../components/BarChart'
-import type { Screen } from '#/engine/types.ts'
+import { useState } from "react";
+import { cn } from "#/libs/utils.ts";
+import { Slider } from "#/components/ui/slider.tsx";
+import { Check, X } from "lucide-react";
+import BarChart from "../components/BarChart";
+import type { Screen } from "#/engine/types.ts";
 
 type AllocationRendererProps = {
-  screen: Extract<Screen, { type: 'allocation' }>
-  onChange: (allocation: Record<string, number>) => void
-  checked: boolean | null
-}
+  screen: Extract<Screen, { type: "allocation" }>;
+  onChange: (allocation: Record<string, number>) => void;
+  checked: boolean | null;
+};
 
 function initialAllocation(categories: readonly string[]): Record<string, number> {
-  const result: Record<string, number> = {}
-  const base = Math.floor(100 / categories.length)
-  let remaining = 100
+  const result: Record<string, number> = {};
+  const base = Math.floor(100 / categories.length);
+  let remaining = 100;
   categories.forEach((cat, i) => {
     if (i === categories.length - 1) {
-      result[cat] = remaining
+      result[cat] = remaining;
     } else {
-      result[cat] = base
-      remaining -= base
+      result[cat] = base;
+      remaining -= base;
     }
-  })
-  return result
+  });
+  return result;
 }
 
 function distribute(
   categories: readonly string[],
   current: Record<string, number>,
   moved: string,
-  value: number
+  value: number,
 ): Record<string, number> {
-  const next = { ...current }
-  const peers = categories.filter((c) => c !== moved)
+  const next = { ...current };
+  const peers = categories.filter((c) => c !== moved);
 
-  let peerTotal = peers.reduce((acc, c) => acc + next[c], 0)
-  let adjustment = 100 - value - peerTotal
+  let peerTotal = peers.reduce((acc, c) => acc + next[c], 0);
+  let adjustment = 100 - value - peerTotal;
 
   for (const peer of peers) {
-    if (adjustment === 0) break
-    const weight = peerTotal === 0 ? 1 / peers.length : next[peer] / peerTotal
-    const share = adjustment * weight
-    const clamped = Math.max(0, Math.min(100, next[peer] + share))
-    const applied = clamped - next[peer]
-    next[peer] = clamped
-    adjustment -= applied
+    if (adjustment === 0) break;
+    const weight = peerTotal === 0 ? 1 / peers.length : next[peer] / peerTotal;
+    const share = adjustment * weight;
+    const clamped = Math.max(0, Math.min(100, next[peer] + share));
+    const applied = clamped - next[peer];
+    next[peer] = clamped;
+    adjustment -= applied;
   }
 
-  next[moved] = 100 - peers.reduce((acc, c) => acc + next[c], 0)
-  return next
+  next[moved] = 100 - peers.reduce((acc, c) => acc + next[c], 0);
+  return next;
 }
 
 export default function AllocationRenderer({ screen, onChange, checked }: AllocationRendererProps) {
-  const [allocation, setAllocation] = useState(() =>
-    initialAllocation(screen.categories)
-  )
+  const [allocation, setAllocation] = useState(() => initialAllocation(screen.categories));
 
   function handleChange(category: string, value: number) {
-    const next = distribute(screen.categories, allocation, category, value)
-    setAllocation(next)
-    onChange(next)
+    const next = distribute(screen.categories, allocation, category, value);
+    setAllocation(next);
+    onChange(next);
   }
 
   const chartData = screen.categories.map((cat) => ({
     label: cat,
     value: Math.round(allocation[cat] ?? 0),
-  }))
+  }));
 
-  const wrapperClass = 'rounded-2xl p-4'
+  const wrapperClass = "rounded-2xl p-4";
 
   const icon =
     checked === null ? null : checked ? (
@@ -80,12 +78,12 @@ export default function AllocationRenderer({ screen, onChange, checked }: Alloca
       <div className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-md bg-destructive text-white">
         <X className="h-4 w-4" />
       </div>
-    )
+    );
 
   return (
     <div className="flex flex-col gap-6">
       <p className="text-lg font-medium">{screen.prompt}</p>
-      <div className={cn('relative', wrapperClass)}>
+      <div className={cn("relative", wrapperClass)}>
         <BarChart data={chartData} />
         <div className="flex flex-col gap-5 mt-6">
           {screen.categories.map((category) => (
@@ -109,5 +107,5 @@ export default function AllocationRenderer({ screen, onChange, checked }: Alloca
         {icon}
       </div>
     </div>
-  )
+  );
 }

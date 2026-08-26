@@ -1,19 +1,19 @@
 // UnitGrid: grid of units with per-unit icons; selecting a unit changes the hero UnitCard.
-import { Card } from '#/components/ui/card'
-import { units } from '#/content/index.ts'
-import { useHomeStore } from '../store.ts'
-import { UNIT_ICONS } from '../constants.ts'
+import { Card } from "#/components/ui/card";
+import { units } from "#/content/index.ts";
+import { useHomeStore } from "../store.ts";
+import { UNIT_ICONS } from "../constants.ts";
 
 export default function UnitGrid() {
-  const selectedUnitId = useHomeStore((s) => s.selectedUnitId)
-  const setSelectedUnit = useHomeStore((s) => s.setSelectedUnit)
+  const selectedUnitId = useHomeStore((s) => s.selectedUnitId);
+  const setSelectedUnit = useHomeStore((s) => s.setSelectedUnit);
 
   return (
     <section className="w-full">
       <div className="grid grid-cols-2 items-center gap-3 lg:grid-cols-4">
         {units.map((unit) => {
-          const isSelected = unit.id === selectedUnitId
-          const Icon = UNIT_ICONS[unit.id]
+          const isSelected = unit.id === selectedUnitId;
+          const Icon = UNIT_ICONS[unit.id];
 
           return (
             <button
@@ -25,11 +25,11 @@ export default function UnitGrid() {
             >
               <Card
                 className={[
-                  'flex h-full flex-col items-center justify-center gap-3 border-2 p-3 transition-all duration-150',
+                  "flex h-full flex-col items-center justify-center gap-3 border-2 p-3 transition-all duration-150",
                   isSelected
-                    ? 'border-primary/30 bg-primary/5 shadow-sm'
-                    : 'border-border hover:-translate-y-0.5 hover:border-primary/40',
-                ].join(' ')}
+                    ? "border-primary/30 bg-primary/5 shadow-sm"
+                    : "border-border hover:-translate-y-0.5 hover:border-primary/40",
+                ].join(" ")}
               >
                 <div className="flex h-12 w-12 items-center justify-center">
                   {unit.imageUrl ? (
@@ -52,9 +52,9 @@ export default function UnitGrid() {
                 </p>
               </Card>
             </button>
-          )
+          );
         })}
       </div>
     </section>
-  )
+  );
 }

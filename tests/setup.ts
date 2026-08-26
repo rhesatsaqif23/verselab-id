@@ -5,4 +5,4 @@ class ResizeObserverMock {
   disconnect() {}
 }
 
-globalThis.ResizeObserver = globalThis.ResizeObserver ?? ResizeObserverMock
+globalThis.ResizeObserver = globalThis.ResizeObserver ?? ResizeObserverMock;

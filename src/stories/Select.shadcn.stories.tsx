@@ -1,21 +1,21 @@
 // Storybook story for the Select shadcn/ui component.
-import type { Meta, StoryObj } from '@storybook/tanstack-react'
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '#/components/ui/select'
+} from "#/components/ui/select";
 
 const meta = {
-  title: 'UI/Select',
+  title: "UI/Select",
   component: Select,
-  tags: ['autodocs'],
-} satisfies Meta<typeof Select>
+  tags: ["autodocs"],
+} satisfies Meta<typeof Select>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
@@ -32,4 +32,4 @@ export const Default: Story = {
       </SelectContent>
     </Select>
   ),
-}
+};

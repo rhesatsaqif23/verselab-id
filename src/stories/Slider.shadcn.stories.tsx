@@ -1,21 +1,21 @@
 // Storybook story for the Slider shadcn/ui component.
-import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import { Slider } from '#/components/ui/slider'
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { Slider } from "#/components/ui/slider";
 
 const meta = {
-  title: 'UI/Slider',
+  title: "UI/Slider",
   component: Slider,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
-    disabled: { control: 'boolean' },
-    min: { control: 'number' },
-    max: { control: 'number' },
-    step: { control: 'number' },
+    disabled: { control: "boolean" },
+    min: { control: "number" },
+    max: { control: "number" },
+    step: { control: "number" },
   },
-} satisfies Meta<typeof Slider>
+} satisfies Meta<typeof Slider>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
@@ -28,7 +28,7 @@ export const Default: Story = {
       <Slider {...args} />
     </div>
   ),
-}
+};
 
 export const Range: Story = {
   args: {
@@ -41,7 +41,7 @@ export const Range: Story = {
       <Slider {...args} />
     </div>
   ),
-}
+};
 
 export const Disabled: Story = {
   args: {
@@ -53,4 +53,4 @@ export const Disabled: Story = {
       <Slider {...args} />
     </div>
   ),
-}
+};

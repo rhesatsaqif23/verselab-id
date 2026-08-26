@@ -1,14 +1,14 @@
 // LessonControls: bottom action buttons per player phase (concept/answering/checked).
-import { Button } from '#/components/ui/button.tsx'
+import { Button } from "#/components/ui/button.tsx";
 
 type LessonControlsProps = {
-  mode: 'concept' | 'answering' | 'checked'
-  hasAnswer: boolean
-  hasExplain: boolean
-  onCheck: () => void
-  onContinue: () => void
-  onExplain: () => void
-}
+  mode: "concept" | "answering" | "checked";
+  hasAnswer: boolean;
+  hasExplain: boolean;
+  onCheck: () => void;
+  onContinue: () => void;
+  onExplain: () => void;
+};
 
 export default function LessonControls({
   mode,
@@ -20,7 +20,7 @@ export default function LessonControls({
 }: LessonControlsProps) {
   return (
     <div className="mx-auto w-full max-w-md flex min-h-20 flex-col gap-3 pt-4">
-      {mode === 'concept' ? (
+      {mode === "concept" ? (
         <Button
           key={mode}
           variant="default"
@@ -30,7 +30,7 @@ export default function LessonControls({
         >
           Lanjut
         </Button>
-      ) : mode === 'answering' ? (
+      ) : mode === "answering" ? (
         <Button
           key={mode}
           variant="default"
@@ -44,25 +44,15 @@ export default function LessonControls({
       ) : (
         <div key={mode} className="flex animate-slide-up-enter gap-3">
           {hasExplain && (
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={onExplain}
-              className="shrink-0"
-            >
+            <Button variant="outline" size="lg" onClick={onExplain} className="shrink-0">
               Kenapa?
             </Button>
           )}
-          <Button
-            variant="default"
-            size="lg"
-            onClick={onContinue}
-            className="flex-1"
-          >
+          <Button variant="default" size="lg" onClick={onContinue} className="flex-1">
             Lanjut
           </Button>
         </div>
       )}
     </div>
-  )
+  );
 }

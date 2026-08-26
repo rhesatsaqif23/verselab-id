@@ -1,15 +1,15 @@
 // Storybook story for the Tabs shadcn/ui component.
-import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/components/ui/tabs'
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "#/components/ui/tabs";
 
 const meta = {
-  title: 'UI/Tabs',
+  title: "UI/Tabs",
   component: Tabs,
-  tags: ['autodocs'],
-} satisfies Meta<typeof Tabs>
+  tags: ["autodocs"],
+} satisfies Meta<typeof Tabs>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
@@ -19,15 +19,11 @@ export const Default: Story = {
         <TabsTrigger value="password">Password</TabsTrigger>
       </TabsList>
       <TabsContent value="account" className="space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Make changes to your account here.
-        </p>
+        <p className="text-sm text-muted-foreground">Make changes to your account here.</p>
       </TabsContent>
       <TabsContent value="password" className="space-y-4">
-        <p className="text-sm text-muted-foreground">
-          Change your password here.
-        </p>
+        <p className="text-sm text-muted-foreground">Change your password here.</p>
       </TabsContent>
     </Tabs>
   ),
-}
+};

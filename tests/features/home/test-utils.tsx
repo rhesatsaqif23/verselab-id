@@ -1,9 +1,9 @@
 // Test helpers for resetting the progress store.
-import { useProgressStore } from '#/engine/progress/progressStore.ts'
-import { units } from '#/content/index.ts'
+import { useProgressStore } from "#/engine/progress/progressStore.ts";
+import { units } from "#/content/index.ts";
 
 export function resetProgress() {
-  localStorage.clear()
+  localStorage.clear();
   useProgressStore.setState({
     xp: 0,
     dailyGoalMinutes: 10,
@@ -12,11 +12,11 @@ export function resetProgress() {
     lastActiveDate: null,
     mastery: {},
     masteryUpdatedAt: {},
-  })
+  });
 }
 
 export function setMastery(value: number) {
   useProgressStore.setState({
     mastery: Object.fromEntries(units.map((u) => [u.id, value])),
-  })
+  });
 }

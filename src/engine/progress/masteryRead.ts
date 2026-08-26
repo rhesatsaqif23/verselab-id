@@ -1,11 +1,8 @@
 // Mastery reads: started checks and decayed display values for the UI.
-import { decayedMastery } from './decay.ts'
+import { decayedMastery } from "./decay.ts";
 
-export function isUnitStarted(
-  unitId: string,
-  mastery: Record<string, number>,
-): boolean {
-  return mastery[unitId] !== undefined
+export function isUnitStarted(unitId: string, mastery: Record<string, number>): boolean {
+  return mastery[unitId] !== undefined;
 }
 
 export function masteryForDisplay(
@@ -14,7 +11,7 @@ export function masteryForDisplay(
   updatedAt: Record<string, string>,
   now: string,
 ): number {
-  const value = mastery[unitId]
-  if (value === undefined) return 0
-  return decayedMastery(value, updatedAt[unitId], now)
+  const value = mastery[unitId];
+  if (value === undefined) return 0;
+  return decayedMastery(value, updatedAt[unitId], now);
 }

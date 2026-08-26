@@ -1,21 +1,21 @@
 // Storybook story for the Switch shadcn/ui component.
-import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import { Switch } from '#/components/ui/switch'
-import { Label } from '#/components/ui/label'
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { Switch } from "#/components/ui/switch";
+import { Label } from "#/components/ui/label";
 
 const meta = {
-  title: 'UI/Switch',
+  title: "UI/Switch",
   component: Switch,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
-    disabled: { control: 'boolean' },
+    disabled: { control: "boolean" },
   },
-} satisfies Meta<typeof Switch>
+} satisfies Meta<typeof Switch>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {}
+export const Default: Story = {};
 
 export const WithLabel: Story = {
   render: () => (
@@ -24,16 +24,16 @@ export const WithLabel: Story = {
       <Label htmlFor="airplane-mode">Airplane Mode</Label>
     </div>
   ),
-}
+};
 
 export const Checked: Story = {
   args: {
     checked: true,
   },
-}
+};
 
 export const Disabled: Story = {
   args: {
     disabled: true,
   },
-}
+};

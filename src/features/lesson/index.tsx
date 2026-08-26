@@ -1,61 +1,56 @@
 // LessonPage: wires a lesson's screens to the player and awards progress on completion.
-import { useNavigate } from '@tanstack/react-router'
-import LessonPlayer, { type AnswerResult } from '#/engine/player/LessonPlayer.tsx'
-import { useLessonStore } from '#/engine/player/lessonStore.ts'
-import {
-  XP_PER_LESSON,
-  XP_PER_SCREEN,
-  useProgressStore,
-} from '#/engine/progress/progressStore.ts'
-import { useLessonCompleteStore } from '#/features/lesson-complete/store/lessonCompleteStore.ts'
-import { findLesson } from '#/content/index.ts'
-import { checkAnswer } from './checkAnswer.ts'
-import { renderScreen } from './renderScreen.tsx'
+import { useNavigate } from "@tanstack/react-router";
+import LessonPlayer, { type AnswerResult } from "#/engine/player/LessonPlayer.tsx";
+import { useLessonStore } from "#/engine/player/lessonStore.ts";
+import { XP_PER_LESSON, XP_PER_SCREEN, useProgressStore } from "#/engine/progress/progressStore.ts";
+import { useLessonCompleteStore } from "#/features/lesson-complete/store/lessonCompleteStore.ts";
+import { findLesson } from "#/content/index.ts";
+import { checkAnswer } from "./checkAnswer.ts";
+import { renderScreen } from "./renderScreen.tsx";
 
 type LessonPageProps = {
-  lessonId: string
-}
+  lessonId: string;
+};
 
 export default function LessonPage({ lessonId }: LessonPageProps) {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const found = findLesson(lessonId)
+  const found = findLesson(lessonId);
   if (!found) {
     return (
       <div className="page-wrap flex min-h-screen items-center justify-center px-4">
         <p className="text-lg text-muted">Lesson tidak ditemukan</p>
       </div>
-    )
+    );
   }
 
-  const { unit, lesson } = found
-  const results = useLessonStore((s) => s.results)
+  const { unit, lesson } = found;
+  const results = useLessonStore((s) => s.results);
   const xpEarned = Object.values(results)
     .filter((r) => r?.correct)
-    .reduce((sum) => sum + XP_PER_SCREEN, 0)
+    .reduce((sum) => sum + XP_PER_SCREEN, 0);
 
   function handleExit() {
-    useLessonStore.getState().clear()
-    navigate({ to: '/home' })
+    useLessonStore.getState().clear();
+    navigate({ to: "/home" });
   }
 
   function handleComplete(results: readonly AnswerResult[]) {
-    const answerResults = results.filter((r) => r.screen.type !== 'concept')
+    const answerResults = results.filter((r) => r.screen.type !== "concept");
 
-    const correctCount = answerResults.filter((r) => r.correct).length
+    const correctCount = answerResults.filter((r) => r.correct).length;
     const wrongScreens = answerResults
       .filter((r) => !r.correct)
-      .map((r) => ({ prompt: r.screen.prompt, explain: r.screen.explain }))
+      .map((r) => ({ prompt: r.screen.prompt, explain: r.screen.explain }));
 
-    const masteryBefore = useProgressStore.getState().mastery[unit.id] ?? null
+    const masteryBefore = useProgressStore.getState().mastery[unit.id] ?? null;
     for (const result of answerResults) {
-      useProgressStore.getState().awardScreenResult(unit.id, result.correct)
+      useProgressStore.getState().awardScreenResult(unit.id, result.correct);
     }
-    useProgressStore.getState().awardLessonCompletion(unit.id)
-    const masteryAfter = useProgressStore.getState().mastery[unit.id] ?? null
+    useProgressStore.getState().awardLessonCompletion(unit.id);
+    const masteryAfter = useProgressStore.getState().mastery[unit.id] ?? null;
 
-    const totalXpEarned =
-      correctCount * XP_PER_SCREEN + XP_PER_LESSON
+    const totalXpEarned = correctCount * XP_PER_SCREEN + XP_PER_LESSON;
 
     useLessonCompleteStore.getState().setSummary({
       unitId: unit.id,
@@ -66,8 +61,8 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
       xpEarned: totalXpEarned,
       masteryBefore,
       masteryAfter,
-    })
-    navigate({ to: '/lesson-complete' })
+    });
+    navigate({ to: "/lesson-complete" });
   }
 
   return (
@@ -79,5 +74,5 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
       onComplete={handleComplete}
       xpEarned={xpEarned}
     />
-  )
+  );
 }

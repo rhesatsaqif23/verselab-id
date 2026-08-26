@@ -1,11 +1,11 @@
 // Header: sticky top nav with streak/XP badges and animated active indicator.
-import { useState } from 'react'
-import { Link, useLocation } from '@tanstack/react-router'
-import { motion } from 'framer-motion'
-import ThemeToggle from './ThemeToggle'
-import { useProgressStore } from '#/engine/progress/progressStore.ts'
-import { Flame } from 'lucide-react'
-import { navItems } from '../constants.ts'
+import { useState } from "react";
+import { Link, useLocation } from "@tanstack/react-router";
+import { motion } from "framer-motion";
+import ThemeToggle from "./ThemeToggle";
+import { useProgressStore } from "#/engine/progress/progressStore.ts";
+import { Flame } from "lucide-react";
+import { navItems } from "../constants.ts";
 
 function NavItem({
   to,
@@ -13,12 +13,12 @@ function NavItem({
   icon: Icon,
   isActive,
 }: {
-  to: string
-  label: string
-  icon: React.ComponentType<{ className?: string }>
-  isActive: boolean
+  to: string;
+  label: string;
+  icon: React.ComponentType<{ className?: string }>;
+  isActive: boolean;
 }) {
-  const [isHovered, setIsHovered] = useState(false)
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
     <Link
@@ -26,7 +26,7 @@ function NavItem({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={`group relative flex h-full items-center gap-2 text-base font-medium transition-colors ${
-        isActive ? 'text-primary hover:text-primary' : 'text-muted hover:text-primary'
+        isActive ? "text-primary hover:text-primary" : "text-muted hover:text-primary"
       }`}
     >
       <Icon className="h-5 w-5" />
@@ -45,33 +45,25 @@ function NavItem({
         }}
       />
     </Link>
-  )
+  );
 }
 
 export default function Header() {
-  const location = useLocation()
-  const isActive = (path: string) => location.pathname === path
-  const streak = useProgressStore((s) => s.streak)
-  const xp = useProgressStore((s) => s.xp)
+  const location = useLocation();
+  const isActive = (path: string) => location.pathname === path;
+  const streak = useProgressStore((s) => s.streak);
+  const xp = useProgressStore((s) => s.xp);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card">
       <nav className="page-wrap flex h-16 items-center gap-8 px-6">
         <Link to="/home" className="flex items-center gap-2 no-underline">
-          <span className="text-3xl font-bold tracking-tight text-foreground">
-            Verselab
-          </span>
+          <span className="text-3xl font-bold tracking-tight text-foreground">Verselab</span>
         </Link>
 
         <div className="flex h-full items-center gap-8">
           {navItems.map(({ to, label, icon }) => (
-            <NavItem
-              key={to}
-              to={to}
-              label={label}
-              icon={icon}
-              isActive={isActive(to)}
-            />
+            <NavItem key={to} to={to} label={label} icon={icon} isActive={isActive(to)} />
           ))}
         </div>
 
@@ -90,7 +82,5 @@ export default function Header() {
         </div>
       </nav>
     </header>
-  )
+  );
 }
-
-

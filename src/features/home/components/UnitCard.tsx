@@ -1,50 +1,52 @@
 // UnitCard: single card for one unit with next lesson, mastery progress, and CTA.
-import { PlayCircle } from 'lucide-react'
-import { Link } from '@tanstack/react-router'
-import { Button } from '#/components/ui/button'
-import { Card, CardContent } from '#/components/ui/card'
-import { Badge } from '#/components/ui/badge'
-import type { Unit } from '#/engine/types.ts'
-import { useProgressStore } from '#/engine/progress/progressStore.ts'
-import { todayString } from '#/libs/date.ts'
-import { decayedMastery } from '#/engine/progress/decay.ts'
-import { units } from '#/content/index.ts'
+import { PlayCircle } from "lucide-react";
+import { Link } from "@tanstack/react-router";
+import { Button } from "#/components/ui/button";
+import { Card, CardContent } from "#/components/ui/card";
+import { Badge } from "#/components/ui/badge";
+import type { Unit } from "#/engine/types.ts";
+import { useProgressStore } from "#/engine/progress/progressStore.ts";
+import { todayString } from "#/libs/date.ts";
+import { decayedMastery } from "#/engine/progress/decay.ts";
+import { units } from "#/content/index.ts";
 
 type UnitCardProps = {
-  unit: Unit
-}
+  unit: Unit;
+};
 
 export default function UnitCard({ unit }: UnitCardProps) {
-  const mastery = useProgressStore((s) => s.mastery)
-  const updatedAt = useProgressStore((s) => s.masteryUpdatedAt)
-  const today = todayString()
+  const mastery = useProgressStore((s) => s.mastery);
+  const updatedAt = useProgressStore((s) => s.masteryUpdatedAt);
+  const today = todayString();
 
-  const lesson = unit.lessons[0]
-  const masteryValue = mastery[unit.id] ?? 0
-  const masteryDisplay = decayedMastery(masteryValue, updatedAt[unit.id], today)
+  const lesson = unit.lessons[0];
+  const masteryValue = mastery[unit.id] ?? 0;
+  const masteryDisplay = decayedMastery(masteryValue, updatedAt[unit.id], today);
 
   // Find recommended unit: the first unlocked unit that is not fully mastered (mastery < 100).
   const recommendedUnitId = (() => {
     for (let i = 0; i < units.length; i++) {
-      const u = units[i]
-      const uMasteryValue = mastery[u.id] ?? 0
-      const uMastery = decayedMastery(uMasteryValue, updatedAt[u.id], today)
-      
-      const prevUnlocked = i === 0 || (() => {
-        const prevU = units[i - 1]
-        const prevMasteryValue = mastery[prevU.id] ?? 0
-        const prevMastery = decayedMastery(prevMasteryValue, updatedAt[prevU.id], today)
-        return prevMastery >= 100
-      })()
+      const u = units[i];
+      const uMasteryValue = mastery[u.id] ?? 0;
+      const uMastery = decayedMastery(uMasteryValue, updatedAt[u.id], today);
+
+      const prevUnlocked =
+        i === 0 ||
+        (() => {
+          const prevU = units[i - 1];
+          const prevMasteryValue = mastery[prevU.id] ?? 0;
+          const prevMastery = decayedMastery(prevMasteryValue, updatedAt[prevU.id], today);
+          return prevMastery >= 100;
+        })();
 
       if (prevUnlocked && uMastery < 100) {
-        return u.id
+        return u.id;
       }
     }
-    return units[0]?.id
-  })()
+    return units[0]?.id;
+  })();
 
-  const isRecommended = unit.id === recommendedUnitId
+  const isRecommended = unit.id === recommendedUnitId;
 
   return (
     <Card className="overflow-hidden border-2 border-border p-0">
@@ -98,5 +100,5 @@ export default function UnitCard({ unit }: UnitCardProps) {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -1,16 +1,16 @@
 // Storybook story for the RadioGroup shadcn/ui component.
-import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import { RadioGroup, RadioGroupItem } from '#/components/ui/radio-group'
-import { Label } from '#/components/ui/label'
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { RadioGroup, RadioGroupItem } from "#/components/ui/radio-group";
+import { Label } from "#/components/ui/label";
 
 const meta = {
-  title: 'UI/RadioGroup',
+  title: "UI/RadioGroup",
   component: RadioGroup,
-  tags: ['autodocs'],
-} satisfies Meta<typeof RadioGroup>
+  tags: ["autodocs"],
+} satisfies Meta<typeof RadioGroup>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
@@ -29,4 +29,4 @@ export const Default: Story = {
       </div>
     </RadioGroup>
   ),
-}
+};

@@ -1,6 +1,6 @@
 # Verselab Architecture
 
-Technical deep-dive into how Verselab is built. Read [PRD.md](PRD.md) for *what* the product is, [CONCEPT.md](CONCEPT.md) for the core ideas and glossary, and this document for *how* the code is organized and why.
+Technical deep-dive into how Verselab is built. Read [PRD.md](PRD.md) for _what_ the product is, [CONCEPT.md](CONCEPT.md) for the core ideas and glossary, and this document for _how_ the code is organized and why.
 
 ---
 
@@ -57,7 +57,7 @@ New materials are added as new sibling folders; the engine is untouched.
 
 ### How to decide where code goes
 
-Ask one question: *does this code mention money, interest, salary, or installments?*
+Ask one question: _does this code mention money, interest, salary, or installments?_
 
 - **Yes** → `domains/personal-finance/` (or the relevant domain folder).
 - **No** → `engine/`.
@@ -160,12 +160,12 @@ The union type in `src/engine/types.ts` is the public contract between engine an
 
 ## 6. Screen types
 
-| Type       | Purpose                                              | Answer checking                                    | Limit per lesson |
-| ---------- | ---------------------------------------------------- | -------------------------------------------------- | ---------------- |
-| `concept`  | Name a concept after the user felt its effect        | none (just "Lanjut")                               | max 1            |
-| `choice`   | Multiple choice; blue border on selected card        | `answer === correctId`                             | max 30%          |
-| `numeric`  | User types a number                                  | within `acceptRange` (range, not exact)            | —                |
-| `allocation`| Sliders summing to 100% with live chart             | rule: `{ category, min?, max? }` on one category   | —                |
+| Type         | Purpose                                       | Answer checking                                  | Limit per lesson |
+| ------------ | --------------------------------------------- | ------------------------------------------------ | ---------------- |
+| `concept`    | Name a concept after the user felt its effect | none (just "Lanjut")                             | max 1            |
+| `choice`     | Multiple choice; blue border on selected card | `answer === correctId`                           | max 30%          |
+| `numeric`    | User types a number                           | within `acceptRange` (range, not exact)          | —                |
+| `allocation` | Sliders summing to 100% with live chart       | rule: `{ category, min?, max? }` on one category | —                |
 
 Key rules from PRD §4:
 
@@ -193,11 +193,11 @@ Key rules from PRD §4:
 
 Zustand, with the `persist` middleware for anything that must survive reload. No manual save/load logic.
 
-| Store                       | Scope                        | Persisted?    | Storage key            |
-| --------------------------- | ---------------------------- | ------------- | ---------------------- |
-| `engine/player/lessonStore` | Current lesson session       | No            | —                      |
-| `engine/progress/progressStore` | Global XP/streak/mastery/goal | Yes (`persist`) | `verselab-progress-v1` |
-| `lesson-complete/lessonCompleteStore` | Last finished lesson summary | No         | —                      |
+| Store                                 | Scope                         | Persisted?      | Storage key            |
+| ------------------------------------- | ----------------------------- | --------------- | ---------------------- |
+| `engine/player/lessonStore`           | Current lesson session        | No              | —                      |
+| `engine/progress/progressStore`       | Global XP/streak/mastery/goal | Yes (`persist`) | `verselab-progress-v1` |
+| `lesson-complete/lessonCompleteStore` | Last finished lesson summary  | No              | —                      |
 
 - `lessonStore` is deliberately **not persisted**: leaving a lesson is "start over" by design (PRD §2 rule 5 — no lives, no retries).
 - `progressStore` is the single source of truth for gamification. All award actions (`awardScreenResult`, `awardLessonCompletion`, `awardXp`, `registerActivity`, `setDailyGoal`) live there; pure functions in `streak.ts` / `decay.ts` do the math.
@@ -209,13 +209,13 @@ Reading persisted state: components subscribe via `useProgressStore((s) => s.xp)
 
 ## 9. Gamification model
 
-| Concept            | Rule                                                          | Constant / location                    |
-| ------------------ | ------------------------------------------------------------- | -------------------------------------- |
-| XP                 | +10 per correct screen, +50 per completed lesson. Never decreases. | `XP_PER_SCREEN`, `XP_PER_LESSON` in `progressStore.ts` |
-| Mastery            | 0–100 per unit. +2 correct, −1 wrong, −2 per full inactive week. | `MASTERY_*`, `DECAY_PER_WEEK` in `progressStore.ts` / `decay.ts` |
-| Streak             | Consecutive days reaching the daily goal. +1 freeze every 7-day streak. | `streakOnActivity()` in `streak.ts` |
-| Streak freeze      | 1 free missed day per 7-day streak; a freeze day consumes it.  | `streak.ts`                            |
-| Daily goal         | User-picked: 3, 10, or 20 minutes.                            | `DailyGoalMinutes` in `progressStore.ts` |
+| Concept       | Rule                                                                    | Constant / location                                              |
+| ------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------- |
+| XP            | +10 per correct screen, +50 per completed lesson. Never decreases.      | `XP_PER_SCREEN`, `XP_PER_LESSON` in `progressStore.ts`           |
+| Mastery       | 0–100 per unit. +2 correct, −1 wrong, −2 per full inactive week.        | `MASTERY_*`, `DECAY_PER_WEEK` in `progressStore.ts` / `decay.ts` |
+| Streak        | Consecutive days reaching the daily goal. +1 freeze every 7-day streak. | `streakOnActivity()` in `streak.ts`                              |
+| Streak freeze | 1 free missed day per 7-day streak; a freeze day consumes it.           | `streak.ts`                                                      |
+| Daily goal    | User-picked: 3, 10, or 20 minutes.                                      | `DailyGoalMinutes` in `progressStore.ts`                         |
 
 Intentional omissions (PRD §6.4): no lives/hearts, no per-question timer, no XP penalty for wrong answers.
 
@@ -248,7 +248,7 @@ Authoring rules (PRD §4.3, §9):
 
 - Write lessons **after** the screen types exist — the available types shape the lesson, not the reverse.
 - Never hardcode a numeric answer; derive the `acceptRange` from `math.ts` output.
-- Follow the rhythm: *make them curious (choice) → name the concept (concept) → practice (numeric/allocation) → apply to a real situation (choice)*.
+- Follow the rhythm: _make them curious (choice) → name the concept (concept) → practice (numeric/allocation) → apply to a real situation (choice)_.
 - Respect per-lesson limits: ≤ 1 concept screen, ≤ 30% choice screens, 6–8 screens total.
 
 ---
@@ -257,15 +257,15 @@ Authoring rules (PRD §4.3, §9):
 
 File-based routing under `src/routes/`. Routes stay thin — a route validates params and delegates rendering to a feature.
 
-| Route                 | File                       | Purpose                                        |
-| --------------------- | -------------------------- | ---------------------------------------------- |
-| `/`                   | `index.tsx`                | Marketing landing page                         |
-| `/_home`              | `_home.tsx`                | Layout route: Header + Outlet + Footer         |
-| `/_home/home`         | `_home/home.tsx`           | Dashboard (default landing after login flow)   |
-| `/_home/about`        | `_home/about.tsx`          | Static about page                              |
-| `/_home/profile`      | `_home/profile.tsx`        | Stats page                                     |
-| `/lesson/$lessonId`   | `lesson.$lessonId.tsx`     | Lesson player (guarded by `findLesson`)        |
-| `/lesson-complete`    | `lesson-complete.tsx`      | Completion summary (guarded by summary presence) |
+| Route               | File                   | Purpose                                          |
+| ------------------- | ---------------------- | ------------------------------------------------ |
+| `/`                 | `index.tsx`            | Marketing landing page                           |
+| `/_home`            | `_home.tsx`            | Layout route: Header + Outlet + Footer           |
+| `/_home/home`       | `_home/home.tsx`       | Dashboard (default landing after login flow)     |
+| `/_home/about`      | `_home/about.tsx`      | Static about page                                |
+| `/_home/profile`    | `_home/profile.tsx`    | Stats page                                       |
+| `/lesson/$lessonId` | `lesson.$lessonId.tsx` | Lesson player (guarded by `findLesson`)          |
+| `/lesson-complete`  | `lesson-complete.tsx`  | Completion summary (guarded by summary presence) |
 
 Guards are done in `beforeLoad` (redirect to `/home` for unknown lessons, `/` for no summary).
 
@@ -292,11 +292,12 @@ Guards are done in `beforeLoad` (redirect to `/home` for unknown lessons, `/` fo
 ## 15. Code standards & tooling
 
 - **TypeScript:** strict, `noUnusedLocals`, `noUnusedParameters`, `verbatimModuleSyntax`, `noEmit`. Typecheck with `npx tsc --noEmit`. Avoid `any` (use `unknown` + narrow).
+- **Formatting:** Oxfmt (not Prettier). 2 spaces, semicolons, double quotes, trailing commas, import sorting, print width 100. Tailwind CSS class sorting enabled.
+- **Linting:** Oxlint (not ESLint). React + TypeScript plugins. Config in `oxlintrc.json`.
 - **Imports:** path aliases `#/...` / `@/...` for `src/`. Local imports use explicit `.ts`/`.tsx` extensions (enabled by `allowImportingTsExtensions`).
 - **Comments:** file-level `// Module purpose` header comments are used; keep them meaningful and updated.
 - **Commits:** Conventional Commits, no quotes/emoji — see `docs/CONVENTIONAL_COMMITS.md`. Scope `web` for frontend work.
 - **Package manager:** npm only. Do not add other lockfiles.
-- **No lint/format configs** exist (per project decision). Typecheck is the gate.
 
 ---
 
@@ -331,7 +332,7 @@ Guards are done in `beforeLoad` (redirect to `/home` for unknown lessons, `/` fo
 - TanStack Query / server state — there is no server state to fetch.
 - Engine code that mentions the material, and domain logic in `engine/`.
 - `tailwind.config.js` — theming is CSS-only.
-- ESLint/Prettier configs.
+- ESLint/Prettier configs (Oxfmt and Oxlint are used instead).
 
 ---
 

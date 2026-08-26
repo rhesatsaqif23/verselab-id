@@ -1,8 +1,8 @@
 // HomePage: dashboard layout combining streak, goal, and course cards.
-import StreakTracker from './components/StreakTracker'
-import DailyGoalCard from './components/DailyGoalCard'
-import ShuffleCard from './components/ShuffleCard'
-import UnitGrid from './components/UnitGrid'
+import StreakTracker from "./components/StreakTracker";
+import DailyGoalCard from "./components/DailyGoalCard";
+import ShuffleCard from "./components/ShuffleCard";
+import UnitGrid from "./components/UnitGrid";
 
 export default function HomePage() {
   return (
@@ -19,5 +19,5 @@ export default function HomePage() {
         </div>
       </div>
     </main>
-  )
+  );
 }

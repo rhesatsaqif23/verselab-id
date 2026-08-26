@@ -1,26 +1,26 @@
 // Lesson session store: current screen index, answers, and per-screen results.
-import { create } from 'zustand'
+import { create } from "zustand";
 
 export type LessonResult = {
-  correct: boolean
-}
+  correct: boolean;
+};
 
 type LessonState = {
-  index: number
-  total: number
-  answers: Record<number, unknown>
-  results: Record<number, LessonResult>
-  correctCount: number
-  wrongCount: number
-}
+  index: number;
+  total: number;
+  answers: Record<number, unknown>;
+  results: Record<number, LessonResult>;
+  correctCount: number;
+  wrongCount: number;
+};
 
 type LessonActions = {
-  startLesson: (total: number) => void
-  setAnswer: (index: number, answer: unknown) => void
-  checkResult: (index: number, correct: boolean) => void
-  next: () => void
-  clear: () => void
-}
+  startLesson: (total: number) => void;
+  setAnswer: (index: number, answer: unknown) => void;
+  checkResult: (index: number, correct: boolean) => void;
+  next: () => void;
+  clear: () => void;
+};
 
 export const useLessonStore = create<LessonState & LessonActions>((set) => ({
   index: 0,
@@ -47,5 +47,6 @@ export const useLessonStore = create<LessonState & LessonActions>((set) => ({
 
   next: () => set((state) => ({ index: state.index + 1 })),
 
-  clear: () => set({ index: 0, total: 0, answers: {}, results: {}, correctCount: 0, wrongCount: 0 }),
-}))
+  clear: () =>
+    set({ index: 0, total: 0, answers: {}, results: {}, correctCount: 0, wrongCount: 0 }),
+}));

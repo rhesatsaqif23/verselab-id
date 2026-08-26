@@ -1,5 +1,5 @@
 // Storybook story for the Card shadcn/ui component.
-import type { Meta, StoryObj } from '@storybook/tanstack-react'
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
 import {
   Card,
   CardContent,
@@ -7,18 +7,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '#/components/ui/card'
-import { Button } from '#/components/ui/button'
-import { Badge } from '#/components/ui/badge'
+} from "#/components/ui/card";
+import { Button } from "#/components/ui/button";
+import { Badge } from "#/components/ui/badge";
 
 const meta = {
-  title: 'UI/Card',
+  title: "UI/Card",
   component: Card,
-  tags: ['autodocs'],
-} satisfies Meta<typeof Card>
+  tags: ["autodocs"],
+} satisfies Meta<typeof Card>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
@@ -38,7 +38,7 @@ export const Default: Story = {
       </CardFooter>
     </Card>
   ),
-}
+};
 
 export const WithBadge: Story = {
   render: () => (
@@ -57,7 +57,7 @@ export const WithBadge: Story = {
       </CardContent>
     </Card>
   ),
-}
+};
 
 export const Simple: Story = {
   render: () => (
@@ -67,4 +67,4 @@ export const Simple: Story = {
       </CardContent>
     </Card>
   ),
-}
+};

@@ -1,29 +1,27 @@
 // Storybook story for the Separator shadcn/ui component.
-import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import { Separator } from '#/components/ui/separator'
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { Separator } from "#/components/ui/separator";
 
 const meta = {
-  title: 'UI/Separator',
+  title: "UI/Separator",
   component: Separator,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     orientation: {
-      control: 'select',
-      options: ['horizontal', 'vertical'],
+      control: "select",
+      options: ["horizontal", "vertical"],
     },
   },
-} satisfies Meta<typeof Separator>
+} satisfies Meta<typeof Separator>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Horizontal: Story = {
   render: () => (
     <div>
       <h4 className="text-sm font-medium">Radix Primitives</h4>
-      <p className="text-sm text-muted-foreground">
-        An open-source UI component library.
-      </p>
+      <p className="text-sm text-muted-foreground">An open-source UI component library.</p>
       <Separator className="my-4" />
       <div className="flex h-5 items-center space-x-4 text-sm">
         <div>Blog</div>
@@ -34,7 +32,7 @@ export const Horizontal: Story = {
       </div>
     </div>
   ),
-}
+};
 
 export const Vertical: Story = {
   render: () => (
@@ -46,4 +44,4 @@ export const Vertical: Story = {
       <div>Source</div>
     </div>
   ),
-}
+};

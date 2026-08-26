@@ -1,29 +1,29 @@
 // Storybook story for the Input shadcn/ui component.
-import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import { Input } from '#/components/ui/input'
-import { Label } from '#/components/ui/label'
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { Input } from "#/components/ui/input";
+import { Label } from "#/components/ui/label";
 
 const meta = {
-  title: 'UI/Input',
+  title: "UI/Input",
   component: Input,
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   argTypes: {
     type: {
-      control: 'select',
-      options: ['text', 'email', 'password', 'number', 'search', 'tel', 'url'],
+      control: "select",
+      options: ["text", "email", "password", "number", "search", "tel", "url"],
     },
-    disabled: { control: 'boolean' },
+    disabled: { control: "boolean" },
   },
-} satisfies Meta<typeof Input>
+} satisfies Meta<typeof Input>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   args: {
-    placeholder: 'Enter text...',
+    placeholder: "Enter text...",
   },
-}
+};
 
 export const WithLabel: Story = {
   render: (args) => (
@@ -32,24 +32,24 @@ export const WithLabel: Story = {
       <Input {...args} id="email" type="email" placeholder="m@example.com" />
     </div>
   ),
-}
+};
 
 export const Password: Story = {
   args: {
-    type: 'password',
-    placeholder: 'Enter password...',
+    type: "password",
+    placeholder: "Enter password...",
   },
-}
+};
 
 export const Disabled: Story = {
   args: {
     disabled: true,
-    placeholder: 'Disabled input',
+    placeholder: "Disabled input",
   },
-}
+};
 
 export const File: Story = {
   args: {
-    type: 'file',
+    type: "file",
   },
-}
+};

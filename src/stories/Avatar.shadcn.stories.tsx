@@ -1,15 +1,15 @@
 // Storybook story for the Avatar shadcn/ui component.
-import type { Meta, StoryObj } from '@storybook/tanstack-react'
-import { Avatar, AvatarFallback, AvatarImage } from '#/components/ui/avatar'
+import type { Meta, StoryObj } from "@storybook/tanstack-react";
+import { Avatar, AvatarFallback, AvatarImage } from "#/components/ui/avatar";
 
 const meta = {
-  title: 'UI/Avatar',
+  title: "UI/Avatar",
   component: Avatar,
-  tags: ['autodocs'],
-} satisfies Meta<typeof Avatar>
+  tags: ["autodocs"],
+} satisfies Meta<typeof Avatar>;
 
-export default meta
-type Story = StoryObj<typeof meta>
+export default meta;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: () => (
@@ -18,7 +18,7 @@ export const Default: Story = {
       <AvatarFallback>CN</AvatarFallback>
     </Avatar>
   ),
-}
+};
 
 export const WithFallback: Story = {
   render: () => (
@@ -26,7 +26,7 @@ export const WithFallback: Story = {
       <AvatarFallback>JD</AvatarFallback>
     </Avatar>
   ),
-}
+};
 
 export const Small: Story = {
   render: () => (
@@ -34,7 +34,7 @@ export const Small: Story = {
       <AvatarFallback className="text-xs">AB</AvatarFallback>
     </Avatar>
   ),
-}
+};
 
 export const Large: Story = {
   render: () => (
@@ -42,4 +42,4 @@ export const Large: Story = {
       <AvatarFallback className="text-lg">XL</AvatarFallback>
     </Avatar>
   ),
-}
+};

@@ -327,26 +327,26 @@ Isinya:
 
 ### 8.1 Wajib dipakai sekarang
 
-| Apa | Kenapa |
-| --- | --- |
+| Apa                | Kenapa                                                                                                                                           |
+| ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
 | React + TypeScript | TypeScript penting di sini karena tipe data Screen itu union type, dan TypeScript bakal otomatis ngasih tau field apa yang tersedia di tiap tipe |
-| Vite | Build tool, udah keinstall |
-| Tailwind v4 | CSS. Di v4 config warna ditulis di file CSS pakai `@theme`, bukan di `tailwind.config.js` kayak versi lama |
-| Zustand | Nyimpen state (XP, streak, jawaban user). Lebih simpel dari Redux, cukup buat kebutuhan kita |
-| localStorage | Nyimpen progress di browser user. Pakai middleware persist bawaan Zustand, jadi gak perlu nulis logic simpan-muat manual |
-| TanStack Router | Routing antar halaman |
-| Vitest | Testing, khusus buat fungsi hitungan di `math.ts` |
+| Vite               | Build tool, udah keinstall                                                                                                                       |
+| Tailwind v4        | CSS. Di v4 config warna ditulis di file CSS pakai `@theme`, bukan di `tailwind.config.js` kayak versi lama                                       |
+| Zustand            | Nyimpen state (XP, streak, jawaban user). Lebih simpel dari Redux, cukup buat kebutuhan kita                                                     |
+| localStorage       | Nyimpen progress di browser user. Pakai middleware persist bawaan Zustand, jadi gak perlu nulis logic simpan-muat manual                         |
+| TanStack Router    | Routing antar halaman                                                                                                                            |
+| Vitest             | Testing, khusus buat fungsi hitungan di `math.ts`                                                                                                |
 
 ### 8.2 Belum dipakai, nanti aja
 
 Jangan install ini dulu. Kalau merasa butuh salah satunya, tanya dulu.
 
-| Nanti dipakai kalau | Apa |
-| --- | --- |
-| Halaman udah lebih dari 4 | TanStack Router |
-| Udah mau bikin animasi transisi feedback | Motion (framer-motion) |
-| Data lesson udah banyak dan perlu divalidasi | Zod |
-| Chart-nya udah lebih rumit dari batang sederhana | Library chart |
+| Nanti dipakai kalau                              | Apa                    |
+| ------------------------------------------------ | ---------------------- |
+| Halaman udah lebih dari 4                        | TanStack Router        |
+| Udah mau bikin animasi transisi feedback         | Motion (framer-motion) |
+| Data lesson udah banyak dan perlu divalidasi     | Zod                    |
+| Chart-nya udah lebih rumit dari batang sederhana | Library chart          |
 
 ### 8.3 Gak ada backend
 
