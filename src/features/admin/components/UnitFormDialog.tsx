@@ -49,11 +49,11 @@ export function UnitFormDialog({ trigger, initialValues, onSave }: UnitFormDialo
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Unit" : "Add Unit"}</DialogTitle>
+          <DialogTitle>{isEdit ? "Edit Unit" : "Tambah Unit"}</DialogTitle>
         </DialogHeader>
         <form id="unit-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="unit-id">ID</Label>
+            <Label htmlFor="unit-id">ID Unit</Label>
             <Input
               id="unit-id"
               value={id}
@@ -64,7 +64,7 @@ export function UnitFormDialog({ trigger, initialValues, onSave }: UnitFormDialo
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="unit-title">Title</Label>
+            <Label htmlFor="unit-title">Judul Unit</Label>
             <Input
               id="unit-title"
               value={title}
@@ -74,7 +74,7 @@ export function UnitFormDialog({ trigger, initialValues, onSave }: UnitFormDialo
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="unit-image">Image URL (optional)</Label>
+            <Label htmlFor="unit-image">URL Gambar (opsional)</Label>
             <Input
               id="unit-image"
               value={imageUrl}
@@ -85,7 +85,7 @@ export function UnitFormDialog({ trigger, initialValues, onSave }: UnitFormDialo
         </form>
         <DialogFooter>
           <Button type="submit" form="unit-form">
-            {isEdit ? "Save changes" : "Add unit"}
+            {isEdit ? "Simpan Perubahan" : "Tambah Unit"}
           </Button>
         </DialogFooter>
       </DialogContent>

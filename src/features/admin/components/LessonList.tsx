@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { ChevronDown, ChevronUp, Pencil, Plus, Trash2 } from "lucide-react";
+import { ChevronDown, ChevronUp, Eye, Pencil, Plus, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "#/components/ui/alert-dialog.tsx";
-import { Button } from "#/components/ui/button.tsx";
+import { Button, buttonVariants } from "#/components/ui/button.tsx";
 import { useContentStore } from "#/content/contentStore.ts";
 import { LessonFormDialog } from "./LessonFormDialog.tsx";
 
@@ -41,7 +41,7 @@ export function LessonList({ unitId }: LessonListProps) {
   }
 
   if (!unit) {
-    return <p className="p-4 text-muted-foreground">Unit not found.</p>;
+    return <p className="p-4 text-muted-foreground">Unit tidak ditemukan.</p>;
   }
 
   return (
@@ -49,40 +49,39 @@ export function LessonList({ unitId }: LessonListProps) {
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 text-sm">
         <Link to="/admin" className="text-primary hover:underline">
-          Units
+          Unit
         </Link>
         <span className="text-muted-foreground">/</span>
         <span className="font-medium text-foreground">{unit.title}</span>
       </div>
 
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Lessons</h2>
+        <h2 className="text-lg font-semibold text-foreground">Daftar Lesson</h2>
         <LessonFormDialog
           trigger={
-            <Button size="sm">
-              <Plus className="size-4" />
-              Add lesson
+            <Button size="sm" className="w-36">
+              <Plus className="size-4" /> Tambah Lesson
             </Button>
           }
           onSave={(values) => addLesson(unitId, values)}
         />
       </div>
 
-      <div className="rounded-md border">
+      <div className="rounded-md border bg-card">
         <table className="w-full">
           <thead>
             <tr className="border-b bg-card/50">
-              <th className="p-3 text-left text-sm font-medium text-card-foreground">Title</th>
-              <th className="p-3 text-center text-sm font-medium text-card-foreground">Screens</th>
-              <th className="p-3 text-center text-sm font-medium text-card-foreground">Order</th>
-              <th className="p-3 text-center text-sm font-medium text-card-foreground">Actions</th>
+              <th className="p-3 text-left text-sm font-medium text-card-foreground">Judul</th>
+              <th className="p-3 text-center text-sm font-medium text-card-foreground">Screen</th>
+              <th className="p-3 text-center text-sm font-medium text-card-foreground">Urutan</th>
+              <th className="p-3 text-center text-sm font-medium text-card-foreground">Aksi</th>
             </tr>
           </thead>
           <tbody>
             {lessons.length === 0 && (
               <tr>
                 <td colSpan={4} className="p-6 text-center text-sm text-muted-foreground">
-                  No lessons yet. Add one above.
+                  Belum ada lesson. Tambahkan lesson baru di atas.
                 </td>
               </tr>
             )}
@@ -101,21 +100,19 @@ export function LessonList({ unitId }: LessonListProps) {
                     <div className="flex items-center justify-center gap-1">
                       <Button
                         variant="ghost"
-                        size="icon"
-                        className="size-7"
+                        size="icon-sm"
                         disabled={index === 0}
                         onClick={() => moveLesson(index, "up")}
-                        aria-label="Move up"
+                        aria-label="Pindah ke atas"
                       >
                         <ChevronUp className="size-4" />
                       </Button>
                       <Button
                         variant="ghost"
-                        size="icon"
-                        className="size-7"
+                        size="icon-sm"
                         disabled={index === lessons.length - 1}
                         onClick={() => moveLesson(index, "down")}
-                        aria-label="Move down"
+                        aria-label="Pindah ke bawah"
                       >
                         <ChevronDown className="size-4" />
                       </Button>
@@ -125,25 +122,22 @@ export function LessonList({ unitId }: LessonListProps) {
                   {/* Actions */}
                   <td className="p-3">
                     <div className="flex items-center justify-center gap-1">
-                      <Button variant="ghost" size="icon" className="size-7" asChild>
-                        <Link
-                          to="/admin/$unitId/$lessonId"
-                          params={{ unitId, lessonId: lesson.id }}
-                          aria-label="View screens"
-                        >
-                          <span className="sr-only">View</span>
-                          <span className="text-xs font-medium text-primary">View</span>
-                        </Link>
-                      </Button>
+                      <Link
+                        to="/admin/$unitId/$lessonId"
+                        params={{ unitId, lessonId: lesson.id }}
+                        className={buttonVariants({
+                          variant: "ghost",
+                          size: "icon-sm",
+                        })}
+                        title="Lihat screen"
+                        aria-label="Lihat screen"
+                      >
+                        <Eye className="size-4" />
+                      </Link>
 
                       <LessonFormDialog
                         trigger={
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="size-7"
-                            aria-label="Edit lesson"
-                          >
+                          <Button variant="ghost" size="icon-sm" aria-label="Edit lesson">
                             <Pencil className="size-4" />
                           </Button>
                         }
@@ -155,29 +149,30 @@ export function LessonList({ unitId }: LessonListProps) {
                         <AlertDialogTrigger asChild>
                           <Button
                             variant="ghost"
-                            size="icon"
-                            className="size-7 text-destructive hover:text-destructive"
-                            aria-label="Delete lesson"
+                            size="icon-sm"
+                            className="text-destructive hover:text-destructive"
+                            aria-label="Hapus lesson"
                           >
                             <Trash2 className="size-4" />
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent size="sm">
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Delete lesson?</AlertDialogTitle>
+                            <AlertDialogTitle>Hapus lesson?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This will permanently delete{" "}
+                              Tindakan ini akan menghapus lesson{" "}
                               <span className="font-medium text-foreground">{lesson.title}</span>{" "}
-                              and all its screens. This action cannot be undone.
+                              beserta semua screen di dalamnya secara permanen. Tindakan ini tidak
+                              dapat dibatalkan.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel>Batal</AlertDialogCancel>
                             <AlertDialogAction
                               variant="destructive"
                               onClick={() => deleteLesson(lesson.id)}
                             >
-                              Delete
+                              Hapus
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>

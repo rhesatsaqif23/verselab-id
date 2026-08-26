@@ -47,11 +47,11 @@ export function LessonFormDialog({ trigger, initialValues, onSave }: LessonFormD
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{isEdit ? "Edit Lesson" : "Add Lesson"}</DialogTitle>
+          <DialogTitle>{isEdit ? "Edit Lesson" : "Tambah Lesson"}</DialogTitle>
         </DialogHeader>
         <form id="lesson-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lesson-id">ID</Label>
+            <Label htmlFor="lesson-id">ID Lesson</Label>
             <Input
               id="lesson-id"
               value={id}
@@ -62,7 +62,7 @@ export function LessonFormDialog({ trigger, initialValues, onSave }: LessonFormD
             />
           </div>
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lesson-title">Title</Label>
+            <Label htmlFor="lesson-title">Judul Lesson</Label>
             <Input
               id="lesson-title"
               value={title}
@@ -74,7 +74,7 @@ export function LessonFormDialog({ trigger, initialValues, onSave }: LessonFormD
         </form>
         <DialogFooter>
           <Button type="submit" form="lesson-form">
-            {isEdit ? "Save changes" : "Add lesson"}
+            {isEdit ? "Simpan Perubahan" : "Tambah Lesson"}
           </Button>
         </DialogFooter>
       </DialogContent>

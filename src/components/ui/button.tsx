@@ -90,7 +90,9 @@ function Button({
           </span>
         </>
       )}
-      <span className="relative z-20">{children}</span>
+      <span className="relative z-20 inline-flex items-center justify-center gap-1.5">
+        {children}
+      </span>
     </Comp>
   );
 }

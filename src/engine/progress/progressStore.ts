@@ -4,7 +4,7 @@ import { persist } from "zustand/middleware";
 import { todayString } from "#/libs/date.ts";
 import { streakOnActivity } from "./streak.ts";
 
-export type DailyGoalMinutes = 3 | 10 | 20;
+export type DailyGoalMinutes = 3 | 5 | 10 | 15 | 20;
 
 export const XP_PER_SCREEN = 10;
 export const XP_PER_LESSON = 50;
