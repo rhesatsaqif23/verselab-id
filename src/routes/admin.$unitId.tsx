@@ -1,11 +1,9 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { LessonList } from "#/features/admin/components/LessonList.tsx";
+import { createFileRoute, Outlet } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/admin/$unitId")({
-  component: LessonListRoute,
+  component: AdminUnitLayout,
 });
 
-function LessonListRoute() {
-  const { unitId } = Route.useParams();
-  return <LessonList unitId={unitId} />;
+function AdminUnitLayout() {
+  return <Outlet />;
 }

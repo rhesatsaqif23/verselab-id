@@ -120,7 +120,7 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
       </div>
 
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Editor Screen</h2>
+        <h2 className="text-lg font-bold text-foreground">Editor Screen</h2>
         <AddScreenDialog onAdd={handleCreateScreen} />
       </div>
 

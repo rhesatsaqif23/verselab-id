@@ -11,7 +11,7 @@ export const Route = createFileRoute("/admin")({
 function AdminLayout() {
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Content Management</h1>
+      <h1 className="mb-4 text-2xl font-bold">Manajemen Konten</h1>
       <Outlet />
     </div>
   );

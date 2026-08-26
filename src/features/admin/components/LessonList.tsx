@@ -56,7 +56,7 @@ export function LessonList({ unitId }: LessonListProps) {
       </div>
 
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-foreground">Daftar Lesson</h2>
+        <h2 className="text-lg font-bold text-foreground">Daftar Lesson</h2>
         <LessonFormDialog
           trigger={
             <Button size="sm" className="w-36">
