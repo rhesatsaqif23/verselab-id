@@ -1,6 +1,7 @@
 // Home store: selected unit driving the hero UnitCard, changed by the UnitGrid.
 import { create } from "zustand";
-import { units, nextLesson } from "#/content/index.ts";
+import { units } from "#/content/units.ts";
+import { nextLesson } from "#/engine/path/nextLesson.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import { todayString } from "#/libs/date.ts";
 

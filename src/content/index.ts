@@ -1,12 +1,12 @@
 // Content registry: unit/lesson lookup helpers and next-lesson wiring.
-import { useContentStore } from "#/content/contentStore.ts"
 import type { Unit, Lesson, Screen } from "#/engine/types.ts"
+import { contentStore } from "#/content/contentStore.ts"
 
 // Seed on first import
-useContentStore.getState().seedIfEmpty()
+contentStore.getState().seedIfEmpty()
 
 export function findLesson(lessonId: string): { unit: Unit; lesson: Lesson } | undefined {
-  const state = useContentStore.getState()
+  const state = contentStore.getState()
   const lessonData = state.lessons[lessonId]
   if (!lessonData) return undefined
 
@@ -47,7 +47,7 @@ export { nextLesson } from "#/engine/path/nextLesson.ts"
 
 // Re-export units from store so existing imports still work
 export function getUnits(): readonly Unit[] {
-  const state = useContentStore.getState()
+  const state = contentStore.getState()
   return state.unitOrder
     .map((uid) => {
       const u = state.units[uid]
@@ -74,4 +74,5 @@ export function getUnits(): readonly Unit[] {
     .filter(Boolean) as readonly Unit[]
 }
 
-export const units = getUnits()
+// Re-export static units for all feature consumers (always populated)
+export { units } from "#/content/units.ts"
