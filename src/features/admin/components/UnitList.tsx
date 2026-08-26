@@ -106,7 +106,11 @@ export function UnitList() {
                 <td className="p-3">
                   <div className="flex items-center justify-center gap-1">
                     <Button variant="ghost" size="icon" className="size-7" asChild>
-                      <Link to="/admin/$unitId" params={{ unitId: unit.id }} aria-label="View lessons">
+                      <Link
+                        to="/admin/$unitId"
+                        params={{ unitId: unit.id }}
+                        aria-label="View lessons"
+                      >
                         <span className="sr-only">View</span>
                         <span className="text-xs font-medium text-primary">View</span>
                       </Link>

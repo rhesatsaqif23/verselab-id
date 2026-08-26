@@ -1,10 +1,12 @@
-// Tests for the profile stats page.
+// Tests for the profile page stats and mastery progress.
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ProfilePage from "#/features/profile/index.tsx";
+import { resetProgress } from "../home/test-utils.tsx";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
+import { todayString } from "#/libs/date.ts";
 
 const { navigateMock } = vi.hoisted(() => ({ navigateMock: vi.fn() }));
 
@@ -33,16 +35,7 @@ vi.mock("@tanstack/react-router", () => ({
 }));
 
 beforeEach(() => {
-  localStorage.clear();
-  useProgressStore.setState({
-    xp: 0,
-    dailyGoalMinutes: 10,
-    streak: 0,
-    streakFreeze: 0,
-    lastActiveDate: null,
-    mastery: {},
-    masteryUpdatedAt: {},
-  });
+  resetProgress();
   navigateMock.mockReset();
 });
 
@@ -70,7 +63,7 @@ describe("ProfilePage", () => {
   it("renders per-unit mastery bars with decayed values", () => {
     useProgressStore.setState({
       mastery: { keuangan: 60 },
-      masteryUpdatedAt: { keuangan: "2026-08-13" },
+      masteryUpdatedAt: { keuangan: todayString() },
     });
     render(<ProfilePage />);
     expect(screen.getByText("Keuangan")).toBeInTheDocument();

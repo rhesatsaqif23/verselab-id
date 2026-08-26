@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { seedContent } from "./seed.ts";
 
 type UnitData = {
   id: string;
@@ -52,7 +53,7 @@ type ContentState = {
   seedIfEmpty(): void;
 };
 
-export const contentStore = create<ContentState>()(set => ({
+export const contentStore = create<ContentState>()((set, get) => ({
   units: {},
   unitOrder: [],
   lessons: {},
@@ -216,7 +217,9 @@ export const contentStore = create<ContentState>()(set => ({
   },
 
   seedIfEmpty() {
-    // will be wired in Step 3
+    if (!get().seeded && get().unitOrder.length === 0) {
+      seedContent();
+    }
   },
 }));
 
