@@ -55,20 +55,18 @@ export default function UnitDetailPage({ unit }: Props) {
   };
 
   return (
-    <main className="relative mx-auto flex min-h-[calc(100vh-140px)] w-full max-w-6xl flex-col px-4 py-8 pb-32 sm:px-6 lg:px-8">
-      {/* Unit Header */}
-      <div className="mb-4 w-full">
+    <main className="relative mx-auto flex min-h-[calc(100vh-140px)] w-full max-w-6xl flex-col px-4 py-8 sm:px-6 lg:px-8">
+      {/* Single Unified Card: Unit Header + Lesson List */}
+      <div className="w-full rounded-3xl border border-border bg-card shadow-xs overflow-hidden">
         <UnitHeader unit={unit} />
-      </div>
-
-      {/* Horizontal zig-zag lesson path – height adaptive to content */}
-      <div className="w-full rounded-3xl border border-border bg-card shadow-xs">
-        <LessonList
-          unit={unit}
-          completedLessons={completedLessons}
-          selectedLessonId={selectedLessonId}
-          onSelectLesson={handleSelectLesson}
-        />
+        <div className="border-t border-border/60">
+          <LessonList
+            unit={unit}
+            completedLessons={completedLessons}
+            selectedLessonId={selectedLessonId}
+            onSelectLesson={handleSelectLesson}
+          />
+        </div>
       </div>
 
       {/* Floating Lesson CTA at the root of the page (only appears when a lesson is clicked) */}

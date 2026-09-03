@@ -6,7 +6,7 @@ type UnitHeaderProps = {
 
 export default function UnitHeader({ unit }: UnitHeaderProps) {
   return (
-    <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-6 sm:gap-8 rounded-3xl border border-border bg-card p-6 sm:p-8 shadow-xs">
+    <div className="flex flex-col sm:flex-row items-center sm:items-stretch gap-6 sm:gap-8 p-6 sm:p-8">
       {/* Left: illustration, slightly smaller */}
       <div className="flex shrink-0 items-center justify-center sm:w-36 md:w-44 lg:w-48">
         {unit.imageUrl ? (

@@ -53,16 +53,8 @@ export default function UnitCard({ unit }: UnitCardProps) {
   const isRecommended = unit.id === recommendedUnitId;
 
   return (
-    <Card className="group relative overflow-hidden border-2 border-border p-0 transition-all hover:border-primary/40">
-      {/* Whole card clickable link to unit detail */}
-      <Link
-        to="/units/$unitId"
-        params={{ unitId: unit.id }}
-        className="absolute inset-0 z-0 cursor-pointer pointer-events-auto"
-        aria-label={`Buka detail ${unit.title}`}
-      />
-
-      <CardContent className="p-0 pointer-events-none">
+    <Card className="group relative overflow-hidden border-2 border-border p-0 transition-all hover:border-primary/40 cursor-grab">
+      <CardContent className="p-0">
         <div className="relative flex flex-col items-center gap-5 px-8 py-8 text-center">
           {/* Soft radial bg decoration */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(21,145,220,0.10)_0%,transparent_70%)]" />

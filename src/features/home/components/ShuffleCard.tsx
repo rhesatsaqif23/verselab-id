@@ -169,17 +169,23 @@ export default function ShuffleCard() {
       if (animating) return;
 
       if (rawX < -TURN_THRESHOLD) {
+        try {
+          (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+        } catch {}
+        setDragging(false);
         setTurning(true);
         commitNext();
         setDragX(0);
-        pendingPointerX.current = e.clientX;
         return;
       }
       if (rawX > TURN_THRESHOLD) {
+        try {
+          (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+        } catch {}
+        setDragging(false);
         setTurning(true);
         commitPrev();
         setDragX(0);
-        pendingPointerX.current = e.clientX;
         return;
       }
 
@@ -256,7 +262,7 @@ export default function ShuffleCard() {
                 opacity: 1,
                 zIndex: 30,
                 cursor: dragging ? "grabbing" : "grab",
-                touchAction: "pan-y",
+                touchAction: "none",
                 userSelect: "none",
                 transition: frontTransition,
               }}
