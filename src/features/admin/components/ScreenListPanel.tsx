@@ -36,12 +36,12 @@ export function ScreenListPanel({
 
   return (
     <div className="rounded-md border bg-card">
-      <div className="border-b p-3 text-sm font-bold text-card-foreground">
+      <div className="border-b p-3 text-base font-bold text-card-foreground">
         Daftar Screen ({validScreens.length})
       </div>
       <div className="max-h-150 divide-y overflow-y-auto">
         {validScreens.length === 0 && (
-          <div className="p-4 text-center text-sm text-muted-foreground">
+          <div className="p-4 text-center text-base text-muted-foreground">
             Belum ada screen di lesson ini.
           </div>
         )}
@@ -60,42 +60,40 @@ export function ScreenListPanel({
                   <Badge variant="secondary" className="border-0 text-xs uppercase">
                     {screen.type}
                   </Badge>
-                  <span className="text-xs text-muted-foreground">#{index + 1}</span>
+                  <span className="text-sm text-muted-foreground">#{index + 1}</span>
                 </div>
-                <p className="truncate text-sm text-foreground">{screen.prompt}</p>
+                <p className="truncate text-base text-foreground">{screen.prompt}</p>
               </div>
 
               <div className="flex items-center gap-0.5" onClick={(e) => e.stopPropagation()}>
                 <Button
                   variant="shadowless"
-                  size="icon"
-                  className="size-6"
+                  size="icon-sm"
                   disabled={index === 0}
                   onClick={() => onMoveScreen(index, "up")}
                   aria-label="Pindah ke atas"
                 >
-                  <ChevronUp className="size-3.5" />
+                  <ChevronUp className="size-4" />
                 </Button>
                 <Button
                   variant="shadowless"
-                  size="icon"
-                  className="size-6"
+                  size="icon-sm"
                   disabled={index === validScreens.length - 1}
                   onClick={() => onMoveScreen(index, "down")}
                   aria-label="Pindah ke bawah"
                 >
-                  <ChevronDown className="size-3.5" />
+                  <ChevronDown className="size-4" />
                 </Button>
 
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
                       variant="shadowless"
-                      size="icon"
-                      className="size-6 text-destructive hover:text-destructive"
+                      size="icon-sm"
+                      className="text-destructive hover:text-destructive"
                       aria-label="Hapus screen"
                     >
-                      <Trash2 className="size-3.5" />
+                      <Trash2 className="size-4" />
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent size="sm">

@@ -36,24 +36,30 @@ export function ScreenForm({ screen, onSave }: ScreenFormProps) {
     <div className="space-y-4">
       {/* Base Fields */}
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="prompt">Pertanyaan / Prompt</Label>
+        <Label htmlFor="prompt" className="text-base">
+          Pertanyaan / Prompt
+        </Label>
         <Textarea
           id="prompt"
           value={formData.prompt}
           onChange={(e) => handleChange("prompt", e.target.value)}
           placeholder="Teks pertanyaan / prompt"
           rows={3}
+          className="md:text-base"
         />
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="explain">Penjelasan</Label>
+        <Label htmlFor="explain" className="text-base">
+          Penjelasan
+        </Label>
         <Textarea
           id="explain"
           value={formData.explain}
           onChange={(e) => handleChange("explain", e.target.value)}
           placeholder="Teks penjelasan yang muncul setelah pengguna menjawab"
           rows={3}
+          className="md:text-base"
         />
       </div>
 

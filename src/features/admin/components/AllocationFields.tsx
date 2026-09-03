@@ -56,8 +56,8 @@ export function AllocationFields({ screen, onChange }: AllocationFieldsProps) {
   return (
     <div className="space-y-4 border-t pt-2">
       <div className="flex items-center justify-between">
-        <Label>Kategori Alokasi</Label>
-        <Button variant="outline" size="sm" onClick={handleAddCategory}>
+        <Label className="text-base">Kategori Alokasi</Label>
+        <Button variant="outline" size="sm" className="text-sm" onClick={handleAddCategory}>
           <Plus className="mr-1 size-3.5" /> Tambah Kategori
         </Button>
       </div>
@@ -69,13 +69,15 @@ export function AllocationFields({ screen, onChange }: AllocationFieldsProps) {
               value={cat}
               onChange={(e) => handleCategoryChange(i, e.target.value)}
               placeholder={`Kategori ${i + 1}`}
+              className="md:text-base"
             />
             <Button
-              variant="ghost"
-              size="icon"
-              className="size-9 text-destructive"
+              variant="shadowless"
+              size="icon-sm"
+              className="text-destructive hover:text-destructive"
               onClick={() => handleRemoveCategory(i)}
               disabled={categories.length <= 1}
+              aria-label="Hapus kategori"
             >
               <Trash2 className="size-4" />
             </Button>
@@ -84,22 +86,22 @@ export function AllocationFields({ screen, onChange }: AllocationFieldsProps) {
       </div>
 
       <div className="space-y-3 border-t pt-2">
-        <Label>Validasi Aturan (Rule)</Label>
+        <Label className="text-base">Validasi Aturan (Rule)</Label>
         <div className="grid grid-cols-3 gap-2">
           <div className="col-span-1 flex flex-col gap-1.5">
-            <Label htmlFor="rule-category" className="text-xs">
+            <Label htmlFor="rule-category" className="text-sm">
               Kategori
             </Label>
             <Select
               value={rule.category}
               onValueChange={(val) => onChange({ rule: { ...rule, category: val } })}
             >
-              <SelectTrigger id="rule-category" className="w-full">
+              <SelectTrigger id="rule-category" className="w-full text-base">
                 <SelectValue placeholder="Kategori" />
               </SelectTrigger>
               <SelectContent>
                 {categories.map((cat, i) => (
-                  <SelectItem key={i} value={cat}>
+                  <SelectItem key={i} value={cat} className="text-base">
                     {cat}
                   </SelectItem>
                 ))}
@@ -108,7 +110,7 @@ export function AllocationFields({ screen, onChange }: AllocationFieldsProps) {
           </div>
 
           <div className="col-span-1 flex flex-col gap-1.5">
-            <Label htmlFor="rule-min" className="text-xs">
+            <Label htmlFor="rule-min" className="text-sm">
               Min (%)
             </Label>
             <Input
@@ -124,11 +126,12 @@ export function AllocationFields({ screen, onChange }: AllocationFieldsProps) {
                 })
               }
               placeholder="Min %"
+              className="md:text-base"
             />
           </div>
 
           <div className="col-span-1 flex flex-col gap-1.5">
-            <Label htmlFor="rule-max" className="text-xs">
+            <Label htmlFor="rule-max" className="text-sm">
               Max (%)
             </Label>
             <Input
@@ -144,6 +147,7 @@ export function AllocationFields({ screen, onChange }: AllocationFieldsProps) {
                 })
               }
               placeholder="Max %"
+              className="md:text-base"
             />
           </div>
         </div>

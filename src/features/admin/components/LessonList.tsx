@@ -56,10 +56,10 @@ export function LessonList({ unitId }: LessonListProps) {
       </div>
 
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-foreground">Daftar Lesson</h2>
+        <h2 className="text-xl font-bold text-foreground">Daftar Lesson</h2>
         <LessonFormDialog
           trigger={
-            <Button size="sm" className="w-36">
+            <Button size="sm" className="w-36 text-sm">
               <Plus className="size-4" /> Tambah Lesson
             </Button>
           }
@@ -71,16 +71,16 @@ export function LessonList({ unitId }: LessonListProps) {
         <table className="w-full">
           <thead>
             <tr className="border-b bg-card/50">
-              <th className="p-3 text-left text-base font-bold text-card-foreground">Judul</th>
-              <th className="p-3 text-center text-base font-bold text-card-foreground">Screen</th>
-              <th className="p-3 text-center text-base font-bold text-card-foreground">Urutan</th>
-              <th className="p-3 pr-12 text-right text-base font-bold text-card-foreground">Aksi</th>
+              <th className="p-3 text-left text-lg font-bold text-card-foreground">Judul</th>
+              <th className="p-3 text-center text-lg font-bold text-card-foreground">Screen</th>
+              <th className="p-3 text-center text-lg font-bold text-card-foreground">Urutan</th>
+              <th className="p-3 pr-12 text-right text-lg font-bold text-card-foreground">Aksi</th>
             </tr>
           </thead>
           <tbody>
             {lessons.length === 0 && (
               <tr>
-                <td colSpan={4} className="p-6 text-center text-sm text-muted-foreground">
+                <td colSpan={4} className="p-6 text-center text-base text-muted-foreground">
                   Belum ada lesson. Tambahkan lesson baru di atas.
                 </td>
               </tr>
@@ -90,31 +90,31 @@ export function LessonList({ unitId }: LessonListProps) {
               return (
                 <tr key={lesson.id} className="border-b last:border-0 hover:bg-card/30">
                   <td className="p-3">
-                    <div className="font-medium text-foreground">{lesson.title}</div>
-                    <div className="text-xs text-muted-foreground">{lesson.id}</div>
+                    <div className="text-lg font-medium text-foreground">{lesson.title}</div>
+                    <div className="text-sm text-muted-foreground">{lesson.id}</div>
                   </td>
-                  <td className="p-3 text-center text-sm tabular-nums">{lesson.screenCount}</td>
+                  <td className="p-3 text-center text-base tabular-nums">{lesson.screenCount}</td>
 
                   {/* Order */}
                   <td className="p-3">
                     <div className="flex items-center justify-center gap-1">
                       <Button
                         variant="shadowless"
-                        size="icon-sm"
+                        size="icon"
                         disabled={index === 0}
                         onClick={() => moveLesson(index, "up")}
                         aria-label="Pindah ke atas"
                       >
-                        <ChevronUp className="size-4" />
+                        <ChevronUp className="size-5" />
                       </Button>
                       <Button
                         variant="shadowless"
-                        size="icon-sm"
+                        size="icon"
                         disabled={index === lessons.length - 1}
                         onClick={() => moveLesson(index, "down")}
                         aria-label="Pindah ke bawah"
                       >
-                        <ChevronDown className="size-4" />
+                        <ChevronDown className="size-5" />
                       </Button>
                     </div>
                   </td>
@@ -127,18 +127,18 @@ export function LessonList({ unitId }: LessonListProps) {
                         params={{ unitId, lessonId: lesson.id }}
                         className={buttonVariants({
                           variant: "shadowless",
-                          size: "icon-sm",
+                          size: "icon",
                         })}
                         title="Lihat screen"
                         aria-label="Lihat screen"
                       >
-                        <Eye className="size-4" />
+                        <Eye className="size-5" />
                       </Link>
 
                       <LessonFormDialog
                         trigger={
-                          <Button variant="shadowless" size="icon-sm" aria-label="Edit lesson">
-                            <Pencil className="size-4" />
+                          <Button variant="shadowless" size="icon" aria-label="Edit lesson">
+                            <Pencil className="size-5" />
                           </Button>
                         }
                         initialValues={{ id: lesson.id, title: lesson.title }}
@@ -149,11 +149,11 @@ export function LessonList({ unitId }: LessonListProps) {
                         <AlertDialogTrigger asChild>
                           <Button
                             variant="shadowless"
-                            size="icon-sm"
+                            size="icon"
                             className="text-destructive hover:text-destructive"
                             aria-label="Hapus lesson"
                           >
-                            <Trash2 className="size-4" />
+                            <Trash2 className="size-5" />
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent size="sm">

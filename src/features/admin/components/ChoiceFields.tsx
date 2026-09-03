@@ -50,8 +50,8 @@ export function ChoiceFields({ screen, onChange }: ChoiceFieldsProps) {
   return (
     <div className="space-y-4 border-t pt-2">
       <div className="flex items-center justify-between">
-        <Label>Pilihan Jawaban</Label>
-        <Button variant="shadowless" size="sm" onClick={handleAddOption}>
+        <Label className="text-base">Pilihan Jawaban</Label>
+        <Button variant="shadowless" size="sm" className="text-sm" onClick={handleAddOption}>
           <Plus className="mr-1 size-3.5" /> Tambah Pilihan
         </Button>
       </div>
@@ -63,13 +63,15 @@ export function ChoiceFields({ screen, onChange }: ChoiceFieldsProps) {
               value={opt.label}
               onChange={(e) => handleOptionChange(i, e.target.value)}
               placeholder={`Pilihan ${i + 1}`}
+              className="md:text-base"
             />
             <Button
-              variant="ghost"
-              size="icon"
-              className="size-9 text-destructive"
+              variant="shadowless"
+              size="icon-sm"
+              className="text-destructive hover:text-destructive"
               onClick={() => handleRemoveOption(i)}
               disabled={options.length <= 1}
+              aria-label="Hapus pilihan"
             >
               <Trash2 className="size-4" />
             </Button>
@@ -78,14 +80,16 @@ export function ChoiceFields({ screen, onChange }: ChoiceFieldsProps) {
       </div>
 
       <div className="flex flex-col gap-1.5">
-        <Label htmlFor="correct-id">Jawaban Benar</Label>
+        <Label htmlFor="correct-id" className="text-base">
+          Jawaban Benar
+        </Label>
         <Select value={screen.correctId} onValueChange={(val) => onChange({ correctId: val })}>
-          <SelectTrigger id="correct-id" className="w-full">
+          <SelectTrigger id="correct-id" className="w-full text-base">
             <SelectValue placeholder="Pilih jawaban benar" />
           </SelectTrigger>
           <SelectContent>
             {options.map((opt) => (
-              <SelectItem key={opt.id} value={opt.id}>
+              <SelectItem key={opt.id} value={opt.id} className="text-base">
                 {opt.label || opt.id}
               </SelectItem>
             ))}

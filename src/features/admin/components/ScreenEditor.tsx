@@ -94,7 +94,7 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
   return (
     <div className="space-y-4">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-1.5 text-sm">
+      <div className="flex items-center gap-1.5 text-base">
         <Link to="/admin" className="text-primary hover:underline">
           Unit
         </Link>
@@ -107,7 +107,7 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
       </div>
 
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-foreground">Editor Screen</h2>
+        <h2 className="text-xl font-bold text-foreground">Editor Screen</h2>
         <AddScreenDialog onAdd={handleCreateScreen} />
       </div>
 
@@ -125,7 +125,11 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
 
         {/* Right Column: Screen Form Editor & Preview */}
         <div className="md:col-span-7 lg:col-span-8">
-          <ScreenEditPanel activeScreen={activeScreen} onUpdateScreen={updateScreen} />
+          <ScreenEditPanel
+            activeScreen={activeScreen}
+            onUpdateScreen={updateScreen}
+            onDeleteScreen={deleteScreen}
+          />
         </div>
       </div>
     </div>

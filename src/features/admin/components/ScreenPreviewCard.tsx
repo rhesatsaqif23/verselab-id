@@ -107,17 +107,14 @@ export function ScreenPreviewCard({ screen }: ScreenPreviewCardProps) {
     <div className="space-y-4 rounded-md border bg-card p-5">
       <div className="flex items-center justify-between border-b pb-3">
         <div className="flex items-center gap-2">
-          <h3 className="text-base font-semibold">Preview Screen</h3>
-          <span className="text-xs text-muted">Pratinjau langsung</span>
+          <h3 className="text-lg font-semibold">Pratinjau Halaman</h3>
         </div>
         <Badge variant="outline" className="text-xs uppercase">
           {debouncedScreen.type}
         </Badge>
       </div>
 
-      <div className="rounded-xl border border-border bg-muted/15 p-5">
-        <div key={reloadKey}>{renderScreenContent(debouncedScreen)}</div>
-      </div>
+      <div key={reloadKey}>{renderScreenContent(debouncedScreen)}</div>
     </div>
   );
 }
