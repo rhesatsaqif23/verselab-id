@@ -62,7 +62,7 @@ export default function UnitMapBottomBar({
         {/* Right: Mulai CTA Button */}
         <div className="flex items-center shrink-0">
           {status === "previous" && (
-            <Button asChild size="lg" className="rounded-2xl px-6 sm:px-8 font-bold text-base shadow-md">
+            <Button asChild size="lg" className="rounded-2xl px-6 sm:px-8 font-bold text-base">
               <Link to="/lesson/$lessonId" params={{ lessonId: currentLesson.id }}>
                 <RotateCcw className="mr-2 size-5" />
                 Main Lagi
@@ -71,7 +71,7 @@ export default function UnitMapBottomBar({
           )}
 
           {status === "current" && (
-            <Button asChild size="lg" className="rounded-2xl px-6 sm:px-8 font-bold text-base shadow-md">
+            <Button asChild size="lg" className="rounded-2xl px-6 sm:px-8 font-bold text-base">
               <Link to="/lesson/$lessonId" params={{ lessonId: currentLesson.id }}>
                 <PlayCircle className="mr-2 size-5" />
                 Mulai Belajar

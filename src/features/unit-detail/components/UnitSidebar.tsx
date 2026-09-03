@@ -106,7 +106,7 @@ export default function UnitSidebar({
 
           {/* Topic list */}
           <div className="mt-5 flex-1 overflow-y-auto pr-1">
-            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            <span className="text-sm font-black tracking-wide">
               Daftar Topik ({filteredLessons.length})
             </span>
             <div className="mt-2.5 flex flex-col gap-2">
