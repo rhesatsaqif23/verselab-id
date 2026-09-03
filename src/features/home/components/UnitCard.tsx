@@ -58,11 +58,11 @@ export default function UnitCard({ unit }: UnitCardProps) {
       <Link
         to="/units/$unitId"
         params={{ unitId: unit.id }}
-        className="absolute inset-0 z-0 cursor-pointer"
+        className="absolute inset-0 z-0 cursor-pointer pointer-events-auto"
         aria-label={`Buka detail ${unit.title}`}
       />
 
-      <CardContent className="p-0">
+      <CardContent className="p-0 pointer-events-none">
         <div className="relative flex flex-col items-center gap-5 px-8 py-8 text-center">
           {/* Soft radial bg decoration */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(21,145,220,0.10)_0%,transparent_70%)]" />
@@ -100,13 +100,12 @@ export default function UnitCard({ unit }: UnitCardProps) {
                   {currentLesson.title}
                 </span>
               </div>
-              <div className="size-3 shrink-0 rounded-full bg-muted-foreground/30" />
             </div>
           )}
 
           {/* CTA button: Mulai opening current lesson directly */}
           {currentLesson && (
-            <Button asChild size="lg" className="relative z-10 mt-1 w-full">
+            <Button asChild size="lg" className="relative z-10 mt-1 w-full pointer-events-auto">
               <Link to="/lesson/$lessonId" params={{ lessonId: currentLesson.id }}>
                 <PlayCircle className="mr-2 size-6" />
                 Mulai

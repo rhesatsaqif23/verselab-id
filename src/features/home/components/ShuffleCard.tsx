@@ -129,12 +129,12 @@ export default function ShuffleCard() {
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     if (e.button !== 0) return;
-    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    // Don't capture pointer immediately, only track start position
+    // so clicks/taps on the card or links bubble normally
     stopRaf();
     startX.current = e.clientX;
     setAnimating(false);
     setTurning(false);
-    setDragging(true);
   }, []);
 
   const onPointerMove = useCallback(
@@ -143,9 +143,20 @@ export default function ShuffleCard() {
         pendingPointerX.current = e.clientX;
         return;
       }
-      if (!dragging || animating) return;
 
       const rawX = e.clientX - startX.current;
+
+      // Start drag threshold: only capture pointer if user actually moves > 5px
+      if (!dragging) {
+        if (Math.abs(rawX) > 5) {
+          (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+          setDragging(true);
+        } else {
+          return;
+        }
+      }
+
+      if (animating) return;
 
       if (rawX < -TURN_THRESHOLD) {
         setTurning(true);
@@ -169,8 +180,12 @@ export default function ShuffleCard() {
 
   const onPointerUp = useCallback(
     (e: React.PointerEvent) => {
-      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
-      setDragging(false);
+      if (dragging) {
+        try {
+          (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+        } catch {}
+        setDragging(false);
+      }
 
       if (turning || animating) return;
 

@@ -14,42 +14,40 @@ type LessonCtaProps = {
 export default function LessonCta({ lesson, status, isVisible }: LessonCtaProps) {
   return (
     <div
-      className={`sticky bottom-4 z-20 w-full transition-all duration-300 ease-in-out ${
+      className={`w-full transition-all duration-300 ease-in-out ${
         isVisible
           ? "opacity-100 translate-y-0 pointer-events-auto"
           : "opacity-0 translate-y-8 pointer-events-none"
       }`}
     >
-      <Card className="border-2 border-border shadow-2xl bg-card/95 backdrop-blur-sm rounded-2xl overflow-hidden">
-        <CardContent className="flex flex-col items-center gap-4 p-5 text-center">
-          <p className="text-base font-bold text-foreground sm:text-lg">
+      <Card className="border-2 border-border shadow-2xl bg-card rounded-2xl overflow-hidden">
+        <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-3 text-center sm:text-left">
+          <p className="text-base font-bold text-foreground sm:text-lg truncate max-w-sm">
             {lesson.title}
           </p>
 
-          <div className="flex w-full items-center gap-2">
+          <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
             {status === "previous" && (
-              <>
-                <Button asChild size="lg" className="flex-1">
-                  <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }}>
-                    <RotateCcw className="mr-2 size-5" />
-                    Main Lagi
-                  </Link>
-                </Button>
-              </>
+              <Button asChild size="default" className="w-full sm:w-auto px-6">
+                <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }}>
+                  <RotateCcw className="mr-2 size-4" />
+                  Main Lagi
+                </Link>
+              </Button>
             )}
 
             {status === "current" && (
-              <Button asChild size="lg" className="flex-1">
+              <Button asChild size="default" className="w-full sm:w-auto px-6">
                 <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }}>
-                  <PlayCircle className="mr-2 size-5" />
+                  <PlayCircle className="mr-2 size-4" />
                   Mulai
                 </Link>
               </Button>
             )}
 
             {status === "unlocked" && (
-              <Button disabled size="lg" variant="secondary" className="flex-1 opacity-70">
-                <Lock className="mr-2 size-5" />
+              <Button disabled size="default" variant="secondary" className="w-full sm:w-auto px-6 opacity-70">
+                <Lock className="mr-2 size-4" />
                 Terkunci
               </Button>
             )}

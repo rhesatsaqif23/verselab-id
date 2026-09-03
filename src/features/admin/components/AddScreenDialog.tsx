@@ -135,7 +135,7 @@ export function AddScreenDialog({ onAdd }: AddScreenDialogProps) {
               <Label>Preview Struktur Screen</Label>
               <span className="text-xs text-muted">Contoh dummy</span>
             </div>
-            <div className="max-h-[340px] overflow-y-auto rounded-xl border border-border bg-muted/15 p-4">
+            <div className="max-h-85 overflow-y-auto rounded-xl border border-border bg-muted/15 p-4">
               <div key={type}>
                 <ScreenPreview type={type} />
               </div>

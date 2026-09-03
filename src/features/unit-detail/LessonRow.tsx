@@ -24,35 +24,35 @@ export default function LessonRow({
 }: LessonRowProps) {
   const IconComponent = getLessonIcon(lesson.icon);
 
-  // Disc outer styles
+  // Solid, non-transparent base styles with consistent size (size-28 sm:size-32)
   const discBase =
-    "relative flex shrink-0 items-center justify-center rounded-3xl transition-all duration-300 select-none cursor-pointer";
+    "relative flex shrink-0 items-center justify-center size-28 sm:size-32 rounded-3xl transition-all duration-200 select-none cursor-pointer bg-card border-2";
 
   const discCardStyle = (() => {
     if (status === "previous") {
-      return `${discBase} size-24 sm:size-28 border-2 border-border bg-card shadow-sm ${
+      return `${discBase} border-border shadow-md ${
         isSelected ? "ring-4 ring-primary/40 border-primary" : ""
       }`;
     }
     if (status === "current") {
-      return `${discBase} size-28 sm:size-32 border-2 border-primary bg-card shadow-xl ring-4 ring-primary/20 ${
+      return `${discBase} border-primary shadow-xl ring-4 ring-primary/20 ${
         isSelected ? "ring-6 ring-primary/50" : ""
       }`;
     }
-    // unlocked (future / locked)
-    return `${discBase} size-24 sm:size-28 border-2 border-border/80 bg-card/60 opacity-85 ${
+    // unlocked (future uncompleted lessons)
+    return `${discBase} border-border shadow-sm opacity-90 ${
       isSelected ? "ring-4 ring-muted-foreground/30 border-muted-foreground" : ""
     }`;
   })();
 
   const titleClass = (() => {
     if (status === "previous") {
-      return "text-sm sm:text-base font-semibold text-foreground/80 text-center max-w-[140px]";
+      return "text-xs sm:text-sm font-semibold text-foreground/80 text-center max-w-[130px] line-clamp-2";
     }
     if (status === "current") {
-      return "text-sm sm:text-base font-black text-foreground text-center max-w-[150px]";
+      return "text-xs sm:text-sm font-black text-foreground text-center max-w-[130px] line-clamp-2";
     }
-    return "text-sm sm:text-base font-medium text-muted-foreground text-center max-w-[140px]";
+    return "text-xs sm:text-sm font-medium text-muted-foreground text-center max-w-[130px] line-clamp-2";
   })();
 
   return (
@@ -66,25 +66,25 @@ export default function LessonRow({
           onSelect();
         }
       }}
-      className={`group flex flex-col items-center gap-3 p-2 transition-transform cursor-pointer ${zigzagOffsetClass}`}
+      className={`group flex flex-col items-center gap-3 p-1 select-none transition-transform cursor-pointer ${zigzagOffsetClass}`}
     >
-      {/* Lesson Card / Box */}
+      {/* Solid Lesson Card */}
       <div className={discCardStyle}>
-        {/* Status indicator badge (top-right or top-left) */}
-        <div className="absolute top-2 left-2 flex items-center gap-1">
-          <span className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider">
+        {/* Sequence tag */}
+        <div className="absolute top-2.5 left-3 flex items-center">
+          <span className="text-[11px] font-bold text-muted-foreground">
             #{index + 1}
           </span>
         </div>
 
         {status === "previous" && (
-          <div className="absolute top-2 right-2 flex size-5 items-center justify-center rounded-full bg-success text-white shadow-xs">
-            <Check className="size-3.5 stroke-[3]" />
+          <div className="absolute top-2.5 right-3 flex size-5 items-center justify-center rounded-full bg-success text-white shadow-xs">
+            <Check className="size-3.5 stroke-3" />
           </div>
         )}
 
         {status === "unlocked" && (
-          <div className="absolute top-2 right-2 flex size-5 items-center justify-center rounded-full bg-muted text-muted-foreground">
+          <div className="absolute top-2.5 right-3 flex size-5 items-center justify-center rounded-full bg-muted text-muted-foreground">
             <Lock className="size-3 stroke-[2.5]" />
           </div>
         )}
@@ -92,7 +92,7 @@ export default function LessonRow({
         {/* Center Lucide Icon */}
         <div className="flex flex-col items-center justify-center">
           <IconComponent
-            className={`size-10 sm:size-12 transition-transform group-hover:scale-110 ${
+            className={`size-11 sm:size-12 transition-transform group-hover:scale-105 ${
               status === "current"
                 ? "text-primary"
                 : status === "previous"

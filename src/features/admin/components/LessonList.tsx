@@ -60,7 +60,7 @@ export function LessonList({ unitId }: LessonListProps) {
       </div>
 
       {/* Breadcrumb */}
-      <div className="flex items-center gap-1.5 text-base">
+      <div className="flex items-center gap-1.5 text-lg">
         <Link to="/admin" className="text-primary hover:underline">
           Unit
         </Link>
