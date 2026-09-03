@@ -65,7 +65,7 @@ describe("useProgressStore", () => {
   });
 
   it("awardLessonCompletion adds the bonus XP and registers activity", () => {
-    store().awardLessonCompletion("unit-a");
+    store().awardLessonCompletion("unit-a", "lesson-a");
     expect(store().xp).toBe(XP_PER_LESSON);
     expect(store().streak).toBe(1);
     expect(store().lastActiveDate).not.toBeNull();
@@ -74,12 +74,12 @@ describe("useProgressStore", () => {
 
   it("awardLessonCompletion seeds mastery only when the unit is not started", () => {
     useProgressStore.setState({ mastery: { "unit-a": 60 } });
-    store().awardLessonCompletion("unit-a");
+    store().awardLessonCompletion("unit-a", "lesson-a");
     expect(store().mastery["unit-a"]).toBe(60);
   });
 
   it("awardLessonCompletion records the updatedAt date", () => {
-    store().awardLessonCompletion("unit-a");
+    store().awardLessonCompletion("unit-a", "lesson-a");
     expect(store().masteryUpdatedAt["unit-a"]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 
@@ -91,7 +91,7 @@ describe("useProgressStore", () => {
   it("persists state to localStorage", () => {
     store().awardXp(60);
     store().setDailyGoal(20);
-    store().awardLessonCompletion("unit-a");
+    store().awardLessonCompletion("unit-a", "lesson-a");
     const raw = localStorage.getItem("verselab-progress-v1");
     expect(raw).not.toBeNull();
     const parsed = JSON.parse(raw as string);

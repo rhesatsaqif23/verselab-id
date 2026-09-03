@@ -22,12 +22,13 @@ type ProgressState = {
   activeDays: string[];
   mastery: Record<string, number>;
   masteryUpdatedAt: Record<string, string>;
+  completedLessons: string[]; // lesson IDs the user has finished
 };
 
 type ProgressActions = {
   awardXp: (amount: number) => void;
   awardScreenResult: (unitId: string, correct: boolean) => void;
-  awardLessonCompletion: (unitId: string) => void;
+  awardLessonCompletion: (unitId: string, lessonId: string) => void;
   setDailyGoal: (minutes: DailyGoalMinutes) => void;
   registerActivity: (date?: string) => void;
 };
@@ -47,6 +48,7 @@ export const useProgressStore = create<ProgressState & ProgressActions>()(
       activeDays: [],
       mastery: {},
       masteryUpdatedAt: {},
+      completedLessons: [],
 
       awardXp: (amount) => set((state) => ({ xp: Math.max(0, state.xp + amount) })),
 
@@ -70,7 +72,7 @@ export const useProgressStore = create<ProgressState & ProgressActions>()(
           };
         }),
 
-      awardLessonCompletion: (unitId) =>
+      awardLessonCompletion: (unitId, lessonId) =>
         set((state) => {
           const today = todayString();
           const result = streakOnActivity(
@@ -84,6 +86,10 @@ export const useProgressStore = create<ProgressState & ProgressActions>()(
           const activeDays = state.activeDays.includes(today)
             ? state.activeDays
             : [...state.activeDays, today];
+          // Deduplicate lesson IDs
+          const completed = state.completedLessons.includes(lessonId)
+            ? state.completedLessons
+            : [...state.completedLessons, lessonId];
           return {
             xp: state.xp + XP_PER_LESSON,
             streak: result.streak,
@@ -95,6 +101,7 @@ export const useProgressStore = create<ProgressState & ProgressActions>()(
               ...state.masteryUpdatedAt,
               [unitId]: today,
             },
+            completedLessons: completed,
           };
         }),
 

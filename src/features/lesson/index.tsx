@@ -47,7 +47,7 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
     for (const result of answerResults) {
       useProgressStore.getState().awardScreenResult(unit.id, result.correct);
     }
-    useProgressStore.getState().awardLessonCompletion(unit.id);
+    useProgressStore.getState().awardLessonCompletion(unit.id, lesson.id);
     const masteryAfter = useProgressStore.getState().mastery[unit.id] ?? null;
 
     const totalXpEarned = correctCount * XP_PER_SCREEN + XP_PER_LESSON;

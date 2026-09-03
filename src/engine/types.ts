@@ -38,6 +38,7 @@ export type Lesson = {
 export type Unit = {
   id: string;
   title: string;
+  description?: string;
   lessons: readonly Lesson[];
   imageUrl?: string;
 };

@@ -21,24 +21,32 @@ export const units = [
   {
     id: "keuangan",
     title: "Keuangan",
+    description:
+      "Bangun fondasi keuangan pribadi yang kuat — dari menabung lebih awal, memahami nilai waktu uang, sampai mengelola anggaran dan cicilan.",
     imageUrl: "/unit/keuangan.webp",
     lessons: [nabungAwalLesson, nilaiWaktuUangLesson, anggaranBulananLesson, hutangCicilanLesson],
   },
   {
     id: "akuntansi",
     title: "Akuntansi",
+    description:
+      "Pahami cara kerja laporan keuangan bisnis — dari persamaan dasar akuntansi, pencatatan transaksi, hingga membaca laba rugi dan arus kas.",
     imageUrl: "/unit/akuntansi.webp",
     lessons: [persamaanLesson, transaksiLesson, labaRugiLesson, arusKasLesson],
   },
   {
     id: "manajemen-produk",
     title: "Manajemen Produk",
+    description:
+      "Latih cara berpikir seorang product manager — dari menemukan masalah nyata, memrioritaskan fitur, mengukur metrik, hingga memvalidasi MVP.",
     imageUrl: "/unit/manajemen-produk.webp",
     lessons: [menemukanMasalahLesson, prioritasFiturLesson, metrikProdukLesson, mvpValidasiLesson],
   },
   {
     id: "kewirausahaan",
     title: "Kewirausahaan",
+    description:
+      "Kuasai logika bisnis dari nol — unit ekonomi, titik impas, penetapan harga, dan cara memvalidasi ide sebelum terlanjur membangunnya.",
     imageUrl: "/unit/kewirausahaan.webp",
     lessons: [unitEkonomiLesson, titikImpasLesson, menentukanHargaLesson, validasiIdeLesson],
   },
