@@ -93,6 +93,11 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-black text-foreground">Editor Screen</h1>
+        <AddScreenDialog onAdd={handleCreateScreen} />
+      </div>
+
       {/* Breadcrumb */}
       <div className="flex items-center gap-1.5 text-base">
         <Link to="/admin" className="text-primary hover:underline">
@@ -104,11 +109,6 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
         </Link>
         <span className="text-muted-foreground">/</span>
         <span className="font-medium text-foreground">{lesson.title}</span>
-      </div>
-
-      <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-foreground">Editor Screen</h2>
-        <AddScreenDialog onAdd={handleCreateScreen} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-12">

@@ -47,16 +47,8 @@ export function LessonList({ unitId }: LessonListProps) {
   return (
     <div className="space-y-4">
       {/* Breadcrumb */}
-      <div className="flex items-center gap-1.5 text-sm">
-        <Link to="/admin" className="text-primary hover:underline">
-          Unit
-        </Link>
-        <span className="text-muted-foreground">/</span>
-        <span className="font-medium text-foreground">{unit.title}</span>
-      </div>
-
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-foreground">Daftar Lesson</h2>
+        <h1 className="text-2xl font-black text-foreground">Daftar Lesson</h1>
         <LessonFormDialog
           trigger={
             <Button size="sm" className="w-36 text-sm">
@@ -65,6 +57,15 @@ export function LessonList({ unitId }: LessonListProps) {
           }
           onSave={(values) => addLesson(unitId, values)}
         />
+      </div>
+
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-1.5 text-base">
+        <Link to="/admin" className="text-primary hover:underline">
+          Unit
+        </Link>
+        <span className="text-muted-foreground">/</span>
+        <span className="font-medium text-foreground">{unit.title}</span>
       </div>
 
       <div className="rounded-md border bg-card">

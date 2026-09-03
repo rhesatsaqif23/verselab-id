@@ -38,7 +38,7 @@ export function UnitList() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-bold text-foreground">Daftar Unit</h2>
+        <h1 className="text-2xl font-black text-foreground">Daftar Unit</h1>
         <UnitFormDialog
           trigger={
             <Button size="sm" className="w-36 text-sm">

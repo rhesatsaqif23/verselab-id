@@ -52,8 +52,10 @@ export function ScreenListPanel({
               key={screen.id}
               onClick={() => onSelectScreen(screen.id)}
               className={`flex cursor-pointer items-center justify-between p-3 transition-colors ${
-                isSelected ? "bg-accent/50 font-medium" : "hover:bg-card/50"
-              }`}
+                isSelected
+                  ? "bg-primary-soft font-medium text-primary"
+                  : "hover:bg-card/50"
+              } ${index === validScreens.length - 1 ? "rounded-b-md" : ""}`}
             >
               <div className="flex min-w-0 flex-1 flex-col gap-1 pr-2">
                 <div className="flex items-center gap-2">
