@@ -36,23 +36,23 @@ export default function UnitMapBottomBar({
         <div className="flex items-center gap-3.5">
           {/* Circular progress badge */}
           <div className="relative flex size-12 shrink-0 items-center justify-center rounded-full border-2 border-primary/30 bg-primary/10">
-            <span className="text-xs font-black text-primary">{progressPercent}%</span>
+            <span className="text-sm font-black text-primary">{progressPercent}%</span>
           </div>
 
           <div className="flex flex-col">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
+            <span className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
               Progres Belajar
             </span>
-            <span className="text-xs sm:text-sm font-black text-foreground">
+            <span className="text-sm sm:text-base font-black text-foreground">
               {completedCount} dari {totalCount} Topik Selesai
             </span>
-            <div className="mt-0.5 flex items-center gap-2 text-[11px] font-semibold text-primary">
+            <div className="mt-0.5 flex items-center gap-2 text-sm font-semibold text-primary">
               <span className="flex items-center gap-1">
                 <Sparkles className="size-3" />
                 {currentLesson.screens.length * 10} XP
               </span>
               <span>&bull;</span>
-              <span className="truncate max-w-[140px] sm:max-w-[220px]">
+              <span className="truncate max-w-35 sm:max-w-55">
                 {currentLesson.title}
               </span>
             </div>

@@ -1,8 +1,10 @@
-// UnitSidebar: Left sidebar displaying current unit metadata, search/filter, and topic breakdown.
-import { useState } from "react";
+// UnitSidebar: presentation component for the left unit-detail sidebar.
+// Search/filter/progress logic lives in useUnitSidebar.
 import { Search, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 import type { Unit } from "#/engine/types.ts";
 import { Button } from "#/components/ui/button";
+import { useUnitSidebar } from "../hooks/useUnitSidebar.ts";
+import { getLessonIcon } from "../iconHelper.ts";
 
 type UnitSidebarProps = {
   unit: Unit;
@@ -21,19 +23,12 @@ export default function UnitSidebar({
   isOpen,
   onToggle,
 }: UnitSidebarProps) {
-  const [searchQuery, setSearchQuery] = useState("");
-
-  const completedCount = unit.lessons.filter((l) => completedLessons.includes(l.id)).length;
-  const totalCount = unit.lessons.length;
-  const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
-
-  const filteredLessons = unit.lessons.filter((l) =>
-    l.title.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const { searchQuery, setSearchQuery, completedCount, totalCount, progressPercent, filteredLessons } =
+    useUnitSidebar(unit, completedLessons);
 
   return (
     <>
-      {/* Sidebar Container */}
+      {/* Sidebar container */}
       <aside
         className={`relative z-20 flex h-full flex-col border-r border-border bg-card transition-all duration-300 ease-in-out ${
           isOpen ? "w-80 md:w-88" : "w-0 overflow-hidden border-r-0"
@@ -42,26 +37,19 @@ export default function UnitSidebar({
         <div className="flex h-full w-80 md:w-88 flex-col p-5">
           {/* Header */}
           <div className="flex items-center justify-between pb-3">
-            <div>
-              <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                Kategori
-              </span>
-              <h2 className="text-lg font-black tracking-tight text-foreground">
-                Detail Unit Belajar
-              </h2>
-            </div>
+            <h2 className="text-lg font-black tracking-tight text-foreground">Detail Unit Belajar</h2>
             <Button
-              variant="ghost"
+              variant="shadowless"
               size="icon-sm"
               onClick={onToggle}
-              className="rounded-xl text-muted-foreground hover:text-foreground"
+              className="rounded-lg text-muted-foreground hover:text-foreground"
               aria-label="Tutup sidebar"
             >
               <ChevronLeft className="size-5" />
             </Button>
           </div>
 
-          {/* Search Bar */}
+          {/* Search */}
           <div className="relative mt-2">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <input
@@ -69,41 +57,41 @@ export default function UnitSidebar({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Cari topik atau materi..."
-              className="w-full rounded-2xl border border-border bg-background py-2.5 pl-9 pr-3 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+              className="w-full rounded-lg border border-border bg-background py-2.5 pl-9 pr-3 text-xs sm:text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
             />
           </div>
 
-          {/* Unit Overview Card */}
+          {/* Unit overview card — font sizes bumped one level */}
           <div className="mt-4 rounded-2xl border border-primary/20 bg-primary/5 p-4">
             <div className="flex items-center gap-3">
               {unit.imageUrl ? (
                 <img
                   src={unit.imageUrl}
                   alt={unit.title}
-                  className="size-12 object-contain shrink-0"
+                  className="size-14 shrink-0 object-contain"
                 />
               ) : (
-                <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/20 font-black text-primary">
+                <div className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-primary/20 text-lg font-black text-primary">
                   {unit.title.charAt(0)}
                 </div>
               )}
               <div className="min-w-0 flex-1">
-                <h3 className="truncate font-bold text-foreground">{unit.title}</h3>
-                <span className="text-xs font-semibold text-primary">
+                <h3 className="truncate text-base font-bold text-foreground">{unit.title}</h3>
+                <span className="text-sm font-semibold text-primary">
                   {completedCount}/{totalCount} Topik Selesai
                 </span>
               </div>
             </div>
 
             {unit.description && (
-              <p className="mt-2.5 line-clamp-3 text-xs leading-relaxed text-muted-foreground">
+              <p className="mt-2.5 line-clamp-3 text-sm leading-relaxed text-muted-foreground">
                 {unit.description}
               </p>
             )}
 
-            {/* Overall Unit Progress Bar */}
+            {/* Progress bar */}
             <div className="mt-3.5 flex flex-col gap-1.5">
-              <div className="flex justify-between text-[11px] font-semibold text-muted-foreground">
+              <div className="flex justify-between text-sm font-semibold text-muted-foreground">
                 <span>Progress Unit</span>
                 <span className="font-bold text-primary">{progressPercent}%</span>
               </div>
@@ -116,41 +104,57 @@ export default function UnitSidebar({
             </div>
           </div>
 
-          {/* Topic list scrollable inside sidebar */}
+          {/* Topic list */}
           <div className="mt-5 flex-1 overflow-y-auto pr-1">
             <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
               Daftar Topik ({filteredLessons.length})
             </span>
             <div className="mt-2.5 flex flex-col gap-2">
-              {filteredLessons.map((lesson, idx) => {
+              {filteredLessons.map((lesson) => {
                 const isCompleted = completedLessons.includes(lesson.id);
                 const isSelected = selectedLessonId === lesson.id;
+
+                // Mirror the icon-box status colors used in LessonMapCard
+                const currentLesson = unit.lessons.find((l) => !completedLessons.includes(l.id));
+                const isCurrent = currentLesson?.id === lesson.id;
+                const IconComponent = getLessonIcon(lesson.icon);
+
+                const iconBoxClass = isCompleted
+                  ? "border-success/30 bg-success/10 text-success"
+                  : isCurrent
+                    ? "border-primary/30 bg-primary/10 text-primary"
+                    : "border-border/60 bg-muted/10 text-muted-foreground";
+
                 return (
                   <button
                     key={lesson.id}
                     type="button"
                     onClick={() => onSelectLesson(lesson.id)}
-                    className={`flex items-center justify-between gap-3 rounded-xl border p-3 text-left transition-all ${
+                    className={`flex items-center gap-3 rounded-lg border p-3 text-left transition-all ${
                       isSelected
-                        ? "border-primary bg-primary/10 text-foreground ring-2 ring-primary/20"
+                        ? "border-primary bg-primary/10 ring-2 ring-primary/20"
                         : "border-border/60 bg-background hover:border-border hover:bg-muted/30"
                     }`}
                   >
-                    <div className="flex min-w-0 items-center gap-2.5">
-                      <span className="flex size-6 shrink-0 items-center justify-center rounded-lg bg-muted text-xs font-bold text-muted-foreground">
-                        {idx + 1}
-                      </span>
+                    {/* Icon box matching LessonMapCard style */}
+                    <div
+                      className={`flex size-9 shrink-0 items-center justify-center rounded-lg border ${iconBoxClass}`}
+                    >
+                      <IconComponent className="size-4 stroke-2" />
+                    </div>
+
+                    {/* Title + screen count */}
+                    <div className="flex min-w-0 flex-1 flex-col">
                       <span className="truncate text-xs sm:text-sm font-semibold text-foreground">
                         {lesson.title}
                       </span>
-                    </div>
-                    {isCompleted ? (
-                      <CheckCircle2 className="size-4 shrink-0 text-success" />
-                    ) : (
-                      <span className="text-[11px] text-muted-foreground shrink-0">
+                      <span className="text-xs text-muted-foreground">
                         {lesson.screens.length} soal
                       </span>
-                    )}
+                    </div>
+
+                    {/* Completion badge */}
+                    {isCompleted && <CheckCircle2 className="size-4 shrink-0 text-success" />}
                   </button>
                 );
               })}
@@ -159,7 +163,7 @@ export default function UnitSidebar({
         </div>
       </aside>
 
-      {/* Floating Toggle Button when Sidebar is closed */}
+      {/* Toggle button when sidebar is closed */}
       {!isOpen && (
         <button
           type="button"

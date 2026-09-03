@@ -30,7 +30,7 @@ export default function LessonMapCard({
       ? "border-primary/70 shadow-lg"
       : status === "previous"
         ? "border-border shadow-md"
-        : "border-border/70 shadow-sm opacity-90";
+        : "border-border/70 shadow-sm";
 
   return (
     <div
@@ -46,7 +46,7 @@ export default function LessonMapCard({
           onSelect();
         }
       }}
-      className={`group relative flex w-[320px] sm:w-[360px] flex-col rounded-3xl border-2 bg-card p-5 select-none transition-all duration-200 cursor-pointer ${cardBorderClass}`}
+      className={`group relative flex w-[340px] flex-col rounded-3xl border-2 bg-card p-5 select-none transition-shadow duration-200 cursor-pointer ${cardBorderClass}`}
     >
       {/* Top row: Icon box, Title, Topic count */}
       <div className="flex items-start gap-3.5">
@@ -57,7 +57,7 @@ export default function LessonMapCard({
               ? "border-primary/30 bg-primary/10 text-primary"
               : status === "previous"
                 ? "border-success/30 bg-success/10 text-success"
-                : "border-border/60 bg-muted/60 text-muted-foreground"
+                : "border-border/60 bg-muted/10 text-muted-foreground"
           }`}
         >
           <IconComponent className="size-7 stroke-[2.2]" />
@@ -70,36 +70,36 @@ export default function LessonMapCard({
             </h3>
             {status === "previous" && (
               <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-success text-white">
-                <Check className="size-3.5 stroke-[3]" />
+                <Check className="size-3.5 stroke-3" />
               </span>
             )}
             {status === "unlocked" && (
               <Lock className="size-4 shrink-0 text-muted-foreground/60 stroke-[2.2]" />
             )}
           </div>
-          <span className="text-xs font-medium text-muted-foreground">
+          <span className="text-sm font-medium text-muted-foreground pt-1">
             Topik #{index + 1} &bull; {lesson.screens.length} soal
           </span>
         </div>
       </div>
 
       {/* Middle row: Lesson description snippet */}
-      <div className="mt-3.5 min-h-[36px]">
+      <div className="mt-3.5 min-h-9">
         <p className="line-clamp-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
           Pahami konsep dan latihan interaktif untuk menguasai topik ini.
         </p>
       </div>
 
       {/* Bottom row: Progress bar + label */}
-      <div className="mt-4 flex flex-col gap-1.5 border-t border-border/50 pt-3">
-        <div className="flex items-center justify-between text-xs font-semibold">
+      <div className="mt-4 flex flex-col gap-1.5 pt-2">
+        <div className="flex items-center justify-between text-sm font-semibold">
           <span className="text-muted-foreground">Progress</span>
           <span
             className={
               status === "previous"
-                ? "text-success font-bold"
+                ? "text-success"
                 : status === "current"
-                  ? "text-primary font-bold"
+                  ? "text-primary"
                   : "text-muted-foreground"
             }
           >
