@@ -9,7 +9,7 @@ export default function UnitGrid() {
   const setSelectedUnit = useHomeStore((s) => s.setSelectedUnit);
 
   return (
-    <section className="w-full">
+    <section className="w-full px-6 sm:px-10">
       <div className="grid grid-cols-2 items-center gap-3 lg:grid-cols-4">
         {units.map((unit) => {
           const isSelected = unit.id === selectedUnitId;
