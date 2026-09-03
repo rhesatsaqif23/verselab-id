@@ -33,9 +33,7 @@ export default function LessonList({
   return (
     <div className="relative flex w-full flex-col items-center">
       {/* Horizontal zig-zag track with generous edge padding (px-12 sm:px-20 lg:px-28) to prevent edge cropping */}
-      <div
-        className="relative flex w-full flex-nowrap items-start justify-start sm:justify-center gap-6 sm:gap-8 md:gap-10 overflow-x-auto py-8 px-6 sm:px-10 lg:px-14 scrollbar-none"
-      >
+      <div className="relative flex w-full flex-nowrap items-start justify-start sm:justify-center gap-6 sm:gap-8 md:gap-10 overflow-x-auto py-8 px-6 sm:px-10 lg:px-14 scrollbar-none">
         {/* Background connecting path line */}
         <div className="pointer-events-none absolute left-16 right-16 top-1/2 -z-10 h-1 -translate-y-4 bg-border border-t-2 border-dashed border-border" />
 

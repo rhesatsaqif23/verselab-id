@@ -3,7 +3,7 @@ import type { Lesson } from "#/engine/types.ts";
 
 export const hutangCicilanLesson: Lesson = {
   id: "hutang-cicilan",
-  title: "Memahami bunga pinjaman",
+  title: "Memahami Bunga Pinjaman",
   icon: "CreditCard",
   screens: [
     {

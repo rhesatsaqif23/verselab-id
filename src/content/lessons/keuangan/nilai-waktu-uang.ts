@@ -3,7 +3,7 @@ import type { Lesson } from "#/engine/types.ts";
 
 export const nilaiWaktuUangLesson: Lesson = {
   id: "nilai-waktu-uang",
-  title: "Uang sekarang vs masa depan",
+  title: "Uang Sekarang vs Masa Depan",
   icon: "TrendingUp",
   screens: [
     {

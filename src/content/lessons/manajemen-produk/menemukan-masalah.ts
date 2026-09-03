@@ -3,7 +3,7 @@ import type { Lesson } from "#/engine/types.ts";
 
 export const menemukanMasalahLesson: Lesson = {
   id: "menemukan-masalah",
-  title: "Mulai dari masalah, bukan dari fitur",
+  title: "Mulai dari Masalah, Bukan dari Fitur",
   icon: "Search",
   screens: [
     {

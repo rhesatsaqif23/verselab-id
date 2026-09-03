@@ -21,9 +21,7 @@ export default function UnitCard({ unit }: UnitCardProps) {
   const today = todayString();
 
   // Find the current active lesson (first uncompleted lesson, or fallback to first lesson)
-  const currentLessonIndex = unit.lessons.findIndex(
-    (l) => !completedLessons.includes(l.id),
-  );
+  const currentLessonIndex = unit.lessons.findIndex((l) => !completedLessons.includes(l.id));
   const activeIndex = currentLessonIndex !== -1 ? currentLessonIndex : 0;
   const currentLesson = unit.lessons[activeIndex] ?? unit.lessons[0];
 

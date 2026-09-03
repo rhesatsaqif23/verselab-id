@@ -3,7 +3,7 @@ import type { Lesson } from "#/engine/types.ts";
 
 export const metrikProdukLesson: Lesson = {
   id: "metrik-produk",
-  title: "Metrik yang benar: aktivasi dan retensi",
+  title: "Metrik yang Benar: Aktivasi dan Retensi",
   icon: "BarChart3",
   screens: [
     {

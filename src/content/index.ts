@@ -22,9 +22,7 @@ export function findLesson(lessonId: string): { unit: Unit; lesson: Lesson } | u
       .map((lid) => {
         const l = state.lessons[lid];
         if (!l) return undefined;
-        const staticLesson = staticUnits
-          .flatMap((u) => u.lessons)
-          .find((les) => les.id === lid);
+        const staticLesson = staticUnits.flatMap((u) => u.lessons).find((les) => les.id === lid);
         return {
           id: l.id,
           title: l.title,

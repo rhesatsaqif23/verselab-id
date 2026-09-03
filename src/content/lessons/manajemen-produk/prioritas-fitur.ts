@@ -3,7 +3,7 @@ import type { Lesson } from "#/engine/types.ts";
 
 export const prioritasFiturLesson: Lesson = {
   id: "prioritas-fitur",
-  title: "Memilih fitur yang paling penting dulu",
+  title: "Memilih Fitur yang Paling Penting Dulu",
   icon: "ListFilter",
   screens: [
     {

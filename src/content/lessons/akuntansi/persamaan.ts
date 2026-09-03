@@ -3,7 +3,7 @@ import type { Lesson } from "#/engine/types.ts";
 
 export const persamaanLesson: Lesson = {
   id: "persamaan",
-  title: "Persamaan dasar: aset, utang, dan modal",
+  title: "Persamaan Dasar: Aset, Utang, dan Modal",
   icon: "Scale",
   screens: [
     {

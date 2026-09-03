@@ -30,7 +30,7 @@ export default function UnitDetailPage({ unit }: Props) {
   }
 
   const selectedLesson = selectedLessonId
-    ? unit.lessons.find((l) => l.id === selectedLessonId) ?? currentLesson
+    ? (unit.lessons.find((l) => l.id === selectedLessonId) ?? currentLesson)
     : currentLesson;
 
   const selectedStatus = selectedLesson ? getStatus(selectedLesson.id) : "current";

@@ -28,7 +28,11 @@ export default function LessonCta({ lesson, status, isVisible }: LessonCtaProps)
 
           <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
             {status === "previous" && (
-              <Button asChild size="lg" className="w-full sm:w-auto text-base! font-bold! shadow-md">
+              <Button
+                asChild
+                size="lg"
+                className="w-full sm:w-auto text-base! font-bold! shadow-md"
+              >
                 <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }}>
                   <RotateCcw className="mr-2 size-5" />
                   Main Lagi
@@ -37,7 +41,11 @@ export default function LessonCta({ lesson, status, isVisible }: LessonCtaProps)
             )}
 
             {status === "current" && (
-              <Button asChild size="lg" className="w-full sm:w-auto text-base! font-bold! shadow-md">
+              <Button
+                asChild
+                size="lg"
+                className="w-full sm:w-auto text-base! font-bold! shadow-md"
+              >
                 <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }}>
                   <PlayCircle className="mr-2 size-5" />
                   Mulai
@@ -46,7 +54,12 @@ export default function LessonCta({ lesson, status, isVisible }: LessonCtaProps)
             )}
 
             {status === "unlocked" && (
-              <Button disabled size="lg" variant="secondary" className="w-full sm:w-auto text-base! font-bold! opacity-70">
+              <Button
+                disabled
+                size="lg"
+                variant="secondary"
+                className="w-full sm:w-auto text-base! font-bold! opacity-70"
+              >
                 <Lock className="mr-2 size-5" />
                 Terkunci
               </Button>

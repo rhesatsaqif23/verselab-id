@@ -3,7 +3,7 @@ import type { Lesson } from "#/engine/types.ts";
 
 export const unitEkonomiLesson: Lesson = {
   id: "unit-ekonomi",
-  title: "Unit ekonomi: untung dari setiap produk terjual",
+  title: "Unit Ekonomi: Untung dari Setiap Produk Terjual",
   icon: "Coins",
   screens: [
     {

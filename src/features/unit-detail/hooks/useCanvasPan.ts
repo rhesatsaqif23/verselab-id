@@ -52,17 +52,14 @@ export function useCanvasPan({
     }
   }, []);
 
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent) => {
-      if (e.button !== 0) return;
-      setIsPanning(true);
-      hasMovedRef.current = false;
-      hasCapturedRef.current = false;
-      startPointer.current = { x: e.clientX, y: e.clientY };
-      startPan.current = { ...currentPanRef.current };
-    },
-    [],
-  );
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    if (e.button !== 0) return;
+    setIsPanning(true);
+    hasMovedRef.current = false;
+    hasCapturedRef.current = false;
+    startPointer.current = { x: e.clientX, y: e.clientY };
+    startPan.current = { ...currentPanRef.current };
+  }, []);
 
   const handlePointerMove = useCallback(
     (e: React.PointerEvent) => {

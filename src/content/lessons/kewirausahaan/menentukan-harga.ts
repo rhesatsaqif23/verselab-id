@@ -3,7 +3,7 @@ import type { Lesson } from "#/engine/types.ts";
 
 export const menentukanHargaLesson: Lesson = {
   id: "menentukan-harga",
-  title: "Menentukan harga jual",
+  title: "Menentukan Harga Jual",
   icon: "Tag",
   screens: [
     {

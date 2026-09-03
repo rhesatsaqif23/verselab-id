@@ -3,7 +3,7 @@ import type { Lesson } from "#/engine/types.ts";
 
 export const validasiIdeLesson: Lesson = {
   id: "validasi-ide",
-  title: "Validasi ide sebelum mengeluarkan uang",
+  title: "Validasi Ide sebelum Mengeluarkan Uang",
   icon: "Lightbulb",
   screens: [
     {

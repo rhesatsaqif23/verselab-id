@@ -52,9 +52,7 @@ export function ScreenListPanel({
               key={screen.id}
               onClick={() => onSelectScreen(screen.id)}
               className={`flex cursor-pointer items-center justify-between p-3 transition-colors ${
-                isSelected
-                  ? "bg-primary-soft font-medium text-primary"
-                  : "hover:bg-card/50"
+                isSelected ? "bg-primary-soft font-medium text-primary" : "hover:bg-card/50"
               } ${index === validScreens.length - 1 ? "rounded-b-md" : ""}`}
             >
               <div className="flex min-w-0 flex-1 flex-col gap-1 pr-2">
@@ -62,7 +60,7 @@ export function ScreenListPanel({
                   <Badge variant="secondary" className="border-0 text-xs uppercase">
                     {screen.type}
                   </Badge>
-                  <span className="text-sm text-muted-foreground">#{index + 1}</span>
+                  <span className="text-base text-muted-foreground">#{index + 1}</span>
                 </div>
                 <p className="truncate text-base text-foreground">{screen.prompt}</p>
               </div>

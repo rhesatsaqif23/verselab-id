@@ -18,7 +18,7 @@ export default function CanvasConnectingArrows({ connections }: CanvasConnecting
           refY="4"
           orient="auto"
         >
-          <polygon points="0 1, 7 4, 0 7" className="fill-primary" />
+          <polygon points="0 1, 7 4, 0 7" className="fill-primary" fillOpacity={1} />
         </marker>
 
         {/* Pending arrow marker */}
@@ -30,7 +30,7 @@ export default function CanvasConnectingArrows({ connections }: CanvasConnecting
           refY="4"
           orient="auto"
         >
-          <polygon points="0 1, 7 4, 0 7" className="fill-muted-foreground/60" />
+          <polygon points="0 1, 7 4, 0 7" className="fill-muted-foreground" />
         </marker>
       </defs>
 
@@ -61,12 +61,11 @@ export default function CanvasConnectingArrows({ connections }: CanvasConnecting
             key={`${c.fromId}->${c.toId}`}
             d={pathData}
             fill="none"
-            stroke={c.isCompleted ? "var(--color-primary)" : "var(--color-border)"}
+            stroke={c.isCompleted ? "var(--color-primary)" : "var(--color-muted)"}
             strokeWidth="3"
             strokeDasharray={c.isCompleted ? "none" : "8,6"}
             strokeLinecap="round"
             strokeLinejoin="round"
-            stroke-opacity="1"
             markerEnd={c.isCompleted ? "url(#arrowhead-completed)" : "url(#arrowhead-pending)"}
           />
         );

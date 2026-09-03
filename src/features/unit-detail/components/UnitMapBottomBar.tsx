@@ -23,9 +23,7 @@ export default function UnitMapBottomBar({
   const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
   const currentLesson =
-    selectedLesson ??
-    unit.lessons.find((l) => !completedLessons.includes(l.id)) ??
-    unit.lessons[0];
+    selectedLesson ?? unit.lessons.find((l) => !completedLessons.includes(l.id)) ?? unit.lessons[0];
 
   if (!currentLesson) return null;
 
@@ -39,12 +37,9 @@ export default function UnitMapBottomBar({
             <span className="text-sm font-black text-primary">{progressPercent}%</span>
           </div>
 
-          <div className="flex flex-col">
-            <span className="text-sm font-bold uppercase tracking-wider text-muted-foreground">
-              Progres Belajar
-            </span>
-            <span className="text-sm sm:text-base font-black text-foreground">
-              {completedCount} dari {totalCount} Topik Selesai
+          <div className="flex flex-col gap-1">
+            <span className="text-sm sm:text-base font-black text-foreground truncate max-w-50 sm:max-w-80">
+              {currentLesson.title}
             </span>
             <div className="mt-0.5 flex items-center gap-2 text-sm font-semibold text-primary">
               <span className="flex items-center gap-1">
@@ -52,8 +47,8 @@ export default function UnitMapBottomBar({
                 {currentLesson.screens.length * 10} XP
               </span>
               <span>&bull;</span>
-              <span className="truncate max-w-35 sm:max-w-55">
-                {currentLesson.title}
+              <span>
+                {completedCount} dari {totalCount} Topik Selesai
               </span>
             </div>
           </div>
@@ -80,7 +75,12 @@ export default function UnitMapBottomBar({
           )}
 
           {status === "unlocked" && (
-            <Button disabled size="lg" variant="secondary" className="rounded-2xl px-6 sm:px-8 font-bold text-base opacity-70">
+            <Button
+              disabled
+              size="lg"
+              variant="secondary"
+              className="rounded-2xl px-6 sm:px-8 font-bold text-base opacity-70"
+            >
               <Lock className="mr-2 size-5" />
               Terkunci
             </Button>

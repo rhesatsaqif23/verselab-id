@@ -5,7 +5,7 @@ import { RotateCcw, ZoomIn, ZoomOut, Move } from "lucide-react";
 import type { Unit } from "#/engine/types.ts";
 import type { LessonStatus } from "../types.ts";
 import { useCanvasPan } from "../hooks/useCanvasPan.ts";
-import { buildNodes, buildConnections, CARD_WIDTH, CARD_HEIGHT } from "../lessonLayout.ts";
+import { buildNodes, buildConnections, CARD_WIDTH } from "../lessonLayout.ts";
 import LessonMapCard from "./LessonMapCard.tsx";
 import CanvasConnectingArrows from "./CanvasConnectingArrows.tsx";
 import { Button } from "#/components/ui/button";
@@ -59,11 +59,11 @@ export default function WhiteboardMapCanvas({
 
     if (node && el) {
       return {
-        x: el.clientWidth * 0.3 - node.x,
-        y: el.clientHeight / 2 - node.y - CARD_HEIGHT / 2,
+        x: Math.max(40, el.clientWidth * 0.05) - node.x,
+        y: Math.max(100, el.clientHeight * 0.22) - node.y,
       };
     }
-    return { x: -40, y: 160 };
+    return { x: 40, y: 120 };
   }, [currentLesson?.id, nodes, unit.lessons, containerRef]);
 
   // Centre on mount — defer one frame so containerRef has real dimensions

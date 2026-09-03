@@ -3,7 +3,7 @@ import type { Lesson } from "#/engine/types.ts";
 
 export const titikImpasLesson: Lesson = {
   id: "titik-impas",
-  title: "Titik impas (break-even)",
+  title: "Titik Impas (Break-Even)",
   icon: "Target",
   screens: [
     {

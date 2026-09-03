@@ -3,7 +3,7 @@ import type { Lesson } from "#/engine/types.ts";
 
 export const mvpValidasiLesson: Lesson = {
   id: "mvp-validasi",
-  title: "MVP: menguji asumsi dengan usaha terkecil",
+  title: "MVP: Menguji Asumsi dengan Usaha Terkecil",
   icon: "Rocket",
   screens: [
     {

@@ -45,12 +45,11 @@ export default function LessonRow({
     }`;
   })();
 
-  const titleClass =
-    `text-sm sm:text-base text-center max-w-[180px] line-clamp-2 ${
-      status === "previous" || isSelected
-        ? "font-semibold text-foreground"
-        : "font-medium text-muted-foreground"
-    }`;
+  const titleClass = `text-sm sm:text-base text-center max-w-[180px] line-clamp-2 ${
+    status === "previous" || isSelected
+      ? "font-semibold text-foreground"
+      : "font-medium text-muted-foreground"
+  }`;
 
   return (
     <div
@@ -69,9 +68,7 @@ export default function LessonRow({
       <div className={discCardStyle}>
         {/* Sequence tag */}
         <div className="absolute top-2.5 left-3 flex items-center">
-          <span className="text-xs font-bold text-muted-foreground">
-            #{index + 1}
-          </span>
+          <span className="text-base font-bold text-muted-foreground">#{index + 1}</span>
         </div>
 
         {status === "previous" && (

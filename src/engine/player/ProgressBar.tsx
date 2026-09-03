@@ -19,11 +19,7 @@ export default function ProgressBar({ current, total }: ProgressBarProps) {
             >
               <div
                 className={`h-full w-full rounded-full transition-all duration-500 ease-out ${
-                  isCompleted
-                    ? "bg-primary"
-                    : isCurrent
-                      ? "bg-chart-3"
-                      : "bg-transparent"
+                  isCompleted ? "bg-primary" : isCurrent ? "bg-chart-3" : "bg-transparent"
                 }`}
               />
             </div>
