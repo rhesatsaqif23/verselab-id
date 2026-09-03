@@ -4,6 +4,7 @@ import type { Lesson } from "#/engine/types.ts";
 export const validasiIdeLesson: Lesson = {
   id: "validasi-ide",
   title: "Validasi ide sebelum mengeluarkan uang",
+  icon: "Lightbulb",
   screens: [
     {
       type: "choice",

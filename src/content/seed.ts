@@ -84,7 +84,7 @@ export function seedContent() {
     const unitDef = unitDefs.find((u) => u.lessonIds.includes(lesson.id));
     if (!unitDef) continue;
 
-    store.getState().addLesson(unitDef.id, { id: lesson.id, title: lesson.title });
+    store.getState().addLesson(unitDef.id, { id: lesson.id, title: lesson.title, icon: lesson.icon });
 
     for (const screen of lesson.screens) {
       store.getState().addScreen(lesson.id, screen);

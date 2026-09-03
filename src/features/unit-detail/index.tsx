@@ -1,26 +1,24 @@
-// UnitDetailPage: two-column layout — sticky left info card + scrollable right lesson list.
+// UnitDetailPage: horizontal full-width layout matching Brilliant course page style.
 import type { Unit } from "#/engine/types.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
-import UnitInfoCard from "./UnitInfoCard.tsx";
+import UnitHeader from "./UnitHeader.tsx";
 import LessonList from "./LessonList.tsx";
 
 type Props = { unit: Unit };
 
 export default function UnitDetailPage({ unit }: Props) {
   const completedLessons = useProgressStore((s) => s.completedLessons);
-  return (
-    <main className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-      {/* Two-column layout on md+, stacked on mobile */}
-      <div className="flex flex-col gap-8 md:flex-row md:items-start md:gap-10">
-        {/* Left: sticky unit info card */}
-        <div className="w-full shrink-0 md:sticky md:top-24 md:w-72 lg:w-80">
-          <UnitInfoCard unit={unit} />
-        </div>
 
-        {/* Right: scrollable lesson list */}
-        <div className="min-w-0 flex-1">
-          <LessonList unit={unit} completedLessons={completedLessons} />
-        </div>
+  return (
+    <main className="mx-auto flex min-h-[calc(100vh-140px)] w-full max-w-6xl flex-col px-4 py-8 sm:px-6 lg:px-8">
+      {/* Unit Header: icon, grade/level badge, title, subtitle */}
+      <div className="mb-8 w-full border-b border-border/60 pb-6">
+        <UnitHeader unit={unit} />
+      </div>
+
+      {/* Horizontal zig-zag lesson path */}
+      <div className="flex w-full flex-1 flex-col items-center justify-center rounded-3xl border border-border/70 bg-card/40 p-4 sm:p-8 backdrop-blur-xs">
+        <LessonList unit={unit} completedLessons={completedLessons} />
       </div>
     </main>
   );

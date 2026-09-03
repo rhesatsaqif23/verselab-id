@@ -4,6 +4,7 @@ import type { Lesson } from "#/engine/types.ts";
 export const nabungAwalLesson: Lesson = {
   id: "nabung-awal",
   title: "Kenapa nabung lebih awal jauh lebih untung",
+  icon: "PiggyBank",
   screens: [
     {
       type: "choice",

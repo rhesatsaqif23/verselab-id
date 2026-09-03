@@ -4,6 +4,7 @@ import type { Lesson } from "#/engine/types.ts";
 export const menentukanHargaLesson: Lesson = {
   id: "menentukan-harga",
   title: "Menentukan harga jual",
+  icon: "Tag",
   screens: [
     {
       type: "choice",

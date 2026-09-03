@@ -1,10 +1,9 @@
-// LessonCta: floating bottom sheet card showing selected lesson details and dynamic action button.
 import { Link } from "@tanstack/react-router";
 import { Lock, PlayCircle, RotateCcw } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { Card, CardContent } from "#/components/ui/card";
 import type { Lesson } from "#/engine/types.ts";
-import type { LessonStatus } from "./LessonRow.tsx";
+import type { LessonStatus } from "./types.ts";
 
 type LessonCtaProps = {
   lesson: Lesson;

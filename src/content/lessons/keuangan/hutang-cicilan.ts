@@ -4,6 +4,7 @@ import type { Lesson } from "#/engine/types.ts";
 export const hutangCicilanLesson: Lesson = {
   id: "hutang-cicilan",
   title: "Memahami bunga pinjaman",
+  icon: "CreditCard",
   screens: [
     {
       type: "choice",

@@ -22,9 +22,13 @@ export function findLesson(lessonId: string): { unit: Unit; lesson: Lesson } | u
       .map((lid) => {
         const l = state.lessons[lid];
         if (!l) return undefined;
+        const staticLesson = staticUnits
+          .flatMap((u) => u.lessons)
+          .find((les) => les.id === lid);
         return {
           id: l.id,
           title: l.title,
+          icon: l.icon ?? staticLesson?.icon,
           screens: l.screenIds
             .map((sid) => state.screens[sid])
             .filter(Boolean) as readonly Screen[],
@@ -36,6 +40,9 @@ export function findLesson(lessonId: string): { unit: Unit; lesson: Lesson } | u
   const lesson: Lesson = {
     id: lessonData.id,
     title: lessonData.title,
+    icon:
+      lessonData.icon ??
+      staticUnits.flatMap((u) => u.lessons).find((l) => l.id === lessonData.id)?.icon,
     screens: lessonData.screenIds
       .map((sid) => state.screens[sid])
       .filter(Boolean) as readonly Screen[],
@@ -61,9 +68,11 @@ export function findUnit(unitId: string): Unit | undefined {
       .map((lid) => {
         const l = state.lessons[lid];
         if (!l) return undefined;
+        const staticLesson = staticUnit?.lessons.find((les) => les.id === lid);
         return {
           id: l.id,
           title: l.title,
+          icon: l.icon ?? staticLesson?.icon,
           screens: l.screenIds
             .map((sid) => state.screens[sid])
             .filter(Boolean) as readonly Screen[],
@@ -82,17 +91,21 @@ export function getUnits(): readonly Unit[] {
     .map((uid) => {
       const u = state.units[uid];
       if (!u) return undefined;
+      const staticUnit = staticUnits.find((su) => su.id === uid);
       return {
         id: u.id,
         title: u.title,
+        description: staticUnit?.description,
         imageUrl: u.imageUrl,
         lessons: u.lessonIds
           .map((lid) => {
             const l = state.lessons[lid];
             if (!l) return undefined;
+            const staticLesson = staticUnit?.lessons.find((les) => les.id === lid);
             return {
               id: l.id,
               title: l.title,
+              icon: l.icon ?? staticLesson?.icon,
               screens: l.screenIds
                 .map((sid) => state.screens[sid])
                 .filter(Boolean) as readonly Screen[],

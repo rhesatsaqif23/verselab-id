@@ -4,6 +4,7 @@ import type { Lesson } from "#/engine/types.ts";
 export const mvpValidasiLesson: Lesson = {
   id: "mvp-validasi",
   title: "MVP: menguji asumsi dengan usaha terkecil",
+  icon: "Rocket",
   screens: [
     {
       type: "choice",

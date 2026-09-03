@@ -4,6 +4,7 @@ import type { Lesson } from "#/engine/types.ts";
 export const titikImpasLesson: Lesson = {
   id: "titik-impas",
   title: "Titik impas (break-even)",
+  icon: "Target",
   screens: [
     {
       type: "choice",

@@ -4,6 +4,7 @@ import type { Lesson } from "#/engine/types.ts";
 export const transaksiLesson: Lesson = {
   id: "transaksi",
   title: "Mencatat transaksi: debit dan kredit",
+  icon: "ArrowLeftRight",
   screens: [
     {
       type: "choice",

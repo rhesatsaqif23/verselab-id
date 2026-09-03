@@ -4,6 +4,7 @@ import type { Lesson } from "#/engine/types.ts";
 export const menemukanMasalahLesson: Lesson = {
   id: "menemukan-masalah",
   title: "Mulai dari masalah, bukan dari fitur",
+  icon: "Search",
   screens: [
     {
       type: "choice",

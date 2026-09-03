@@ -13,6 +13,7 @@ type LessonData = {
   title: string;
   unitId: string;
   screenIds: string[];
+  icon?: string;
 };
 
 type ScreenData = {

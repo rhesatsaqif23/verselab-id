@@ -4,6 +4,7 @@ import type { Lesson } from "#/engine/types.ts";
 export const labaRugiLesson: Lesson = {
   id: "laba-rugi",
   title: "Laporan laba rugi: untung atau rugi",
+  icon: "FileText",
   screens: [
     {
       type: "choice",

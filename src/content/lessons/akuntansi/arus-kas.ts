@@ -4,6 +4,7 @@ import type { Lesson } from "#/engine/types.ts";
 export const arusKasLesson: Lesson = {
   id: "arus-kas",
   title: "Arus kas: uang yang benar-benar masuk dan keluar",
+  icon: "Banknote",
   screens: [
     {
       type: "choice",
