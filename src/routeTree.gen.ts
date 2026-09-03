@@ -19,6 +19,7 @@ import { Route as HomeProfileRouteImport } from './routes/_home/profile'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminUnitIdRouteImport } from './routes/admin.$unitId'
 import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
+import { Route as HomeUnitsUnitIdRouteImport } from './routes/_home/units.$unitId'
 import { Route as AdminUnitIdIndexRouteImport } from './routes/admin.$unitId.index'
 import { Route as AdminUnitIdLessonIdRouteImport } from './routes/admin.$unitId.$lessonId'
 
@@ -71,6 +72,11 @@ const LessonLessonIdRoute = LessonLessonIdRouteImport.update({
   path: '/lesson/$lessonId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const HomeUnitsUnitIdRoute = HomeUnitsUnitIdRouteImport.update({
+  id: '/units/$unitId',
+  path: '/units/$unitId',
+  getParentRoute: () => HomeRoute,
+} as any)
 const AdminUnitIdIndexRoute = AdminUnitIdIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -92,6 +98,7 @@ export interface FileRoutesByFullPath {
   '/admin/$unitId': typeof AdminUnitIdRouteWithChildren
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/units/$unitId': typeof HomeUnitsUnitIdRoute
   '/admin/$unitId/$lessonId': typeof AdminUnitIdLessonIdRoute
   '/admin/$unitId/': typeof AdminUnitIdIndexRoute
 }
@@ -103,6 +110,7 @@ export interface FileRoutesByTo {
   '/profile': typeof HomeProfileRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/admin': typeof AdminIndexRoute
+  '/units/$unitId': typeof HomeUnitsUnitIdRoute
   '/admin/$unitId/$lessonId': typeof AdminUnitIdLessonIdRoute
   '/admin/$unitId': typeof AdminUnitIdIndexRoute
 }
@@ -118,6 +126,7 @@ export interface FileRoutesById {
   '/admin/$unitId': typeof AdminUnitIdRouteWithChildren
   '/lesson/$lessonId': typeof LessonLessonIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/_home/units/$unitId': typeof HomeUnitsUnitIdRoute
   '/admin/$unitId/$lessonId': typeof AdminUnitIdLessonIdRoute
   '/admin/$unitId/': typeof AdminUnitIdIndexRoute
 }
@@ -133,6 +142,7 @@ export interface FileRouteTypes {
     | '/admin/$unitId'
     | '/lesson/$lessonId'
     | '/admin/'
+    | '/units/$unitId'
     | '/admin/$unitId/$lessonId'
     | '/admin/$unitId/'
   fileRoutesByTo: FileRoutesByTo
@@ -144,6 +154,7 @@ export interface FileRouteTypes {
     | '/profile'
     | '/lesson/$lessonId'
     | '/admin'
+    | '/units/$unitId'
     | '/admin/$unitId/$lessonId'
     | '/admin/$unitId'
   id:
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
     | '/admin/$unitId'
     | '/lesson/$lessonId'
     | '/admin/'
+    | '/_home/units/$unitId'
     | '/admin/$unitId/$lessonId'
     | '/admin/$unitId/'
   fileRoutesById: FileRoutesById
@@ -242,6 +254,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LessonLessonIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_home/units/$unitId': {
+      id: '/_home/units/$unitId'
+      path: '/units/$unitId'
+      fullPath: '/units/$unitId'
+      preLoaderRoute: typeof HomeUnitsUnitIdRouteImport
+      parentRoute: typeof HomeRoute
+    }
     '/admin/$unitId/': {
       id: '/admin/$unitId/'
       path: '/'
@@ -263,12 +282,14 @@ interface HomeRouteChildren {
   HomeAboutRoute: typeof HomeAboutRoute
   HomeHomeRoute: typeof HomeHomeRoute
   HomeProfileRoute: typeof HomeProfileRoute
+  HomeUnitsUnitIdRoute: typeof HomeUnitsUnitIdRoute
 }
 
 const HomeRouteChildren: HomeRouteChildren = {
   HomeAboutRoute: HomeAboutRoute,
   HomeHomeRoute: HomeHomeRoute,
   HomeProfileRoute: HomeProfileRoute,
+  HomeUnitsUnitIdRoute: HomeUnitsUnitIdRoute,
 }
 
 const HomeRouteWithChildren = HomeRoute._addFileChildren(HomeRouteChildren)

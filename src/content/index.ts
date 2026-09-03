@@ -1,6 +1,7 @@
 // Content registry: unit/lesson lookup helpers and next-lesson wiring.
 import type { Unit, Lesson, Screen } from "#/engine/types.ts";
 import { contentStore } from "#/content/contentStore.ts";
+import { units as staticUnits } from "#/content/units.ts";
 
 // Seed on first import
 contentStore.getState().seedIfEmpty();
@@ -41,6 +42,35 @@ export function findLesson(lessonId: string): { unit: Unit; lesson: Lesson } | u
   };
 
   return { unit, lesson };
+}
+
+export function findUnit(unitId: string): Unit | undefined {
+  const state = contentStore.getState();
+  const unitData = state.units[unitId];
+  if (!unitData) return undefined;
+
+  // Merge description from the static units array (not stored in contentStore)
+  const staticUnit = staticUnits.find((u) => u.id === unitId);
+
+  return {
+    id: unitData.id,
+    title: unitData.title,
+    description: staticUnit?.description,
+    imageUrl: unitData.imageUrl,
+    lessons: unitData.lessonIds
+      .map((lid) => {
+        const l = state.lessons[lid];
+        if (!l) return undefined;
+        return {
+          id: l.id,
+          title: l.title,
+          screens: l.screenIds
+            .map((sid) => state.screens[sid])
+            .filter(Boolean) as readonly Screen[],
+        };
+      })
+      .filter(Boolean) as readonly Lesson[],
+  };
 }
 
 export { nextLesson } from "#/engine/path/nextLesson.ts";
