@@ -29,7 +29,7 @@ const MAX_SCALE = 1.4;
 const SCALE_STEP = 0.1;
 
 export function useCanvasPan({
-  fallbackPan = { x: 80, y: 120 },
+  fallbackPan = { x: 40, y: 160 },
 }: UseCanvasPanOptions = {}): UseCanvasPanReturn {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLDivElement>(null);

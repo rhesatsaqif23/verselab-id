@@ -59,11 +59,11 @@ export default function WhiteboardMapCanvas({
 
     if (node && el) {
       return {
-        x: el.clientWidth / 2 - node.x - CARD_WIDTH / 2,
+        x: el.clientWidth * 0.3 - node.x,
         y: el.clientHeight / 2 - node.y - CARD_HEIGHT / 2,
       };
     }
-    return { x: 80, y: 120 };
+    return { x: -40, y: 160 };
   }, [currentLesson?.id, nodes, unit.lessons, containerRef]);
 
   // Centre on mount — defer one frame so containerRef has real dimensions
@@ -99,7 +99,7 @@ export default function WhiteboardMapCanvas({
       />
 
       {/* Top-left: map hint banner */}
-      <div className="pointer-events-none absolute left-6 top-5 z-10 flex items-center gap-2 rounded-2xl border border-border/80 bg-card/85 px-4 py-2 shadow-xs backdrop-blur-xs">
+      <div className="pointer-events-none absolute left-6 top-5 z-10 flex items-center gap-2 rounded-lg border border-border/80 bg-card/85 px-4 py-2 shadow-xs backdrop-blur-xs">
         <Move className="size-4 text-primary" />
         <span className="text-xs sm:text-sm font-bold text-foreground">
           Peta Belajar &bull; {unit.title}
@@ -109,31 +109,31 @@ export default function WhiteboardMapCanvas({
 
       {/* Top-right: zoom + recenter toolbar */}
       <div className="absolute right-5 top-5 z-20 flex items-center gap-2">
-        <div className="flex items-center rounded-2xl border border-border bg-card/90 p-1 shadow-md backdrop-blur-sm">
+        <div className="flex items-center rounded-lg border border-border bg-card/90 p-1 shadow-md backdrop-blur-sm">
           <Button
-            variant="ghost"
+            variant="shadowless"
             size="icon-sm"
             onClick={zoomIn}
-            className="rounded-xl text-muted-foreground hover:text-foreground"
+            className="rounded-lg text-muted-foreground hover:text-foreground"
             title="Perbesar (Zoom In)"
           >
             <ZoomIn className="size-4" />
           </Button>
           <Button
-            variant="ghost"
+            variant="shadowless"
             size="icon-sm"
             onClick={zoomOut}
-            className="rounded-xl text-muted-foreground hover:text-foreground"
+            className="rounded-lg text-muted-foreground hover:text-foreground"
             title="Perkecil (Zoom Out)"
           >
             <ZoomOut className="size-4" />
           </Button>
           <div className="mx-1 h-4 w-px bg-border" />
           <Button
-            variant="ghost"
+            variant="shadowless"
             size="icon-sm"
             onClick={() => recenter(computeCenteredPan())}
-            className="rounded-xl text-muted-foreground hover:text-foreground"
+            className="rounded-lg text-muted-foreground hover:text-foreground"
             title="Pusatkan Peta (Recenter)"
           >
             <RotateCcw className="size-4" />

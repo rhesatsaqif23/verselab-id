@@ -57,7 +57,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card">
-      <nav className="page-wrap flex h-16 items-center gap-8 px-6">
+      <nav className="flex h-16 items-center gap-8 px-16">
         <Link to="/" className="flex items-center gap-2 no-underline">
           <span className="text-3xl font-bold tracking-tight text-foreground">Verselab</span>
         </Link>

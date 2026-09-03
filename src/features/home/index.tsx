@@ -13,7 +13,7 @@ export default function HomePage() {
           <DailyGoalCard />
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1">
           <ShuffleCard />
           <UnitGrid />
         </div>

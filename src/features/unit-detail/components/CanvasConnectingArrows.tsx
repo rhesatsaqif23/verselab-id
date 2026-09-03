@@ -66,6 +66,7 @@ export default function CanvasConnectingArrows({ connections }: CanvasConnecting
             strokeDasharray={c.isCompleted ? "none" : "8,6"}
             strokeLinecap="round"
             strokeLinejoin="round"
+            stroke-opacity="0.8"
             markerEnd={c.isCompleted ? "url(#arrowhead-completed)" : "url(#arrowhead-pending)"}
           />
         );

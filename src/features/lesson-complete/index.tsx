@@ -87,12 +87,12 @@ export default function LessonCompletePage() {
           )}
         </div>
 
-        {/* Button — same position as LessonControls */}
-        <div className="mx-auto w-full max-w-md flex min-h-20 flex-col gap-3 pt-4">
-          <Button asChild size="lg" className="w-full">
-            <Link to="/home">Lanjut</Link>
-          </Button>
-        </div>
+{/* Button — same position as LessonControls */}
+          <div className="mx-auto w-full max-w-md flex min-h-20 flex-col gap-3 pt-4">
+            <Button asChild size="lg" className="w-full">
+              <Link to={`/units/${summary.unitId}`}>Lanjut</Button>
+            </Button>
+          </div>
       </div>
     </main>
   );
