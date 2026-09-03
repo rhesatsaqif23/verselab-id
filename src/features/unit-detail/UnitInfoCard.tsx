@@ -1,23 +1,18 @@
-// UnitInfoCard: left sticky panel with unit image, title, description, counts, and CTA.
-import { BookOpen, Layers, PlayCircle } from "lucide-react";
-import { Link } from "@tanstack/react-router";
-import { Button } from "#/components/ui/button";
+import { BookOpen, Layers } from "lucide-react";
 import { Card, CardContent } from "#/components/ui/card";
 import type { Unit } from "#/engine/types.ts";
 
 type UnitInfoCardProps = {
   unit: Unit;
-  activeLessonId: string | undefined;
-  hasStarted: boolean;
 };
 
-export default function UnitInfoCard({ unit, activeLessonId, hasStarted }: UnitInfoCardProps) {
+export default function UnitInfoCard({ unit }: UnitInfoCardProps) {
   const lessonCount = unit.lessons.length;
   const exerciseCount = unit.lessons.reduce((sum, l) => sum + l.screens.length, 0);
 
   return (
     <Card className="overflow-hidden border-2 border-border">
-      <CardContent className="flex flex-col gap-5 p-6">
+      <CardContent className="flex flex-col gap-5 px-6">
         {/* Unit image */}
         {unit.imageUrl && (
           <img
@@ -47,16 +42,6 @@ export default function UnitInfoCard({ unit, activeLessonId, hasStarted }: UnitI
             {exerciseCount} Soal
           </span>
         </div>
-
-        {/* CTA — only if there's an active lesson */}
-        {activeLessonId && (
-          <Button asChild size="lg" className="mt-1 w-full">
-            <Link to="/lesson/$lessonId" params={{ lessonId: activeLessonId }}>
-              <PlayCircle className="mr-2 size-5" />
-              {hasStarted ? "Lanjutkan" : "Mulai"}
-            </Link>
-          </Button>
-        )}
       </CardContent>
     </Card>
   );

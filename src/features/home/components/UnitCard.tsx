@@ -15,12 +15,17 @@ type UnitCardProps = {
 };
 
 export default function UnitCard({ unit }: UnitCardProps) {
+  const completedLessons = useProgressStore((s) => s.completedLessons);
   const mastery = useProgressStore((s) => s.mastery);
   const updatedAt = useProgressStore((s) => s.masteryUpdatedAt);
   const today = todayString();
 
-  const masteryValue = mastery[unit.id] ?? 0;
-  const masteryDisplay = decayedMastery(masteryValue, updatedAt[unit.id], today);
+  // Find the current active lesson (first uncompleted lesson, or fallback to first lesson)
+  const currentLessonIndex = unit.lessons.findIndex(
+    (l) => !completedLessons.includes(l.id),
+  );
+  const activeIndex = currentLessonIndex !== -1 ? currentLessonIndex : 0;
+  const currentLesson = unit.lessons[activeIndex] ?? unit.lessons[0];
 
   // Find recommended unit: the first unlocked unit that is not fully mastered (mastery < 100).
   const recommendedUnitId = (() => {
@@ -48,7 +53,15 @@ export default function UnitCard({ unit }: UnitCardProps) {
   const isRecommended = unit.id === recommendedUnitId;
 
   return (
-    <Card className="overflow-hidden border-2 border-border p-0">
+    <Card className="group relative overflow-hidden border-2 border-border p-0 transition-all hover:border-primary/40">
+      {/* Whole card clickable link to unit detail */}
+      <Link
+        to="/units/$unitId"
+        params={{ unitId: unit.id }}
+        className="absolute inset-0 z-0 cursor-pointer"
+        aria-label={`Buka detail ${unit.title}`}
+      />
+
       <CardContent className="p-0">
         <div className="relative flex flex-col items-center gap-5 px-8 py-8 text-center">
           {/* Soft radial bg decoration */}
@@ -73,29 +86,33 @@ export default function UnitCard({ unit }: UnitCardProps) {
             src={unit.imageUrl || "/course-illustration.png"}
             alt={`Ilustrasi ${unit.title}`}
             draggable={false}
-            className="relative h-36 w-auto object-contain sm:h-40 pointer-events-none select-none"
+            className="pointer-events-none relative h-36 w-auto select-none object-contain sm:h-40"
           />
-          {/* Progress bar */}
-          <div className="relative w-full">
-            <div className="mb-2 flex items-center justify-between">
-              <span className="text-sm font-medium text-muted">Progres lesson</span>
-              <span className="text-sm font-bold text-muted">{masteryDisplay}%</span>
-            </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-border">
-              <div
-                className="h-full rounded-full bg-primary transition-all duration-500"
-                style={{ width: `${masteryDisplay}%` }}
-              />
-            </div>
-          </div>
 
-          {/* CTA button */}
-          <Button asChild size="lg" className="relative w-full mt-2">
-            <Link to="/units/$unitId" params={{ unitId: unit.id }}>
-              <PlayCircle className="size-6 mr-2" />
-              Buka Unit
-            </Link>
-          </Button>
+          {/* Current lesson indicator row (replacing progress bar) */}
+          {currentLesson && (
+            <div className="relative z-10 flex w-full items-center justify-between gap-3 rounded-xl border border-border/70 bg-card/70 px-4 py-3 text-left shadow-xs backdrop-blur-xs">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary font-bold text-white shadow-sm ring-2 ring-primary/30">
+                  <span className="text-sm">{activeIndex + 1}</span>
+                </div>
+                <span className="truncate text-sm font-bold text-foreground">
+                  {currentLesson.title}
+                </span>
+              </div>
+              <div className="size-3 shrink-0 rounded-full bg-muted-foreground/30" />
+            </div>
+          )}
+
+          {/* CTA button: Mulai opening current lesson directly */}
+          {currentLesson && (
+            <Button asChild size="lg" className="relative z-10 mt-1 w-full">
+              <Link to="/lesson/$lessonId" params={{ lessonId: currentLesson.id }}>
+                <PlayCircle className="mr-2 size-6" />
+                Mulai
+              </Link>
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
