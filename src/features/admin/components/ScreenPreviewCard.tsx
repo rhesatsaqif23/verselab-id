@@ -109,7 +109,7 @@ export function ScreenPreviewCard({ screen }: ScreenPreviewCardProps) {
         <div className="flex items-center gap-2">
           <h3 className="text-lg font-semibold">Pratinjau Halaman</h3>
         </div>
-        <Badge variant="outline" className="text-xs uppercase">
+        <Badge variant="secondary" className="uppercase">
           {debouncedScreen.type}
         </Badge>
       </div>

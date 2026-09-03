@@ -19,7 +19,6 @@ export default function UnitCard({ unit }: UnitCardProps) {
   const updatedAt = useProgressStore((s) => s.masteryUpdatedAt);
   const today = todayString();
 
-  const lesson = unit.lessons[0];
   const masteryValue = mastery[unit.id] ?? 0;
   const masteryDisplay = decayedMastery(masteryValue, updatedAt[unit.id], today);
 
@@ -92,9 +91,9 @@ export default function UnitCard({ unit }: UnitCardProps) {
 
           {/* CTA button */}
           <Button asChild size="lg" className="relative w-full mt-2">
-            <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }}>
+            <Link to="/units/$unitId" params={{ unitId: unit.id }}>
               <PlayCircle className="size-6 mr-2" />
-              Lanjut ke lesson berikutnya
+              Buka Unit
             </Link>
           </Button>
         </div>
