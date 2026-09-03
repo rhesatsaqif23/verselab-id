@@ -1,42 +1,27 @@
-// UnitDetailPage: horizontal full-width layout with root-level floating LessonCta.
-import { useState, useEffect, useRef } from "react";
+// UnitDetailPage: Interactive full-screen whiteboard lesson map with free-drag canvas and unit sidebar.
+import { useState } from "react";
 import type { Unit } from "#/engine/types.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import type { LessonStatus } from "./types.ts";
-import UnitHeader from "./UnitHeader.tsx";
-import LessonList from "./LessonList.tsx";
-import LessonCta from "./LessonCta.tsx";
+import UnitSidebar from "./components/UnitSidebar.tsx";
+import WhiteboardMapCanvas from "./components/WhiteboardMapCanvas.tsx";
+import UnitMapBottomBar from "./components/UnitMapBottomBar.tsx";
 
 type Props = { unit: Unit };
 
 export default function UnitDetailPage({ unit }: Props) {
   const completedLessons = useProgressStore((s) => s.completedLessons);
 
-  // First lesson not yet completed is the current lesson
+  // Sidebar toggle state
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Active / Selected lesson selection
   const currentLesson =
     unit.lessons.find((l) => !completedLessons.includes(l.id)) ?? unit.lessons[0];
 
-  // CTA button only views when user clicks a lesson item (null initially)
-  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
-  const [isCtaVisible, setIsCtaVisible] = useState<boolean>(false);
-
-  const lastScrollY = useRef<number>(0);
-
-  // Handle scroll to smoothly hide on scroll down and show on scroll up if a lesson is selected
-  useEffect(() => {
-    const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      if (currentScrollY > lastScrollY.current + 10 && currentScrollY > 100) {
-        setIsCtaVisible(false);
-      } else if (currentScrollY < lastScrollY.current - 10 && selectedLessonId !== null) {
-        setIsCtaVisible(true);
-      }
-      lastScrollY.current = currentScrollY;
-    };
-
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [selectedLessonId]);
+  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(
+    currentLesson?.id ?? null,
+  );
 
   function getStatus(lessonId: string): LessonStatus {
     if (completedLessons.includes(lessonId)) return "previous";
@@ -45,42 +30,44 @@ export default function UnitDetailPage({ unit }: Props) {
   }
 
   const selectedLesson = selectedLessonId
-    ? unit.lessons.find((l) => l.id === selectedLessonId)
-    : null;
+    ? unit.lessons.find((l) => l.id === selectedLessonId) ?? currentLesson
+    : currentLesson;
+
   const selectedStatus = selectedLesson ? getStatus(selectedLesson.id) : "current";
 
   const handleSelectLesson = (lessonId: string) => {
     setSelectedLessonId(lessonId);
-    setIsCtaVisible(true);
   };
 
   return (
-    <main className="relative mx-auto flex min-h-[calc(100vh-140px)] w-full max-w-6xl flex-col px-4 py-8 sm:px-6 lg:px-8">
-      {/* Single Unified Card: Unit Header + Lesson List */}
-      <div className="w-full rounded-3xl border border-border bg-card shadow-xs overflow-hidden">
-        <UnitHeader unit={unit} />
-        <div className="border-t border-border/60">
-          <LessonList
-            unit={unit}
-            completedLessons={completedLessons}
-            selectedLessonId={selectedLessonId}
-            onSelectLesson={handleSelectLesson}
-          />
-        </div>
-      </div>
+    <div className="relative flex h-[calc(100vh-64px)] w-full overflow-hidden bg-background">
+      {/* Left Collapsible Sidebar */}
+      <UnitSidebar
+        unit={unit}
+        completedLessons={completedLessons}
+        selectedLessonId={selectedLessonId}
+        onSelectLesson={handleSelectLesson}
+        isOpen={isSidebarOpen}
+        onToggle={() => setIsSidebarOpen((prev) => !prev)}
+      />
 
-      {/* Floating Lesson CTA at the root of the page (only appears when a lesson is clicked) */}
-      {selectedLesson && (
-        <div className="fixed bottom-6 inset-x-0 z-30 flex justify-center px-4 sm:px-8 pointer-events-none">
-          <div className="w-full max-w-2xl pointer-events-auto">
-            <LessonCta
-              lesson={selectedLesson}
-              status={selectedStatus}
-              isVisible={isCtaVisible}
-            />
-          </div>
-        </div>
-      )}
-    </main>
+      {/* Main Free-Drag Whiteboard Canvas */}
+      <div className="relative flex h-full flex-1 flex-col overflow-hidden">
+        <WhiteboardMapCanvas
+          unit={unit}
+          completedLessons={completedLessons}
+          selectedLessonId={selectedLessonId}
+          onSelectLesson={handleSelectLesson}
+        />
+
+        {/* Floating Bottom Bar with Progress and Mulai CTA */}
+        <UnitMapBottomBar
+          unit={unit}
+          completedLessons={completedLessons}
+          selectedLesson={selectedLesson}
+          status={selectedStatus}
+        />
+      </div>
+    </div>
   );
 }
