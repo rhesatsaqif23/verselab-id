@@ -57,12 +57,12 @@ export default function UnitDetailPage({ unit }: Props) {
   return (
     <main className="relative mx-auto flex min-h-[calc(100vh-140px)] w-full max-w-6xl flex-col px-4 py-8 pb-32 sm:px-6 lg:px-8">
       {/* Unit Header */}
-      <div className="mb-8 w-full border-b border-border/60 pb-6">
+      <div className="mb-4 w-full">
         <UnitHeader unit={unit} />
       </div>
 
-      {/* Horizontal zig-zag lesson path */}
-      <div className="flex w-full flex-1 flex-col items-center justify-center rounded-3xl border border-border bg-card p-2 sm:p-6 shadow-xs overflow-hidden">
+      {/* Horizontal zig-zag lesson path – height adaptive to content */}
+      <div className="w-full rounded-3xl border border-border bg-card shadow-xs">
         <LessonList
           unit={unit}
           completedLessons={completedLessons}

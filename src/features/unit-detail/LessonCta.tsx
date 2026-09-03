@@ -21,33 +21,33 @@ export default function LessonCta({ lesson, status, isVisible }: LessonCtaProps)
       }`}
     >
       <Card className="border-2 border-border shadow-2xl bg-card rounded-2xl overflow-hidden">
-        <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-3 text-center sm:text-left">
+        <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 text-center sm:text-left">
           <p className="text-base font-bold text-foreground sm:text-lg truncate max-w-sm">
             {lesson.title}
           </p>
 
           <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
             {status === "previous" && (
-              <Button asChild size="default" className="w-full sm:w-auto px-6">
+              <Button asChild size="lg" className="w-full sm:w-auto !text-base !font-bold">
                 <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }}>
-                  <RotateCcw className="mr-2 size-4" />
+                  <RotateCcw className="mr-2 size-5" />
                   Main Lagi
                 </Link>
               </Button>
             )}
 
             {status === "current" && (
-              <Button asChild size="default" className="w-full sm:w-auto px-6">
+              <Button asChild size="lg" className="w-full sm:w-auto !text-base !font-bold">
                 <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }}>
-                  <PlayCircle className="mr-2 size-4" />
+                  <PlayCircle className="mr-2 size-5" />
                   Mulai
                 </Link>
               </Button>
             )}
 
             {status === "unlocked" && (
-              <Button disabled size="default" variant="secondary" className="w-full sm:w-auto px-6 opacity-70">
-                <Lock className="mr-2 size-4" />
+              <Button disabled size="lg" variant="secondary" className="w-full sm:w-auto !text-base !font-bold opacity-70">
+                <Lock className="mr-2 size-5" />
                 Terkunci
               </Button>
             )}

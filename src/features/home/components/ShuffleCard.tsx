@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { units } from "#/content/index.ts";
 import { useHomeStore } from "../store.ts";
 import UnitCard from "./UnitCard.tsx";
@@ -23,6 +24,7 @@ function stackStyle(distance: number) {
 const CSS_TRANSITION = `all ${COMMIT_MS}ms cubic-bezier(0.25, 0.1, 0.25, 1)`;
 
 export default function ShuffleCard() {
+  const navigate = useNavigate();
   const selectedUnitId = useHomeStore((s) => s.selectedUnitId);
   const setSelectedUnit = useHomeStore((s) => s.setSelectedUnit);
 
@@ -36,6 +38,8 @@ export default function ShuffleCard() {
   const [animating, setAnimating] = useState(false);
   const [turning, setTurning] = useState(false);
   const startX = useRef(0);
+  const startY = useRef(0);
+  const isDragThresholdPassed = useRef(false);
   const rafRef = useRef<number | null>(null);
   const pendingPointerX = useRef(0);
   const commitSourceRef = useRef<"grid" | "drag">("grid");
@@ -129,28 +133,34 @@ export default function ShuffleCard() {
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     if (e.button !== 0) return;
-    // Don't capture pointer immediately, only track start position
-    // so clicks/taps on the card or links bubble normally
+    // If clicking directly on a button or link inside (e.g. Mulai button), let it handle the click
+    if ((e.target as HTMLElement).closest("a, button")) {
+      return;
+    }
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
     stopRaf();
     startX.current = e.clientX;
+    startY.current = e.clientY;
+    isDragThresholdPassed.current = false;
     setAnimating(false);
     setTurning(false);
+    setDragging(true);
   }, []);
 
   const onPointerMove = useCallback(
     (e: React.PointerEvent) => {
+      if (!dragging) return;
       if (turning) {
         pendingPointerX.current = e.clientX;
         return;
       }
 
       const rawX = e.clientX - startX.current;
+      const rawY = e.clientY - startY.current;
 
-      // Start drag threshold: only capture pointer if user actually moves > 5px
-      if (!dragging) {
-        if (Math.abs(rawX) > 5) {
-          (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-          setDragging(true);
+      if (!isDragThresholdPassed.current) {
+        if (Math.hypot(rawX, rawY) > 6) {
+          isDragThresholdPassed.current = true;
         } else {
           return;
         }
@@ -180,14 +190,22 @@ export default function ShuffleCard() {
 
   const onPointerUp = useCallback(
     (e: React.PointerEvent) => {
-      if (dragging) {
-        try {
-          (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
-        } catch {}
-        setDragging(false);
-      }
+      if (!dragging) return;
+      try {
+        (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId);
+      } catch {}
+      setDragging(false);
 
       if (turning || animating) return;
+
+      // If user clicked without dragging beyond threshold, navigate to the unit detail
+      if (!isDragThresholdPassed.current) {
+        const frontUnitId = order[0];
+        if (frontUnitId) {
+          navigate({ to: "/units/$unitId", params: { unitId: frontUnitId } });
+        }
+        return;
+      }
 
       if (dragX < -COMMIT_THRESHOLD) {
         const releaseX = dragX;
@@ -207,7 +225,7 @@ export default function ShuffleCard() {
         animateTo(dragX, 0, 300);
       }
     },
-    [dragX, turning, animating, commitNext, commitPrev],
+    [dragging, turning, animating, dragX, order, navigate, commitNext, commitPrev],
   );
 
   const progress = Math.min(1, Math.abs(dragX) / DRAG_DIVISOR);

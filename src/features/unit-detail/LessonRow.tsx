@@ -45,15 +45,12 @@ export default function LessonRow({
     }`;
   })();
 
-  const titleClass = (() => {
-    if (status === "previous") {
-      return "text-xs sm:text-sm font-semibold text-foreground/80 text-center max-w-[130px] line-clamp-2";
-    }
-    if (status === "current") {
-      return "text-xs sm:text-sm font-black text-foreground text-center max-w-[130px] line-clamp-2";
-    }
-    return "text-xs sm:text-sm font-medium text-muted-foreground text-center max-w-[130px] line-clamp-2";
-  })();
+  const titleClass =
+    `text-sm sm:text-base text-center max-w-[180px] line-clamp-2 ${
+      status === "previous" || isSelected
+        ? "font-semibold text-foreground"
+        : "font-medium text-muted-foreground"
+    }`;
 
   return (
     <div
@@ -72,21 +69,19 @@ export default function LessonRow({
       <div className={discCardStyle}>
         {/* Sequence tag */}
         <div className="absolute top-2.5 left-3 flex items-center">
-          <span className="text-[11px] font-bold text-muted-foreground">
+          <span className="text-xs font-bold text-muted-foreground">
             #{index + 1}
           </span>
         </div>
 
         {status === "previous" && (
-          <div className="absolute top-2.5 right-3 flex size-5 items-center justify-center rounded-full bg-success text-white shadow-xs">
+          <div className="absolute top-2.5 right-2.5 flex size-5 items-center justify-center rounded-full bg-success text-white shadow-xs">
             <Check className="size-3.5 stroke-3" />
           </div>
         )}
 
         {status === "unlocked" && (
-          <div className="absolute top-2.5 right-3 flex size-5 items-center justify-center rounded-full bg-muted text-muted-foreground">
-            <Lock className="size-3 stroke-[2.5]" />
-          </div>
+          <Lock className="absolute top-2.5 right-2.5 size-4 text-foreground/70 stroke-[2.5]" />
         )}
 
         {/* Center Lucide Icon */}

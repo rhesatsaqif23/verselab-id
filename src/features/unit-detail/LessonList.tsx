@@ -24,21 +24,18 @@ export default function LessonList({
     return "unlocked";
   }
 
-  // Zigzag offsets (alternating wave like a game map)
+  // Zigzag via padding-top so the container height adapts to content (transforms are layout-invisible)
   const getZigzagOffset = (idx: number) => {
-    const pattern = [
-      "-translate-y-4 sm:-translate-y-6",
-      "translate-y-8 sm:translate-y-12",
-      "-translate-y-6 sm:-translate-y-8",
-      "translate-y-10 sm:translate-y-14",
-    ];
+    const pattern = ["pt-0", "pt-28", "pt-6", "pt-36"];
     return pattern[idx % pattern.length];
   };
 
   return (
     <div className="relative flex w-full flex-col items-center">
       {/* Horizontal zig-zag track with generous edge padding (px-12 sm:px-20 lg:px-28) to prevent edge cropping */}
-      <div className="relative flex w-full flex-nowrap items-center justify-start sm:justify-center gap-14 sm:gap-20 md:gap-28 lg:gap-36 overflow-x-auto py-20 px-12 sm:px-20 lg:px-28 scrollbar-none">
+      <div
+        className="relative flex w-full flex-nowrap items-start justify-start sm:justify-center gap-6 sm:gap-8 md:gap-10 overflow-x-auto py-8 px-6 sm:px-10 lg:px-14 scrollbar-none"
+      >
         {/* Background connecting path line */}
         <div className="pointer-events-none absolute left-16 right-16 top-1/2 -z-10 h-1 -translate-y-4 bg-border border-t-2 border-dashed border-border" />
 
