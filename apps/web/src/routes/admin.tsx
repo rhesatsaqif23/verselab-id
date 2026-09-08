@@ -14,7 +14,7 @@ function AdminLayout() {
   return (
     <div className="flex min-h-screen flex-col">
       <Header />
-      <div className="container mx-auto flex-1 p-4">
+      <div className="container mx-auto flex-1 px-4 py-8 md:py-12">
         <Outlet />
       </div>
       <Footer />

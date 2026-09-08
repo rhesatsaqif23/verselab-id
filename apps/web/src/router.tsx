@@ -1,5 +1,6 @@
 // Router factory: creates the app router from the generated route tree.
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
+import type { resolveSession } from "#/libs/session.ts";
 import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {
@@ -14,6 +15,9 @@ export function getRouter() {
 }
 
 declare module "@tanstack/react-router" {
+  interface RouterContext {
+    session?: Awaited<ReturnType<typeof resolveSession>>;
+  }
   interface Register {
     router: ReturnType<typeof getRouter>;
   }
