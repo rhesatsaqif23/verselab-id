@@ -82,6 +82,15 @@
         "vitest": "latest",
       },
     },
+    "packages/shared": {
+      "name": "@verselab/shared",
+      "dependencies": {
+        "zod": "^4.4.3",
+      },
+      "devDependencies": {
+        "typescript": "^6.0.2",
+      },
+    },
   },
   "packages": {
     "@adobe/css-tools": ["@adobe/css-tools@4.5.0", "", {}, "sha512-6OzddxPio9UiWTCemp4N8cYLV2ZN1ncRnV1cVGtve7dhPOtRkleRyx32GQCYSwDYgaHU3USMm84tNsvKzRCa1Q=="],
@@ -809,6 +818,8 @@
     "@valibot/to-json-schema": ["@valibot/to-json-schema@1.7.1", "", { "peerDependencies": { "valibot": "^1.4.0" } }, "sha512-3qkmU6KXWh8GIThEAW3kuRHPQBMjWkKy+Ppz3WkUucx53DTpOa6siMn4xDGSOhlVyMrDaJTCTMLYPZVAIk1P0A=="],
 
     "@verselab/api": ["@verselab/api@workspace:apps/api"],
+
+    "@verselab/shared": ["@verselab/shared@workspace:packages/shared"],
 
     "@verselab/web": ["@verselab/web@workspace:apps/web"],
 
