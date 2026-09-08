@@ -46,7 +46,7 @@ export default function LessonMapCard({
           onSelect();
         }
       }}
-      className={`group relative flex w-[340px] flex-col rounded-3xl border-2 bg-card p-5 select-none transition-shadow duration-200 cursor-pointer ${cardBorderClass}`}
+      className={`group relative flex w-[320px] sm:w-90 flex-col rounded-3xl border-2 bg-card p-5 select-none transition-all duration-200 cursor-pointer ${cardBorderClass}`}
     >
       {/* Top row: Icon box, Title, Topic count */}
       <div className="flex items-start gap-3.5">
@@ -57,7 +57,7 @@ export default function LessonMapCard({
               ? "border-primary/30 bg-primary/10 text-primary"
               : status === "previous"
                 ? "border-success/30 bg-success/10 text-success"
-                : "border-border/60 bg-muted/10 text-muted-foreground"
+                : "border-border/60 bg-muted/60 text-muted-foreground"
           }`}
         >
           <IconComponent className="size-7 stroke-[2.2]" />
@@ -92,14 +92,14 @@ export default function LessonMapCard({
 
       {/* Bottom row: Progress bar + label */}
       <div className="mt-4 flex flex-col gap-1.5 pt-2">
-        <div className="flex items-center justify-between text-sm font-semibold">
-          <span className="text-muted-foreground">Progress</span>
+        <div className="flex items-center justify-between text-xs font-semibold">
+          <span className="text-sm font-semibold text-muted-foreground">Progress</span>
           <span
             className={
               status === "previous"
-                ? "text-success"
+                ? "text-success font-bold"
                 : status === "current"
-                  ? "text-primary"
+                  ? "text-primary font-bold"
                   : "text-muted-foreground"
             }
           >
@@ -110,7 +110,7 @@ export default function LessonMapCard({
         {/* Progress track */}
         <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
           <div
-            className={`h-full rounded-full transition-all duration-300 ${
+            className={`th-full rounded-full transition-all duration-300 ${
               status === "previous"
                 ? "bg-success"
                 : status === "current"
