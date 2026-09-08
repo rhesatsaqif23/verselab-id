@@ -17,6 +17,7 @@
     "zod": "^4.5.4"
   },
   "devDependencies": {
+    "@better-auth/cli": "^1.4.21",
     "@types/node": "^26.5.0",
     "@types/pg": "^8.23.1",
     "bun-types": "^1.4.2",
