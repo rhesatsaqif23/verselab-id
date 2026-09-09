@@ -15,6 +15,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LessonCompleteRouteImport } from './routes/lesson-complete'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as HomeAboutRouteImport } from './routes/_home/about'
@@ -23,6 +24,8 @@ import { Route as HomeProfileRouteImport } from './routes/_home/profile'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminUnitIdRouteImport } from './routes/admin.$unitId'
 import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
+import { Route as OnboardingIndexRouteImport } from './routes/onboarding.index'
+import { Route as OnboardingWelcomeRouteImport } from './routes/onboarding.welcome'
 import { Route as HomeUnitsUnitIdRouteImport } from './routes/_home/units.$unitId'
 import { Route as AdminUnitIdIndexRouteImport } from './routes/admin.$unitId.index'
 import { Route as AdminUnitIdLessonIdRouteImport } from './routes/admin.$unitId.$lessonId'
@@ -54,6 +57,11 @@ const LessonCompleteRoute = LessonCompleteRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterRoute = RegisterRouteImport.update({
@@ -96,6 +104,16 @@ const LessonLessonIdRoute = LessonLessonIdRouteImport.update({
   path: '/lesson/$lessonId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OnboardingIndexRoute = OnboardingIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => OnboardingRoute,
+} as any)
+const OnboardingWelcomeRoute = OnboardingWelcomeRouteImport.update({
+  id: '/welcome',
+  path: '/welcome',
+  getParentRoute: () => OnboardingRoute,
+} as any)
 const HomeUnitsUnitIdRoute = HomeUnitsUnitIdRouteImport.update({
   id: '/units/$unitId',
   path: '/units/$unitId',
@@ -118,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/lesson-complete': typeof LessonCompleteRoute
   '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRouteWithChildren
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/about': typeof HomeAboutRoute
@@ -125,7 +144,9 @@ export interface FileRoutesByFullPath {
   '/profile': typeof HomeProfileRoute
   '/admin/$unitId': typeof AdminUnitIdRouteWithChildren
   '/lesson/$lessonId': typeof LessonLessonIdRoute
+  '/onboarding/welcome': typeof OnboardingWelcomeRoute
   '/admin/': typeof AdminIndexRoute
+  '/onboarding/': typeof OnboardingIndexRoute
   '/units/$unitId': typeof HomeUnitsUnitIdRoute
   '/admin/$unitId/$lessonId': typeof AdminUnitIdLessonIdRoute
   '/admin/$unitId/': typeof AdminUnitIdIndexRoute
@@ -141,7 +162,9 @@ export interface FileRoutesByTo {
   '/home': typeof HomeHomeRoute
   '/profile': typeof HomeProfileRoute
   '/lesson/$lessonId': typeof LessonLessonIdRoute
+  '/onboarding/welcome': typeof OnboardingWelcomeRoute
   '/admin': typeof AdminIndexRoute
+  '/onboarding': typeof OnboardingIndexRoute
   '/units/$unitId': typeof HomeUnitsUnitIdRoute
   '/admin/$unitId/$lessonId': typeof AdminUnitIdLessonIdRoute
   '/admin/$unitId': typeof AdminUnitIdIndexRoute
@@ -154,6 +177,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/lesson-complete': typeof LessonCompleteRoute
   '/login': typeof LoginRoute
+  '/onboarding': typeof OnboardingRouteWithChildren
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
   '/_home/about': typeof HomeAboutRoute
@@ -161,7 +185,9 @@ export interface FileRoutesById {
   '/_home/profile': typeof HomeProfileRoute
   '/admin/$unitId': typeof AdminUnitIdRouteWithChildren
   '/lesson/$lessonId': typeof LessonLessonIdRoute
+  '/onboarding/welcome': typeof OnboardingWelcomeRoute
   '/admin/': typeof AdminIndexRoute
+  '/onboarding/': typeof OnboardingIndexRoute
   '/_home/units/$unitId': typeof HomeUnitsUnitIdRoute
   '/admin/$unitId/$lessonId': typeof AdminUnitIdLessonIdRoute
   '/admin/$unitId/': typeof AdminUnitIdIndexRoute
@@ -174,6 +200,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/lesson-complete'
     | '/login'
+    | '/onboarding'
     | '/register'
     | '/reset-password'
     | '/about'
@@ -181,7 +208,9 @@ export interface FileRouteTypes {
     | '/profile'
     | '/admin/$unitId'
     | '/lesson/$lessonId'
+    | '/onboarding/welcome'
     | '/admin/'
+    | '/onboarding/'
     | '/units/$unitId'
     | '/admin/$unitId/$lessonId'
     | '/admin/$unitId/'
@@ -197,7 +226,9 @@ export interface FileRouteTypes {
     | '/home'
     | '/profile'
     | '/lesson/$lessonId'
+    | '/onboarding/welcome'
     | '/admin'
+    | '/onboarding'
     | '/units/$unitId'
     | '/admin/$unitId/$lessonId'
     | '/admin/$unitId'
@@ -209,6 +240,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/lesson-complete'
     | '/login'
+    | '/onboarding'
     | '/register'
     | '/reset-password'
     | '/_home/about'
@@ -216,7 +248,9 @@ export interface FileRouteTypes {
     | '/_home/profile'
     | '/admin/$unitId'
     | '/lesson/$lessonId'
+    | '/onboarding/welcome'
     | '/admin/'
+    | '/onboarding/'
     | '/_home/units/$unitId'
     | '/admin/$unitId/$lessonId'
     | '/admin/$unitId/'
@@ -229,6 +263,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LessonCompleteRoute: typeof LessonCompleteRoute
   LoginRoute: typeof LoginRoute
+  OnboardingRoute: typeof OnboardingRouteWithChildren
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   LessonLessonIdRoute: typeof LessonLessonIdRoute
@@ -276,6 +311,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
@@ -333,6 +375,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/lesson/$lessonId'
       preLoaderRoute: typeof LessonLessonIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/onboarding/': {
+      id: '/onboarding/'
+      path: '/'
+      fullPath: '/onboarding/'
+      preLoaderRoute: typeof OnboardingIndexRouteImport
+      parentRoute: typeof OnboardingRoute
+    }
+    '/onboarding/welcome': {
+      id: '/onboarding/welcome'
+      path: '/welcome'
+      fullPath: '/onboarding/welcome'
+      preLoaderRoute: typeof OnboardingWelcomeRouteImport
+      parentRoute: typeof OnboardingRoute
     }
     '/_home/units/$unitId': {
       id: '/_home/units/$unitId'
@@ -400,6 +456,20 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface OnboardingRouteChildren {
+  OnboardingWelcomeRoute: typeof OnboardingWelcomeRoute
+  OnboardingIndexRoute: typeof OnboardingIndexRoute
+}
+
+const OnboardingRouteChildren: OnboardingRouteChildren = {
+  OnboardingWelcomeRoute: OnboardingWelcomeRoute,
+  OnboardingIndexRoute: OnboardingIndexRoute,
+}
+
+const OnboardingRouteWithChildren = OnboardingRoute._addFileChildren(
+  OnboardingRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   HomeRoute: HomeRouteWithChildren,
@@ -407,6 +477,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   LessonCompleteRoute: LessonCompleteRoute,
   LoginRoute: LoginRoute,
+  OnboardingRoute: OnboardingRouteWithChildren,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   LessonLessonIdRoute: LessonLessonIdRoute,
