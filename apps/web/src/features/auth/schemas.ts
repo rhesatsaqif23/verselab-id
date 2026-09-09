@@ -3,7 +3,11 @@
 // against the same rules.
 import { z } from "zod";
 
-export const emailSchema = z.string().trim().min(1, "Email wajib diisi").email("Format email tidak valid");
+export const emailSchema = z
+  .string()
+  .trim()
+  .min(1, "Email wajib diisi")
+  .email("Format email tidak valid");
 
 export const passwordSchema = z
   .string()

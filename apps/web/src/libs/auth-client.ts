@@ -5,4 +5,6 @@ export const authClient = createAuthClient({
   baseURL: env.apiOrigin,
 });
 
-export type AuthUser = NonNullable<Awaited<ReturnType<typeof authClient.getSession>>["data"]>["user"];
+export type AuthUser = NonNullable<
+  Awaited<ReturnType<typeof authClient.getSession>>["data"]
+>["user"];

@@ -15,20 +15,18 @@ async function fetchProfile(userId: string): Promise<Profile | null> {
   return body.data?.profile ?? null;
 }
 
-export const resolveSession = createServerFn({ method: "GET" }).handler(
-  async () => {
-    const result = await authClient.getSession({
-      fetchOptions: { headers: getRequestHeaders() },
-    });
-    if (!result.data?.user) return { status: "anonymous" as const };
-    const profile = await fetchProfile(result.data.user.id);
-    return {
-      status: "authenticated" as const,
-      user: result.data.user,
-      onboarded: profile?.onboardedAt != null,
-    };
-  },
-);
+export const resolveSession = createServerFn({ method: "GET" }).handler(async () => {
+  const result = await authClient.getSession({
+    fetchOptions: { headers: getRequestHeaders() },
+  });
+  if (!result.data?.user) return { status: "anonymous" as const };
+  const profile = await fetchProfile(result.data.user.id);
+  return {
+    status: "authenticated" as const,
+    user: result.data.user,
+    onboarded: profile?.onboardedAt != null,
+  };
+});
 
 export const requireAuth = createServerFn({ method: "GET" }).handler(async () => {
   const s = await resolveSession();

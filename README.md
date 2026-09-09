@@ -12,13 +12,16 @@ While it launches with business and financial literacy materials (**Keuangan**, 
 ## Key Features
 
 ### 1. Interactive Question Types
+
 The learning engine supports 4 interactive screen formats:
+
 - **`concept`**: Introduces core ideas, mental models, and definitions after the user has experienced the intuition.
 - **`choice`**: Multiple-choice scenario cards with instant feedback and explanations.
 - **`numeric`**: Dynamic numerical input with tolerances checked against math calculations (never hardcoded answers).
 - **`allocation`**: Interactive multi-slider controls that must sum to 100% and satisfy financial/budgeting constraints.
 
 ### 2. Interactive Whiteboard Map Canvas (`/units/$unitId`)
+
 - Infinite-feel pannable and zoomable whiteboard canvas.
 - Automatically centers and positions the current lesson with comfortable viewport margins.
 - Visual sequential flow: dashed connector lines that become solid on completion with directional arrowheads.
@@ -26,17 +29,20 @@ The learning engine supports 4 interactive screen formats:
 - Floating bottom bar with progress percentage, XP rewards, and active lesson CTA.
 
 ### 3. Gamification Engine
+
 - **XP System**: Earn XP for completing screens and lessons.
 - **Daily Streaks**: Maintain active streak counts with automated decay and recovery mechanics.
 - **Daily Goals**: Customizable daily target tracking (Casual, Regular, Serious).
 - **Mastery Levels**: Dynamic unit mastery calculated from retention and completion history.
 
 ### 4. Curriculum Studio / Admin Mode (`/admin`)
+
 - Complete in-browser curriculum editor to manage units, lessons, and interactive screens.
 - Reorder screens with drag-and-drop or sequential buttons.
 - Real-time preview panel to test newly authored screens before publishing.
 
 ### 5. Design & User Experience
+
 - **Tailwind CSS v4**: Theme tokens defined via `@theme inline` in CSS (zero hardcoded hex colors).
 - **Zero-FOUC Dark Mode**: Light, Dark, and Auto/System mode detection with pre-hydration theme script.
 - **Sticky Glassmorphic Header**: Elevated navigation with live streak and XP counter badges.
@@ -46,33 +52,34 @@ The learning engine supports 4 interactive screen formats:
 
 ## Curriculum Tracks
 
-| Unit | Focus & Learning Outcomes | Lessons |
-| ---- | ------------------------- | ------- |
-| **Keuangan** | Personal finance, compound interest, time value of money, budgeting, and loans | 4 Lessons |
-| **Akuntansi** | Balance sheet equation, double-entry bookkeeping, profit & loss, and cash flow | 4 Lessons |
+| Unit                 | Focus & Learning Outcomes                                                      | Lessons   |
+| -------------------- | ------------------------------------------------------------------------------ | --------- |
+| **Keuangan**         | Personal finance, compound interest, time value of money, budgeting, and loans | 4 Lessons |
+| **Akuntansi**        | Balance sheet equation, double-entry bookkeeping, profit & loss, and cash flow | 4 Lessons |
 | **Manajemen Produk** | Problem discovery, feature prioritization, product metrics, and MVP validation | 4 Lessons |
-| **Kewirausahaan** | Unit economics, break-even analysis, value-based pricing, and idea validation | 4 Lessons |
+| **Kewirausahaan**    | Unit economics, break-even analysis, value-based pricing, and idea validation  | 4 Lessons |
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology | Details |
-| ----- | ---------- | ------- |
-| **Framework** | [TanStack Start](https://tanstack.com/start) + [React 19](https://react.dev/) | Full-stack React framework powered by Vite |
-| **Routing** | [TanStack Router](https://tanstack.com/router) | 100% type-safe, file-based routing |
-| **Styling** | [Tailwind CSS v4](https://tailwindcss.com/) | Pure CSS `@theme` configuration with semantic CSS variables |
-| **State** | [Zustand](https://zustand.docs.pmnd.rs/) | Client state with `persist` middleware to `localStorage` |
-| **UI Components** | [shadcn/ui](https://ui.shadcn.com/) | New-York style primitives with Lucide icons |
-| **Linting & Formatting** | [Oxlint](https://oxc.rs/) & [Oxfmt](https://oxc.rs/) | High-performance Rust-based linter and formatter |
-| **Testing** | [Vitest](https://vitest.dev/) + Testing Library | Unit tests mirroring application structure |
-| **Design System** | [Storybook](https://storybook.js.org/) | Isolated component workbench |
+| Layer                    | Technology                                                                    | Details                                                     |
+| ------------------------ | ----------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **Framework**            | [TanStack Start](https://tanstack.com/start) + [React 19](https://react.dev/) | Full-stack React framework powered by Vite                  |
+| **Routing**              | [TanStack Router](https://tanstack.com/router)                                | 100% type-safe, file-based routing                          |
+| **Styling**              | [Tailwind CSS v4](https://tailwindcss.com/)                                   | Pure CSS `@theme` configuration with semantic CSS variables |
+| **State**                | [Zustand](https://zustand.docs.pmnd.rs/)                                      | Client state with `persist` middleware to `localStorage`    |
+| **UI Components**        | [shadcn/ui](https://ui.shadcn.com/)                                           | New-York style primitives with Lucide icons                 |
+| **Linting & Formatting** | [Oxlint](https://oxc.rs/) & [Oxfmt](https://oxc.rs/)                          | High-performance Rust-based linter and formatter            |
+| **Testing**              | [Vitest](https://vitest.dev/) + Testing Library                               | Unit tests mirroring application structure                  |
+| **Design System**        | [Storybook](https://storybook.js.org/)                                        | Isolated component workbench                                |
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
+
 - Node.js 20+
 - npm (do not use yarn/pnpm/bun to maintain lockfile consistency)
 

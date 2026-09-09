@@ -15,7 +15,9 @@ export const logger = new Elysia({ name: "request-logger" })
     if (env.NODE_ENV === "development") {
       console.log(`[req] ${request.method} ${request.url}`);
     } else {
-      console.log(JSON.stringify({ type: "request", method: request.method, url: request.url, requestId }));
+      console.log(
+        JSON.stringify({ type: "request", method: request.method, url: request.url, requestId }),
+      );
     }
   })
   .onError(({ error, set, request, code }) => {
@@ -24,7 +26,9 @@ export const logger = new Elysia({ name: "request-logger" })
     if (env.NODE_ENV === "development") {
       console.error(`[err] ${code} ${request.method} ${request.url} - ${errorMessage(error)}`);
     } else {
-      console.error(JSON.stringify({ type: "error", code, message: errorMessage(error), requestId }));
+      console.error(
+        JSON.stringify({ type: "error", code, message: errorMessage(error), requestId }),
+      );
     }
     if (typeof set.status === "number" && set.status < 500) return;
     set.status = 500;

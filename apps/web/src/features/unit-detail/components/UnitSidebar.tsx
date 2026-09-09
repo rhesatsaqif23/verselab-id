@@ -23,8 +23,14 @@ export default function UnitSidebar({
   isOpen,
   onToggle,
 }: UnitSidebarProps) {
-  const { searchQuery, setSearchQuery, completedCount, totalCount, progressPercent, filteredLessons } =
-    useUnitSidebar(unit, completedLessons);
+  const {
+    searchQuery,
+    setSearchQuery,
+    completedCount,
+    totalCount,
+    progressPercent,
+    filteredLessons,
+  } = useUnitSidebar(unit, completedLessons);
 
   return (
     <>
@@ -37,7 +43,9 @@ export default function UnitSidebar({
         <div className="flex h-full w-80 md:w-88 flex-col p-5">
           {/* Header */}
           <div className="flex items-center justify-between pb-3">
-            <h2 className="text-lg font-black tracking-tight text-foreground">Detail Unit Belajar</h2>
+            <h2 className="text-lg font-black tracking-tight text-foreground">
+              Detail Unit Belajar
+            </h2>
             <Button
               variant="shadowless"
               size="icon-sm"

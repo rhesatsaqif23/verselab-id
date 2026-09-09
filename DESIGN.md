@@ -1,107 +1,110 @@
 ---
+
 # Verselab design system — DESIGN.md
+
 name: "Verselab Design System"
 version: "1.0.0"
 theme: light
 author: "Verselab"
 description: >-
-  Gamified interactive-learning web app inspired by Brilliant.org / Duolingo.
-  Users learn through short interactive screens (choice, numeric, allocation,
-  concept), earning XP and streaks. Friendly, energetic, and Ivory/Light
-  educational brand.
+Gamified interactive-learning web app inspired by Brilliant.org / Duolingo.
+Users learn through short interactive screens (choice, numeric, allocation,
+concept), earning XP and streaks. Friendly, energetic, and Ivory/Light
+educational brand.
 
 # Design tokens — source of truth: apps/web/src/styles/globals.css
+
 tokens:
-  color:
-    foreground: "#1a1a1a"
-    background: "#f4f9fd"
-    border: "#e5e7eb"
-    headerBg: "rgba(255,255,255,0.88)"
-    primary: "#2c5ead"
-    primaryLight: "#1591dc"
-    primaryBright: "#4bb8fa"
-    primarySoft: "#c4e2f5"
-    primaryForeground: "#ffffff"
-    secondary: "#dbe756"
-    secondaryForeground: "#1a1a1a"
-    accent: "#1591dc"
-    accentForeground: "#ffffff"
-    destructive: "#ef4444"
-    destructiveForeground: "#ffffff"
-    success: "#22c55e"
-    successForeground: "#ffffff"
-    muted: "#6b7280"
-    mutedForeground: "#6b7280"
-    card: "#ffffff"
-    cardForeground: "#1a1a1a"
-    popover: "#ffffff"
-    popoverForeground: "#1a1a1a"
-    input: "#e5e7eb"
-    ring: "#2c5ead"
-    fireLight: "#fff3e0"
-    fire: "#f97316"
-    fireDark: "#783d0d"
-    featureHover: "#d4cfc4"
-  color-dark:
-    foreground: "#f5f5f5"
-    background: "#1a1f2e"
-    border: "#2a3040"
-    headerBg: "rgba(26,31,46,0.88)"
-    primary: "#4bb8fa"
-    primaryLight: "#1591dc"
-    primaryBright: "#4bb8fa"
-    primarySoft: "#c4e2f5"
-    primaryForeground: "#1a1a1a"
-    secondary: "#dbe756"
-    secondaryForeground: "#1a1a1a"
-    accent: "#4bb8fa"
-    accentForeground: "#1a1a1a"
-    destructive: "#f87171"
-    destructiveForeground: "#1a1a1a"
-    success: "#4ade80"
-    successForeground: "#1a1a1a"
-    muted: "#9ca3af"
-    mutedForeground: "#9ca3af"
-    card: "#212736"
-    cardForeground: "#f5f5f5"
-    popover: "#212736"
-    popoverForeground: "#f5f5f5"
-    input: "#2a3040"
-    ring: "#4bb8fa"
-    fire: "#f97316"
-    fireDark: "#783d0d"
-    featureHover: "#403c36"
-  illustration:
-    ink: "#141b2d"
-    paper: "#f6f7f9"
-    sand: "#e8e2d6"
-    surface: "#ffffff"
-    trackPetrol: "#146b63"
-    trackIndigo: "#3446c4"
-    trackOchre: "#a9720e"
-    trackMoss: "#4a6b2a"
-    trackPlum: "#7c3a6e"
-  illustration-dark:
-    ink: "#edeff4"
-    paper: "#141b2d"
-    sand: "#3a3730"
-    surface: "#1e2533"
-    trackPetrol: "#2fa095"
-    trackIndigo: "#7488f0"
-    trackOchre: "#d9a23c"
-    trackMoss: "#86ad5c"
-    trackPlum: "#b573a5"
-  radius:
-    base: "0.75rem"
-    sm: "calc(0.75rem - 4px)"
-    md: "calc(0.75rem - 2px)"
-    lg: "0.75rem"
-    xl: "calc(0.75rem + 4px)"
-  font:
-    sans: '"CoFo Brilliant", "Manrope", ui-sans-serif, system-ui, sans-serif'
-    body-weight: 500            # global default (font-medium)
-  animation:
-    durationMs: 300
+color:
+foreground: "#1a1a1a"
+background: "#f4f9fd"
+border: "#e5e7eb"
+headerBg: "rgba(255,255,255,0.88)"
+primary: "#2c5ead"
+primaryLight: "#1591dc"
+primaryBright: "#4bb8fa"
+primarySoft: "#c4e2f5"
+primaryForeground: "#ffffff"
+secondary: "#dbe756"
+secondaryForeground: "#1a1a1a"
+accent: "#1591dc"
+accentForeground: "#ffffff"
+destructive: "#ef4444"
+destructiveForeground: "#ffffff"
+success: "#22c55e"
+successForeground: "#ffffff"
+muted: "#6b7280"
+mutedForeground: "#6b7280"
+card: "#ffffff"
+cardForeground: "#1a1a1a"
+popover: "#ffffff"
+popoverForeground: "#1a1a1a"
+input: "#e5e7eb"
+ring: "#2c5ead"
+fireLight: "#fff3e0"
+fire: "#f97316"
+fireDark: "#783d0d"
+featureHover: "#d4cfc4"
+color-dark:
+foreground: "#f5f5f5"
+background: "#1a1f2e"
+border: "#2a3040"
+headerBg: "rgba(26,31,46,0.88)"
+primary: "#4bb8fa"
+primaryLight: "#1591dc"
+primaryBright: "#4bb8fa"
+primarySoft: "#c4e2f5"
+primaryForeground: "#1a1a1a"
+secondary: "#dbe756"
+secondaryForeground: "#1a1a1a"
+accent: "#4bb8fa"
+accentForeground: "#1a1a1a"
+destructive: "#f87171"
+destructiveForeground: "#1a1a1a"
+success: "#4ade80"
+successForeground: "#1a1a1a"
+muted: "#9ca3af"
+mutedForeground: "#9ca3af"
+card: "#212736"
+cardForeground: "#f5f5f5"
+popover: "#212736"
+popoverForeground: "#f5f5f5"
+input: "#2a3040"
+ring: "#4bb8fa"
+fire: "#f97316"
+fireDark: "#783d0d"
+featureHover: "#403c36"
+illustration:
+ink: "#141b2d"
+paper: "#f6f7f9"
+sand: "#e8e2d6"
+surface: "#ffffff"
+trackPetrol: "#146b63"
+trackIndigo: "#3446c4"
+trackOchre: "#a9720e"
+trackMoss: "#4a6b2a"
+trackPlum: "#7c3a6e"
+illustration-dark:
+ink: "#edeff4"
+paper: "#141b2d"
+sand: "#3a3730"
+surface: "#1e2533"
+trackPetrol: "#2fa095"
+trackIndigo: "#7488f0"
+trackOchre: "#d9a23c"
+trackMoss: "#86ad5c"
+trackPlum: "#b573a5"
+radius:
+base: "0.75rem"
+sm: "calc(0.75rem - 4px)"
+md: "calc(0.75rem - 2px)"
+lg: "0.75rem"
+xl: "calc(0.75rem + 4px)"
+font:
+sans: '"CoFo Brilliant", "Manrope", ui-sans-serif, system-ui, sans-serif'
+body-weight: 500 # global default (font-medium)
+animation:
+durationMs: 300
 
 # Verselab Design System
 
@@ -261,17 +264,17 @@ never knows the subject. Correct/wrong feedback uses
 
 Motion is playful but fast and never blocks comprehension.
 
-| Token | Timing | Use |
-|---|---|---|
-| `slide-up-enter` | 0.3s ease-out | content entering (cards, panels) |
-| `slide-up-exit` | 0.2s ease-in | content leaving |
-| `slide-in-right` | 0.35s ease-out | stepping forward in a flow |
-| `slide-out-left` | 0.25s ease-in | stepping back |
-| `progress-fill` | 0.4s ease-out | progress/streak bars |
-| `shake` | 0.4s ease-in-out | wrong answer |
-| `pulse-glow` | 0.6s ease-out | correct answer emphasis |
-| `bounce-in` | 0.3s ease-out | celebration / reward |
-| `fade-in` | 0.3s ease-out | general reveal |
+| Token            | Timing           | Use                              |
+| ---------------- | ---------------- | -------------------------------- |
+| `slide-up-enter` | 0.3s ease-out    | content entering (cards, panels) |
+| `slide-up-exit`  | 0.2s ease-in     | content leaving                  |
+| `slide-in-right` | 0.35s ease-out   | stepping forward in a flow       |
+| `slide-out-left` | 0.25s ease-in    | stepping back                    |
+| `progress-fill`  | 0.4s ease-out    | progress/streak bars             |
+| `shake`          | 0.4s ease-in-out | wrong answer                     |
+| `pulse-glow`     | 0.6s ease-out    | correct answer emphasis          |
+| `bounce-in`      | 0.3s ease-out    | celebration / reward             |
+| `fade-in`        | 0.3s ease-out    | general reveal                   |
 
 Transitions on interactive elements default to `180ms` for background, color,
 border, and transform. Micro-interactions should stay under ~350ms.
@@ -282,6 +285,7 @@ animation durations to ~0.01ms. Never disable this.
 ## Dos and Don'ts
 
 **Do**
+
 - Use semantic tokens (`bg-card`, `text-primary`, `border-border`); never inline
   a hex in a component.
 - Keep buttons pill-shaped with their tactile 3D press shadow — it defines the
@@ -294,6 +298,7 @@ animation durations to ~0.01ms. Never disable this.
 - Respect `prefers-reduced-motion`.
 
 **Don't**
+
 - Don't hardcode colors or use literal Tailwind color utilities like
   `bg-orange-500`, `text-blue-800`, `border-gray-600` — add a variable instead.
 - Don't use square corners for buttons, and don't remove the press-down shadow.

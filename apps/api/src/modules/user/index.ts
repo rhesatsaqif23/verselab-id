@@ -6,7 +6,6 @@ export const user = new Elysia({ prefix: "/user" })
   .use(authContext)
   .get(
     "/me",
-    ({ user: u, session }) =>
-      ok({ user: u, session: { expiresAt: session.expiresAt } }),
+    ({ user: u, session }) => ok({ user: u, session: { expiresAt: session.expiresAt } }),
     { auth: true },
   );
