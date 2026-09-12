@@ -16,7 +16,8 @@ export const errorPlugin = new Elysia({ name: "error-handler" })
     const requestId = request.headers.get("x-request-id") ?? "";
 
     if (error instanceof AppError) {
-      if (!isTest) console.error(`[err] ${error.code} ${request.method} ${request.url} ${requestId}`);
+      if (!isTest)
+        console.error(`[err] ${error.code} ${request.method} ${request.url} ${requestId}`);
       set.status = error.status;
       return fail({ code: error.code, message: error.message, issues: error.issues });
     }

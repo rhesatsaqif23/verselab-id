@@ -1,11 +1,10 @@
 import { Elysia } from "elysia";
 import { authContext } from "../../middleware/auth.ts";
 import { ok } from "../../libs/response.ts";
+import { userService, type UserService } from "./service.ts";
 
-export const user = new Elysia({ prefix: "/user" })
-  .use(authContext)
-  .get(
-    "/me",
-    ({ user: u, session }) => ok({ user: u, session: { expiresAt: session.expiresAt } }),
-    { auth: true },
-  );
+export function createUserController(service: UserService = userService) {
+  return new Elysia({ prefix: "/user" })
+    .use(authContext)
+    .get("/me", async ({ user }) => ok(await service.getMe(user)), { auth: true });
+}

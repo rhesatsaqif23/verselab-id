@@ -4,9 +4,9 @@ import { auth } from "./auth/index.ts";
 import { authContext } from "./middleware/auth.ts";
 import { logger } from "./plugins/logger.ts";
 import { errorPlugin } from "./plugins/error.ts";
-import { health } from "./modules/health/index.ts";
-import { user } from "./modules/user/index.ts";
-import { onboarding } from "./modules/onboarding/index.ts";
+import { createHealthController } from "./modules/health/index.ts";
+import { createUserController } from "./modules/user/index.ts";
+import { createOnboardingController } from "./modules/onboarding/index.ts";
 import { env } from "./config/env.ts";
 
 export const app = new Elysia()
@@ -18,7 +18,9 @@ export const app = new Elysia()
   })
   .mount(auth.handler) // Better Auth at /api/auth/*
   .use(authContext)
-  .group("/v1", (v1) => v1.use(health).use(user).use(onboarding))
+  .group("/v1", (v1) =>
+    v1.use(createHealthController()).use(createUserController()).use(createOnboardingController()),
+  )
   .listen(env.PORT);
 
 export type App = typeof app;

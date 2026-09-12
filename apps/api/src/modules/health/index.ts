@@ -1,6 +1,7 @@
 import { Elysia } from "elysia";
 import { ok } from "../../libs/response.ts";
+import { healthService, type HealthService } from "./service.ts";
 
-export const health = new Elysia({ prefix: "/health" }).get("/", () =>
-  ok({ status: "ok" as const }),
-);
+export function createHealthController(service: HealthService = healthService) {
+  return new Elysia({ prefix: "/health" }).get("/", () => ok(service.check()));
+}

@@ -1,42 +1,19 @@
 import { Elysia } from "elysia";
-import { eq } from "drizzle-orm";
 import { authContext } from "../../middleware/auth.ts";
-import { getDb } from "../../database/index.ts";
-import { userProfiles } from "../../database/schema.ts";
 import { ok } from "../../libs/response.ts";
-import { appError } from "../../libs/errors.ts";
+import { onboardingService, type OnboardingService } from "./service.ts";
 import { onboardingSchema } from "@verselab/shared/schemas/profile";
 
-export const onboarding = new Elysia({ prefix: "/onboarding" }).use(authContext).post(
-  "/",
-  async ({ user: u, body }) => {
-    const db = getDb();
-
-    const existing = await db
-      .select({ userId: userProfiles.userId })
-      .from(userProfiles)
-      .where(eq(userProfiles.userId, u.id))
-      .limit(1);
-
-    if (existing.length > 0) {
-      throw appError({ code: "PROFILE_ALREADY_EXISTS" });
-    }
-
-    const [profile] = await db
-      .insert(userProfiles)
-      .values({
-        userId: u.id,
-        displayName: body.displayName,
-        startUnitId: body.startUnitId,
-        dailyGoal: body.dailyGoal,
-        onboardedAt: new Date(),
-      })
-      .returning();
-
-    return ok({ user: u, profile });
-  },
-  {
-    body: onboardingSchema,
-    auth: true,
-  },
-);
+export function createOnboardingController(service: OnboardingService = onboardingService) {
+  return new Elysia({ prefix: "/onboarding" }).use(authContext).post(
+    "/",
+    async ({ user, body }) => {
+      const profile = await service.createOnboardingProfile(user.id, body);
+      return ok({ user, profile });
+    },
+    {
+      body: onboardingSchema,
+      auth: true,
+    },
+  );
+}
