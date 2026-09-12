@@ -2,14 +2,11 @@ import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import type { Profile } from "@verselab/shared/schemas/profile";
 import { authClient } from "#/libs/auth-client.ts";
-import { env } from "#/libs/env.ts";
+import { relayRequest } from "#/libs/relay.ts";
 
 async function fetchProfile(userId: string): Promise<Profile | null> {
   void userId;
-  const headers = getRequestHeaders();
-  const res = await fetch(`${env.apiOrigin}/v1/user/me`, {
-    headers: { ...headers, accept: "application/json" },
-  });
+  const res = await relayRequest("/v1/user/me");
   if (!res.ok) return null;
   const body = (await res.json()) as { data?: { profile?: Profile | null } };
   return body.data?.profile ?? null;

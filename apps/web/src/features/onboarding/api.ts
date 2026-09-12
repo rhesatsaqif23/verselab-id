@@ -1,17 +1,15 @@
 // Onboarding API: server function that POSTs the learning profile to the API
 // with the browser's cookies relayed from the request headers.
 import { createServerFn } from "@tanstack/react-start";
-import { getRequestHeaders } from "@tanstack/react-start/server";
 import type { DailyGoal, OnboardingInput } from "@verselab/shared/schemas/profile";
-import { env } from "#/libs/env.ts";
+import { relayRequest } from "#/libs/relay.ts";
 
 export const submitOnboarding = createServerFn({ method: "POST" })
   .validator((input: OnboardingInput) => input)
   .handler(async ({ data }) => {
-    const headers = getRequestHeaders();
-    const res = await fetch(`${env.apiOrigin}/v1/onboarding`, {
+    const res = await relayRequest("/v1/onboarding", {
       method: "POST",
-      headers: { ...headers, "content-type": "application/json", accept: "application/json" },
+      headers: { "content-type": "application/json" },
       body: JSON.stringify(data),
     });
 
