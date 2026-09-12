@@ -3,7 +3,8 @@ import { eq } from "drizzle-orm";
 import { authContext } from "../../middleware/auth.ts";
 import { getDb } from "../../database/index.ts";
 import { userProfiles } from "../../database/schema.ts";
-import { ok, fail } from "../../libs/response.ts";
+import { ok } from "../../libs/response.ts";
+import { appError } from "../../libs/errors.ts";
 import { onboardingSchema } from "@verselab/shared/schemas/profile";
 
 export const onboarding = new Elysia({ prefix: "/onboarding" }).use(authContext).post(
@@ -18,7 +19,7 @@ export const onboarding = new Elysia({ prefix: "/onboarding" }).use(authContext)
       .limit(1);
 
     if (existing.length > 0) {
-      return fail({ code: "PROFILE_ALREADY_EXISTS", message: "Profile already exists" });
+      throw appError({ code: "PROFILE_ALREADY_EXISTS" });
     }
 
     const [profile] = await db
