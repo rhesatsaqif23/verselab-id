@@ -1,3 +1,4 @@
+import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import type { Profile } from "@verselab/shared/schemas/profile";
@@ -30,5 +31,16 @@ export const requireAuth = createServerFn({ method: "GET" }).handler(async () =>
   if (s.status === "anonymous") throw new Error("Unauthorized");
   return s;
 });
+
+/**
+ * Inverse guard for auth surfaces (`/login`, `/register`): authenticated users
+ * are sent to the dashboard, or to onboarding when no profile exists yet.
+ * Takes the resolved session so it unit-tests without the router.
+ */
+export function redirectIfAuthenticated(session: ResolvedSession) {
+  if (session.status === "authenticated") {
+    throw redirect({ to: session.onboarded ? "/" : "/onboarding" });
+  }
+}
 
 export type ResolvedSession = Awaited<ReturnType<typeof resolveSession>>;
