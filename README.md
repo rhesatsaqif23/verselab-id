@@ -3,9 +3,19 @@
 > **Interactive skill learning, gamified like Duolingo, visual like Brilliant.org.**  
 > Learn essential concepts through short interactive screens — concept, multiple choice, numeric calculation, and dynamic allocation — while earning XP and maintaining daily streaks.
 
-Verselab ([verselab.id](https://verselab.id)) is an interactive learning web application designed around micro-learning and gamification. Everything runs **100% in the browser with zero backend, no login, and zero database setup** — all user progress is saved locally via `localStorage`.
+Verselab ([verselab.id](https://verselab.id)) is an interactive learning web application designed around micro-learning and gamification. A **Bun workspace monorepo** serves a TanStack Start SSR web app (port 3000) and a Bun + Elysia API (port 3001) with PostgreSQL for accounts and learning profiles. In-game progress (XP, streak, mastery, curriculum edits) stays in the browser via `localStorage`.
 
 While it launches with business and financial literacy materials (**Keuangan**, **Akuntansi**, **Manajemen Produk**, and **Kewirausahaan**), the core engine is completely domain-agnostic and built to support any future subject matter without architectural changes.
+
+---
+
+## Workspace layout
+
+```txt
+apps/web        TanStack Start + React 19 SSR app (port 3000)
+apps/api        Bun + Elysia + Better Auth + Drizzle/PostgreSQL API (port 3001)
+packages/shared shared Zod schemas/types reused by web and api
+```
 
 ---
 
@@ -35,13 +45,19 @@ The learning engine supports 4 interactive screen formats:
 - **Daily Goals**: Customizable daily target tracking (Casual, Regular, Serious).
 - **Mastery Levels**: Dynamic unit mastery calculated from retention and completion history.
 
-### 4. Curriculum Studio / Admin Mode (`/admin`)
+### 4. Accounts, Auth & Onboarding
+
+- Email + password authentication via **Better Auth** on the Elysia API.
+- Session relay through TanStack Start server functions with route guards.
+- Onboarding profile: display name, starting unit, and daily goal persisted in PostgreSQL.
+
+### 5. Curriculum Studio / Admin Mode (`/admin`)
 
 - Complete in-browser curriculum editor to manage units, lessons, and interactive screens.
 - Reorder screens with drag-and-drop or sequential buttons.
 - Real-time preview panel to test newly authored screens before publishing.
 
-### 5. Design & User Experience
+### 6. Design & User Experience
 
 - **Tailwind CSS v4**: Theme tokens defined via `@theme inline` in CSS (zero hardcoded hex colors).
 - **Zero-FOUC Dark Mode**: Light, Dark, and Auto/System mode detection with pre-hydration theme script.
@@ -65,14 +81,18 @@ The learning engine supports 4 interactive screen formats:
 
 | Layer                    | Technology                                                                    | Details                                                     |
 | ------------------------ | ----------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| **Framework**            | [TanStack Start](https://tanstack.com/start) + [React 19](https://react.dev/) | Full-stack React framework powered by Vite                  |
+| **Web framework**        | [TanStack Start](https://tanstack.com/start) + [React 19](https://react.dev/) | Full-stack React framework powered by Vite                  |
 | **Routing**              | [TanStack Router](https://tanstack.com/router)                                | 100% type-safe, file-based routing                          |
+| **API**                  | [Elysia](https://elysiajs.com/) + [Bun](https://bun.sh/)                      | HTTP server on port 3001                                    |
+| **Auth**                 | [Better Auth](https://better-auth.com/)                                       | Email + password, sessions in PostgreSQL                    |
+| **Database**             | [Drizzle ORM](https://orm.drizzle.team/) + PostgreSQL                         | Lazy `getDb()` access, kitchen migrations                   |
+| **Shared schemas**       | [Zod](https://zod.dev/)                                                       | Single source of truth in `packages/shared`                 |
 | **Styling**              | [Tailwind CSS v4](https://tailwindcss.com/)                                   | Pure CSS `@theme` configuration with semantic CSS variables |
 | **State**                | [Zustand](https://zustand.docs.pmnd.rs/)                                      | Client state with `persist` middleware to `localStorage`    |
 | **UI Components**        | [shadcn/ui](https://ui.shadcn.com/)                                           | New-York style primitives with Lucide icons                 |
 | **Linting & Formatting** | [Oxlint](https://oxc.rs/) & [Oxfmt](https://oxc.rs/)                          | High-performance Rust-based linter and formatter            |
-| **Testing**              | [Vitest](https://vitest.dev/) + Testing Library                               | Unit tests mirroring application structure                  |
-| **Design System**        | [Storybook](https://storybook.js.org/)                                        | Isolated component workbench                                |
+| **Testing**              | [Vitest](https://vitest.dev/) + Testing Library                               | Web unit tests mirroring application structure              |
+| **Design System**        | [Storybook](https://storybook.js.org/)                                        | Isolated component workbench (web only)                     |
 
 ---
 
@@ -80,8 +100,8 @@ The learning engine supports 4 interactive screen formats:
 
 ### Prerequisites
 
-- Node.js 20+
-- npm (do not use yarn/pnpm/bun to maintain lockfile consistency)
+- [Bun](https://bun.sh/docs/installation) ≥ 1.x
+- Docker (for local PostgreSQL)
 
 ### Installation
 
@@ -90,15 +110,25 @@ The learning engine supports 4 interactive screen formats:
 git clone https://github.com/rhesatsaqif23/verselab-id.git
 cd verselab-id
 
-# Install dependencies
-npm install
+# Install dependencies (Bun workspaces)
+bun install
 
-# Start development server
-npm run dev
+# Copy environment templates
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env
+
+# Start local PostgreSQL (Docker)
+docker start verselab-postgres   # create with: docker run -d --name verselab-postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:16
+
+# Apply migrations
+bun run --cwd apps/api db:migrate
+
+# Start the API and web app
+bun run dev:api                  # http://localhost:3001
+bun run dev                      # http://localhost:3000
 ```
 
-The app will be running at [http://localhost:3000](http://localhost:3000).  
-No database, backend server, or `.env` configuration is required.
+Open [http://localhost:3000](http://localhost:3000). See [DEVELOPMENT.md](DEVELOPMENT.md) for the full command and env-key reference, and [DATABASE-SCHEMA.md](DATABASE-SCHEMA.md) for the data model.
 
 ---
 
@@ -106,65 +136,70 @@ No database, backend server, or `.env` configuration is required.
 
 ```sh
 # Development & Build
-npm run dev              # Start Vite dev server on port 3000
-npm run build            # Create production bundle
-npm run preview          # Locally preview production build
-npm run generate-routes  # Regenerate TanStack Router route tree (tsr generate)
+bun run dev              # Web dev server on port 3000
+bun run dev:api          # API dev server on port 3001
+bun run build            # Production web build (vite build)
+bun run --cwd apps/web generate-routes  # Regenerate TanStack Router route tree (tsr generate)
+
+# Database (Drizzle)
+bun run --cwd apps/api db:generate
+bun run --cwd apps/api db:migrate
+bun run --cwd apps/api db:push
+bun run --cwd apps/api db:studio
 
 # Quality & Verification
-npm run lint             # Run Oxlint (React + TypeScript rules)
-npm run lint:fix         # Run Oxlint with automated fixes
-npm run fmt              # Format all files using Oxfmt
-npm run fmt:check        # Check formatting without writing (CI)
-npx tsc --noEmit         # Full TypeScript typecheck
-npx vitest run           # Run unit tests with Vitest
+bun run lint             # Run Oxlint
+bun run lint:fix         # Run Oxlint with automated fixes
+bun run fmt              # Format all files using Oxfmt
+bun run fmt:check        # Check formatting without writing (CI)
+bun run check-types      # Full TypeScript typecheck (api + web + shared)
+bun run test             # Run API (bun test) + web (vitest) tests
 
 # Storybook
-npm run storybook        # Start Storybook on port 6006
-npm run build-storybook  # Build static Storybook site
+bun run --cwd apps/web storybook   # Start Storybook on port 6006
+bun run --cwd apps/web build-storybook
 ```
 
 ---
 
 ## Project Structure
 
-The project follows a strict architectural boundary separating the **generic learning engine** from the **domain-specific materials**:
-
 ```
-src/
-├── engine/                      # Domain-agnostic learning engine (never references finance/business)
-│   ├── player/                  # Lesson UI: LessonPlayer, LessonHeader, LessonControls, ProgressBar
-│   ├── progress/                # XP, streaks, decay rules, mastery scores, daily goals (Zustand)
-│   ├── path/                    # Unit unlocking logic and next-lesson resolution
-│   └── types.ts                 # Screen union type, Lesson, Unit definitions
-├── domains/                     # Domain-specific logic & custom visualizers
-│   └── personal-finance/        # Mathematical calculations (FV, installments) & custom screen renderers
-├── features/                    # Feature modules delegating from routes
-│   ├── landing/                 # Marketing hero, feature showcases, sticky header
-│   ├── home/                    # Dashboard: Course cards, streak widget, daily goal cards
-│   ├── unit-detail/             # Whiteboard canvas, pan/zoom hooks, lesson cards, connecting arrows
-│   ├── lesson/                  # Lesson runtime screen dispatcher and answer validation
-│   ├── lesson-complete/         # XP animation, streak celebration, next step navigation
-│   ├── profile/                 # User progress dashboard and historical mastery metrics
-│   ├── about/                   # Curriculum catalog and unit index
-│   ├── admin/                   # In-browser curriculum studio and screen editor
-│   └── layout/                  # Global chrome: Header, Footer, ThemeToggle
-├── content/                     # Seeded curriculum data: units.ts, lessons/, contentStore.ts
-├── components/ui/               # shadcn/ui primitives (button, card, dialog, input, etc.)
-├── libs/                        # Subject-agnostic utilities: cn(), date helpers, theme scripts
-├── routes/                      # Thin TanStack Router file routes delegating to features
-└── styles/                      # globals.css (semantic theme variables) & styles.css
-tests/                           # Unit tests mirroring the src/ directory
+apps/
+├── api/                             # Bun + Elysia + Better Auth + Drizzle
+│   ├── src/
+│   │   ├── auth/                    # Better Auth instance
+│   │   ├── config/                  # Zod-parsed env
+│   │   ├── database/                # schema.ts, auth-schema.ts, lazy getDb()
+│   │   ├── libs/response.ts         # ok() / fail() envelope
+│   │   ├── middleware/auth.ts       # authContext macro ({ auth: true })
+│   │   ├── modules/                 # health, user, onboarding controllers
+│   │   └── plugins/logger.ts        # x-request-id + request/error logging
+│   └── drizzle/                     # Drizzle migrations
+└── web/                             # TanStack Start SSR app
+    └── src/
+        ├── engine/                  # Domain-agnostic learning engine (never references finance/business)
+        ├── domains/                 # personal-finance (math + screen renderers)
+        ├── features/                # home, lesson, unit-detail, admin, auth, onboarding, ...
+        ├── content/                 # Seeded curriculum data (4 units, 16 lessons)
+        ├── libs/                    # env.ts, session.ts (relay), auth-client.ts, utils, date, theme
+        ├── components/ui/           # shadcn/ui primitives
+        ├── routes/                  # Thin TanStack Router routes delegating to features
+        ├── stories/                 # Storybook stories
+        └── styles/                  # globals.css (semantic theme variables) & styles.css
+packages/
+└── shared/                          # Zod schemas/types (schemas/profile.ts)
 ```
 
 ---
 
 ## Architecture Rules & Principles
 
-1. **Engine / Domain Boundary**: Code inside `src/engine/` must never contain subject-matter terms (money, interest, salary, accounting, etc.). The engine only handles question flow, validation callbacks, XP, and streaks.
-2. **Local-First & Client-Side**: There is no backend or database. All user progress, streaks, and curriculum modifications are persisted via browser storage.
-3. **Tailwind v4 Semantic Tokens**: Brand colors and component surfaces are defined using CSS variables in `src/styles/globals.css` and mapped through `@theme inline`. Hardcoded Tailwind color utilities (e.g. `bg-blue-600`) are forbidden.
-4. **Tooling**: Formatting is powered by **Oxfmt** and linting by **Oxlint** (do not add Prettier or ESLint configs).
+1. **Engine / Domain Boundary**: Code inside `apps/web/src/engine/` must never contain subject-matter terms (money, interest, salary, accounting, etc.). The engine only handles question flow, validation callbacks, XP, and streaks.
+2. **Shared Zod Schemas**: DTOs live once in `packages/shared`; the API validates with them and the web types its forms from them. No duplication.
+3. **Server-side Accounts, Client-side Progress**: Auth, accounts, and the learning profile live in PostgreSQL; XP, streak, mastery, and curriculum edits persist to `localStorage` via Zustand (PRD §8.3).
+4. **Tailwind v4 Semantic Tokens**: Brand colors and component surfaces are defined using CSS variables in `apps/web/src/styles/globals.css` and mapped through `@theme inline`. Hardcoded Tailwind color utilities (e.g. `bg-blue-600`) are forbidden.
+5. **Tooling**: Formatting is powered by **Oxfmt** and linting by **Oxlint** (do not add Prettier or ESLint configs). Package manager is **Bun**.
 
 ---
 
@@ -172,9 +207,11 @@ tests/                           # Unit tests mirroring the src/ directory
 
 - [PRD.md](PRD.md) — Product requirements document (Indonesian)
 - [CONCEPT.md](CONCEPT.md) — Conceptual model, learning philosophy, and core glossary
-- [ARCHITECTURE.md](ARCHITECTURE.md) — Technical architecture: state machine, screen lifecycle, data flow
+- [ARCHITECTURE.md](ARCHITECTURE.md) — Technical architecture: engine/domain split, request lifecycle, data flow
+- [DATABASE-SCHEMA.md](DATABASE-SCHEMA.md) — PostgreSQL data model (ERD, tables, enums)
+- [DEVELOPMENT.md](DEVELOPMENT.md) — Commands, env keys, and local development
 - [AGENTS.md](AGENTS.md) — Guidelines and conventions for AI assistants and contributors
-- [docs/CONVENTIONAL_COMMITS.md](docs/CONVENTIONAL_COMMITS.md) — Conventional commit standards
+- [docs/backend-refactor.md](docs/backend-refactor.md) — Backend refactor plan (target architecture)
 
 ---
 

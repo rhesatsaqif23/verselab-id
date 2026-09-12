@@ -1,346 +1,351 @@
+---
+title: Architecture
+description: Current Verselab architecture and package responsibilities.
+---
+
 # Verselab Architecture
 
-Technical deep-dive into how Verselab is built. Read [PRD.md](PRD.md) for _what_ the product is, [CONCEPT.md](CONCEPT.md) for the core ideas and glossary, and this document for _how_ the code is organized and why.
+Verselab is a **Bun workspace monorepo** for a gamified interactive-learning web app. The web app is a TanStack Start SSR app rendered from the TanStack Router route tree. It hydrates React features in the browser, relays sessions through TanStack Start server functions, and talks to a separate Elysia API for accounts, profiles, and learning data. The API uses Better Auth for authentication, feature controllers under `/v1`, and lazy Drizzle/PostgreSQL access. Shared Zod schemas live in `packages/shared`.
 
----
+Read [PRD.md](PRD.md) for _what_ the product is, [CONCEPT.md](CONCEPT.md) for the learning-engine ideas, and this document for _how_ the code is organized and why. [AGENTS.md](AGENTS.md) is the operational guide (commands, conventions).
 
-## 1. Overview
+Related files:
 
-Verselab is a gamified interactive-learning web app inspired by Brilliant.org / Duolingo. Users learn through short interactive screens (choice, numeric, allocation, concept), earning XP and streaks to keep them returning daily.
+- `apps/api/.env.example` / `apps/web/.env.example` — environment variable templates (see [DEVELOPMENT.md](DEVELOPMENT.md))
+- `apps/api/drizzle/` — Drizzle migrations
+- `docs/backend-refactor.md` — step-by-step backend refactor plan (target architecture)
 
-- **Single app:** TanStack Start + React + Vite. No backend, no database, no login.
-- **Persistence:** all progress lives in the browser via `localStorage` (PRD §8.3).
-- **First domain:** personal finance. The engine must stay reusable for any future domain.
+## Current system map
 
----
+```mermaid
+flowchart TD
+  browser["Browser"]
+  web["apps/web<br/>TanStack Start SSR (3000)"]
+  relay["server functions<br/>resolveSession / submitOnboarding"]
+  api["apps/api<br/>Elysia + Better Auth (3001)"]
+  db["Drizzle ORM"]
+  postgres[("PostgreSQL")]
+  shared["packages/shared<br/>Zod schemas + types"]
 
-## 2. Design principles (from PRD §2)
+  browser -->|"page request + hydration"| web
+  web --> relay
+  relay -->|"cookies relayed, HTTP JSON"| api
+  browser -->|"auth mutations (better-auth/react)"| api
+  api --> db
+  db --> postgres
 
-These are rules, not suggestions. Architecture decisions exist to satisfy them:
+  web -. imports/validates .-> shared
+  api -. validates with .-> shared
 
-1. **No passive screens** — every screen must make the user do something.
-2. **Feel first, name later** — questions come before the concept name.
-3. **Wrong is not punishment** — every answer (right or wrong) shows a 2-sentence explanation.
-4. **One screen, one idea.**
-5. **Wrong still proceeds** — no retries, no lives; mastery just drops.
-6. **Max 2 sentences of text per screen.**
-7. **A lesson takes 3–5 minutes.**
-
-The technical consequence of rule 1 is the strict **engine/domain split** below.
-
----
-
-## 3. The engine/domain split (the core idea)
-
-This is the single most important architectural rule (PRD §3.2). The codebase is deliberately divided into two halves:
-
-### Engine — subject-agnostic
-
-Code that does **not** know what the material is about:
-
-- Lesson UI (progress bar, buttons, feedback panel) — `src/engine/player/`
-- XP, streak, mastery, daily goal — `src/engine/progress/`
-- Unit ordering and unlock rules — `src/engine/path/`
-- The `Screen`/`Lesson`/`Unit` type definitions — `src/engine/types.ts`
-
-If tomorrow the material changes from finance to cooking, `src/engine/` is not touched.
-
-### Domain — the material
-
-Code that is about the subject matter. Today that is personal finance:
-
-- Lesson questions — `src/content/`
-- Finance calculations — `src/domains/personal-finance/math.ts`
-- Screen renderers and charts — `src/domains/personal-finance/screens/` and `components/`
-
-New materials are added as new sibling folders; the engine is untouched.
-
-### How to decide where code goes
-
-Ask one question: _does this code mention money, interest, salary, or installments?_
-
-- **Yes** → `domains/personal-finance/` (or the relevant domain folder).
-- **No** → `engine/`.
-
-### The binding contract
-
-- The engine passes **one screen's data** to the domain; the domain renders it and calls back `onAnswer(true)` or `onAnswer(false)`.
-- The engine never knows what a question is about — only that it was answered right or wrong.
-- If you find yourself writing `if (material === 'keuangan')` inside `engine/`, something is wrong. Stop and ask.
-
----
-
-## 4. Directory structure
-
-```
-src/
-├── client.tsx / server.tsx / router.tsx   TanStack Start entry points
-├── engine/                                Subject-agnostic core. Never knows the material.
-│   ├── types.ts                           Screen (union), Lesson, Unit type definitions
-│   ├── player/                            Lesson UI: progress bar, buttons, feedback, "Kenapa?" dialog
-│   │   ├── LessonPlayer.tsx               Orchestrates one screen at a time via lessonStore
-│   │   ├── LessonHeader.tsx               Exit button, ProgressBar, live XP badge
-│   │   ├── LessonControls.tsx             Bottom buttons per phase (concept/answering/checked)
-│   │   ├── ProgressBar.tsx                Screen index progress bar
-│   │   ├── ExplanationDialog.tsx          "Kenapa?" explanation modal
-│   │   └── lessonStore.ts                 Per-lesson session state (in-memory)
-│   ├── progress/                          XP, streak, mastery, daily goal
-│   │   ├── progressStore.ts               Global persisted store + award actions
-│   │   ├── streak.ts                      Streak + freeze rules (pure functions)
-│   │   ├── decay.ts                       Mastery decay over inactive weeks
-│   │   └── masteryRead.ts                 Display helpers (started, decayed value)
-│   └── path/
-│       └── nextLesson.ts                  Picks the next unit/lesson to open
-├── domains/                               The material. One folder per domain.
-│   └── personal-finance/
-│       ├── math.ts                        Pure finance functions (futureValue, monthlyPayment, ...)
-│       ├── screens/                       One renderer per screen type
-│       │   ├── ChoiceRenderer.tsx
-│       │   ├── NumericRenderer.tsx
-│       │   ├── AllocationRenderer.tsx
-│       │   └── ConceptRenderer.tsx
-│       └── components/
-│           └── BarChart.tsx               Simple bar chart for allocation preview
-├── content/                               Lesson data as TS. The only place screens are written.
-│   ├── index.ts                           units export + findLesson() registry
-│   ├── units.ts                           Ordered unit list (learning path)
-│   └── lessons/
-│       └── why-save-early.ts              The first real lesson
-├── features/                              Feature-scoped modules wrapping the engine/domains core
-│   ├── layout/                            App chrome
-│   │   ├── constants.ts                   navItems for the header
-│   │   └── components/                    Header, Footer, ThemeToggle
-│   ├── home/                              Dashboard
-│   │   ├── constants.ts                   WEEKDAY_LABELS
-│   │   ├── index.tsx                      HomePage composition
-│   │   └── components/                    CourseCard, CourseGrid, DailyGoalCard, StreakTracker
-│   ├── lesson/                            Lesson page wiring
-│   │   ├── index.tsx                      LessonPage: connects player to progress/content
-│   │   ├── renderScreen.tsx               Dispatches Screen type → domain renderer
-│   │   └── checkAnswer.ts                 Correctness rules per screen type
-│   ├── lesson-complete/                   Completion summary
-│   │   ├── index.tsx                      LessonCompletePage
-│   │   └── store/lessonCompleteStore.ts   Last-completed-lesson summary (in-memory)
-│   ├── profile/                           Profile stats page
-│   └── about/                             Static about page
-├── libs/                                  Subject-agnostic shared app code
-│   ├── utils.ts                           cn() class merge helper
-│   ├── date.ts                            todayString, addDays, daysBetween, getWeekDates, ...
-│   ├── theme.ts                           Theme mode types, init script, apply helpers
-│   └── hooks/use-mobile.ts                Mobile viewport detection
-├── contentless? no — see content/ above
-├── components/ui/                         shadcn/ui primitives (new-york style, lucide icons)
-├── routes/                                Thin file-based routes delegating to features
-├── stories/                               Storybook stories (shadcn primitives + Configure.mdx)
-└── styles/
-    └── globals.css                        Semantic color tokens (light + dark) via @theme
-
-tests/                                     Unit tests mirroring src/ (root-level)
+  classDef app fill:#f5efdc,stroke:#6b4fd8,color:#241a4a;
+  classDef pkg fill:#eee8de,stroke:#9a8c7d,color:#28211a;
+  classDef infra fill:#faf6ee,stroke:#d8d0c5,color:#28211a;
+  class web,relay,api,db app;
+  class shared pkg;
+  class browser,postgres infra;
 ```
 
-Path aliases: `#/*` and `@/*` both map to `./src/*`.
+## Workspace shape
 
----
+```txt
+apps/
+  api/       Bun + Elysia + Better Auth + Drizzle/PostgreSQL API
+  web/       TanStack Start + React 19 SSR frontend
+packages/
+  shared/    shared Zod schemas/types (single source of truth for DTOs)
+```
 
-## 5. Domain model
+There is no `packages/ui` — web owns its shadcn/ui primitives under `apps/web/src/components/ui/`, and all Storybook lives in `apps/web`.
+
+## Runtime responsibilities
+
+### `apps/web`
+
+`apps/web` owns the user interface, the learning engine, and SSR rendering.
+
+Stack:
+
+- TanStack Start / TanStack Router
+- React 19
+- Vite (dev + build)
+- Tailwind CSS v4 + shadcn/ui
+- Zustand (client state, persisted to `localStorage`)
+- Better Auth React client (`better-auth/react`)
+- Vitest + Testing Library
+
+Responsibilities:
+
+- routes under `src/routes` (thin, delegate to features)
+- the **engine/domain split** — the core architectural rule (see below)
+- feature modules under `src/features/`
+- curriculum data under `src/content/`
+- session relay + auth guards via TanStack Start server functions (`src/libs/session.ts`)
+- client auth mutations through `src/libs/auth-client.ts`
+- app-side Storybook stories (`src/stories`, `apps/web/.storybook`)
+
+It should **not** own:
+
+- database logic or business persistence logic
+- Elysia/Better Auth server logic
+- duplicated DTO schemas (use `packages/shared`)
+
+Web data flow:
+
+```txt
+route loader / beforeLoad
+  -> resolveSession() server fn (relays cookies)
+  -> authClient.getSession / fetch(`${apiOrigin}/v1/...`)
+  -> apps/api Elysia route
+```
+
+Server functions (`createServerFn`) are used only where the web server itself owns something: cookie relay to/from the API, session resolution for route guards, and the `submitOnboarding` POST. Normal product data that grows in the future should go through the API.
+
+### `apps/api`
+
+`apps/api` owns the backend HTTP API, auth, validation, logging, and persistence.
+
+Stack:
+
+- Bun + Elysia
+- Better Auth (mounted at `/api/auth/*`)
+- Drizzle ORM + `pg`
+- PostgreSQL (local Docker on port 5432)
+- shared Zod schemas from `@verselab/shared`
+
+Responsibilities:
+
+- HTTP routes under `/v1/*`: `health`, `user`, `onboarding`
+- Better Auth endpoint handling (`/api/auth/*`)
+- request/response validation with shared Zod schemas
+- database queries through lazy `getDb()`
+- response helpers `ok()` / `fail()`
+- request logging/tracing (`plugins/logger.ts`)
+- CORS for the web origin
+
+It should **not** own:
+
+- frontend UI state or the learning engine
+- duplicated frontend schemas
+
+Feature module shape (current):
+
+```txt
+apps/api/src/modules/<feature>/
+  index.ts   Elysia controller
+```
+
+Target shape (from `docs/backend-refactor.md`):
+
+```txt
+apps/api/src/modules/<feature>/
+  index.ts   Elysia controller (happy path only, factory for DI)
+  service.ts business logic (framework-decoupled)
+```
+
+### `packages/shared`
+
+`packages/shared` owns schemas and types reused by both API and web.
+
+```txt
+packages/shared/src/schemas/
+  profile.ts   unitIdSchema, dailyGoalSchema, onboardingSchema, profileSchema
+```
+
+Rules:
+
+- Zod schemas are the source of truth for JSON DTOs.
+- Export schema and inferred type together (e.g. `OnboardingInput`, `Profile`, `DailyGoal`).
+- API uses schema for Elysia `body` validation.
+- Web uses schema for form validation and DTO types.
+- Do not duplicate DTO definitions in app packages.
+
+## Engine / domain split
+
+The single most important rule in `apps/web` (PRD §3.2). The codebase is deliberately divided into two halves:
+
+- **`engine/`** — subject-agnostic: lesson player, progress (XP/streak/mastery/daily goal), path/next-lesson logic, and the `Screen`/`Lesson`/`Unit` type definitions. It must never know what the material is about.
+- **`domains/`** — the material. Today only `personal-finance/` (math + screen renderers). Future domains become sibling folders.
+
+The engine passes one screen's data to the domain; the domain renders it and calls back `onAnswer(true)` or `onAnswer(false)`. Auth/onboarding live in the API and in `features/auth` / `features/onboarding`; they never reference subject matter either.
+
+## Request lifecycle
+
+### Web SSR page request
+
+```txt
+Browser requests http://localhost:3000/route
+  -> TanStack Start SSR renders route
+  -> beforeLoad may call resolveSession() (server fn)
+  -> server fn forwards browser cookies to API
+  -> Better Auth getSession + /v1/user/me return JSON
+  -> Start renders HTML with the resolved session
+  -> Browser hydrates React + session context
+```
+
+### Browser auth mutation
+
+```txt
+Browser form submit (login/register/reset/forgot)
+  -> React form validates with shared Zod schema (features/auth/schemas.ts)
+  -> authClient.signIn.email / signUp.email / requestPasswordReset / resetPassword
+  -> better-auth/react calls http://localhost:3001/api/auth/* (CORS + credentials)
+  -> Better Auth writes session cookies on the API origin
+  -> web route guards re-resolve the session via server functions
+  -> router redirects (dashboard, onboarding, etc.)
+```
+
+### API request
+
+```txt
+Request enters Elysia
+  -> logger plugin adds x-request-id
+  -> CORS checks origin
+  -> route validation runs (shared Zod body)
+  -> auth macro validates session when { auth: true }
+  -> controller calls service (target: service uses getDb())
+  -> response returned via ok()/fail()
+```
+
+### API error
+
+```txt
+Elysia error
+  -> global onError (logger plugin) maps to friendly JSON
+  -> response includes requestId + error code
+```
+
+Current error handling is a mix of `fail()` returns in controllers and a generic `onError` in the logger plugin. The refactor plan (`docs/backend-refactor.md`) targets the wedding-tools model: typed `AppError` + centralized `appErrorMeta` + a global `onError` mapping, with controllers happy-path only.
+
+Response envelope:
+
+```json
+{ "ok": true, "data": { ... } }
+{ "ok": false, "error": { "code": "...", "message": "..." } }
+```
+
+Use the helpers in `apps/api/src/libs/response.ts`:
 
 ```ts
-Unit    → { id, title, lessons: readonly Lesson[] }
-Lesson  → { id, title, screens: readonly Screen[] }
-Screen  → a discriminated union (see §6)
+ok(data); // { ok: true, data }
+fail({ code, message }); // { ok: false, error: { code, message } }
 ```
 
-- **Unit** — one topic, e.g. "Bunga berbunga". A unit has 3–5 lessons.
-- **Lesson** — one sitting, 3–5 minutes. A lesson has 6–8 screens.
-- **Screen** — the smallest unit; one interactive question or (rarely) one concept intro.
+## Data and schema flow
 
-The union type in `src/engine/types.ts` is the public contract between engine and domain. TypeScript narrows available fields per screen type, so a renderer only ever sees the fields it needs.
-
----
-
-## 6. Screen types
-
-| Type         | Purpose                                       | Answer checking                                  | Limit per lesson |
-| ------------ | --------------------------------------------- | ------------------------------------------------ | ---------------- |
-| `concept`    | Name a concept after the user felt its effect | none (just "Lanjut")                             | max 1            |
-| `choice`     | Multiple choice; blue border on selected card | `answer === correctId`                           | max 30%          |
-| `numeric`    | User types a number                           | within `acceptRange` (range, not exact)          | —                |
-| `allocation` | Sliders summing to 100% with live chart       | rule: `{ category, min?, max? }` on one category | —                |
-
-Key rules from PRD §4:
-
-- **numeric** answers are checked by **range** (`acceptRange: [min, max]`), never exact value. The point is magnitude ("oh, 60 juta becomes 82 juta"), not rupiah precision.
-- **numeric** correct answers are **computed from `math.ts`**, never hardcoded in the data — so fixing a formula can't silently leave a stale answer in a lesson.
-- **allocation** has many correct answers by design (real life has no single "right" way to split a salary). Correctness is a constraint on one category (e.g. savings ≥ 20%).
-
----
-
-## 7. Runtime data flow (one screen)
-
-1. Route `/lesson/$lessonId` validates the id via `findLesson()` and calls `lessonStore.startLesson(screenCount)` in `beforeLoad`.
-2. `LessonPage` (features/lesson) renders `LessonPlayer`, passing `screens`, `renderScreen`, `checkAnswer`, `onExit`, `onComplete`, and the current earned XP.
-3. `LessonPlayer` reads `index`, `answers`, `results` from `lessonStore` and renders the current screen through `renderScreen(screen, onChange, checked)`.
-4. `renderScreen` dispatches on `screen.type` to the matching **domain renderer** (e.g. `NumericRenderer`). The engine never knows which renderer is chosen or what the screen is about.
-5. The user interacts; the renderer calls `onChange(answer)`, which writes into `lessonStore.answers[index]`. The Check button becomes enabled.
-6. "Cek Jawaban" → `LessonPlayer.handleCheck` → `checkAnswer(screen, answer)` → `lessonStore.checkResult(index, correct)`.
-7. `checked` becomes `true|false`, and the renderer shows green/red feedback inline (never a modal over the question — PRD §5).
-8. "Lanjut" → `handleContinue`. If there are more screens, `index` increments; if this was the last screen, `onComplete(finalResults)` fires with every `AnswerResult`.
-9. `LessonPage.handleComplete` awards per-screen mastery + XP, awards lesson completion (+50 XP, streak), writes the summary to `lessonCompleteStore`, and navigates to `/lesson-complete`.
-
----
-
-## 8. State management
-
-Zustand, with the `persist` middleware for anything that must survive reload. No manual save/load logic.
-
-| Store                                 | Scope                         | Persisted?      | Storage key            |
-| ------------------------------------- | ----------------------------- | --------------- | ---------------------- |
-| `engine/player/lessonStore`           | Current lesson session        | No              | —                      |
-| `engine/progress/progressStore`       | Global XP/streak/mastery/goal | Yes (`persist`) | `verselab-progress-v1` |
-| `lesson-complete/lessonCompleteStore` | Last finished lesson summary  | No              | —                      |
-
-- `lessonStore` is deliberately **not persisted**: leaving a lesson is "start over" by design (PRD §2 rule 5 — no lives, no retries).
-- `progressStore` is the single source of truth for gamification. All award actions (`awardScreenResult`, `awardLessonCompletion`, `awardXp`, `registerActivity`, `setDailyGoal`) live there; pure functions in `streak.ts` / `decay.ts` do the math.
-- Persisted state is versioned (`verselab-progress-v1`) so schema changes can be migrated.
-
-Reading persisted state: components subscribe via `useProgressStore((s) => s.xp)` etc. Derive display values with `masteryForDisplay` / `decayedMastery` rather than reading `mastery` raw.
-
----
-
-## 9. Gamification model
-
-| Concept       | Rule                                                                    | Constant / location                                              |
-| ------------- | ----------------------------------------------------------------------- | ---------------------------------------------------------------- |
-| XP            | +10 per correct screen, +50 per completed lesson. Never decreases.      | `XP_PER_SCREEN`, `XP_PER_LESSON` in `progressStore.ts`           |
-| Mastery       | 0–100 per unit. +2 correct, −1 wrong, −2 per full inactive week.        | `MASTERY_*`, `DECAY_PER_WEEK` in `progressStore.ts` / `decay.ts` |
-| Streak        | Consecutive days reaching the daily goal. +1 freeze every 7-day streak. | `streakOnActivity()` in `streak.ts`                              |
-| Streak freeze | 1 free missed day per 7-day streak; a freeze day consumes it.           | `streak.ts`                                                      |
-| Daily goal    | User-picked: 3, 10, or 20 minutes.                                      | `DailyGoalMinutes` in `progressStore.ts`                         |
-
-Intentional omissions (PRD §6.4): no lives/hearts, no per-question timer, no XP penalty for wrong answers.
-
----
-
-## 10. Rendering pipeline
-
-```
-Route (thin)
-  → feature page            (e.g. features/lesson → LessonPage)
-    → engine player         (LessonPlayer — knows nothing of the material)
-      → renderScreen()      (features/lesson — maps Screen.type → renderer)
-        → domain renderer   (domains/personal-finance/screens/* — knows the material)
-          → onChange(answer) / checked feedback
+```txt
+packages/shared Zod schema
+  |---------------------------|
+  v                           v
+API route validation          Web form / DTO types
+Elysia body (onboardingSchema)  react-hook-form + zodResolver
 ```
 
-`checkAnswer()` (features/lesson) is the correctness rulebook: exact match for `choice`, range for `numeric`, rule check for `allocation`. `concept` screens are never checked (always "continue").
+For normal JSON DTOs, use shared Zod. `features/auth/schemas.ts` holds web-native auth form schemas (email/password) that mirror the API rules.
 
----
+## Database architecture
 
-## 11. Content authoring
+Drizzle schema files:
 
-Content is TypeScript under `src/content/`:
+```txt
+apps/api/src/database/schema.ts        # user_profiles, daily_goal enum
+apps/api/src/database/auth-schema.ts   # Better Auth: user, session, account, verification
+```
 
-- `units.ts` exports the ordered `units` array (the learning path). Units can contain placeholder lessons (`dummyLesson`).
-- Each real lesson lives in `src/content/lessons/<slug>.ts` and is imported into `units.ts`.
-- `findLesson(id)` walks all units to locate a lesson regardless of unit.
+`getDb()` (`apps/api/src/database/index.ts`) is lazy by design:
 
-Authoring rules (PRD §4.3, §9):
+- tests can import the API without `DATABASE_URL`
+- the connection initializes only when a service actually queries
 
-- Write lessons **after** the screen types exist — the available types shape the lesson, not the reverse.
-- Never hardcode a numeric answer; derive the `acceptRange` from `math.ts` output.
-- Follow the rhythm: _make them curious (choice) → name the concept (concept) → practice (numeric/allocation) → apply to a real situation (choice)_.
-- Respect per-lesson limits: ≤ 1 concept screen, ≤ 30% choice screens, 6–8 screens total.
+Migration commands:
 
----
+```sh
+bun run --cwd apps/api db:generate
+bun run --cwd apps/api db:migrate
+bun run --cwd apps/api db:push
+bun run --cwd apps/api db:studio
+```
 
-## 12. Routing
+See [DATABASE-SCHEMA.md](DATABASE-SCHEMA.md) for the full data model.
 
-File-based routing under `src/routes/`. Routes stay thin — a route validates params and delegates rendering to a feature.
+## Auth
 
-| Route               | File                   | Purpose                                          |
-| ------------------- | ---------------------- | ------------------------------------------------ |
-| `/`                 | `index.tsx`            | Marketing landing page                           |
-| `/_home`            | `_home.tsx`            | Layout route: Header + Outlet + Footer           |
-| `/_home/home`       | `_home/home.tsx`       | Dashboard (default landing after login flow)     |
-| `/_home/about`      | `_home/about.tsx`      | Static about page                                |
-| `/_home/profile`    | `_home/profile.tsx`    | Stats page                                       |
-| `/lesson/$lessonId` | `lesson.$lessonId.tsx` | Lesson player (guarded by `findLesson`)          |
-| `/lesson-complete`  | `lesson-complete.tsx`  | Completion summary (guarded by summary presence) |
+Auth is owned by **Better Auth** (`apps/api/src/auth/index.ts`), mounted inside Elysia at `/api/auth/*`:
 
-Guards are done in `beforeLoad` (redirect to `/home` for unknown lessons, `/` for no summary).
+- email + password enabled; email verification disabled
+- sessions persist in the PostgreSQL `session` table
+- `plugin`-style `authContext` macro (`apps/api/src/middleware/auth.ts`) resolves the session and guards routes with `{ auth: true }`
+- `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `WEB_ORIGIN` come from `config/env.ts` (Zod-parsed)
 
----
+The web app relays sessions through server functions (`apps/web/src/libs/session.ts`: `resolveSession` / `requireAuth`) and authenticates from the browser via `apps/web/src/libs/auth-client.ts`.
 
-## 13. Styling & theming
+## Logging and tracing
 
-- **Tailwind v4** configured via CSS `@theme`, **no** `tailwind.config.js`.
-- Semantic color tokens live in `src/styles/globals.css` (light `:root` + `.dark` blocks) and are surfaced to Tailwind via `@theme inline`. **Never hardcode hex colors in components.**
-- Theme mode (`light`/`dark`/`auto`) is managed by `libs/theme.ts` (init script + `applyThemeMode`), toggled by `features/layout/ThemeToggle`, persisted under the `theme` key.
-- Use canonical Tailwind classes (see [AGENTS.md](AGENTS.md) §Styling) and semantic classes (`text-primary`, `bg-card`, `border-border`, `text-accent`, `text-muted`).
+Logger plugin: `apps/api/src/plugins/logger.ts`
 
----
+- adds `x-request-id` on every request
+- logs requests and errors (readable in dev, JSON in production)
+- silences logs in tests
+- maps unexpected 5xx errors to a friendly JSON envelope
 
-## 14. Testing
+## Storybook
 
-- Tests live at the **repo root** in `tests/`, mirroring `src/` one-to-one (`tests/engine/...`, `tests/features/...`, `tests/domains/...`, `tests/content/...`).
-- Runner is **Vitest**, configured inside `vite.config.ts` (`environment: jsdom`, `globals: true`, `setupFiles: ['./tests/setup.ts']`).
-- `tests/setup.ts` provides a `ResizeObserver` mock (needed by shadcn/ui components).
-- There is **no `test` npm script**; run tests with `npx vitest run` (or `npm run storybook` for component stories).
+Storybook lives in `apps/web` only:
 
----
+```txt
+apps/web/.storybook   @storybook/tanstack-react config
+apps/web/src/stories  stories (features + shadcn primitives)
+```
 
-## 15. Code standards & tooling
+- Port `6006`
+- Do not place stories beside component source; keep them in `apps/web/src/stories`
 
-- **TypeScript:** strict, `noUnusedLocals`, `noUnusedParameters`, `verbatimModuleSyntax`, `noEmit`. Typecheck with `npx tsc --noEmit`. Avoid `any` (use `unknown` + narrow).
-- **Formatting:** Oxfmt (not Prettier). 2 spaces, semicolons, double quotes, trailing commas, import sorting, print width 100. Tailwind CSS class sorting enabled.
-- **Linting:** Oxlint (not ESLint). React + TypeScript plugins. Config in `oxlintrc.json`.
-- **Imports:** path aliases `#/...` / `@/...` for `src/`. Local imports use explicit `.ts`/`.tsx` extensions (enabled by `allowImportingTsExtensions`).
-- **Comments:** file-level `// Module purpose` header comments are used; keep them meaningful and updated.
-- **Commits:** Conventional Commits, no quotes/emoji — see `docs/CONVENTIONAL_COMMITS.md`. Scope `web` for frontend work.
-- **Package manager:** npm only. Do not add other lockfiles.
+## Deployment and build outputs
 
----
+### Development
 
-## 16. Extending the platform
+```txt
+local Bun web (3000) + local Bun API (3001)
+  -> Docker PostgreSQL (verselab-postgres, 5432)
+```
 
-### Adding a new domain (e.g. cooking)
+Commands:
 
-1. Create `src/domains/cooking/` with `math.ts`, `screens/`, `components/`.
-2. Write lesson content under `src/content/lessons/` using existing `Screen` types.
-3. Point `renderScreen.tsx` at the new domain's renderers (or write new ones implementing the same `Screen` union).
-4. **Do not touch `engine/`.** The engine already speaks generic `Screen` data.
+```sh
+docker start verselab-postgres
+bun run dev:api        # API on 3001
+bun run dev            # web on 3000
+```
 
-### Adding a new screen type (e.g. `matching`)
+### Production
 
-1. Extend the `Screen` union in `src/engine/types.ts`.
-2. Implement `checkAnswer` for the new type.
-3. Add a renderer in the domain `screens/` and dispatch it in `renderScreen.tsx`.
-4. Add tests in `tests/` for the checker and renderer.
+Not yet configured. Web builds with Vite (`bun run build` → `apps/web/dist`); the API runs directly from source with Bun (`bun run --cwd apps/api start`). CORS restricts the API to `WEB_ORIGIN`.
 
-### Adding a lesson
+## Testing strategy
 
-1. Write `src/content/lessons/<slug>.ts` exporting a `Lesson`.
-2. Register it in `src/content/units.ts`.
-3. Derive numeric `acceptRange`s from `math.ts`.
-4. Respect the per-lesson screen limits.
+Web tests live in `apps/web/tests` (Vitest + jsdom, mirrors `src/`).
 
----
+API tests use `bun test tests/` with `app.handle(new Request(...))` — no test starts a real listener. Target tests (from the refactor plan):
 
-## 17. Things deliberately absent
+- response status + JSON envelope
+- validation messages
+- request-id behavior
+- controller/service boundaries through injected fakes (controller factories)
 
-- Backend, database, login, or any server code — all persistence is `localStorage` (PRD §8.3). The Drizzle scripts in `package.json` are starter-template leftovers; do not use them.
-- TanStack Query / server state — there is no server state to fetch.
-- Engine code that mentions the material, and domain logic in `engine/`.
-- `tailwind.config.js` — theming is CSS-only.
-- ESLint/Prettier configs (Oxfmt and Oxlint are used instead).
+## Out of scope / future notes
 
----
+Good next additions (see [docs/backend-refactor.md](docs/backend-refactor.md)):
 
-## 18. Guardrails (quick checks)
+- `AppError` + `appErrorMeta` + global `onError` mapping
+- controller factories + service layer for `user` / `onboarding` / `health`
+- `/v1/user/me` returning `{ user, profile }` (currently returns `{ user, session }` — spec gap)
+- cookie `Set-Cookie` copying in web server functions (full relay per [docs/auth-web.md](docs/auth-web.md))
+- API integration tests + OpenAPI plugin
+- email delivery for forgot/reset-password flows
 
-- **I'm about to write `if (material === ...)` in `engine/`** → stop; put it in the domain.
-- **Does this code mention money/interest/salary/installments?** → it belongs in `domains/personal-finance/`.
-- **Am I hardcoding a numeric answer?** → derive it from `math.ts` instead.
-- **More than 1 concept screen per lesson?** → split.
-- **More than 30% choice screens per lesson?** → it's a quiz, not interactive learning.
-- **Am I adding a modal over the question?** → no. Feedback must not hide the question (PRD §5).
+Avoid:
+
+- duplicating schemas between apps
+- adding ESLint/Prettier beside Oxlint/Oxfmt
+- proxying every API request through `createServerFn`
+- breaking the engine/domain split
+- putting backend/database logic in `web/src/features/`

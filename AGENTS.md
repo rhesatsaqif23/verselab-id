@@ -6,42 +6,174 @@ Verselab (verselab.id) is a gamified interactive-learning web app inspired by Br
 
 The product is NOT a finance app. It is a learning engine — personal finance is only the first material because numeric questions are cheap to build and check. The engine must be reusable for any future domain without rewriting it.
 
-Single app: TanStack Start + React + Vite. No backend, no database, no login. All progress is stored in the browser via `localStorage` (PRD section 8.3).
+Verselab is a **Bun workspace monorepo**: a TanStack Start web app, an Elysia API, and a shared schemas package.
+
+```txt
+apps/web        TanStack Start + React 19 SSR app (port 3000)
+apps/api        Bun + Elysia + Better Auth + Drizzle/PostgreSQL API (port 3001)
+packages/shared shared Zod schemas/types reused by web and api
+```
+
+Auth, accounts, and the learning profile are server-side (PostgreSQL). Game progress (XP, streak, mastery, curriculum edits) stays client-side in `localStorage` via Zustand (PRD section 8.3).
+
+## Package manager
+
+Use Bun only.
+
+```sh
+bun install
+```
+
+- Use existing `bun.lock`; do not add npm/yarn/pnpm lockfiles.
+
+## Workspace layout
+
+```txt
+apps/web        TanStack Start + React + Vite
+apps/api        Elysia API + Better Auth + Drizzle PostgreSQL
+packages/shared shared Zod schemas/types
+```
+
+## Root commands
+
+```sh
+bun run dev              # web dev server on port 3000
+bun run dev:api          # API dev server on port 3001
+bun run build            # production web build (vite build)
+bun run check-types      # tsc across api, web, shared
+bun run lint             # Oxlint
+bun run lint:fix         # Oxlint with auto-fix
+bun run fmt              # Oxfmt — format all files
+bun run fmt:check        # Oxfmt — check without writing
+bun run test             # api (bun test) + web (vitest)
+```
+
+Before handoff, normally run:
+
+```sh
+bun run fmt && bun run check-types && bun run lint && bun run test
+```
+
+## Per-package commands
+
+API (`apps/api`):
+
+```sh
+bun run --cwd apps/api dev                # bun --hot, port 3001
+bun run --cwd apps/api start              # run without hot reload
+bun run --cwd apps/api check-types
+bun run --cwd apps/api test               # bun test tests/
+bun run --cwd apps/api db:generate        # drizzle-kit generate
+bun run --cwd apps/api db:migrate         # drizzle-kit migrate
+bun run --cwd apps/api db:push            # drizzle-kit push
+bun run --cwd apps/api db:studio          # drizzle-kit studio UI
+```
+
+Web (`apps/web`):
+
+```sh
+bun run --cwd apps/web dev                # vite dev, port 3000
+bun run --cwd apps/web build
+bun run --cwd apps/web generate-routes    # tsr generate (route tree)
+bun run --cwd apps/web check-types
+bun run --cwd apps/web test               # vitest run
+bun run --cwd apps/web storybook          # port 6006
+bun run --cwd apps/web build-storybook
+bun run --cwd apps/web preview
+```
+
+Shared (`packages/shared`):
+
+```sh
+bun run --cwd packages/shared check-types
+```
+
+## Running a single test
+
+Web tests use Vitest with jsdom; API tests use `bun test`.
+
+```sh
+cd apps/web && bunx vitest run tests/engine/progress/streak.test.ts
+cd apps/web && bunx vitest run -t "keeps streak on same day"
+cd apps/api && bunx vitest run tests/...
+```
+
+Do not put API tests under `src`; use `apps/api/tests`.
+
+## Environment files
+
+Environment files live where they are consumed.
+
+```sh
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env
+```
+
+`apps/api/.env` is required — `config/env.ts` parses it with Zod at import time. `apps/web/.env` supplies `VITE_API_ORIGIN`. See [DEVELOPMENT.md](DEVELOPMENT.md) for the full key tables.
+
+## Database
+
+Drizzle commands live in `apps/api`. Set `DATABASE_URL` in `apps/api/.env` first.
+
+Database schema lives in:
+
+```txt
+apps/api/src/database/schema.ts       # domain tables (user_profiles)
+apps/api/src/database/auth-schema.ts  # Better Auth tables (user, session, account, verification)
+```
+
+Use lazy DB access through `getDb()` (`apps/api/src/database/index.ts`) so importing the app in tests does not require `DATABASE_URL`. The connection initializes only when a service actually queries.
+
+Local PostgreSQL runs in Docker (`verselab-postgres`, postgres:16, port 5432). Access it with:
+
+```sh
+docker start verselab-postgres
+docker exec -it verselab-postgres psql -U postgres -d verselab
+```
+
+## Auth
+
+Auth is owned by **Better Auth** mounted inside the Elysia API at `/api/auth/*` (`apps/api/src/auth/index.ts`). Email + password is enabled; email verification is disabled. Sessions persist in the Postgres `session` table.
+
+The web app relays sessions through TanStack Start server functions (`apps/web/src/libs/session.ts`): it forwards the browser's cookies to the API and copies Better Auth cookies back. Route guards use `resolveSession()` / `requireAuth()` in `beforeLoad`. Client-side auth mutations use the Better Auth React client (`apps/web/src/libs/auth-client.ts`).
+
+## Shared schemas
+
+Use `packages/shared` for schemas/types reused by frontend and backend. Zod is the source of truth for JSON DTOs — do not duplicate DTOs in app packages.
+
+```txt
+packages/shared/src/schemas/profile.ts   # unitId, dailyGoal, onboarding, profile
+```
+
+Elysia validates request bodies directly with shared Zod schemas:
+
+```ts
+body: onboardingSchema,
+```
+
+Web uses the same schemas for form validation and DTO types. Export schema and inferred type together.
 
 ## Architecture: engine / domain split
 
-This is the single most important concept in the project (PRD section 3.2). See [CONCEPT.md](CONCEPT.md) for a detailed explanation and glossary of terms (Screen, Lesson, Unit, Renderer, Mastery, XP), and [ARCHITECTURE.md](ARCHITECTURE.md) for the full technical deep-dive.
+This is the single most important concept in the web app (PRD section 3.2). See [CONCEPT.md](CONCEPT.md) and [ARCHITECTURE.md](ARCHITECTURE.md).
 
-```
-src/
+```txt
+apps/web/src/
 ├── engine/                  Must never know the subject matter
 │   ├── player/              Lesson UI: LessonPlayer, LessonHeader, LessonControls, ProgressBar, ExplanationDialog, lessonStore
 │   ├── progress/            XP, streak, mastery, daily goal: progressStore, streak, decay, masteryRead
 │   ├── path/                nextLesson: unit ordering and unlock rules
 │   └── types.ts             Screen (union), Lesson, Unit type definitions
 ├── domains/
-│   └── personal-finance/
-│       ├── math.ts          All finance calculations (futureValue, monthlyPayment, monthsToTarget)
-│       ├── screens/         Renderer per screen type: Choice, Numeric, Allocation, Concept
-│       └── components/      Charts and other visual components (BarChart)
-├── features/                Feature-scoped modules around the engine/domains core
-│   ├── layout/              App chrome: Header, Footer, ThemeToggle (+ constants)
-│   ├── home/                Dashboard: CourseCard, CourseGrid, StreakTracker, DailyGoalCard (+ constants)
-│   ├── lesson/              Lesson page wiring: renderScreen, checkAnswer
-│   ├── lesson-complete/     Completion summary page + store/
-│   ├── profile/             Profile stats page
-│   └── about/               Static about page
-├── libs/                    Subject-agnostic shared app code
-│   ├── utils.ts             cn() class merge helper
-│   ├── date.ts              Date helpers: todayString, addDays, daysBetween, ...
-│   ├── theme.ts             Theme mode types, init script, apply helpers
-│   └── hooks/               use-mobile
-├── content/                 Lesson data as TS: units.ts, index.ts, lessons/
+│   └── personal-finance/    math.ts, screens/ (renderers), components/ (BarChart)
+├── features/                Feature-scoped modules: layout, home, unit-detail, lesson, lesson-complete, profile, about, admin, auth, onboarding, landing
+├── libs/                    Shared app code: env.ts, auth-client.ts, session.ts, utils.ts, date.ts, theme.ts, hooks/
+├── content/                 Lesson data as TS: units.ts, index.ts, lessons/ (4 units)
 ├── components/ui/           shadcn/ui primitives
 ├── routes/                  Thin route files delegating to features
-├── stories/                 Storybook stories (shadcn primitives)
-└── styles/                  globals.css
-tests/                       Unit tests mirroring src/ (root tests/ dir)
+├── stories/                 Storybook stories
+└── styles/                  globals.css (theme) + styles.css
+tests/                       Vitest tests mirroring src/ (apps/web/tests)
 ```
 
 Rules:
@@ -50,86 +182,75 @@ Rules:
 - The engine passes one screen's data to the domain; the domain renders it and calls back `onAnswer(true)` or `onAnswer(false)`.
 - The engine never knows what a question is about — only that it was answered right or wrong.
 - If you find yourself writing `if (material === 'keuangan')` inside `engine/`, something is wrong. Stop and ask.
+- Auth/onboarding live in the API and in `features/auth` / `features/onboarding`; they never reference subject matter.
 
 ## Screen types
 
-There are 4 screen types in v1 (PRD section 4). Each has its own renderer component and typed data. The `Screen` type in `src/engine/types.ts` is a union type, so TypeScript narrows the available fields per type.
+There are 4 screen types in v1 (PRD section 4). The `Screen` type in `apps/web/src/engine/types.ts` is a union type, so TypeScript narrows the available fields per type.
 
 - `concept` — introduces a concept name after the user has felt its effect. Max 1 per lesson.
 - `choice` — multiple choice; cards with a blue border on selection. Max 30% of screens per lesson.
 - `numeric` — user types a number; answers checked by range, not exact value. Correct answer is computed from `math.ts`, never hardcoded.
 - `allocation` — sliders summing to 100%; checked against a rule (e.g. savings min 20%).
 
-## Commands
+## API module design
 
-```sh
-npm run dev                  # Vite dev server on port 3000
-npm run build                # production build
-npm run preview              # preview the production build
-npm run generate-routes      # tsr generate (route tree)
-npm run storybook            # Storybook dev server on port 6006
-npm run build-storybook      # Storybook build
+Follow the Elysia feature-based shape under `apps/api/src/modules/<feature>/`:
+
+```txt
+index.ts   Elysia controller (happy path)
+service.ts business logic (target — see docs/backend-refactor.md)
 ```
 
-Linting and formatting:
+- Use an Elysia instance as the controller. `body` is validated by the relevant shared Zod schema.
+- Response helpers live in `apps/api/src/libs/response.ts`:
 
-```sh
-npm run lint                  # Oxlint (React + TypeScript rules)
-npm run lint:fix              # Oxlint with auto-fix
-npm run fmt                   # Oxfmt — format all files
-npm run fmt:check             # Oxfmt — check without writing (CI)
-npx tsc --noEmit              # TypeScript typecheck
+```ts
+ok(data); // { ok: true, data }
+fail({ code, message }); // { ok: false, error: { code, message } }
 ```
 
-Drizzle scripts (`db:generate`, `db:migrate`, `db:push`, `db:pull`, `db:studio`) exist from the starter template but the app has no backend — do not use them for product code.
+- The target error model (from the refactor plan) is `AppError` + a global `onError` mapping; controllers stay happy-path only and never check `if (!result.ok)`.
 
-## Package manager
+## Storybook
 
-Use npm only. There is an existing `package-lock.json`; do not add bun/yarn/pnpm lockfiles.
+Storybook lives in `apps/web` only (there is no `packages/ui`). It documents feature components and shadcn primitives.
 
-## Styling: Tailwind v4
+```txt
+apps/web/.storybook   BOTH/Storybook config
+apps/web/stories      stories
+```
 
-Tailwind v4 is configured in CSS via `@theme`, not in a `tailwind.config.js`.
-
-- Theme and all brand colors live as semantic CSS variables in `src/styles/globals.css`, imported by `src/styles.css`. Never hardcode hex colors in components.
-- **Never use hardcoded Tailwind color utilities** like `bg-orange-500`, `text-blue-800`, `border-gray-600`, etc. Always use a CSS variable from `globals.css`. If the variable does not exist yet, add it there first (both light and dark values), expose it in `@theme inline`, then use it as `bg-fire`, `text-primary`, etc.
-- Use Tailwind canonical classes only — keep the IntelliSense `suggestCanonicalClasses` panel clean:
-  - `bg-linear-to-*`, not `bg-gradient-to-*`
-  - `shrink-0`, not `flex-shrink-0`
-  - `(--var)` shorthand, not `[var(--var)]`
-  - `wrap-anywhere`, not `[overflow-wrap:anywhere]`
-  - Semantic classes `text-primary` / `bg-card` / `border-border` / `text-accent` / `text-muted`, not `text-(--color-primary)`
+- Uses `@storybook/tanstack-react`.
+- Port `6006`.
+- Do not place stories beside component source; keep them in `apps/web/stories`.
 
 ## Path aliases
 
-- `#/*` and `@/*` both map to `./src/*`.
-- shadcn/ui aliases: `#/components/ui`, `#/lib/utils`, `#/lib`, `#/hooks`.
+- `#/*` and `@/*` map to `./src/*` (web).
+- `@verselab/shared/*` maps to `packages/shared/src/*`.
 
 ## shadcn/ui
 
-Shared UI components live in `src/components/ui/` (new-york style, lucide icons). Add new ones with:
+Shared UI components live in `apps/web/src/components/ui/` (new-york style, lucide icons). Add new ones with:
 
 ```sh
-npx shadcn@latest add <component>
+bunx shadcn@latest add <component>
 ```
 
 ## State
 
-Use Zustand for client state (XP, streak, answers, selected unit). Persist to `localStorage` with Zustand's `persist` middleware — do not write manual save/load logic.
+Use Zustand for client state (XP, streak, answers, selected unit, daily-goal minutes). Persist to `localStorage` with Zustand's `persist` middleware — do not write manual save/load logic. Account/profile data comes from the API, never duplicated in persistent stores.
 
 ## Routing
 
-File-based routing in `src/routes/`. Keep route files thin: a route defines the loader/component and delegates rendering to a feature. Feature implementation belongs under `src/features/<feature>/`.
+File-based routing in `apps/web/src/routes/`. Keep route files thin: a route defines the loader/`beforeLoad` and delegates rendering to a feature under `apps/web/src/features/<feature>/`. Regenerate the tree with `bun run --cwd apps/web generate-routes`.
 
-## TypeScript
+Auth-guarded flows use `resolveSession()` in `beforeLoad`:
 
-- Strict mode, `noUnusedLocals`, `noUnusedParameters`, `verbatimModuleSyntax`, `noEmit`.
-- Prefer inferred return types for simple functions; add explicit types for public contracts (e.g. the `Screen` union, stores).
-- Avoid `any`.
-
-## Commit convention
-
-Follow `docs/CONVENTIONAL_COMMITS.md`: Conventional Commits, no quotes, no emoji, scope for context.
+- anonymous → `redirect({ to: "/login" })`
+- authenticated but not onboarded → `/onboarding`
+- onboarded → dashboard
 
 ## Formatting and linting
 
@@ -147,12 +268,25 @@ Linting is **Oxlint**, not ESLint.
 
 Do not add ESLint/Prettier configs.
 
+## TypeScript
+
+- Strict mode, `noUnusedLocals`, `noUnusedParameters`, `verbatimModuleSyntax`, `noEmit`.
+- Prefer inferred return types for simple functions; add explicit types for public contracts (e.g. the `Screen` union, shared schema-derived `Profile`, store shapes).
+- Avoid `any`; model unknown data with `unknown` then narrow.
+- Local TS imports use `.ts` suffixes (bundler-style). Configs use Bundler resolution.
+
+## Commit convention
+
+Follow Conventional Commits: `<type>(<scope>): <summary>`. Use `feat`, `fix`, `refactor`, `style`, `chore`, `docs`, `test`, `perf`. Scopes: `api`, `web`, `shared`, `db`, `docs`. No quotes, no emoji. Body describes what changed (why belongs in a PR).
+
 ## What not to add
 
-- No ESLint/Prettier configs (Oxfmt and Oxlint are used instead).
-- No backend/server/database code in the product (PRD 8.3 — everything is localStorage).
+- No ESLint/Prettier configs (Oxfmt and Oxlint are used instead). Delete stray `.prettierignore` if found.
+- No `tailwind.config.js` — colors are defined in `apps/web/src/styles/globals.css`.
+- No duplicated DTO schemas between web and API — use `packages/shared`.
+- No live listeners in tests — use `app.handle(new Request(...))` and injected fakes.
+- No backend/server/database logic in `features/` beyond the auth relay and `submitOnboarding` server functions.
 - No engine code that knows the subject matter, and no domain logic in `engine/`.
-- No `tailwind.config.js` — colors are defined in `src/styles/globals.css`.
 
 <!-- intent-skills:start -->
 
@@ -183,10 +317,10 @@ tanstackIntent:
   for: "Analyze library codebase for critical architecture and debugging points, add strategic event emissions. Identify middleware boundaries, state transitions, lifecycle hooks. Consolidate events (1 not 15), debounce high-frequency updates, DRY shared payload fields, guard emit() for production. Transparent server/client event bridging."
 - id: "@tanstack/devtools-vite#devtools-vite-plugin"
   run: "npx @tanstack/intent@latest load @tanstack/devtools-vite#devtools-vite-plugin"
-  for: "Configure @tanstack/devtools-vite for source inspection (data-tsd-source, inspectHotkey, ignore patterns), console piping (client-to-server, server-to-client, levels), enhanced logging, server event bus (port, host, HTTPS), production stripping (removeDevtoolsOnBuild), editor integration (launch-editor, custom editor.open). Must be FIRST plugin in Vite config. Vite ^6 || ^7 only."
+  for: "Configure @tanstack/devtools-vite for source inspection (data-tsd-source, inspectHotkey, ignore patterns), console piping (client-to-server, client-to-server, levels), enhanced logging, server event bus (port, host, HTTPS), production stripping (removeDevtoolsOnBuild), editor integration (launch-editor, custom editor.open). Must be FIRST plugin in Vite config. Vite ^6 || ^7 only."
 - id: "@tanstack/react-start#lifecycle/migrate-from-nextjs"
   run: "npx @tanstack/intent@latest load @tanstack/react-start#lifecycle/migrate-from-nextjs"
-  for: "Step-by-step migration from Next.js App Router to TanStack Start: route definition conversion, API mapping, server function conversion from Server Actions, middleware conversion, data fetching pattern changes."
+  for: "Step-by-step migration from Next.js App Router to TanStack Start: route definition conversion, API endpoint mapping, Server Action conversion, middleware conversion, data fetching pattern changes."
 - id: "@tanstack/react-start#react-start"
   run: "npx @tanstack/intent@latest load @tanstack/react-start#react-start"
   for: "React bindings for TanStack Start: createStart, StartClient, StartServer, React-specific imports, re-exports from @tanstack/react-router, full project setup with React, useServerFn hook."
@@ -213,7 +347,7 @@ tanstackIntent:
   for: "notFound() function, notFoundComponent, defaultNotFoundComponent, notFoundMode (fuzzy/root), errorComponent, CatchBoundary, CatchNotFound, isNotFound, NotFoundRoute (deprecated), route masking (mask option, createRouteMask, unmaskOnReload)."
 - id: "@tanstack/router-core#router-core/path-params"
   run: "npx @tanstack/intent@latest load @tanstack/router-core#router-core/path-params"
-  for: "Dynamic path segments ($paramName), splat routes ($ / _splat), optional params ({-$paramName}), prefix/suffix patterns ({$param}.ext), useParams, params.parse/stringify, pathParamsAllowedCharacters, i18n locale patterns."
+  for: "Dynamic path segments ($paramName), splat routes ($ / _splat), optional params ({-$paramName}), prefix/suffix patterns ({$param}.ext), pathParamsAllowedCharacters, i18n locale patterns."
 - id: "@tanstack/router-core#router-core/search-params"
   run: "npx @tanstack/intent@latest load @tanstack/router-core#router-core/search-params"
   for: "validateSearch, search param validation with Zod/Valibot/ArkType adapters, fallback(), search middlewares (retainSearchParams, stripSearchParams), custom serialization (parseSearch, stringifySearch), search param inheritance, loaderDeps for cache keys, reading and writing search params."
@@ -255,7 +389,7 @@ tanstackIntent:
   for: "Programmatic route tree building as an alternative to filesystem conventions: rootRoute, index, route, layout, physical, defineVirtualSubtreeConfig. Use with TanStack Router plugin's virtualRouteConfig option."
 - id: "dotenv#dotenv"
   run: "npx @tanstack/intent@latest load dotenv#dotenv"
-  for: "Load environment variables from a .env file into process.env for Node.js applications. Use when configuring apps with secrets, setting up local development environments, managing API keys and database uRLs, parsing .env file contents, or populating environment variables programmatically. Always use this skill when the user mentions .env, even for simple tasks like \"set up dotenv\" — the skill contains critical gotchas (encrypted keys, variable expansion, command substitution) that prevent common production issues."
+  for: "Load environment variables from a .env file into process.env for Node.js applications. Use when configuring apps with secrets, setting up local development environments, managing API keys and database URLs, parsing .env file contents, or populating environment variables programmatically. Always use this skill when the user mentions .env, even for simple tasks like \"set up dotenv\" — the skill contains critical gotchas (encrypted keys, variable expansion, command substitution) that prevent common production issues."
 - id: "dotenv#dotenvx"
   run: "npx @tanstack/intent@latest load dotenv#dotenvx"
   for: "Use dotenvx to run commands with environment variables, manage multiple .env files, expand variables, and encrypt env files for safe commits and CI/CD."
