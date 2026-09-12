@@ -1,5 +1,6 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
+import { swagger } from "@elysiajs/swagger";
 import { auth } from "./auth/index.ts";
 import { authContext } from "./middleware/auth.ts";
 import { logger } from "./plugins/logger.ts";
@@ -13,6 +14,23 @@ export const app = new Elysia()
   .use(logger)
   .use(errorPlugin)
   .use(cors({ origin: env.WEB_ORIGIN, credentials: true }))
+  .use(
+    swagger({
+      path: "/openapi",
+      documentation: {
+        info: {
+          title: "Verselab API",
+          version: "1.0.0",
+          description: "Elysia + Better Auth API for verselab.id",
+        },
+        tags: [
+          { name: "health", description: "Liveness checks" },
+          { name: "user", description: "Current user and learning profile" },
+          { name: "onboarding", description: "Learning profile setup" },
+        ],
+      },
+    }),
+  )
   .onRequest(({ request }) => {
     void request.headers.get("cookie"); // Elysia .mount() cookie fix
   })

@@ -14,6 +14,12 @@ export function createOnboardingController(service: OnboardingService = onboardi
     {
       body: onboardingSchema,
       auth: true,
+      tags: ["onboarding"],
+      detail: {
+        summary: "Create the learning profile",
+        description:
+          "Creates the learning profile for the authenticated user. Fails with 409 PROFILE_ALREADY_EXISTS if one exists.",
+      },
     },
   );
 }
