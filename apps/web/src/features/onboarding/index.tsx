@@ -32,8 +32,8 @@ export function OnboardingPage() {
               Siapkan profil belajarmu
             </h1>
             <p className="mx-auto mt-3 max-w-sm text-base leading-7 text-muted-foreground">
-              Pilih nama panggilan, unit awal, dan target harianmu. Kamu bisa
-              mengubahnya kapan saja.
+              Pilih nama panggilan, unit awal, dan target harianmu. Kamu bisa mengubahnya kapan
+              saja.
             </p>
           </div>
           <OnboardingForm defaultName={defaultName} />

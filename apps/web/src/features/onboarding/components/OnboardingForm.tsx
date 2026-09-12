@@ -86,9 +86,8 @@ export function OnboardingForm({ defaultName }: { defaultName?: string }) {
   const { handleSubmit, watch } = form;
   const values = watch();
 
-  const valid = values.displayName?.trim()
-    && values.startUnitId != null
-    && values.dailyGoal != null;
+  const valid =
+    values.displayName?.trim() && values.startUnitId != null && values.dailyGoal != null;
 
   return (
     <Form {...form}>
@@ -160,7 +159,12 @@ export function OnboardingForm({ defaultName }: { defaultName?: string }) {
 
         {error && <p className="text-sm font-medium text-destructive">{error}</p>}
 
-        <Button type="submit" size="lg" className="w-full font-bold" disabled={!valid || submitting}>
+        <Button
+          type="submit"
+          size="lg"
+          className="w-full font-bold"
+          disabled={!valid || submitting}
+        >
           {submitting ? <Wrench className="size-4 animate-spin" /> : null}
           Mulai belajar
         </Button>
