@@ -57,37 +57,37 @@ export default function OnboardingWizard({ defaultName }: { defaultName?: string
   const bubbleText = STEP_BUBBLES[step]?.(displayName);
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-0 flex-1 w-full flex-col gap-3 overflow-hidden px-4 py-3 md:px-8 md:py-4">
       {/* Top bar: back + progress */}
-      <div className="flex items-center gap-4 px-4 py-4 md:px-16">
+      <div className="flex shrink-0 items-center gap-4">
         {step > 0 && step < TOTAL_STEPS ? (
           <button
             type="button"
             onClick={handleBack}
             aria-label="Kembali"
-            className="flex size-10 shrink-0 items-center justify-center rounded-full text-foreground/70 transition-colors hover:text-foreground"
+            className="flex size-9 shrink-0 items-center justify-center rounded-full text-foreground/70 transition-colors hover:text-foreground"
           >
-            <ArrowLeft className="size-6 stroke-2" />
+            <ArrowLeft className="size-5 stroke-2" />
           </button>
         ) : (
-          <div className="size-10 shrink-0" />
+          <div className="size-9 shrink-0" />
         )}
         <div className="flex-1">
           <OnboardingProgressBar current={step} total={TOTAL_STEPS} />
         </div>
-        <div className="size-10 shrink-0" />
+        <div className="size-9 shrink-0" />
       </div>
 
-      {/* Content area */}
-      <main className="flex flex-1 flex-col px-4 py-4">
-        <div className="mx-auto flex w-full max-w-md flex-1 flex-col">
+      {/* Card — same structure as LessonPlayer */}
+      <div className="flex min-h-0 w-full flex-1 flex-col overflow-hidden rounded-3xl border-2 border-border py-4 transition-colors duration-300">
+        <div className="mx-auto flex min-h-0 w-full max-w-2xl flex-1 flex-col">
           {/* Mascot + bubble */}
-          <div className="mb-6">
+          <div className="shrink-0 px-6 pt-2 pb-2">
             <MascotBubble message={bubbleText} />
           </div>
 
-          {/* Step content */}
-          <div className="flex flex-1 flex-col">
+          {/* Content — fills remaining space, centered */}
+          <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-6 py-2">
             {step === 0 && <OnboardingStep0Welcome name={displayName} />}
             {step === 1 && <OnboardingStep1Purpose value={purpose} onSelect={setPurpose} />}
             {step === 2 && <OnboardingStep2Topic value={startUnitId} onSelect={setStartUnitId} />}
@@ -96,29 +96,31 @@ export default function OnboardingWizard({ defaultName }: { defaultName?: string
               <OnboardingStep4Done displayName={displayName} startUnitId={startUnitId!} />
             )}
           </div>
-        </div>
-      </main>
 
-      {/* Bottom action */}
-      {step < TOTAL_STEPS && (
-        <div className="flex justify-end px-4 py-4 md:px-16">
-          <Button
-            size="lg"
-            className="min-w-[140px] font-bold"
-            disabled={!canAdvance || submitting}
-            onClick={step === TOTAL_STEPS - 1 ? handleComplete : handleNext}
-          >
-            {submitting ? <Wrench className="size-4 animate-spin" /> : "Lanjutkan"}
-          </Button>
-        </div>
-      )}
+          {/* Error */}
+          {error && (
+            <div className="shrink-0 px-6 pb-2 text-center">
+              <p className="text-sm font-medium text-destructive">{error}</p>
+            </div>
+          )}
 
-      {/* Error */}
-      {error && (
-        <div className="px-4 pb-4 text-center">
-          <p className="text-sm font-medium text-destructive">{error}</p>
+          {/* Bottom controls — same max-w as LessonControls */}
+          {step < TOTAL_STEPS && (
+            <div className="mx-auto flex w-full max-w-md shrink-0 flex-col gap-2 px-6 pt-2 pb-2">
+              <Button
+                key={step}
+                variant="default"
+                size="lg"
+                disabled={!canAdvance || submitting}
+                onClick={step === TOTAL_STEPS - 1 ? handleComplete : handleNext}
+                className="w-full animate-slide-up-enter"
+              >
+                {submitting ? <Wrench className="size-4 animate-spin" /> : "Lanjutkan"}
+              </Button>
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

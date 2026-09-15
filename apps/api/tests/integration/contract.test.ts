@@ -17,6 +17,12 @@ if (TEST_DATABASE_URL) {
   process.env.DATABASE_URL = TEST_DATABASE_URL;
 }
 
+// Enable the console email transport so the forgot/reset tests can exercise
+// the sendResetPassword path without a real SMTP server.
+if (!process.env.EMAIL_TRANSPORT) {
+  process.env.EMAIL_TRANSPORT = "console";
+}
+
 const { createApp } = await import("../../src/app.ts");
 
 const app = createApp();

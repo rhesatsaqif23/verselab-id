@@ -32,7 +32,7 @@ export function RegisterPage() {
       return;
     }
     setValue("password", "");
-    await navigate({ to: "/home" });
+    await navigate({ to: "/onboarding" });
   }
 
   return (

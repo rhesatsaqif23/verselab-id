@@ -7,6 +7,16 @@ import { relayRequest } from "#/libs/relay.ts";
 export const PROFILE_ALREADY_EXISTS = "PROFILE_ALREADY_EXISTS";
 export const ONBOARDING_FAILED = "ONBOARDING_FAILED";
 
+export class OnboardingError extends Error {
+  code: string;
+  status: number;
+  constructor(code: string, message: string, status = 500) {
+    super(message);
+    this.code = code;
+    this.status = status;
+  }
+}
+
 export const submitOnboarding = createServerFn({ method: "POST" })
   .validator((input: OnboardingInput) => input)
   .handler(async ({ data }) => {
@@ -16,15 +26,32 @@ export const submitOnboarding = createServerFn({ method: "POST" })
       body: JSON.stringify(data),
     });
 
-    const body = (await res.json().catch(() => null)) as
-      | { ok: true; data: { profile: { userId: string; dailyGoal: DailyGoal } } }
-      | { ok: false; error: { code: string; message: string } }
-      | null;
-
-    if (!res.ok || !body || !body.ok) {
-      const code = body && !body.ok ? body.error.code : undefined;
-      throw new Error(code ?? ONBOARDING_FAILED);
+    const text = await res.text();
+    let body: unknown;
+    try {
+      body = JSON.parse(text);
+    } catch {
+      throw new OnboardingError(
+        ONBOARDING_FAILED,
+        `API returned non-JSON (${res.status}): ${text.slice(0, 200)}`,
+        res.status,
+      );
     }
 
-    return body.data;
+    if (!res.ok) {
+      const errBody = body as { ok?: boolean; error?: { code?: string; message?: string } } | null;
+      const code = errBody?.error?.code ?? ONBOARDING_FAILED;
+      const message = errBody?.error?.message ?? `API error ${res.status}`;
+      throw new OnboardingError(code, message, res.status);
+    }
+
+    const okBody = body as {
+      ok: boolean;
+      data?: { profile: { userId: string; dailyGoal: DailyGoal } };
+    };
+    if (!okBody?.ok || !okBody?.data) {
+      throw new OnboardingError(ONBOARDING_FAILED, "Unexpected API response shape", res.status);
+    }
+
+    return okBody.data;
   });

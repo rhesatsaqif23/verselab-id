@@ -20,6 +20,15 @@ vi.mock("#/features/onboarding/api.ts", () => ({
   submitOnboarding: submitOnboardingMock,
   PROFILE_ALREADY_EXISTS: "PROFILE_ALREADY_EXISTS",
   ONBOARDING_FAILED: "ONBOARDING_FAILED",
+  OnboardingError: class extends Error {
+    code: string;
+    status: number;
+    constructor(code: string, message: string, status = 500) {
+      super(message);
+      this.code = code;
+      this.status = status;
+    }
+  },
 }));
 
 const values = {
@@ -71,7 +80,10 @@ describe("useOnboarding", () => {
   });
 
   it("redirects home when the profile already exists", async () => {
-    submitOnboardingMock.mockRejectedValue(new Error("PROFILE_ALREADY_EXISTS"));
+    const { OnboardingError } = await import("#/features/onboarding/api.ts");
+    submitOnboardingMock.mockRejectedValue(
+      new OnboardingError("PROFILE_ALREADY_EXISTS", "Profil sudah ada."),
+    );
 
     const { result } = renderHook(() => useOnboarding());
     await act(async () => {
@@ -82,7 +94,22 @@ describe("useOnboarding", () => {
     expect(result.current.error).toBeNull();
   });
 
-  it("shows the generic error for any other failure", async () => {
+  it("shows the API error message for known error codes", async () => {
+    const { OnboardingError } = await import("#/features/onboarding/api.ts");
+    submitOnboardingMock.mockRejectedValue(
+      new OnboardingError("VALIDATION_ERROR", "Data tidak valid."),
+    );
+
+    const { result } = renderHook(() => useOnboarding());
+    await act(async () => {
+      await result.current.submit(values);
+    });
+
+    expect(navigateMock).not.toHaveBeenCalled();
+    expect(result.current.error).toBe("Data tidak valid.");
+  });
+
+  it("shows the generic error for unknown failures", async () => {
     submitOnboardingMock.mockRejectedValue(new Error("network timeout"));
 
     const { result } = renderHook(() => useOnboarding());
@@ -91,6 +118,6 @@ describe("useOnboarding", () => {
     });
 
     expect(navigateMock).not.toHaveBeenCalled();
-    expect(result.current.error).toBe("Gagal menyimpan profil. Silakan coba lagi.");
+    expect(result.current.error).toBe("Terjadi kesalahan. Silakan coba lagi.");
   });
 });

@@ -11,8 +11,8 @@ export function OnboardingPage() {
   const defaultName = session.data?.user?.name;
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-border/80 bg-background/85 px-4 backdrop-blur-md transition-all md:px-16">
+    <div className="flex h-screen h-dvh w-full flex-col overflow-hidden bg-background">
+      <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center justify-between border-b border-border/80 bg-background/85 px-4 backdrop-blur-md transition-all md:px-16">
         <Link to="/" className="flex items-center gap-2.5 no-underline">
           <div className="flex size-9 items-center justify-center rounded-lg bg-linear-to-br from-primary to-accent font-black text-white shadow-xs">
             V
@@ -24,7 +24,9 @@ export function OnboardingPage() {
         <ThemeToggle />
       </header>
 
-      <OnboardingWizard defaultName={defaultName} />
+      <div className="flex min-h-0 flex-1 flex-col">
+        <OnboardingWizard defaultName={defaultName} />
+      </div>
     </div>
   );
 }

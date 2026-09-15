@@ -23,7 +23,7 @@ export default function SelectableCard({
       type="button"
       onClick={onSelect}
       className={cn(
-        "flex w-full items-start gap-3 rounded-xl border-2 bg-card p-4 text-left outline-none transition-all duration-150",
+        "flex w-full items-start gap-3 rounded-xl border-2 bg-card px-4 py-3 text-left outline-none transition-all duration-150",
         "focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50",
         selected
           ? "border-primary bg-primary/5 ring-2 ring-primary/20"

@@ -1,8 +1,18 @@
-import { Outlet, createFileRoute, useRouterState } from "@tanstack/react-router";
+import { Outlet, createFileRoute, redirect, useRouterState } from "@tanstack/react-router";
 import Header from "#/features/layout/components/Header";
 import Footer from "#/features/layout/components/Footer";
+import { resolveSession } from "#/libs/session.ts";
 
 export const Route = createFileRoute("/_home")({
+  beforeLoad: async () => {
+    const session = await resolveSession();
+    if (session.status === "anonymous") {
+      throw redirect({ to: "/login" });
+    }
+    if (!session.onboarded) {
+      throw redirect({ to: "/onboarding" });
+    }
+  },
   component: HomeLayout,
 });
 

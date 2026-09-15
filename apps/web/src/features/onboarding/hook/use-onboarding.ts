@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useProgressStore, type DailyGoalMinutes } from "#/engine/progress/progressStore.ts";
 import { dailyGoalToMinutes, type OnboardingInput } from "@verselab/shared/schemas/profile";
-import { PROFILE_ALREADY_EXISTS, submitOnboarding } from "../api.ts";
+import { OnboardingError, PROFILE_ALREADY_EXISTS, submitOnboarding } from "../api.ts";
 import type { OnboardingState } from "../types.ts";
 
 export function useOnboarding() {
@@ -27,12 +27,15 @@ export function useOnboarding() {
       };
       await navigate({ to: "/onboarding/welcome", state: state as never });
     } catch (err) {
-      // Already onboarded (stale tab / double submit): take the user home.
-      if (err instanceof Error && err.message === PROFILE_ALREADY_EXISTS) {
-        await navigate({ to: "/" });
+      if (err instanceof OnboardingError) {
+        if (err.code === PROFILE_ALREADY_EXISTS) {
+          await navigate({ to: "/" });
+          return;
+        }
+        setError(err.message);
         return;
       }
-      setError("Gagal menyimpan profil. Silakan coba lagi.");
+      setError("Terjadi kesalahan. Silakan coba lagi.");
     } finally {
       setSubmitting(false);
     }
