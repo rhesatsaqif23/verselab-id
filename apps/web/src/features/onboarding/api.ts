@@ -4,6 +4,9 @@ import { createServerFn } from "@tanstack/react-start";
 import type { DailyGoal, OnboardingInput } from "@verselab/shared/schemas/profile";
 import { relayRequest } from "#/libs/relay.ts";
 
+export const PROFILE_ALREADY_EXISTS = "PROFILE_ALREADY_EXISTS";
+export const ONBOARDING_FAILED = "ONBOARDING_FAILED";
+
 export const submitOnboarding = createServerFn({ method: "POST" })
   .validator((input: OnboardingInput) => input)
   .handler(async ({ data }) => {
@@ -20,7 +23,7 @@ export const submitOnboarding = createServerFn({ method: "POST" })
 
     if (!res.ok || !body || !body.ok) {
       const code = body && !body.ok ? body.error.code : undefined;
-      throw new Error(code ?? "ONBOARDING_FAILED");
+      throw new Error(code ?? ONBOARDING_FAILED);
     }
 
     return body.data;

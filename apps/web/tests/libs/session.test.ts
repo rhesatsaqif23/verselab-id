@@ -11,17 +11,24 @@ function capture(fn: () => void): { to?: string } | null {
     fn();
     return null;
   } catch (e) {
-    if (e instanceof Response && "options" in e) return (e as Response & { options: { to?: string } }).options;
+    if (e instanceof Response && "options" in e)
+      return (e as Response & { options: { to?: string } }).options;
     return e as { to?: string };
   }
 }
 
 const authenticated = (onboarded: boolean): ResolvedSession =>
-  ({ status: "authenticated", user: { id: "u-1", email: "t@test.dev", name: "Tester" }, onboarded }) as ResolvedSession;
+  ({
+    status: "authenticated",
+    user: { id: "u-1", email: "t@test.dev", name: "Tester" },
+    onboarded,
+  }) as ResolvedSession;
 
 describe("redirectIfAuthenticated", () => {
   it("lets anonymous sessions through", () => {
-    expect(capture(() => redirectIfAuthenticated({ status: "anonymous" } as ResolvedSession))).toBeNull();
+    expect(
+      capture(() => redirectIfAuthenticated({ status: "anonymous" } as ResolvedSession)),
+    ).toBeNull();
   });
 
   it("sends an onboarded user to the dashboard", () => {

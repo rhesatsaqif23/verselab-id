@@ -22,6 +22,7 @@ export const resolveSession = createServerFn({ method: "GET" }).handler(async ()
   return {
     status: "authenticated" as const,
     user: result.data.user,
+    profile,
     onboarded: profile?.onboardedAt != null,
   };
 });

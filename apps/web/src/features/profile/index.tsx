@@ -7,6 +7,7 @@ import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import { units } from "#/content/index.ts";
 import { masteryForDisplay } from "#/engine/progress/masteryRead.ts";
 import { todayString } from "#/libs/date.ts";
+import ProfileChip from "./ProfileChip";
 
 export default function ProfilePage() {
   const xp = useProgressStore((s) => s.xp);
@@ -19,6 +20,8 @@ export default function ProfilePage() {
   return (
     <main className="page-wrap px-4 pb-16 pt-8">
       <div className="mx-auto max-w-xl space-y-6">
+        <ProfileChip />
+
         <div className="flex gap-4">
           <Card className="flex-1 p-5 text-center">
             <p className="text-3xl font-black text-foreground">{xp}</p>
