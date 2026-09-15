@@ -14,6 +14,7 @@ function toProfile(row: typeof userProfiles.$inferSelect): Profile | null {
     displayName: row.displayName ?? "",
     startUnitId: (row.startUnitId ?? "keuangan") as Profile["startUnitId"],
     dailyGoal: row.dailyGoal ?? "regular",
+    purpose: (row.purpose ?? "lainnya") as Profile["purpose"],
     onboardedAt: row.onboardedAt ? row.onboardedAt.toISOString() : null,
   };
 }

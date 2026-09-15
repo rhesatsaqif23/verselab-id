@@ -17,7 +17,7 @@ export const onboardingSchema = z.object({
   displayName: z.string().trim().min(1).max(50),
   startUnitId: unitIdSchema,
   dailyGoal: dailyGoalSchema,
-  purpose: purposeSchema,
+  purpose: purposeSchema.optional(),
 });
 
 export const profileSchema = onboardingSchema.extend({

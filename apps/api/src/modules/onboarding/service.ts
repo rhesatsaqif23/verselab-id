@@ -14,6 +14,7 @@ function toProfile(row: typeof userProfiles.$inferSelect): Profile {
     displayName: row.displayName ?? "",
     startUnitId: (row.startUnitId ?? "keuangan") as Profile["startUnitId"],
     dailyGoal: row.dailyGoal ?? "regular",
+    purpose: (row.purpose ?? "lainnya") as Profile["purpose"],
     onboardedAt: row.onboardedAt ? row.onboardedAt.toISOString() : null,
   };
 }
@@ -39,6 +40,7 @@ export const onboardingService: OnboardingService = {
         displayName: input.displayName,
         startUnitId: input.startUnitId,
         dailyGoal: input.dailyGoal,
+        purpose: input.purpose,
         onboardedAt: new Date(),
       })
       .returning();

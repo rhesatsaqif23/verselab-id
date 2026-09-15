@@ -8,6 +8,13 @@
       "when": 1788851104143,
       "tag": "0000_light_gwen_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789448090745,
+      "tag": "0001_gifted_alex_power",
+      "breakpoints": true
     }
   ]
 }

@@ -3,6 +3,15 @@ import { user } from "./auth-schema.ts";
 
 export const dailyGoalEnum = pgEnum("daily_goal", ["casual", "regular", "serious"]);
 
+export const purposeEnum = pgEnum("purpose", [
+  "karier",
+  "pendidikan",
+  "investasi",
+  "wirausaha",
+  "pengembangan-diri",
+  "lainnya",
+]);
+
 export const userProfiles = pgTable("user_profiles", {
   userId: text("user_id")
     .primaryKey()
@@ -10,6 +19,7 @@ export const userProfiles = pgTable("user_profiles", {
   displayName: text("display_name"),
   startUnitId: text("start_unit_id"),
   dailyGoal: dailyGoalEnum("daily_goal").default("regular"),
+  purpose: purposeEnum("purpose"),
   onboardedAt: timestamp("onboarded_at"),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
