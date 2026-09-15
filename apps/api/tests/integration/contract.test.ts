@@ -203,11 +203,10 @@ realDbSuite("authenticated onboarding flow (TEST_DATABASE_URL)", () => {
     expect(body.errors.length).toBeGreaterThan(0);
   });
 
-  it("signs out: clears the session cookies and deletes the server-side session", async () => {
+  it("signs out: clears the session cookies, deletes the session, and rejects stale cookies", async () => {
     const signOut = await app.handle(request("/api/auth/sign-out", { method: "POST" }, cookie));
     expect(signOut.status).toBe(200);
-    // The browser drops the session cookies (empty value in set-cookie); a
-    // request without them is a plain unauthenticated 401 (asserted above).
+    // The browser drops the session cookies (empty value in set-cookie).
     expect(
       signOut.headers.getSetCookie().some((l) => l.startsWith("better-auth.session_token=")),
     ).toBe(true);
@@ -216,6 +215,93 @@ realDbSuite("authenticated onboarding flow (TEST_DATABASE_URL)", () => {
     const { sql } = await import("drizzle-orm");
     const rows = await getDb().execute(sql`SELECT id FROM "session" WHERE user_id = ${user.id}`);
     expect((rows.rows ?? []).length).toBe(0);
+
+    // With the session cookie cache disabled outside production, the stale
+    // cookie must fail on the very next request instead of passing for up to 5
+    // minutes.
+    const stale = await app.handle(request("/v1/user/me", {}, cookie));
+    expect(stale.status).toBe(401);
+  });
+
+  it("expiring the session server-side logs the user out immediately", async () => {
+    // Fresh sign-in (signed out above) with the still-current password.
+    const signIn = await app.handle(
+      request("/api/auth/sign-in/email", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      }),
+    );
+    expect(signIn.status).toBe(200);
+    const liveCookie = cookieJar(signIn);
+
+    const before = await app.handle(request("/v1/user/me", {}, liveCookie));
+    expect(before.status).toBe(200);
+
+    // Simulate a revoked/expired session (auth.api.deleteUserSession equivalent)
+    // while the browser still holds a valid-looking cookie.
+    const { getDb } = await import("../../src/database/index.ts");
+    const { sql } = await import("drizzle-orm");
+    await getDb().execute(sql`DELETE FROM "session" WHERE user_id = ${user.id}`);
+
+    const after = await app.handle(request("/v1/user/me", {}, liveCookie));
+    expect(after.status).toBe(401);
+  });
+
+  it("completes the dev forgot/reset loop via the EMAIL_TRANSPORT=console transport", async () => {
+    const logs: string[] = [];
+    const original = console.log;
+    console.log = (line: string) => {
+      logs.push(line);
+    };
+
+    let resetToken: string | undefined;
+    try {
+      const forgot = await app.handle(
+        request("/api/auth/request-password-reset", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ email }),
+        }),
+      );
+      expect(forgot.status).toBe(200);
+
+      const urlLine = logs.find((l) => l.startsWith("[email] Reset password link:"));
+      expect(urlLine).toBeDefined();
+      resetToken = urlLine!.split("reset-password/")[1]?.split("?")[0];
+    } finally {
+      console.log = original;
+    }
+    expect(resetToken).toBeTruthy();
+
+    const newPassword = "contract-pass-456";
+    const reset = await app.handle(
+      request("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ newPassword, token: resetToken }),
+      }),
+    );
+    expect(reset.status).toBe(200);
+
+    // The old password no longer works, the new one does — the loop is closed.
+    const oldSignIn = await app.handle(
+      request("/api/auth/sign-in/email", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      }),
+    );
+    expect(oldSignIn.status).toBe(401);
+
+    const newSignIn = await app.handle(
+      request("/api/auth/sign-in/email", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ email, password: newPassword }),
+      }),
+    );
+    expect(newSignIn.status).toBe(200);
   });
 
   afterAll(async () => {

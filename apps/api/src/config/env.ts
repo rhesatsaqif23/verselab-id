@@ -11,6 +11,7 @@ const envSchema = z
     DATABASE_URL: z.string().url().optional(),
     PORT: z.coerce.number().default(3001),
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+    EMAIL_TRANSPORT: z.enum(["console"]).optional(),
   })
   .superRefine((data, ctx) => {
     if (data.NODE_ENV === "test") return;
@@ -26,7 +27,7 @@ const envSchema = z
   });
 
 type ParsedEnv = z.infer<typeof envSchema>;
-type AppEnv = ParsedEnv & {
+export type AppEnv = ParsedEnv & {
   BETTER_AUTH_SECRET: string;
   BETTER_AUTH_URL: string;
   DATABASE_URL: string;
