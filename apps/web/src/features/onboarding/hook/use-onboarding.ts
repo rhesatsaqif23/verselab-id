@@ -23,6 +23,7 @@ export function useOnboarding() {
       const state: OnboardingState = {
         displayName: values.displayName,
         startUnitId: values.startUnitId,
+        purpose: values.purpose ?? "lainnya",
       };
       await navigate({ to: "/onboarding/welcome", state: state as never });
     } catch (err) {

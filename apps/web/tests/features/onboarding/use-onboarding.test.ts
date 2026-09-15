@@ -54,7 +54,7 @@ describe("useOnboarding", () => {
     expect(useProgressStore.getState().dailyGoalMinutes).toBe(20);
     expect(navigateMock).toHaveBeenCalledWith({
       to: "/onboarding/welcome",
-      state: { displayName: "Budi", startUnitId: "keuangan" },
+      state: { displayName: "Budi", startUnitId: "keuangan", purpose: "lainnya" },
     });
     expect(result.current.error).toBeNull();
   });

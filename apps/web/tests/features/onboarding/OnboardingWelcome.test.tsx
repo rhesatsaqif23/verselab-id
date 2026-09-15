@@ -32,7 +32,11 @@ vi.mock("@tanstack/react-router", () => ({
   ),
 }));
 
-const state: OnboardingState = { displayName: "Budi", startUnitId: "kewirausahaan" };
+const state: OnboardingState = {
+  displayName: "Budi",
+  startUnitId: "kewirausahaan",
+  purpose: "wirausaha",
+};
 
 describe("OnboardingWelcome", () => {
   it("greets the user by name", () => {

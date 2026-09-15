@@ -2,7 +2,15 @@
 // so the API and UI agree) plus the starting-unit picker options resolved from
 // the curriculum.
 import type { LucideIcon } from "lucide-react";
-import { BookOpen } from "lucide-react";
+import {
+  BookOpen,
+  Briefcase,
+  Brain,
+  GraduationCap,
+  MoreHorizontal,
+  Rocket,
+  TrendingUp,
+} from "lucide-react";
 import { dailyGoalToMinutes, type DailyGoal } from "@verselab/shared/schemas/profile";
 import { units } from "#/content/units.ts";
 import { UNIT_ICONS } from "#/features/home/constants.ts";
@@ -20,6 +28,19 @@ export const DAILY_GOAL_OPTIONS: {
   { value: "serious", label: "Serius", description: "20 menit per hari", minutes: 20 },
 ];
 
+export const PURPOSE_OPTIONS: {
+  value: string;
+  label: string;
+  icon: LucideIcon;
+}[] = [
+  { value: "karier", label: "Meningkatkan karier", icon: Briefcase },
+  { value: "pendidikan", label: "Mendukung pendidikan", icon: GraduationCap },
+  { value: "investasi", label: "Investasi & keuangan", icon: TrendingUp },
+  { value: "wirausaha", label: "Wirausaha", icon: Rocket },
+  { value: "pengembangan-diri", label: "Pengembangan diri", icon: Brain },
+  { value: "lainnya", label: "Lainnya", icon: MoreHorizontal },
+];
+
 export const START_UNIT_OPTIONS: {
   id: string;
   title: string;
@@ -31,3 +52,12 @@ export const START_UNIT_OPTIONS: {
   description: u.description,
   icon: UNIT_ICONS[u.id] ?? BookOpen,
 }));
+
+/** Speech-bubble text for each wizard step. */
+export const STEP_BUBBLES: Record<number, (name?: string) => string> = {
+  0: (name) => `Halo${name ? ` ${name}` : ""}! Siap belajar sesuatu yang baru?`,
+  1: () => "Apa yang ingin kamu capai?",
+  2: () => "Pilih topik yang ingin kamu pelajari dulu",
+  3: () => "Seberapa sering kamu ingin belajar?",
+  4: () => "Kamu siap! Ayo mulai petualanganmu!",
+};

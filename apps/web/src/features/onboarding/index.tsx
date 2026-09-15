@@ -1,10 +1,10 @@
-// OnboardingPage: full-screen learning-profile setup (display name, starting
-// unit, daily goal). Rendered outside the _home layout chrome.
+// OnboardingPage: full-screen Duolingo-style onboarding wizard. Rendered
+// outside the _home layout chrome.
 "use client";
 import { Link } from "@tanstack/react-router";
 import { authClient } from "#/libs/auth-client.ts";
 import ThemeToggle from "#/features/layout/components/ThemeToggle.tsx";
-import { OnboardingForm } from "./components/OnboardingForm.tsx";
+import OnboardingWizard from "./components/OnboardingWizard.tsx";
 
 export function OnboardingPage() {
   const session = authClient.useSession();
@@ -24,21 +24,7 @@ export function OnboardingPage() {
         <ThemeToggle />
       </header>
 
-      <main className="flex flex-1 flex-col items-center px-4 py-12">
-        <div className="w-full max-w-md">
-          <div className="mb-8 text-center">
-            <p className="island-kicker">Ayo mulai</p>
-            <h1 className="display-title mt-2 text-3xl font-black tracking-tight text-foreground">
-              Siapkan profil belajarmu
-            </h1>
-            <p className="mx-auto mt-3 max-w-sm text-base leading-7 text-muted-foreground">
-              Pilih nama panggilan, unit awal, dan target harianmu. Kamu bisa mengubahnya kapan
-              saja.
-            </p>
-          </div>
-          <OnboardingForm defaultName={defaultName} />
-        </div>
-      </main>
+      <OnboardingWizard defaultName={defaultName} />
     </div>
   );
 }
