@@ -20,15 +20,6 @@ vi.mock("#/features/onboarding/api.ts", () => ({
   submitOnboarding: submitOnboardingMock,
   PROFILE_ALREADY_EXISTS: "PROFILE_ALREADY_EXISTS",
   ONBOARDING_FAILED: "ONBOARDING_FAILED",
-  OnboardingError: class extends Error {
-    code: string;
-    status: number;
-    constructor(code: string, message: string, status = 500) {
-      super(message);
-      this.code = code;
-      this.status = status;
-    }
-  },
 }));
 
 const values = {
@@ -80,10 +71,10 @@ describe("useOnboarding", () => {
   });
 
   it("redirects home when the profile already exists", async () => {
-    const { OnboardingError } = await import("#/features/onboarding/api.ts");
-    submitOnboardingMock.mockRejectedValue(
-      new OnboardingError("PROFILE_ALREADY_EXISTS", "Profil sudah ada."),
-    );
+    submitOnboardingMock.mockRejectedValue({
+      code: "PROFILE_ALREADY_EXISTS",
+      message: "Profil sudah ada.",
+    });
 
     const { result } = renderHook(() => useOnboarding());
     await act(async () => {
@@ -95,10 +86,10 @@ describe("useOnboarding", () => {
   });
 
   it("shows the API error message for known error codes", async () => {
-    const { OnboardingError } = await import("#/features/onboarding/api.ts");
-    submitOnboardingMock.mockRejectedValue(
-      new OnboardingError("VALIDATION_ERROR", "Data tidak valid."),
-    );
+    submitOnboardingMock.mockRejectedValue({
+      code: "VALIDATION_ERROR",
+      message: "Data tidak valid.",
+    });
 
     const { result } = renderHook(() => useOnboarding());
     await act(async () => {

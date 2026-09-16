@@ -55,7 +55,7 @@ export const START_UNIT_OPTIONS: {
 
 /** Speech-bubble text for each wizard step. */
 export const STEP_BUBBLES: Record<number, (name?: string) => string> = {
-  0: (name) => `Halo${name ? ` ${name}` : ""}! Siap belajar sesuatu yang baru?`,
+  0: () => "Selamat datang di Verselab! 🚀",
   1: () => "Apa yang ingin kamu capai?",
   2: () => "Pilih topik yang ingin kamu pelajari dulu",
   3: () => "Seberapa sering kamu ingin belajar?",

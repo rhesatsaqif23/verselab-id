@@ -41,13 +41,18 @@ export async function relayRequest(
   init?: RequestInit,
   ctx: RelayContext = serverContext,
 ): Promise<Response> {
-  const headers = new Headers(ctx.requestHeaders());
+  const url = `${env.apiOrigin.replace(/localhost/, "127.0.0.1")}${path}`;
+  const headers = new Headers();
+  // Forward cookies from the browser request (needed for auth)
+  const cookie = ctx.requestHeaders().get("cookie");
+  if (cookie) headers.set("cookie", cookie);
+  // Apply caller-provided headers (content-type, etc.)
   if (init?.headers) {
     for (const [key, value] of new Headers(init.headers)) headers.set(key, value);
   }
   headers.set("accept", "application/json");
 
-  const res = await fetch(`${env.apiOrigin}${path}`, { ...init, headers });
+  const res = await fetch(url, { ...init, headers });
   relayAuthCookies(res, ctx);
   return res;
 }

@@ -4,7 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useProgressStore, type DailyGoalMinutes } from "#/engine/progress/progressStore.ts";
 import { dailyGoalToMinutes, type OnboardingInput } from "@verselab/shared/schemas/profile";
-import { OnboardingError, PROFILE_ALREADY_EXISTS, submitOnboarding } from "../api.ts";
+import { PROFILE_ALREADY_EXISTS, submitOnboarding } from "../api.ts";
 import type { OnboardingState } from "../types.ts";
 
 export function useOnboarding() {
@@ -26,13 +26,16 @@ export function useOnboarding() {
         purpose: values.purpose ?? "lainnya",
       };
       await navigate({ to: "/onboarding/welcome", state: state as never });
-    } catch (err) {
-      if (err instanceof OnboardingError) {
-        if (err.code === PROFILE_ALREADY_EXISTS) {
-          await navigate({ to: "/" });
-          return;
-        }
-        setError(err.message);
+    } catch (err: unknown) {
+      console.error("[onboarding] submit failed:", err);
+      const asObj = typeof err === "object" && err !== null ? err : null;
+      const code = asObj && "code" in asObj ? String((asObj as { code: unknown }).code) : undefined;
+      if (code === PROFILE_ALREADY_EXISTS) {
+        await navigate({ to: "/" });
+        return;
+      }
+      if (code && asObj && "message" in asObj) {
+        setError(String((asObj as { message: unknown }).message));
         return;
       }
       setError("Terjadi kesalahan. Silakan coba lagi.");

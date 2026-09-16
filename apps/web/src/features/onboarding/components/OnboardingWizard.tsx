@@ -113,7 +113,7 @@ export default function OnboardingWizard({ defaultName }: { defaultName?: string
                 size="lg"
                 disabled={!canAdvance || submitting}
                 onClick={step === TOTAL_STEPS - 1 ? handleComplete : handleNext}
-                className="w-full animate-slide-up-enter"
+                className="w-full animate-slide-up-enter disabled:bg-none disabled:bg-(--lesson-btn-disabled-bg) disabled:text-(--lesson-btn-disabled-text) disabled:opacity-50 disabled:shadow-[0_5px_0_0_var(--lesson-btn-disabled-shadow),0_6px_16px_rgba(0,0,0,0.12)]"
               >
                 {submitting ? <Wrench className="size-4 animate-spin" /> : "Lanjutkan"}
               </Button>

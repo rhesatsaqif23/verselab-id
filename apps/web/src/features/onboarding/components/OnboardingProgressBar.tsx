@@ -11,6 +11,7 @@ export default function OnboardingProgressBar({ current, total }: OnboardingProg
       <div className="flex gap-1.5">
         {Array.from({ length: total }, (_, i) => {
           const isCompleted = i < current;
+          const isCurrent = i === current;
           return (
             <div
               key={i}
@@ -18,7 +19,7 @@ export default function OnboardingProgressBar({ current, total }: OnboardingProg
             >
               <div
                 className={`h-full w-full rounded-full transition-all duration-500 ease-out ${
-                  isCompleted ? "bg-primary" : "bg-transparent"
+                  isCompleted ? "bg-primary" : isCurrent ? "bg-chart-3" : "bg-transparent"
                 }`}
               />
             </div>
@@ -26,7 +27,7 @@ export default function OnboardingProgressBar({ current, total }: OnboardingProg
         })}
       </div>
       <span className="text-center text-sm font-bold text-muted">
-        {current} / {total}
+        {Math.min(current, total)} / {total}
       </span>
     </div>
   );

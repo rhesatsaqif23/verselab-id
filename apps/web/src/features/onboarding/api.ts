@@ -20,11 +20,18 @@ export class OnboardingError extends Error {
 export const submitOnboarding = createServerFn({ method: "POST" })
   .validator((input: OnboardingInput) => input)
   .handler(async ({ data }) => {
-    const res = await relayRequest("/v1/onboarding", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify(data),
-    });
+    let res: Response;
+    try {
+      res = await relayRequest("/v1/onboarding", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify(data),
+      });
+    } catch (fetchErr: unknown) {
+      const err = fetchErr as Error & { cause?: unknown };
+      console.error("[onboarding] relayRequest failed:", err.message, err.cause);
+      throw new OnboardingError(ONBOARDING_FAILED, `Network error: ${err.message}`, 0);
+    }
 
     const text = await res.text();
     let body: unknown;

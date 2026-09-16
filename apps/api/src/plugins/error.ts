@@ -22,8 +22,6 @@ export const errorPlugin = new Elysia({ name: "error-handler" })
       return fail({ code: error.code, message: error.message, issues: error.issues });
     }
 
-    if (typeof set.status === "number" && set.status < 500) return;
-
     if (!isTest) {
       console.error(`[err] INTERNAL ${request.method} ${request.url} ${requestId}`);
       console.error(describeError(error));

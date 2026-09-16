@@ -5,7 +5,9 @@ export default function OnboardingStep0Welcome({ name }: { name?: string }) {
       <h1 className="text-3xl font-black tracking-tight text-foreground">
         Halo{name ? ` ${name}` : ""}!
       </h1>
-      <p className="text-base leading-7 text-muted-foreground">Siap belajar sesuatu yang baru?</p>
+      <p className="text-base leading-7 text-muted-foreground">
+        Siap belajar sesuatu yang baru hari ini?
+      </p>
     </div>
   );
 }
