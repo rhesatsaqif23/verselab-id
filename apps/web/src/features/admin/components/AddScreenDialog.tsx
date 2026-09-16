@@ -18,11 +18,8 @@ import {
   SelectValue,
 } from "#/components/ui/select.tsx";
 import type { AdminScreen } from "#/libs/admin-content-fns.ts";
-
-import ChoiceRenderer from "#/domains/personal-finance/screens/ChoiceRenderer.tsx";
-import ConceptRenderer from "#/domains/personal-finance/screens/ConceptRenderer.tsx";
-import NumericRenderer from "#/domains/personal-finance/screens/NumericRenderer.tsx";
-import AllocationRenderer from "#/domains/personal-finance/screens/AllocationRenderer.tsx";
+import { renderScreen } from "#/domains/registry.tsx";
+import type { Screen } from "#/engine/types.ts";
 
 type ScreenType = AdminScreen["type"];
 
@@ -30,66 +27,42 @@ interface AddScreenDialogProps {
   onAdd: (type: ScreenType) => void;
 }
 
+const previewScreens: Record<ScreenType, Screen> = {
+  concept: {
+    type: "concept",
+    prompt:
+      "Dana darurat adalah simpanan yang disiapkan khusus untuk mengantisipasi kejadian tak terduga dalam kehidupan sehari-hari.",
+    explain: "Penjelasan konsep.",
+  },
+  choice: {
+    type: "choice",
+    prompt: "Berapa porsi minimal dari penghasilan bulanan yang disarankan untuk ditabung?",
+    options: [
+      { id: "opt1", label: "20% dari total penghasilan" },
+      { id: "opt2", label: "5% dari total penghasilan" },
+    ],
+    correctId: "opt1",
+    explain: "Disarankan menyisihkan minimal 20% penghasilan.",
+  },
+  numeric: {
+    type: "numeric",
+    prompt:
+      "Jika penghasilan bulanan Rp 5.000.000, berapa rupiah nilai 20% yang harus Anda tabung?",
+    unit: "Rupiah",
+    acceptRange: [1000000, 1000000],
+    explain: "20% dari Rp 5.000.000 adalah Rp 1.000.000.",
+  },
+  allocation: {
+    type: "allocation",
+    prompt: "Atur alokasi pembagian pengeluaran bulanan Anda:",
+    categories: ["Kebutuhan", "Tabungan"],
+    rule: { category: "Tabungan", min: 20 },
+    explain: "Alokasikan sebagian pendapatan untuk tabungan.",
+  },
+};
+
 function ScreenPreview({ type }: { type: ScreenType }) {
-  switch (type) {
-    case "concept":
-      return (
-        <ConceptRenderer
-          screen={{
-            type: "concept",
-            prompt:
-              "Dana darurat adalah simpanan yang disiapkan khusus untuk mengantisipasi kejadian tak terduga dalam kehidupan sehari-hari.",
-            explain: "Penjelasan konsep.",
-          }}
-        />
-      );
-    case "choice":
-      return (
-        <ChoiceRenderer
-          screen={{
-            type: "choice",
-            prompt: "Berapa porsi minimal dari penghasilan bulanan yang disarankan untuk ditabung?",
-            options: [
-              { id: "opt1", label: "20% dari total penghasilan" },
-              { id: "opt2", label: "5% dari total penghasilan" },
-            ],
-            correctId: "opt1",
-            explain: "Disarankan menyisihkan minimal 20% penghasilan.",
-          }}
-          onSelect={() => {}}
-          checked={null}
-        />
-      );
-    case "numeric":
-      return (
-        <NumericRenderer
-          screen={{
-            type: "numeric",
-            prompt:
-              "Jika penghasilan bulanan Rp 5.000.000, berapa rupiah nilai 20% yang harus Anda tabung?",
-            unit: "Rupiah",
-            acceptRange: [1000000, 1000000],
-            explain: "20% dari Rp 5.000.000 adalah Rp 1.000.000.",
-          }}
-          onChange={() => {}}
-          checked={null}
-        />
-      );
-    case "allocation":
-      return (
-        <AllocationRenderer
-          screen={{
-            type: "allocation",
-            prompt: "Atur alokasi pembagian pengeluaran bulanan Anda:",
-            categories: ["Kebutuhan", "Tabungan"],
-            rule: { category: "Tabungan", min: 20 },
-            explain: "Alokasikan sebagian pendapatan untuk tabungan.",
-          }}
-          onChange={() => {}}
-          checked={null}
-        />
-      );
-  }
+  return <>{renderScreen(previewScreens[type], () => {}, null)}</>;
 }
 
 export function AddScreenDialog({ onAdd }: AddScreenDialogProps) {

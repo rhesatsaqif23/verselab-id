@@ -1,86 +1,52 @@
 import { useEffect, useState } from "react";
 import { Badge } from "#/components/ui/badge.tsx";
 import type { AdminScreen } from "#/libs/admin-content-fns.ts";
-import ChoiceRenderer from "#/domains/personal-finance/screens/ChoiceRenderer.tsx";
-import ConceptRenderer from "#/domains/personal-finance/screens/ConceptRenderer.tsx";
-import NumericRenderer from "#/domains/personal-finance/screens/NumericRenderer.tsx";
-import AllocationRenderer from "#/domains/personal-finance/screens/AllocationRenderer.tsx";
+import { renderScreen } from "#/domains/registry.tsx";
+import type { Screen } from "#/engine/types.ts";
 
 interface ScreenPreviewCardProps {
   screen: AdminScreen;
 }
 
-function renderScreenContent(screen: AdminScreen) {
-  switch (screen.type) {
+function adminScreenToScreen(admin: AdminScreen): Screen {
+  const base = { prompt: admin.prompt || "(Belum ada teks pertanyaan)", explain: admin.explain || "" };
+
+  switch (admin.type) {
     case "concept":
-      return (
-        <ConceptRenderer
-          screen={{
-            type: "concept",
-            prompt: screen.prompt || "(Belum ada teks pertanyaan)",
-            explain: screen.explain || "",
-          }}
-        />
-      );
-    case "choice": {
-      const options =
-        screen.options && screen.options.length > 0
-          ? screen.options
-          : [
-              { id: "opt1", label: "Pilihan 1" },
-              { id: "opt2", label: "Pilihan 2" },
-            ];
-      return (
-        <ChoiceRenderer
-          screen={{
-            type: "choice",
-            prompt: screen.prompt || "(Belum ada teks pertanyaan)",
-            options,
-            correctId: screen.correctId || options[0].id,
-            explain: screen.explain || "",
-          }}
-          onSelect={() => {}}
-          checked={null}
-        />
-      );
-    }
+      return { type: "concept", ...base };
+    case "choice":
+      return {
+        type: "choice",
+        ...base,
+        options:
+          admin.options && admin.options.length > 0
+            ? admin.options
+            : [
+                { id: "opt1", label: "Pilihan 1" },
+                { id: "opt2", label: "Pilihan 2" },
+              ],
+        correctId: admin.correctId || "opt1",
+      };
     case "numeric":
-      return (
-        <NumericRenderer
-          screen={{
-            type: "numeric",
-            prompt: screen.prompt || "(Belum ada teks pertanyaan)",
-            unit: screen.numericUnit || "Rp",
-            acceptRange: [
-              screen.acceptRangeMin ?? 0,
-              screen.acceptRangeMax ?? 100,
-            ],
-            explain: screen.explain || "",
-          }}
-          onChange={() => {}}
-          checked={null}
-        />
-      );
+      return {
+        type: "numeric",
+        ...base,
+        unit: admin.numericUnit || "Rp",
+        acceptRange: [admin.acceptRangeMin ?? 0, admin.acceptRangeMax ?? 100],
+      };
     case "allocation": {
       const categories =
-        screen.categories && screen.categories.length > 0
-          ? screen.categories
+        admin.categories && admin.categories.length > 0
+          ? admin.categories
           : ["Kategori 1", "Kategori 2"];
-      return (
-        <AllocationRenderer
-          screen={{
-            type: "allocation",
-            prompt: screen.prompt || "(Belum ada teks pertanyaan)",
-            categories,
-            rule: screen.rule
-              ? { category: screen.rule.categoryId, min: screen.rule.min }
-              : { category: categories[0], min: 20 },
-            explain: screen.explain || "",
-          }}
-          onChange={() => {}}
-          checked={null}
-        />
-      );
+      return {
+        type: "allocation",
+        ...base,
+        categories,
+        rule: admin.rule
+          ? { category: admin.rule.categoryId, min: admin.rule.min }
+          : { category: categories[0], min: 20 },
+      };
     }
   }
 }
@@ -114,7 +80,9 @@ export function ScreenPreviewCard({ screen }: ScreenPreviewCardProps) {
         </Badge>
       </div>
 
-      <div key={reloadKey}>{renderScreenContent(debouncedScreen)}</div>
+      <div key={reloadKey}>
+        {renderScreen(adminScreenToScreen(debouncedScreen), () => {}, null)}
+      </div>
     </div>
   );
 }
