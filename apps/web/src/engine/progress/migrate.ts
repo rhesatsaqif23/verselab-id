@@ -6,6 +6,7 @@ const STORAGE_KEY = "verselab-progress-v1";
 
 /** Import localStorage progress into server on first login. */
 export async function migrateLegacyProgress(): Promise<boolean> {
+  if (typeof window === "undefined") return false;
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return false;
 

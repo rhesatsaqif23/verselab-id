@@ -1,62 +1,25 @@
-// Tests for the profile page stats and mastery progress.
+// Tests for the profile page stats and unit progress cards.
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { act, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import ProfilePage from "#/features/profile/index.tsx";
 import { resetProgress } from "../home/test-utils.tsx";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
-import { todayString } from "#/libs/date.ts";
 
-const { navigateMock, resolveSessionMock } = vi.hoisted(() => ({
-  navigateMock: vi.fn(),
+const { resolveSessionMock } = vi.hoisted(() => ({
   resolveSessionMock: vi.fn(),
 }));
 
-// ProfileChip resolves its session asynchronously; stub it as anonymous so the
-// dashboard reads stay focused on the page stats.
 vi.mock("#/libs/session.ts", () => ({
   resolveSession: resolveSessionMock,
 }));
 
 beforeEach(() => {
-  resolveSessionMock.mockReset();
-  resolveSessionMock.mockResolvedValue({ status: "anonymous" });
-});
-
-vi.mock("@tanstack/react-router", () => ({
-  useNavigate: () => navigateMock,
-  Link: ({
-    to,
-    params,
-    children,
-  }: {
-    to: string;
-    params?: Record<string, string>;
-    children: React.ReactNode;
-  }) => (
-    <a
-      href={params ? `${to}/${params.lessonId}` : to}
-      onClick={(e) => {
-        e.preventDefault();
-        if (params) navigateMock({ to, params });
-        else navigateMock({ to });
-      }}
-    >
-      {children}
-    </a>
-  ),
-}));
-
-beforeEach(() => {
   resetProgress();
-  navigateMock.mockReset();
   resolveSessionMock.mockReset();
   resolveSessionMock.mockResolvedValue({ status: "anonymous" });
 });
 
-// Render inside act and let React 19's scheduler flush the ProfileChip session
-// resolution while act is active, mirroring a real async session fetch.
 async function renderPage() {
   await act(async () => {
     render(<ProfilePage />);
@@ -65,48 +28,52 @@ async function renderPage() {
 }
 
 describe("ProfilePage", () => {
-  it("shows total XP", async () => {
+  it("shows section titles outside cards", async () => {
+    await renderPage();
+    expect(screen.getByText("Statistik")).toBeInTheDocument();
+    expect(screen.getAllByText("Goal harian").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText("Progress materi")).toBeInTheDocument();
+  });
+
+  it("shows streak in stats", async () => {
+    useProgressStore.setState({ streak: 7 });
+    await renderPage();
+    expect(screen.getByText("7")).toBeInTheDocument();
+    expect(screen.getByText("Runtunan hari")).toBeInTheDocument();
+  });
+
+  it("shows total XP in stats", async () => {
     useProgressStore.setState({ xp: 250 });
     await renderPage();
     expect(screen.getByText("250")).toBeInTheDocument();
-    expect(screen.getByText("XP")).toBeInTheDocument();
+    expect(screen.getByText("Total XP")).toBeInTheDocument();
   });
 
-  it("shows streak and freeze count", async () => {
-    useProgressStore.setState({ streak: 7, streakFreeze: 1 });
+  it("shows 4 stat cards", async () => {
     await renderPage();
-    expect(screen.getByText("7")).toBeInTheDocument();
-    expect(screen.getByText(/Streak \(1\)/)).toBeInTheDocument();
+    expect(screen.getByText("Runtunan hari")).toBeInTheDocument();
+    expect(screen.getByText("Total XP")).toBeInTheDocument();
+    expect(screen.getByText("Lesson selesai")).toBeInTheDocument();
+    expect(screen.getAllByText("Goal harian").length).toBeGreaterThanOrEqual(1);
   });
 
-  it("shows zero for a fresh user", async () => {
-    await renderPage();
-    expect(screen.getAllByText("0")).toHaveLength(2);
-    expect(screen.getByText("XP")).toBeInTheDocument();
-  });
-
-  it("renders per-unit mastery bars with decayed values", async () => {
-    useProgressStore.setState({
-      mastery: { keuangan: 60 },
-      masteryUpdatedAt: { keuangan: todayString() },
-    });
+  it("renders per-unit progress cards with descriptions", async () => {
     await renderPage();
     expect(screen.getByText("Keuangan")).toBeInTheDocument();
-    expect(screen.getByText("60%")).toBeInTheDocument();
+    expect(screen.getByText("Menabung, anggaran, cicilan, dan nilai waktu uang.")).toBeInTheDocument();
+    expect(screen.getByText("Akuntansi")).toBeInTheDocument();
+    expect(screen.getByText("Manajemen Produk")).toBeInTheDocument();
+    expect(screen.getByText("Kewirausahaan")).toBeInTheDocument();
   });
 
-  it("shows 0% for untouched units", async () => {
+  it("shows lesson counts for each unit", async () => {
     await renderPage();
-    expect(screen.getAllByText("0%").length).toBeGreaterThanOrEqual(4);
+    expect(screen.getAllByText("0/4")).toHaveLength(4);
   });
 
-  it("navigates to the unit lesson when clicked", async () => {
+  it("shows completed lesson count when lessons are done", async () => {
+    useProgressStore.setState({ completedLessons: ["nabung-awal", "nilai-waktu-uang"] });
     await renderPage();
-    const user = userEvent.setup();
-    await user.click(screen.getByText("Keuangan"));
-    expect(navigateMock).toHaveBeenCalledWith({
-      to: "/lesson/$lessonId",
-      params: { lessonId: "nabung-awal" },
-    });
+    expect(screen.getByText("2/4")).toBeInTheDocument();
   });
 });

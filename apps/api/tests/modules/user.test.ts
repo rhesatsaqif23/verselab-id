@@ -19,23 +19,26 @@ mock.module("../../src/middleware/auth.ts", () => ({
 const profile: Profile = {
   userId: fakeUser.id,
   displayName: "Tester",
+  avatarUrl: null,
   startUnitId: "keuangan",
   dailyGoal: "regular",
   onboardedAt: "2026-09-12T00:00:00.000Z",
 };
 
-async function controller() {
-  const { createUserController } = await import("../../src/modules/user/index.ts");
-  return createUserController;
-}
+const stubService = {
+  getMe: async (user: User) => ({ user, profile }),
+  updateProfile: async () => profile,
+  uploadAvatar: async () => ({ avatarUrl: "/uploads/avatars/u-1.jpg" }),
+};
 
 describe("user module", () => {
   it("GET /me returns { user, profile } and passes the user to the service", async () => {
-    const create = await controller();
+    const { createUserController } = await import("../../src/modules/user/index.ts");
     let calledWith: User | undefined;
 
     const app = new Elysia().use(
-      create({
+      createUserController({
+        ...stubService,
         getMe: async (user) => {
           calledWith = user;
           return { user, profile };
@@ -53,8 +56,10 @@ describe("user module", () => {
   });
 
   it("returns profile null when the user is not onboarded", async () => {
-    const create = await controller();
-    const app = new Elysia().use(create({ getMe: async (user) => ({ user, profile: null }) }));
+    const { createUserController } = await import("../../src/modules/user/index.ts");
+    const app = new Elysia().use(
+      createUserController({ ...stubService, getMe: async (user) => ({ user, profile: null }) }),
+    );
 
     const res = await app.handle(
       new Request("http://localhost/user/me", { headers: { cookie: "session_token=abc" } }),
@@ -66,8 +71,10 @@ describe("user module", () => {
   });
 
   it("rejects unauthenticated requests", async () => {
-    const create = await controller();
-    const app = new Elysia().use(create({ getMe: async (user) => ({ user, profile: null }) }));
+    const { createUserController } = await import("../../src/modules/user/index.ts");
+    const app = new Elysia().use(
+      createUserController({ ...stubService, getMe: async (user) => ({ user, profile: null }) }),
+    );
 
     const res = await app.handle(new Request("http://localhost/user/me"));
 

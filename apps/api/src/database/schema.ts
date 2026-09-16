@@ -27,6 +27,7 @@ export const userProfiles = pgTable("user_profiles", {
     .primaryKey()
     .references(() => user.id),
   displayName: text("display_name"),
+  avatarUrl: text("avatar_url"),
   startUnitId: text("start_unit_id"),
   dailyGoal: dailyGoalEnum("daily_goal").default("regular"),
   purpose: purposeEnum("purpose"),

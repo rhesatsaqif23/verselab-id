@@ -22,7 +22,14 @@ export const onboardingSchema = z.object({
 
 export const profileSchema = onboardingSchema.extend({
   userId: z.string(),
+  avatarUrl: z.string().nullable().optional(),
   onboardedAt: z.string().nullable(),
+});
+
+export const updateProfileSchema = z.object({
+  displayName: z.string().trim().min(1).max(50).optional(),
+  dailyGoal: dailyGoalSchema.optional(),
+  avatarUrl: z.string().url().nullable().optional(),
 });
 
 export type Purpose = z.infer<typeof purposeSchema>;
@@ -36,3 +43,4 @@ export const dailyGoalToMinutes: Record<DailyGoal, number> = {
 
 export type OnboardingInput = z.infer<typeof onboardingSchema>;
 export type Profile = z.infer<typeof profileSchema>;
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

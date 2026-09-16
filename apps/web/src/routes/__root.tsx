@@ -2,6 +2,7 @@
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 
 import { THEME_INIT_SCRIPT } from "#/libs/theme.ts";
+import { Toaster } from "#/components/ui/sonner";
 import appCss from "../styles.css?url";
 
 export const Route = createRootRoute({
@@ -35,6 +36,7 @@ function RootDocument() {
       </head>
       <body className="font-sans antialiased wrap-anywhere selection:bg-accent/20">
         <Outlet />
+        <Toaster />
         <Scripts />
       </body>
     </html>
