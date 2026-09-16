@@ -1,9 +1,12 @@
 // Root route: document shell with theme pre-hydration and global 404.
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { THEME_INIT_SCRIPT } from "#/libs/theme.ts";
 import { Toaster } from "#/components/ui/sonner";
 import appCss from "../styles.css?url";
+
+const queryClient = new QueryClient();
 
 export const Route = createRootRoute({
   head: () => ({
@@ -35,8 +38,10 @@ function RootDocument() {
         <HeadContent />
       </head>
       <body className="font-sans antialiased wrap-anywhere selection:bg-accent/20">
-        <Outlet />
-        <Toaster />
+        <QueryClientProvider client={queryClient}>
+          <Outlet />
+          <Toaster />
+        </QueryClientProvider>
         <Scripts />
       </body>
     </html>

@@ -43,6 +43,13 @@
       "when": 1789542862805,
       "tag": "0005_colossal_rumiko_fujikawa",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789546150317,
+      "tag": "0006_tan_newton_destine",
+      "breakpoints": true
     }
   ]
 }

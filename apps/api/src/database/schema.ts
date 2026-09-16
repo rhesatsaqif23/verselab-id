@@ -2,6 +2,7 @@ import {
   pgEnum,
   pgTable,
   integer,
+  real,
   text,
   timestamp,
   date,
@@ -130,8 +131,8 @@ export const contentScreens = pgTable(
     correctId: text("correct_id"),
     // numeric fields
     numericUnit: text("numeric_unit"),
-    acceptRangeMin: integer("accept_range_min"),
-    acceptRangeMax: integer("accept_range_max"),
+    acceptRangeMin: real("accept_range_min"),
+    acceptRangeMax: real("accept_range_max"),
     // allocation fields
     categories: text("categories").array(),
     rule: jsonb("rule"),

@@ -59,8 +59,8 @@ export const createScreenSchema = z.object({
   correctId: z.string().optional(),
   // numeric
   numericUnit: z.string().trim().max(50).optional(),
-  acceptRangeMin: z.number().int().optional(),
-  acceptRangeMax: z.number().int().optional(),
+  acceptRangeMin: z.number().optional(),
+  acceptRangeMax: z.number().optional(),
   // allocation
   categories: z.array(z.string()).optional(),
   rule: allocationRuleSchema.optional(),
@@ -76,8 +76,8 @@ export const updateScreenSchema = z.object({
   correctId: z.string().optional().nullable(),
   // numeric
   numericUnit: z.string().trim().max(50).optional().nullable(),
-  acceptRangeMin: z.number().int().optional().nullable(),
-  acceptRangeMax: z.number().int().optional().nullable(),
+  acceptRangeMin: z.number().optional().nullable(),
+  acceptRangeMax: z.number().optional().nullable(),
   // allocation
   categories: z.array(z.string()).optional().nullable(),
   rule: allocationRuleSchema.optional().nullable(),
