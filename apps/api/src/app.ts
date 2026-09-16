@@ -8,6 +8,7 @@ import { errorPlugin } from "./plugins/error.ts";
 import { createHealthController } from "./modules/health/index.ts";
 import { createUserController } from "./modules/user/index.ts";
 import { createOnboardingController } from "./modules/onboarding/index.ts";
+import { createProgressController } from "./modules/progress/index.ts";
 import { buildCorsOptions } from "./config/http.ts";
 import { env } from "./config/env.ts";
 
@@ -33,6 +34,7 @@ export function createApp() {
               { name: "health", description: "Liveness checks" },
               { name: "user", description: "Current user and learning profile" },
               { name: "onboarding", description: "Learning profile setup" },
+              { name: "progress", description: "Game progress sync" },
             ],
           },
         }),
@@ -46,7 +48,8 @@ export function createApp() {
         v1
           .use(createHealthController())
           .use(createUserController())
-          .use(createOnboardingController()),
+          .use(createOnboardingController())
+          .use(createProgressController()),
       )
   );
 }
