@@ -1,6 +1,5 @@
 import { Link, useLocation } from "@tanstack/react-router";
-import { BookOpen, PanelLeftClose, PanelLeftOpen, Users } from "lucide-react";
-import { useState } from "react";
+import { BookOpen, Users } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -12,8 +11,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from "#/components/ui/sidebar.tsx";
-import { Button } from "#/components/ui/button.tsx";
 import {
   Tooltip,
   TooltipContent,
@@ -28,42 +27,28 @@ const navItems = [
 
 export function AdminSidebar() {
   const location = useLocation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { state } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
   return (
     <TooltipProvider delayDuration={0}>
       <Sidebar collapsible="icon" className="bg-white">
         <SidebarHeader className="border-b border-border px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link to="/admin" className="flex items-center gap-2.5 no-underline">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary font-sans text-base font-bold text-white">
-                V
-              </span>
-              <span
-                className={cn(
-                  "text-lg font-bold tracking-tight text-foreground transition-all duration-300 whitespace-nowrap",
-                  isCollapsed
-                    ? "pointer-events-none w-0 -translate-x-2 opacity-0"
-                    : "w-auto translate-x-0 opacity-100",
-                )}
-              >
-                Verselab
-              </span>
-            </Link>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              className="size-7 shrink-0 cursor-pointer text-muted-foreground hover:text-foreground"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-              aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
-            >
-              {isCollapsed ? (
-                <PanelLeftOpen className="size-4" />
-              ) : (
-                <PanelLeftClose className="size-4" />
+          <Link to="/admin" className="flex items-center gap-2.5 no-underline">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary font-sans text-base font-bold text-white">
+              V
+            </span>
+            <span
+              className={cn(
+                "text-lg font-bold tracking-tight text-foreground transition-all duration-300 whitespace-nowrap",
+                isCollapsed
+                  ? "pointer-events-none w-0 -translate-x-2 opacity-0"
+                  : "w-auto translate-x-0 opacity-100",
               )}
-            </Button>
-          </div>
+            >
+              Verselab
+            </span>
+          </Link>
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
