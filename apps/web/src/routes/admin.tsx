@@ -1,12 +1,8 @@
 import { createFileRoute, Outlet } from "@tanstack/react-router";
-import { useContentStore } from "#/content/contentStore.ts";
 import Header from "#/features/layout/components/Header.tsx";
 import Footer from "#/features/layout/components/Footer.tsx";
 
 export const Route = createFileRoute("/admin")({
-  beforeLoad: () => {
-    useContentStore.getState().seedIfEmpty();
-  },
   component: AdminLayout,
 });
 

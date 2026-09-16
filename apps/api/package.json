@@ -11,7 +11,8 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "seed:admin": "bun src/scripts/seed-admin.ts"
+    "seed:admin": "bun src/scripts/seed-admin.ts",
+    "seed:content": "bun src/scripts/seed-content.ts"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.7.3",
