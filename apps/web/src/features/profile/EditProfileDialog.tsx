@@ -1,7 +1,8 @@
-// EditProfileDialog: edit displayName and avatar.
+// EditProfileDialog: edit displayName and avatar with API integration.
 "use client";
 import { Camera, Loader2 } from "lucide-react";
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { Button } from "#/components/ui/button";
 import {
   Dialog,
@@ -13,8 +14,8 @@ import {
 import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "#/components/ui/avatar";
-import { resolveSession, type ResolvedSession } from "#/libs/session.ts";
-import { relayRequest } from "#/libs/relay.ts";
+import { type ResolvedSession } from "#/libs/session.ts";
+import { updateProfile, uploadAvatar } from "#/libs/profile-fns.ts";
 
 type Props = {
   open: boolean;
@@ -22,6 +23,15 @@ type Props = {
   session: ResolvedSession;
   onUpdated: (session: ResolvedSession) => void;
 };
+
+function readFileAsBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
 
 export default function EditProfileDialog({ open, onOpenChange, session, onUpdated }: Props) {
   const profile = session.status === "authenticated" ? session.profile : null;
@@ -46,27 +56,16 @@ export default function EditProfileDialog({ open, onOpenChange, session, onUpdat
       let avatarUrl = profile?.avatarUrl ?? null;
 
       if (avatarFile) {
-        const form = new FormData();
-        form.append("file", avatarFile);
-        const res = await relayRequest("/v1/user/me/avatar", {
-          method: "POST",
-          body: form,
-        });
-        if (res.ok) {
-          const body = (await res.json()) as { data: { avatarUrl: string } };
-          avatarUrl = body.data.avatarUrl;
-        }
+        const base64 = await readFileAsBase64(avatarFile);
+        avatarUrl = await uploadAvatar({ data: { base64, filename: avatarFile.name } });
       }
 
-      await relayRequest("/v1/user/me", {
-        method: "PATCH",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ displayName: name, avatarUrl }),
-      });
-
-      const updated = await resolveSession();
+      const updated = await updateProfile({ data: { displayName: name, avatarUrl } });
       onUpdated(updated);
       onOpenChange(false);
+      toast.success("Profil tersimpan");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Gagal menyimpan profil");
     } finally {
       setSaving(false);
     }

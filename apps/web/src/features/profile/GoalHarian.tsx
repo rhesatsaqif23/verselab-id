@@ -7,7 +7,7 @@ import { Card, CardContent } from "#/components/ui/card";
 import { Button } from "#/components/ui/button";
 import { type DailyGoal } from "@verselab/shared/schemas/profile";
 import { resolveSession, type ResolvedSession } from "#/libs/session.ts";
-import { relayRequest } from "#/libs/relay.ts";
+import { updateProfile } from "#/libs/profile-fns.ts";
 
 const DAILY_GOALS: { value: DailyGoal; label: string; desc: string }[] = [
   { value: "casual", label: "5 menit", desc: "Santai" },
@@ -50,21 +50,12 @@ export default function GoalHarian({ onUpdated }: Props) {
     if (!hasChanges || saving) return;
     setSaving(true);
     try {
-      const res = await relayRequest("/v1/user/me", {
-        method: "PATCH",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ dailyGoal: selected }),
-      });
-      if (!res.ok) {
-        toast.error("Gagal menyimpan goal harian");
-        return;
-      }
-      const updated = await resolveSession();
+      const updated = await updateProfile({ data: { dailyGoal: selected } });
       setSession(updated);
       onUpdated(updated);
       toast.success("Goal harian tersimpan");
-    } catch {
-      toast.error("Gagal menyimpan goal harian");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Gagal menyimpan goal harian");
     } finally {
       setSaving(false);
     }
