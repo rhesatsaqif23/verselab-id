@@ -59,7 +59,7 @@ export const requireAuth = createServerFn({ method: "GET" }).handler(async () =>
  */
 export function redirectIfAuthenticated(session: ResolvedSession) {
   if (session.status === "authenticated") {
-    throw redirect({ to: session.onboarded ? "/" : "/onboarding" });
+    throw redirect({ to: session.onboarded ? "/home" : "/onboarding" });
   }
 }
 

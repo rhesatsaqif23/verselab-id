@@ -11,7 +11,7 @@ export const Route = createFileRoute("/onboarding")({
       throw redirect({ to: "/login" });
     }
     if (session.onboarded) {
-      throw redirect({ to: "/" });
+      throw redirect({ to: "/home" });
     }
     return { session };
   },

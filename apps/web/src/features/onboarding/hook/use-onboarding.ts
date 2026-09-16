@@ -31,7 +31,7 @@ export function useOnboarding() {
       const asObj = typeof err === "object" && err !== null ? err : null;
       const code = asObj && "code" in asObj ? String((asObj as { code: unknown }).code) : undefined;
       if (code === PROFILE_ALREADY_EXISTS) {
-        await navigate({ to: "/" });
+        await navigate({ to: "/home" });
         return;
       }
       if (code && asObj && "message" in asObj) {

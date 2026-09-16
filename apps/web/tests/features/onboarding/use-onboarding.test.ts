@@ -81,7 +81,7 @@ describe("useOnboarding", () => {
       await result.current.submit(values);
     });
 
-    expect(navigateMock).toHaveBeenCalledWith({ to: "/" });
+    expect(navigateMock).toHaveBeenCalledWith({ to: "/home" });
     expect(result.current.error).toBeNull();
   });
 
