@@ -50,8 +50,7 @@ function NavItem({
 
 export default function Header() {
   const location = useLocation();
-  const isActive = (path: string) =>
-    path === "/admin" ? location.pathname.startsWith("/admin") : location.pathname === path;
+  const isActive = (path: string) => location.pathname === path;
   const streak = useProgressStore((s) => s.streak);
   const xp = useProgressStore((s) => s.xp);
 

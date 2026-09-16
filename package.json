@@ -21,6 +21,7 @@
     "oxlint": "^1.80.0"
   },
   "dependencies": {
+    "@elysiajs/static": "^1.4.10",
     "@tanstack/react-query": "^5.103.0"
   }
 }

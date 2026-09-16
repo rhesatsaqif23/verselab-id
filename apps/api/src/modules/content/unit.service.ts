@@ -82,7 +82,8 @@ export const contentUnitService: ContentUnitService = {
   },
 
   async uploadImage(id, file) {
-    const ext = file.type === "image/png" ? "png" : "jpg";
+    const ext =
+      file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
     const buffer = Buffer.from(await file.arrayBuffer());
     const path = `${process.cwd()}/uploads/content/${id}.${ext}`;
 
