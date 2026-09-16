@@ -37,10 +37,15 @@ export default function UnitMapBottomBar({
             <span className="text-sm font-black text-primary">{progressPercent}%</span>
           </div>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-0.5">
             <span className="text-sm sm:text-base font-black text-foreground truncate max-w-50 sm:max-w-80">
               {currentLesson.title}
             </span>
+            {currentLesson.prerequisite && (
+              <span className="text-xs text-muted-foreground truncate max-w-50 sm:max-w-80">
+                💡 {currentLesson.prerequisite}
+              </span>
+            )}
             <div className="mt-0.5 flex items-center gap-2 text-sm font-semibold text-primary">
               <span className="flex items-center gap-1">
                 <Sparkles className="size-3" />

@@ -17,9 +17,9 @@ export default function OnboardingStep3Goal({
             key={option.value}
             selected={value === option.value}
             onSelect={() => onSelect(option.value)}
+            icon={option.icon}
             label={option.label}
             subtitle={option.description}
-            className="flex-col items-start"
           />
         ))}
       </div>

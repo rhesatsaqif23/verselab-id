@@ -5,6 +5,7 @@ export const mvpValidasiLesson: Lesson = {
   id: "mvp-validasi",
   title: "MVP: Menguji Asumsi dengan Usaha Terkecil",
   icon: "Rocket",
+  prerequisite: "Disarankan selesaikan Metrik yang Benar: Aktivasi dan Retensi terlebih dahulu.",
   screens: [
     {
       type: "choice",

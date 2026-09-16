@@ -5,6 +5,7 @@ export const arusKasLesson: Lesson = {
   id: "arus-kas",
   title: "Arus Kas: Uang yang Benar-Benar Masuk dan Keluar",
   icon: "Banknote",
+  prerequisite: "Disarankan selesaikan Laporan Laba Rugi: Untung atau Rugi terlebih dahulu.",
   screens: [
     {
       type: "choice",

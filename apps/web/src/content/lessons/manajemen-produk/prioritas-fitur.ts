@@ -5,6 +5,7 @@ export const prioritasFiturLesson: Lesson = {
   id: "prioritas-fitur",
   title: "Memilih Fitur yang Paling Penting Dulu",
   icon: "ListFilter",
+  prerequisite: "Disarankan selesaikan Mulai dari Masalah, Bukan dari Fitur terlebih dahulu.",
   screens: [
     {
       type: "choice",

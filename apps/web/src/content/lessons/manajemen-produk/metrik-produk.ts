@@ -5,6 +5,7 @@ export const metrikProdukLesson: Lesson = {
   id: "metrik-produk",
   title: "Metrik yang Benar: Aktivasi dan Retensi",
   icon: "BarChart3",
+  prerequisite: "Disarankan selesaikan Memilih Fitur yang Paling Penting Dulu terlebih dahulu.",
   screens: [
     {
       type: "choice",

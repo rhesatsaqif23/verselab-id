@@ -97,13 +97,6 @@ export default function UnitSidebar({
               </p>
             )}
 
-            {unit.prerequisite && (
-              <p className="mt-1.5 text-xs font-medium leading-relaxed text-muted-foreground">
-                <span className="font-semibold text-primary">Rekomendasi: </span>
-                {unit.prerequisite}
-              </p>
-            )}
-
             {/* Progress bar */}
             <div className="mt-3.5 flex flex-col gap-1.5">
               <div className="flex justify-between text-sm font-semibold text-muted-foreground">
@@ -166,6 +159,11 @@ export default function UnitSidebar({
                       <span className="text-xs text-muted-foreground">
                         {lesson.screens.length} soal
                       </span>
+                      {lesson.prerequisite && (
+                        <span className="mt-1 text-xs leading-snug text-muted-foreground/70">
+                          💡 {lesson.prerequisite}
+                        </span>
+                      )}
                     </div>
 
                     {/* Completion badge */}

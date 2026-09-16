@@ -5,6 +5,7 @@ export const anggaranBulananLesson: Lesson = {
   id: "anggaran-bulanan",
   title: "Membuat Anggaran Sederhana",
   icon: "PieChart",
+  prerequisite: "Disarankan selesaikan Uang Sekarang vs Masa Depan terlebih dahulu.",
   screens: [
     {
       type: "choice",

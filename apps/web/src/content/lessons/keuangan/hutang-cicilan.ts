@@ -5,6 +5,7 @@ export const hutangCicilanLesson: Lesson = {
   id: "hutang-cicilan",
   title: "Memahami Bunga Pinjaman",
   icon: "CreditCard",
+  prerequisite: "Disarankan selesaikan Membuat Anggaran Sederhana terlebih dahulu.",
   screens: [
     {
       type: "choice",

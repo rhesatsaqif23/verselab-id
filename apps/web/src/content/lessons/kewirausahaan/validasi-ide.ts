@@ -5,6 +5,7 @@ export const validasiIdeLesson: Lesson = {
   id: "validasi-ide",
   title: "Validasi Ide sebelum Mengeluarkan Uang",
   icon: "Lightbulb",
+  prerequisite: "Disarankan selesaikan Menentukan Harga Jual terlebih dahulu.",
   screens: [
     {
       type: "choice",

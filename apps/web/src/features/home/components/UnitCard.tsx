@@ -71,13 +71,6 @@ export default function UnitCard({ unit }: UnitCardProps) {
             {unit.title}
           </h2>
 
-          {unit.prerequisite && (
-            <p className="relative z-10 -mt-2 text-xs font-medium text-muted-foreground">
-              <span className="font-semibold text-primary/90">Prasyarat: </span>
-              {unit.prerequisite}
-            </p>
-          )}
-
           {/* Illustration */}
           <img
             src={unit.imageUrl || "/course-illustration.png"}

@@ -33,6 +33,7 @@ export type Lesson = {
   id: string;
   title: string;
   icon?: string;
+  prerequisite?: string;
   screens: readonly Screen[];
 };
 
@@ -40,7 +41,6 @@ export type Unit = {
   id: string;
   title: string;
   description?: string;
-  prerequisite?: string;
   lessons: readonly Lesson[];
   imageUrl?: string;
 };

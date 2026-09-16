@@ -5,6 +5,7 @@ export const transaksiLesson: Lesson = {
   id: "transaksi",
   title: "Mencatat Transaksi: Debit dan Kredit",
   icon: "ArrowLeftRight",
+  prerequisite: "Disarankan selesaikan Persamaan Dasar: Aset, Utang, dan Modal terlebih dahulu.",
   screens: [
     {
       type: "choice",

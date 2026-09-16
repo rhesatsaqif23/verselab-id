@@ -82,9 +82,15 @@ export default function LessonMapCard({
 
       {/* Middle row: Lesson description snippet */}
       <div className="mt-3.5 min-h-9">
-        <p className="line-clamp-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
-          Pahami konsep dan latihan interaktif untuk menguasai topik ini.
-        </p>
+        {lesson.prerequisite ? (
+          <p className="line-clamp-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
+            💡 {lesson.prerequisite}
+          </p>
+        ) : (
+          <p className="line-clamp-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
+            Pahami konsep dan latihan interaktif untuk menguasai topik ini.
+          </p>
+        )}
       </div>
 
       {/* Bottom row: Progress bar + label */}

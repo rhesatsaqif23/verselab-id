@@ -6,10 +6,13 @@ import {
   BookOpen,
   Briefcase,
   Brain,
+  Clock,
+  Coffee,
   GraduationCap,
   MoreHorizontal,
   Rocket,
   TrendingUp,
+  Zap,
 } from "lucide-react";
 import { dailyGoalToMinutes, type DailyGoal } from "@verselab/shared/schemas/profile";
 import { units } from "#/content/units.ts";
@@ -22,10 +25,11 @@ export const DAILY_GOAL_OPTIONS: {
   label: string;
   description: string;
   minutes: number;
+  icon: LucideIcon;
 }[] = [
-  { value: "casual", label: "Santai", description: "5 menit per hari", minutes: 5 },
-  { value: "regular", label: "Rutin", description: "10 menit per hari", minutes: 10 },
-  { value: "serious", label: "Serius", description: "20 menit per hari", minutes: 20 },
+  { value: "casual", label: "Santai", description: "5 menit per hari", minutes: 5, icon: Coffee },
+  { value: "regular", label: "Rutin", description: "10 menit per hari", minutes: 10, icon: Clock },
+  { value: "serious", label: "Serius", description: "20 menit per hari", minutes: 20, icon: Zap },
 ];
 
 export const PURPOSE_OPTIONS: {

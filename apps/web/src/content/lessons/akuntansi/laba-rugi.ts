@@ -5,6 +5,7 @@ export const labaRugiLesson: Lesson = {
   id: "laba-rugi",
   title: "Laporan Laba Rugi: Untung atau Rugi",
   icon: "FileText",
+  prerequisite: "Disarankan selesaikan Mencatat Transaksi: Debit dan Kredit terlebih dahulu.",
   screens: [
     {
       type: "choice",

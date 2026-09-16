@@ -5,6 +5,8 @@ export const titikImpasLesson: Lesson = {
   id: "titik-impas",
   title: "Titik Impas (Break-Even)",
   icon: "Target",
+  prerequisite:
+    "Disarankan selesaikan Unit Ekonomi: Untung dari Setiap Produk Terjual terlebih dahulu.",
   screens: [
     {
       type: "choice",

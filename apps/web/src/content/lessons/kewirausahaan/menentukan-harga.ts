@@ -5,6 +5,7 @@ export const menentukanHargaLesson: Lesson = {
   id: "menentukan-harga",
   title: "Menentukan Harga Jual",
   icon: "Tag",
+  prerequisite: "Disarankan selesaikan Titik Impas (Break-Even) terlebih dahulu.",
   screens: [
     {
       type: "choice",

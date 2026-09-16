@@ -22,9 +22,16 @@ export default function LessonCta({ lesson, status, isVisible }: LessonCtaProps)
     >
       <Card className="border-2 border-border shadow-2xl bg-card rounded-2xl">
         <CardContent className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 text-center sm:text-left">
-          <p className="text-base font-bold text-foreground sm:text-lg truncate max-w-lg">
-            {lesson.title}
-          </p>
+          <div className="flex flex-col max-w-lg text-center sm:text-left">
+            <p className="text-base font-bold text-foreground sm:text-lg truncate">
+              {lesson.title}
+            </p>
+            {lesson.prerequisite && (
+              <p className="mt-0.5 text-xs font-medium text-muted-foreground">
+                💡 {lesson.prerequisite}
+              </p>
+            )}
+          </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
             {status === "previous" ? (

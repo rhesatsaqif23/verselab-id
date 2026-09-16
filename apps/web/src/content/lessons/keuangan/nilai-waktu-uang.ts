@@ -5,6 +5,7 @@ export const nilaiWaktuUangLesson: Lesson = {
   id: "nilai-waktu-uang",
   title: "Uang Sekarang vs Masa Depan",
   icon: "TrendingUp",
+  prerequisite: "Disarankan selesaikan Kenapa Nabung Lebih Awal terlebih dahulu.",
   screens: [
     {
       type: "choice",
