@@ -3,9 +3,10 @@ import type { Profile, UpdateProfileInput } from "@verselab/shared/schemas/profi
 import { eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
 import { userProfiles } from "../../database/schema.ts";
+import { user as authUserTable } from "../../database/auth-schema.ts";
 
 export type UserService = {
-  getMe: (user: User) => Promise<{ user: User; profile: Profile | null }>;
+  getMe: (user: User) => Promise<{ user: User; profile: Profile | null; role: string }>;
   updateProfile: (userId: string, input: UpdateProfileInput) => Promise<Profile>;
   uploadAvatar: (userId: string, file: File) => Promise<{ avatarUrl: string }>;
 };
@@ -24,13 +25,24 @@ function toProfile(row: typeof userProfiles.$inferSelect): Profile {
 
 export const userService: UserService = {
   async getMe(user) {
-    const [profileRow] = await getDb()
+    const db = getDb();
+    const [profileRow] = await db
       .select()
       .from(userProfiles)
       .where(eq(userProfiles.userId, user.id))
       .limit(1);
 
-    return { user, profile: profileRow ? toProfile(profileRow) : null };
+    const [userRow] = await db
+      .select({ role: authUserTable.role })
+      .from(authUserTable)
+      .where(eq(authUserTable.id, user.id))
+      .limit(1);
+
+    return {
+      user,
+      profile: profileRow ? toProfile(profileRow) : null,
+      role: userRow?.role ?? "user",
+    };
   },
 
   async updateProfile(userId, input) {

@@ -9,6 +9,7 @@ import { createHealthController } from "./modules/health/index.ts";
 import { createUserController } from "./modules/user/index.ts";
 import { createOnboardingController } from "./modules/onboarding/index.ts";
 import { createProgressController } from "./modules/progress/index.ts";
+import { createContentController } from "./modules/content/index.ts";
 import { buildCorsOptions } from "./config/http.ts";
 import { env } from "./config/env.ts";
 
@@ -35,6 +36,7 @@ export function createApp() {
               { name: "user", description: "Current user and learning profile" },
               { name: "onboarding", description: "Learning profile setup" },
               { name: "progress", description: "Game progress sync" },
+              { name: "content", description: "Content management (units, lessons, screens)" },
             ],
           },
         }),
@@ -49,7 +51,8 @@ export function createApp() {
           .use(createHealthController())
           .use(createUserController())
           .use(createOnboardingController())
-          .use(createProgressController()),
+          .use(createProgressController())
+          .use(createContentController()),
       )
   );
 }

@@ -1,15 +1,17 @@
 // ProfileHeader: avatar, name, join date, and edit button.
 "use client";
-import { Pencil } from "lucide-react";
+import { Loader2, LogOut, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "#/components/ui/avatar";
 import { Button } from "#/components/ui/button";
 import { resolveSession, type ResolvedSession } from "#/libs/session.ts";
+import { useSignOut } from "#/features/auth/use-sign-out.ts";
 import EditProfileDialog from "./EditProfileDialog";
 
 export default function ProfileHeader() {
   const [session, setSession] = useState<ResolvedSession | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const { signOut, pending } = useSignOut();
 
   useEffect(() => {
     let active = true;
@@ -60,6 +62,16 @@ export default function ProfileHeader() {
         >
           <Pencil className="mr-1.5 size-4" />
           Edit
+        </Button>
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={signOut}
+          disabled={pending}
+          className="shrink-0"
+        >
+          {pending ? <Loader2 className="mr-1.5 size-4 animate-spin" /> : <LogOut className="mr-1.5 size-4" />}
+          Keluar
         </Button>
       </div>
 

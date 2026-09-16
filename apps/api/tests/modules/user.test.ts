@@ -26,13 +26,13 @@ const profile: Profile = {
 };
 
 const stubService = {
-  getMe: async (user: User) => ({ user, profile }),
+  getMe: async (user: User) => ({ user, profile, role: "user" }),
   updateProfile: async () => profile,
   uploadAvatar: async () => ({ avatarUrl: "/uploads/avatars/u-1.jpg" }),
 };
 
 describe("user module", () => {
-  it("GET /me returns { user, profile } and passes the user to the service", async () => {
+  it("GET /me returns { user, profile, role } and passes the user to the service", async () => {
     const { createUserController } = await import("../../src/modules/user/index.ts");
     let calledWith: User | undefined;
 
@@ -41,7 +41,7 @@ describe("user module", () => {
         ...stubService,
         getMe: async (user) => {
           calledWith = user;
-          return { user, profile };
+          return { user, profile, role: "user" };
         },
       }),
     );
@@ -51,29 +51,36 @@ describe("user module", () => {
     );
 
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ ok: true, data: { user: fakeUser, profile } });
+    expect(await res.json()).toEqual({ ok: true, data: { user: fakeUser, profile, role: "user" } });
     expect(calledWith).toMatchObject(fakeUser);
   });
 
   it("returns profile null when the user is not onboarded", async () => {
     const { createUserController } = await import("../../src/modules/user/index.ts");
     const app = new Elysia().use(
-      createUserController({ ...stubService, getMe: async (user) => ({ user, profile: null }) }),
+      createUserController({
+        ...stubService,
+        getMe: async (user) => ({ user, profile: null, role: "user" }),
+      }),
     );
 
     const res = await app.handle(
       new Request("http://localhost/user/me", { headers: { cookie: "session_token=abc" } }),
     );
 
-    const body = (await res.json()) as { data: { profile: unknown } };
+    const body = (await res.json()) as { data: { profile: unknown; role: string } };
     expect(res.status).toBe(200);
     expect(body.data.profile).toBeNull();
+    expect(body.data.role).toBe("user");
   });
 
   it("rejects unauthenticated requests", async () => {
     const { createUserController } = await import("../../src/modules/user/index.ts");
     const app = new Elysia().use(
-      createUserController({ ...stubService, getMe: async (user) => ({ user, profile: null }) }),
+      createUserController({
+        ...stubService,
+        getMe: async (user) => ({ user, profile: null, role: "user" }),
+      }),
     );
 
     const res = await app.handle(new Request("http://localhost/user/me"));

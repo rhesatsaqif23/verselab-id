@@ -1,0 +1,99 @@
+import type { CreateScreenInput, UpdateScreenInput } from "@verselab/shared/schemas/content";
+import { asc, desc, eq } from "drizzle-orm";
+import { getDb } from "../../database/index.ts";
+import { contentScreens } from "../../database/schema.ts";
+
+export type ScreenData = typeof contentScreens.$inferSelect;
+
+export type ContentScreenService = {
+  listScreens: (lessonId: string) => Promise<ScreenData[]>;
+  getScreen: (id: string) => Promise<ScreenData | null>;
+  createScreen: (input: CreateScreenInput) => Promise<ScreenData>;
+  updateScreen: (id: string, input: UpdateScreenInput) => Promise<ScreenData>;
+  deleteScreen: (id: string) => Promise<void>;
+  reorderScreens: (ids: string[]) => Promise<void>;
+};
+
+async function getMaxSortOrder(lessonId: string): Promise<number> {
+  const db = getDb();
+  const rows = await db
+    .select({ sortOrder: contentScreens.sortOrder })
+    .from(contentScreens)
+    .where(eq(contentScreens.lessonId, lessonId))
+    .orderBy(desc(contentScreens.sortOrder))
+    .limit(1);
+  return rows[0]?.sortOrder ?? -1;
+}
+
+export const contentScreenService: ContentScreenService = {
+  async listScreens(lessonId) {
+    const db = getDb();
+    return db
+      .select()
+      .from(contentScreens)
+      .where(eq(contentScreens.lessonId, lessonId))
+      .orderBy(asc(contentScreens.sortOrder));
+  },
+
+  async getScreen(id) {
+    const db = getDb();
+    const [row] = await db
+      .select()
+      .from(contentScreens)
+      .where(eq(contentScreens.id, id))
+      .limit(1);
+    return row ?? null;
+  },
+
+  async createScreen(input) {
+    const db = getDb();
+    const sortOrder = input.sortOrder ?? (await getMaxSortOrder(input.lessonId)) + 1;
+    const [row] = await db
+      .insert(contentScreens)
+      .values({
+        id: input.id,
+        lessonId: input.lessonId,
+        type: input.type,
+        prompt: input.prompt,
+        explain: input.explain,
+        options: input.options,
+        correctId: input.correctId,
+        numericUnit: input.numericUnit,
+        acceptRangeMin: input.acceptRangeMin,
+        acceptRangeMax: input.acceptRangeMax,
+        categories: input.categories,
+        rule: input.rule,
+        sortOrder,
+      })
+      .returning();
+    return row;
+  },
+
+  async updateScreen(id, input) {
+    const db = getDb();
+    const [row] = await db
+      .update(contentScreens)
+      .set({ ...input, updatedAt: new Date() })
+      .where(eq(contentScreens.id, id))
+      .returning();
+    if (!row) throw new Error("Screen not found");
+    return row;
+  },
+
+  async deleteScreen(id) {
+    const db = getDb();
+    await db.delete(contentScreens).where(eq(contentScreens.id, id));
+  },
+
+  async reorderScreens(ids) {
+    const db = getDb();
+    await db.transaction(async (tx) => {
+      for (let i = 0; i < ids.length; i++) {
+        await tx
+          .update(contentScreens)
+          .set({ sortOrder: i, updatedAt: new Date() })
+          .where(eq(contentScreens.id, ids[i]));
+      }
+    });
+  },
+};

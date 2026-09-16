@@ -22,6 +22,7 @@ const authenticated = (onboarded: boolean): ResolvedSession =>
     user: { id: "u-1", email: "t@test.dev", name: "Tester" },
     profile: null,
     onboarded,
+    role: "user",
   }) as ResolvedSession;
 
 describe("redirectIfAuthenticated", () => {
@@ -49,7 +50,7 @@ describe("resolveSessionCore", () => {
         getSession: async () => {
           throw new Error("fetch failed");
         },
-        fetchProfile: async () => null,
+        fetchProfileAndRole: async () => ({ profile: null, role: "user" }),
       }),
     ).resolves.toEqual({ status: "anonymous" });
   });
@@ -58,7 +59,7 @@ describe("resolveSessionCore", () => {
     await expect(
       resolveSessionCore({
         getSession: async () => ({ data: { user } }),
-        fetchProfile: async () => {
+        fetchProfileAndRole: async () => {
           throw new Error("fetch failed");
         },
       }),
@@ -69,20 +70,23 @@ describe("resolveSessionCore", () => {
     await expect(
       resolveSessionCore({
         getSession: async () => ({ data: null }),
-        fetchProfile: async () => null,
+        fetchProfileAndRole: async () => ({ profile: null, role: "user" }),
       }),
     ).resolves.toEqual({ status: "anonymous" });
   });
 
-  it("returns authenticated with the profile for a session user", async () => {
+  it("returns authenticated with the profile and role for a session user", async () => {
     const session = await resolveSessionCore({
       getSession: async () => ({ data: { user } }),
-      fetchProfile: async () => ({
-        userId: "u-1",
-        displayName: "Budi",
-        startUnitId: "keuangan",
-        dailyGoal: "regular",
-        onboardedAt: "2026-09-12T00:00:00.000Z",
+      fetchProfileAndRole: async () => ({
+        profile: {
+          userId: "u-1",
+          displayName: "Budi",
+          startUnitId: "keuangan",
+          dailyGoal: "regular",
+          onboardedAt: "2026-09-12T00:00:00.000Z",
+        },
+        role: "admin",
       }),
     });
     expect(session.status).toBe("authenticated");
@@ -90,6 +94,27 @@ describe("resolveSessionCore", () => {
       expect(session.user.name).toBe("Tester");
       expect(session.onboarded).toBe(true);
       expect(session.profile?.displayName).toBe("Budi");
+      expect(session.role).toBe("admin");
+    }
+  });
+
+  it("defaults role to user when not provided", async () => {
+    const session = await resolveSessionCore({
+      getSession: async () => ({ data: { user } }),
+      fetchProfileAndRole: async () => ({
+        profile: {
+          userId: "u-1",
+          displayName: "Budi",
+          startUnitId: "keuangan",
+          dailyGoal: "regular",
+          onboardedAt: "2026-09-12T00:00:00.000Z",
+        },
+        role: "user",
+      }),
+    });
+    expect(session.status).toBe("authenticated");
+    if (session.status === "authenticated") {
+      expect(session.role).toBe("user");
     }
   });
 });

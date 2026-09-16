@@ -36,6 +36,13 @@
       "when": 1789538370721,
       "tag": "0004_romantic_captain_marvel",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789542862805,
+      "tag": "0005_colossal_rumiko_fujikawa",
+      "breakpoints": true
     }
   ]
 }

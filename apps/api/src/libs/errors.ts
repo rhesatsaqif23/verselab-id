@@ -3,6 +3,7 @@
 export const appErrorMeta = {
   PROFILE_ALREADY_EXISTS: { status: 409, message: "Profile already exists" },
   NOT_FOUND: { status: 404, message: "Not found" },
+  FORBIDDEN: { status: 403, message: "Forbidden" },
   INTERNAL: { status: 500, message: "Internal server error" },
 } as const;
 
