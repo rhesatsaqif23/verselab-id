@@ -2,6 +2,9 @@ import { Outlet, createFileRoute, redirect, useRouterState } from "@tanstack/rea
 import Header from "#/features/layout/components/Header";
 import Footer from "#/features/layout/components/Footer";
 import { resolveSession } from "#/libs/session.ts";
+import { loadProgress } from "#/engine/progress/sync.ts";
+import { useProgressStore } from "#/engine/progress/progressStore.ts";
+import { migrateLegacyProgress } from "#/engine/progress/migrate.ts";
 
 export const Route = createFileRoute("/_home")({
   beforeLoad: async () => {
@@ -12,6 +15,12 @@ export const Route = createFileRoute("/_home")({
     if (!session.onboarded) {
       throw redirect({ to: "/onboarding" });
     }
+
+    const progress = await loadProgress();
+    if (progress) {
+      useProgressStore.getState().hydrateFromServer(progress);
+    }
+    await migrateLegacyProgress();
   },
   component: HomeLayout,
 });

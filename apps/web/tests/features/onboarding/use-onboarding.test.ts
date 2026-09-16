@@ -7,9 +7,10 @@ import { useOnboarding } from "#/features/onboarding/hook/use-onboarding.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import { resetProgress } from "../home/test-utils.tsx";
 
-const { navigateMock, submitOnboardingMock } = vi.hoisted(() => ({
+const { navigateMock, submitOnboardingMock, putProgressMock } = vi.hoisted(() => ({
   navigateMock: vi.fn(),
   submitOnboardingMock: vi.fn(),
+  putProgressMock: vi.fn(),
 }));
 
 vi.mock("@tanstack/react-router", () => ({
@@ -20,6 +21,10 @@ vi.mock("#/features/onboarding/api.ts", () => ({
   submitOnboarding: submitOnboardingMock,
   PROFILE_ALREADY_EXISTS: "PROFILE_ALREADY_EXISTS",
   ONBOARDING_FAILED: "ONBOARDING_FAILED",
+}));
+
+vi.mock("#/libs/api.ts", () => ({
+  putProgress: putProgressMock,
 }));
 
 const values = {
@@ -40,6 +45,7 @@ beforeEach(() => {
   resetProgress();
   navigateMock.mockReset();
   submitOnboardingMock.mockReset();
+  putProgressMock.mockReset();
 });
 
 describe("useOnboarding", () => {

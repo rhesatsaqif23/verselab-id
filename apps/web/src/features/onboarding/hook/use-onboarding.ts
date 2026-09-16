@@ -4,6 +4,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { useProgressStore, type DailyGoalMinutes } from "#/engine/progress/progressStore.ts";
 import { dailyGoalToMinutes, type OnboardingInput } from "@verselab/shared/schemas/profile";
+import { putProgress } from "#/libs/api.ts";
 import { PROFILE_ALREADY_EXISTS, submitOnboarding } from "../api.ts";
 import type { OnboardingState } from "../types.ts";
 
@@ -20,6 +21,15 @@ export function useOnboarding() {
       const result = await submitOnboarding({ data: values });
       const minutes = dailyGoalToMinutes[result.profile.dailyGoal] as DailyGoalMinutes;
       setDailyGoal(minutes);
+      await putProgress({
+        data: {
+          xp: 0,
+          streak: 0,
+          streakFreeze: 0,
+          lastActiveDate: null,
+          completedLessons: [],
+        },
+      });
       const state: OnboardingState = {
         displayName: values.displayName,
         startUnitId: values.startUnitId,
