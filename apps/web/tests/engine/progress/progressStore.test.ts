@@ -1,5 +1,5 @@
-// Tests for the global progress store and persistence.
-import { beforeEach, describe, expect, it } from "vitest";
+// Tests for the global progress store.
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import {
   MASTERY_CORRECT,
   MASTERY_MAX,
@@ -8,6 +8,10 @@ import {
   XP_PER_SCREEN,
   useProgressStore,
 } from "#/engine/progress/progressStore.ts";
+
+vi.mock("#/engine/progress/sync.ts", () => ({
+  scheduleSync: vi.fn(),
+}));
 
 const store = () => useProgressStore.getState();
 
@@ -86,18 +90,5 @@ describe("useProgressStore", () => {
   it("setDailyGoal updates the setting", () => {
     store().setDailyGoal(20);
     expect(store().dailyGoalMinutes).toBe(20);
-  });
-
-  it("persists state to localStorage", () => {
-    store().awardXp(60);
-    store().setDailyGoal(20);
-    store().awardLessonCompletion("unit-a", "lesson-a");
-    const raw = localStorage.getItem("verselab-progress-v1");
-    expect(raw).not.toBeNull();
-    const parsed = JSON.parse(raw as string);
-    expect(parsed.state.xp).toBe(60 + XP_PER_LESSON);
-    expect(parsed.state.dailyGoalMinutes).toBe(20);
-    expect(parsed.state.streak).toBe(1);
-    expect(parsed.state.masteryUpdatedAt["unit-a"]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 });

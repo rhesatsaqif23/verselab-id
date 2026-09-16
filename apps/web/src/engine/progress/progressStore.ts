@@ -1,8 +1,10 @@
-// Global progress store: XP, streak, mastery, and daily goal in localStorage.
+// Global progress store: XP, streak, mastery, and daily goal.
+// Server-synced via sync.ts; hydrated on login.
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import type { ServerProgress } from "@verselab/shared/schemas/progress";
 import { todayString } from "#/libs/date.ts";
 import { streakOnActivity } from "./streak.ts";
+import { scheduleSync } from "./sync.ts";
 
 export type DailyGoalMinutes = 3 | 5 | 10 | 15 | 20;
 
@@ -14,6 +16,7 @@ export const MASTERY_MIN = 0;
 export const MASTERY_MAX = 100;
 
 type ProgressState = {
+  hydrated: boolean;
   xp: number;
   dailyGoalMinutes: DailyGoalMinutes;
   streak: number;
@@ -22,10 +25,11 @@ type ProgressState = {
   activeDays: string[];
   mastery: Record<string, number>;
   masteryUpdatedAt: Record<string, string>;
-  completedLessons: string[]; // lesson IDs the user has finished
+  completedLessons: string[];
 };
 
 type ProgressActions = {
+  hydrateFromServer: (data: ServerProgress) => void;
   awardXp: (amount: number) => void;
   awardScreenResult: (unitId: string, correct: boolean) => void;
   awardLessonCompletion: (unitId: string, lessonId: string) => void;
@@ -37,96 +41,129 @@ function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
 
-export const useProgressStore = create<ProgressState & ProgressActions>()(
-  persist(
-    (set) => ({
-      xp: 0,
-      dailyGoalMinutes: 10,
-      streak: 0,
-      streakFreeze: 0,
-      lastActiveDate: null,
-      activeDays: [],
-      mastery: {},
-      masteryUpdatedAt: {},
-      completedLessons: [],
+export const useProgressStore = create<ProgressState & ProgressActions>()((set) => ({
+  hydrated: false,
+  xp: 0,
+  dailyGoalMinutes: 10,
+  streak: 0,
+  streakFreeze: 0,
+  lastActiveDate: null,
+  activeDays: [],
+  mastery: {},
+  masteryUpdatedAt: {},
+  completedLessons: [],
 
-      awardXp: (amount) => set((state) => ({ xp: Math.max(0, state.xp + amount) })),
-
-      awardScreenResult: (unitId, correct) =>
-        set((state) => {
-          const started = state.mastery[unitId] ?? 0;
-          return {
-            xp: state.xp + (correct ? XP_PER_SCREEN : 0),
-            mastery: {
-              ...state.mastery,
-              [unitId]: clamp(
-                started + (correct ? MASTERY_CORRECT : -MASTERY_WRONG),
-                MASTERY_MIN,
-                MASTERY_MAX,
-              ),
-            },
-            masteryUpdatedAt: {
-              ...state.masteryUpdatedAt,
-              [unitId]: todayString(),
-            },
-          };
-        }),
-
-      awardLessonCompletion: (unitId, lessonId) =>
-        set((state) => {
-          const today = todayString();
-          const result = streakOnActivity(
-            {
-              streak: state.streak,
-              streakFreeze: state.streakFreeze,
-              lastActiveDate: state.lastActiveDate,
-            },
-            today,
-          );
-          const activeDays = state.activeDays.includes(today)
-            ? state.activeDays
-            : [...state.activeDays, today];
-          // Deduplicate lesson IDs
-          const completed = state.completedLessons.includes(lessonId)
-            ? state.completedLessons
-            : [...state.completedLessons, lessonId];
-          return {
-            xp: state.xp + XP_PER_LESSON,
-            streak: result.streak,
-            streakFreeze: result.streakFreeze,
-            lastActiveDate: result.lastActiveDate,
-            activeDays,
-            mastery: { ...state.mastery, [unitId]: state.mastery[unitId] ?? 50 },
-            masteryUpdatedAt: {
-              ...state.masteryUpdatedAt,
-              [unitId]: today,
-            },
-            completedLessons: completed,
-          };
-        }),
-
-      setDailyGoal: (minutes) => set({ dailyGoalMinutes: minutes }),
-
-      registerActivity: (date) =>
-        set((state) => {
-          const today = date ?? todayString();
-          const result = streakOnActivity(
-            {
-              streak: state.streak,
-              streakFreeze: state.streakFreeze,
-              lastActiveDate: state.lastActiveDate,
-            },
-            today,
-          );
-          return {
-            streak: result.streak,
-            streakFreeze: result.streakFreeze,
-            lastActiveDate: result.lastActiveDate,
-          };
-        }),
+  hydrateFromServer: (data) =>
+    set({
+      hydrated: true,
+      xp: data.xp,
+      streak: data.streak,
+      streakFreeze: data.streakFreeze,
+      lastActiveDate: data.lastActiveDate,
+      completedLessons: data.completedLessons,
+      activeDays: data.recentActivity,
+      mastery: Object.fromEntries(data.units.map((u) => [u.unitId, u.mastery])),
+      masteryUpdatedAt: Object.fromEntries(
+        data.units.map((u) => [u.unitId, u.masteryUpdatedAt]),
+      ),
     }),
-    {
-      name: "verselab-progress-v1",
-    },
-  ),
-);
+
+  awardXp: (amount) => set((state) => ({ xp: Math.max(0, state.xp + amount) })),
+
+  awardScreenResult: (unitId, correct) =>
+    set((state) => {
+      const started = state.mastery[unitId] ?? 0;
+      const next = {
+        xp: state.xp + (correct ? XP_PER_SCREEN : 0),
+        mastery: {
+          ...state.mastery,
+          [unitId]: clamp(
+            started + (correct ? MASTERY_CORRECT : -MASTERY_WRONG),
+            MASTERY_MIN,
+            MASTERY_MAX,
+          ),
+        },
+        masteryUpdatedAt: {
+          ...state.masteryUpdatedAt,
+          [unitId]: todayString(),
+        },
+      };
+      // Sync after set
+      scheduleSync({
+        xp: next.xp,
+        units: [
+          {
+            unitId,
+            mastery: next.mastery[unitId],
+            masteryUpdatedAt: next.masteryUpdatedAt[unitId],
+          },
+        ],
+      });
+      return next;
+    }),
+
+  awardLessonCompletion: (unitId, lessonId) =>
+    set((state) => {
+      const today = todayString();
+      const result = streakOnActivity(
+        {
+          streak: state.streak,
+          streakFreeze: state.streakFreeze,
+          lastActiveDate: state.lastActiveDate,
+        },
+        today,
+      );
+      const activeDays = state.activeDays.includes(today)
+        ? state.activeDays
+        : [...state.activeDays, today];
+      const completed = state.completedLessons.includes(lessonId)
+        ? state.completedLessons
+        : [...state.completedLessons, lessonId];
+      const next = {
+        xp: state.xp + XP_PER_LESSON,
+        streak: result.streak,
+        streakFreeze: result.streakFreeze,
+        lastActiveDate: result.lastActiveDate,
+        activeDays,
+        mastery: { ...state.mastery, [unitId]: state.mastery[unitId] ?? 50 },
+        masteryUpdatedAt: { ...state.masteryUpdatedAt, [unitId]: today },
+        completedLessons: completed,
+      };
+      scheduleSync({
+        xp: next.xp,
+        streak: next.streak,
+        streakFreeze: next.streakFreeze,
+        lastActiveDate: next.lastActiveDate,
+        completedLessons: next.completedLessons,
+        units: [
+          {
+            unitId,
+            mastery: next.mastery[unitId],
+            masteryUpdatedAt: next.masteryUpdatedAt[unitId],
+          },
+        ],
+        activityDate: today,
+      });
+      return next;
+    }),
+
+  setDailyGoal: (minutes) => set({ dailyGoalMinutes: minutes }),
+
+  registerActivity: (date) =>
+    set((state) => {
+      const today = date ?? todayString();
+      const result = streakOnActivity(
+        {
+          streak: state.streak,
+          streakFreeze: state.streakFreeze,
+          lastActiveDate: state.lastActiveDate,
+        },
+        today,
+      );
+      return {
+        streak: result.streak,
+        streakFreeze: result.streakFreeze,
+        lastActiveDate: result.lastActiveDate,
+      };
+    }),
+}));
