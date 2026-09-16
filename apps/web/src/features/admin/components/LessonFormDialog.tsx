@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "#/components/ui/button.tsx";
 import {
   Dialog,
@@ -10,21 +11,41 @@ import {
 } from "#/components/ui/dialog.tsx";
 import { Input } from "#/components/ui/input.tsx";
 import { Label } from "#/components/ui/label.tsx";
+import {
+  adminCreateLesson,
+  adminUpdateLesson,
+  type AdminLesson,
+} from "#/libs/admin-content-fns.ts";
 
 interface LessonFormDialogProps {
   trigger: React.ReactNode;
-  initialValues?: { id: string; title: string };
-  onSave: (values: { id: string; title: string }) => void;
+  unitId: string;
+  lesson?: AdminLesson;
 }
 
-export function LessonFormDialog({ trigger, initialValues, onSave }: LessonFormDialogProps) {
+export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogProps) {
+  const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [id, setId] = useState(initialValues?.id ?? "");
-  const [title, setTitle] = useState(initialValues?.title ?? "");
+  const [id, setId] = useState(lesson?.id ?? "");
+  const [title, setTitle] = useState(lesson?.title ?? "");
+  const [icon, setIcon] = useState(lesson?.icon ?? "");
+
+  const createMutation = useMutation({
+    mutationFn: (data: { id: string; unitId: string; title: string; icon?: string }) =>
+      adminCreateLesson({ data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: (data: { id: string; title?: string; icon?: string }) =>
+      adminUpdateLesson({ data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] }),
+  });
 
   function reset() {
-    setId(initialValues?.id ?? "");
-    setTitle(initialValues?.title ?? "");
+    setId(lesson?.id ?? "");
+    setTitle(lesson?.title ?? "");
+    setIcon(lesson?.icon ?? "");
   }
 
   function handleOpenChange(next: boolean) {
@@ -32,15 +53,32 @@ export function LessonFormDialog({ trigger, initialValues, onSave }: LessonFormD
     if (!next) reset();
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!id.trim() || !title.trim()) return;
-    onSave({ id: id.trim(), title: title.trim() });
+    if (!title.trim()) return;
+
+    if (lesson) {
+      await updateMutation.mutateAsync({
+        id: lesson.id,
+        title: title.trim(),
+        icon: icon.trim() || undefined,
+      });
+    } else {
+      if (!id.trim()) return;
+      await createMutation.mutateAsync({
+        id: id.trim(),
+        unitId,
+        title: title.trim(),
+        icon: icon.trim() || undefined,
+      });
+    }
+
     setOpen(false);
     reset();
   }
 
-  const isEdit = !!initialValues;
+  const isEdit = !!lesson;
+  const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -71,10 +109,19 @@ export function LessonFormDialog({ trigger, initialValues, onSave }: LessonFormD
               required
             />
           </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="lesson-icon">Icon (opsional)</Label>
+            <Input
+              id="lesson-icon"
+              value={icon}
+              onChange={(e) => setIcon(e.target.value)}
+              placeholder="💰"
+            />
+          </div>
         </form>
         <DialogFooter>
-          <Button type="submit" form="lesson-form">
-            {isEdit ? "Simpan Perubahan" : "Tambah Lesson"}
+          <Button type="submit" form="lesson-form" disabled={isPending}>
+            {isPending ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Tambah Lesson"}
           </Button>
         </DialogFooter>
       </DialogContent>

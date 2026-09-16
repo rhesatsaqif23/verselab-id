@@ -9,27 +9,24 @@ import {
   SelectTrigger,
   SelectValue,
 } from "#/components/ui/select.tsx";
-import type { contentStore } from "#/content/contentStore.ts";
-
-type ContentState = ReturnType<typeof contentStore.getState>;
-type ScreenItem = ContentState["screens"][string];
+import type { AdminScreen } from "#/libs/admin-content-fns.ts";
 
 interface AllocationFieldsProps {
-  screen: ScreenItem;
-  onChange: (patch: Partial<ScreenItem>) => void;
+  screen: AdminScreen;
+  onChange: (patch: Partial<AdminScreen>) => void;
 }
 
 export function AllocationFields({ screen, onChange }: AllocationFieldsProps) {
   const categories = screen.categories ?? [];
-  const rule = screen.rule ?? { category: categories[0] ?? "", min: 0 };
+  const rule = screen.rule ?? { type: "min", categoryId: categories[0] ?? "", min: 0 };
 
   function handleCategoryChange(index: number, val: string) {
     const newCats = [...categories];
     const oldVal = newCats[index];
     newCats[index] = val;
-    const patch: Partial<ScreenItem> = { categories: newCats };
-    if (rule.category === oldVal) {
-      patch.rule = { ...rule, category: val };
+    const patch: Partial<AdminScreen> = { categories: newCats };
+    if (rule.categoryId === oldVal) {
+      patch.rule = { ...rule, categoryId: val };
     }
     onChange(patch);
   }
@@ -39,16 +36,16 @@ export function AllocationFields({ screen, onChange }: AllocationFieldsProps) {
     const newCats = [...categories, newCat];
     onChange({
       categories: newCats,
-      rule: rule.category ? rule : { category: newCat, min: 0 },
+      rule: rule.categoryId ? rule : { type: "min", categoryId: newCat, min: 0 },
     });
   }
 
   function handleRemoveCategory(index: number) {
     const catToRemove = categories[index];
     const newCats = categories.filter((_, i) => i !== index);
-    const patch: Partial<ScreenItem> = { categories: newCats };
-    if (rule.category === catToRemove && newCats.length > 0) {
-      patch.rule = { ...rule, category: newCats[0] };
+    const patch: Partial<AdminScreen> = { categories: newCats };
+    if (rule.categoryId === catToRemove && newCats.length > 0) {
+      patch.rule = { ...rule, categoryId: newCats[0] };
     }
     onChange(patch);
   }
@@ -93,8 +90,8 @@ export function AllocationFields({ screen, onChange }: AllocationFieldsProps) {
               Kategori
             </Label>
             <Select
-              value={rule.category}
-              onValueChange={(val) => onChange({ rule: { ...rule, category: val } })}
+              value={rule.categoryId}
+              onValueChange={(val) => onChange({ rule: { ...rule, categoryId: val } })}
             >
               <SelectTrigger id="rule-category" className="w-full text-base">
                 <SelectValue placeholder="Kategori" />

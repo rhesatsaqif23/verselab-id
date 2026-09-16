@@ -9,14 +9,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "#/components/ui/select.tsx";
-import type { contentStore } from "#/content/contentStore.ts";
-
-type ContentState = ReturnType<typeof contentStore.getState>;
-type ScreenItem = ContentState["screens"][string];
+import type { AdminScreen } from "#/libs/admin-content-fns.ts";
 
 interface ChoiceFieldsProps {
-  screen: ScreenItem;
-  onChange: (patch: Partial<ScreenItem>) => void;
+  screen: AdminScreen;
+  onChange: (patch: Partial<AdminScreen>) => void;
 }
 
 export function ChoiceFields({ screen, onChange }: ChoiceFieldsProps) {
@@ -40,7 +37,7 @@ export function ChoiceFields({ screen, onChange }: ChoiceFieldsProps) {
   function handleRemoveOption(index: number) {
     const optToRemove = options[index];
     const newOpts = options.filter((_, i) => i !== index);
-    const patch: Partial<ScreenItem> = { options: newOpts };
+    const patch: Partial<AdminScreen> = { options: newOpts };
     if (screen.correctId === optToRemove.id && newOpts.length > 0) {
       patch.correctId = newOpts[0].id;
     }
@@ -83,7 +80,7 @@ export function ChoiceFields({ screen, onChange }: ChoiceFieldsProps) {
         <Label htmlFor="correct-id" className="text-base">
           Jawaban Benar
         </Label>
-        <Select value={screen.correctId} onValueChange={(val) => onChange({ correctId: val })}>
+        <Select value={screen.correctId ?? ""} onValueChange={(val) => onChange({ correctId: val })}>
           <SelectTrigger id="correct-id" className="w-full text-base">
             <SelectValue placeholder="Pilih jawaban benar" />
           </SelectTrigger>

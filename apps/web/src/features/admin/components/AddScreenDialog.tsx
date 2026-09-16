@@ -17,16 +17,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "#/components/ui/select.tsx";
-import type { contentStore } from "#/content/contentStore.ts";
+import type { AdminScreen } from "#/libs/admin-content-fns.ts";
 
 import ChoiceRenderer from "#/domains/personal-finance/screens/ChoiceRenderer.tsx";
 import ConceptRenderer from "#/domains/personal-finance/screens/ConceptRenderer.tsx";
 import NumericRenderer from "#/domains/personal-finance/screens/NumericRenderer.tsx";
 import AllocationRenderer from "#/domains/personal-finance/screens/AllocationRenderer.tsx";
 
-type ContentState = ReturnType<typeof contentStore.getState>;
-type ScreenItem = ContentState["screens"][string];
-type ScreenType = ScreenItem["type"];
+type ScreenType = AdminScreen["type"];
 
 interface AddScreenDialogProps {
   onAdd: (type: ScreenType) => void;

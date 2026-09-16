@@ -1,62 +1,86 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "@tanstack/react-router";
-import { contentStore, useContentStore } from "#/content/contentStore.ts";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  adminGetScreens,
+  adminCreateScreen,
+  adminDeleteScreen,
+  adminReorderScreens,
+  type AdminScreen,
+} from "#/libs/admin-content-fns.ts";
 import { AddScreenDialog } from "./AddScreenDialog.tsx";
 import { ScreenListPanel } from "./ScreenListPanel.tsx";
 import { ScreenEditPanel } from "./ScreenEditPanel.tsx";
-
-type ContentState = ReturnType<typeof contentStore.getState>;
-type ScreenItem = ContentState["screens"][string];
-type ScreenType = ScreenItem["type"];
 
 interface ScreenEditorProps {
   lessonId: string;
 }
 
 export function ScreenEditor({ lessonId }: ScreenEditorProps) {
-  const { unitId } = useParams({ from: "/admin/$unitId/$lessonId" });
-  const lesson = useContentStore((s) => s.lessons[lessonId]);
-  const unit = useContentStore((s) => s.units[unitId]);
-  const screenIds = useContentStore((s) => s.lessons[lessonId]?.screenIds ?? []);
-  const screens = useContentStore((s) =>
-    (s.lessons[lessonId]?.screenIds ?? []).map((id) => s.screens[id]),
-  );
+  const queryClient = useQueryClient();
 
-  const addScreen = useContentStore((s) => s.addScreen);
-  const updateScreen = useContentStore((s) => s.updateScreen);
-  const deleteScreen = useContentStore((s) => s.deleteScreen);
-  const reorderScreens = useContentStore((s) => s.reorderScreens);
+  const { data: screens, isLoading } = useQuery({
+    queryKey: ["admin-screens", lessonId],
+    queryFn: () => adminGetScreens({ data: { lessonId } }),
+  });
+
+  const createMutation = useMutation({
+    mutationFn: (data: Parameters<typeof adminCreateScreen>[0]["data"]) =>
+      adminCreateScreen({ data }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => adminDeleteScreen({ data: { id } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] }),
+  });
+
+  const reorderMutation = useMutation({
+    mutationFn: (ids: string[]) => adminReorderScreens({ data: { ids } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] }),
+  });
+
+  const allScreens: AdminScreen[] = screens ?? [];
 
   const [selectedScreenId, setSelectedScreenId] = useState<string | null>(null);
 
-  // Sync selected screen ID when screens list updates
   useEffect(() => {
-    if (screenIds.length > 0) {
-      if (!selectedScreenId || !screenIds.includes(selectedScreenId)) {
-        setSelectedScreenId(screenIds[0]);
+    if (allScreens.length > 0) {
+      if (!selectedScreenId || !allScreens.some((s) => s.id === selectedScreenId)) {
+        setSelectedScreenId(allScreens[0].id);
       }
     } else {
       setSelectedScreenId(null);
     }
-  }, [screenIds, selectedScreenId]);
+  }, [allScreens, selectedScreenId]);
 
-  const activeScreen = useContentStore((s) =>
-    selectedScreenId ? s.screens[selectedScreenId] : undefined,
-  );
+  const activeScreen = allScreens.find((s) => s.id === selectedScreenId) ?? null;
 
   function moveScreen(index: number, direction: "up" | "down") {
-    const next = [...screenIds];
+    const next = allScreens.map((s) => s.id);
     const swap = direction === "up" ? index - 1 : index + 1;
     [next[index], next[swap]] = [next[swap], next[index]];
-    reorderScreens(lessonId, next);
+    reorderMutation.mutate(next);
   }
 
-  function handleCreateScreen(type: ScreenType) {
-    let initialScreen: Omit<ScreenItem, "id">;
+  function handleDeleteScreen(id: string) {
+    deleteMutation.mutate(id);
+  }
+
+  function handleCreateScreen(type: AdminScreen["type"]) {
+    let data: Parameters<typeof adminCreateScreen>[0]["data"];
+
     if (type === "concept") {
-      initialScreen = { type: "concept", prompt: "Pertanyaan Konsep Baru", explain: "Penjelasan" };
+      data = {
+        id: `screen-${Date.now()}`,
+        lessonId,
+        type: "concept",
+        prompt: "Pertanyaan Konsep Baru",
+        explain: "Penjelasan",
+      };
     } else if (type === "choice") {
-      initialScreen = {
+      data = {
+        id: `screen-${Date.now()}`,
+        lessonId,
         type: "choice",
         prompt: "Pertanyaan Pilihan Ganda Baru",
         explain: "Penjelasan",
@@ -67,28 +91,33 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
         correctId: "opt1",
       };
     } else if (type === "numeric") {
-      initialScreen = {
+      data = {
+        id: `screen-${Date.now()}`,
+        lessonId,
         type: "numeric",
         prompt: "Pertanyaan Angka Baru",
         explain: "Penjelasan",
-        unit: "Rp",
-        acceptRange: [0, 100],
+        numericUnit: "Rp",
+        acceptRangeMin: 0,
+        acceptRangeMax: 100,
       };
     } else {
-      initialScreen = {
+      data = {
+        id: `screen-${Date.now()}`,
+        lessonId,
         type: "allocation",
         prompt: "Pertanyaan Alokasi Baru",
         explain: "Penjelasan",
         categories: ["Tabungan", "Pengeluaran"],
-        rule: { category: "Tabungan", min: 20 },
+        rule: { type: "min", categoryId: "Tabungan", min: 20 },
       };
     }
 
-    addScreen(lessonId, initialScreen);
+    createMutation.mutate(data);
   }
 
-  if (!lesson) {
-    return <p className="p-4 text-muted-foreground">Lesson tidak ditemukan.</p>;
+  if (isLoading) {
+    return <p className="p-4 text-muted-foreground">Memuat screen...</p>;
   }
 
   return (
@@ -98,37 +127,21 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
         <AddScreenDialog onAdd={handleCreateScreen} />
       </div>
 
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-1.5 text-base">
-        <Link to="/admin" className="text-primary hover:underline">
-          Unit
-        </Link>
-        <span className="text-muted-foreground">/</span>
-        <Link to="/admin/$unitId" params={{ unitId }} className="text-primary hover:underline">
-          {unit?.title ?? unitId}
-        </Link>
-        <span className="text-muted-foreground">/</span>
-        <span className="font-medium text-foreground">{lesson.title}</span>
-      </div>
-
       <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
-        {/* Left Column: Screen List */}
         <div className="space-y-2 md:col-span-5 lg:col-span-4">
           <ScreenListPanel
-            screens={screens}
+            screens={allScreens}
             selectedScreenId={selectedScreenId}
             onSelectScreen={setSelectedScreenId}
             onMoveScreen={moveScreen}
-            onDeleteScreen={deleteScreen}
+            onDeleteScreen={handleDeleteScreen}
           />
         </div>
 
-        {/* Right Column: Screen Form Editor & Preview */}
         <div className="md:col-span-7 lg:col-span-8">
           <ScreenEditPanel
             activeScreen={activeScreen}
-            onUpdateScreen={updateScreen}
-            onDeleteScreen={deleteScreen}
+            lessonId={lessonId}
           />
         </div>
       </div>

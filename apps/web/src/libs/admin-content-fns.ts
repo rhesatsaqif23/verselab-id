@@ -155,3 +155,94 @@ export const adminReorderLessons = createServerFn({ method: "POST" })
       body: JSON.stringify(data),
     });
   });
+
+// ── Screen CRUD ────────────────────────────────────────────────────────────
+
+export type AdminScreen = {
+  id: string;
+  lessonId: string;
+  type: "concept" | "choice" | "numeric" | "allocation";
+  prompt: string;
+  explain: string;
+  options: { id: string; label: string }[] | null;
+  correctId: string | null;
+  numericUnit: string | null;
+  acceptRangeMin: number | null;
+  acceptRangeMax: number | null;
+  categories: string[] | null;
+  rule: { type: string; categoryId: string; min?: number; max?: number } | null;
+  sortOrder: number;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+export const adminGetScreens = createServerFn({ method: "GET" })
+  .validator((data: { lessonId: string }) => data)
+  .handler(async ({ data }) => {
+    return apiCall<AdminScreen[]>(`/v1/content/lessons/${data.lessonId}/screens`) ?? [];
+  });
+
+export const adminCreateScreen = createServerFn({ method: "POST" })
+  .validator(
+    (data: {
+      id: string;
+      lessonId: string;
+      type: "concept" | "choice" | "numeric" | "allocation";
+      prompt: string;
+      explain: string;
+      options?: { id: string; label: string }[];
+      correctId?: string;
+      numericUnit?: string;
+      acceptRangeMin?: number;
+      acceptRangeMax?: number;
+      categories?: string[];
+      rule?: { type: string; categoryId: string; min?: number; max?: number };
+    }) => data,
+  )
+  .handler(async ({ data }) => {
+    return apiMutate<AdminScreen>("/v1/content/screens", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(data),
+    });
+  });
+
+export const adminUpdateScreen = createServerFn({ method: "POST" })
+  .validator(
+    (data: {
+      id: string;
+      prompt?: string;
+      explain?: string;
+      options?: { id: string; label: string }[];
+      correctId?: string;
+      numericUnit?: string;
+      acceptRangeMin?: number;
+      acceptRangeMax?: number;
+      categories?: string[];
+      rule?: { type: string; categoryId: string; min?: number; max?: number };
+    }) => data,
+  )
+  .handler(async ({ data }) => {
+    const { id, ...patch } = data;
+    return apiMutate<AdminScreen>(`/v1/content/screens/${id}`, {
+      method: "PATCH",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(patch),
+    });
+  });
+
+export const adminDeleteScreen = createServerFn({ method: "POST" })
+  .validator((data: { id: string }) => data)
+  .handler(async ({ data }) => {
+    return apiMutate<null>(`/v1/content/screens/${data.id}`, { method: "DELETE" });
+  });
+
+export const adminReorderScreens = createServerFn({ method: "POST" })
+  .validator((data: { ids: string[] }) => data)
+  .handler(async ({ data }) => {
+    return apiMutate<null>("/v1/content/screens/reorder", {
+      method: "PUT",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(data),
+    });
+  });

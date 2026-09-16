@@ -1,17 +1,15 @@
 import { Input } from "#/components/ui/input.tsx";
 import { Label } from "#/components/ui/label.tsx";
-import type { contentStore } from "#/content/contentStore.ts";
-
-type ContentState = ReturnType<typeof contentStore.getState>;
-type ScreenItem = ContentState["screens"][string];
+import type { AdminScreen } from "#/libs/admin-content-fns.ts";
 
 interface NumericFieldsProps {
-  screen: ScreenItem;
-  onChange: (patch: Partial<ScreenItem>) => void;
+  screen: AdminScreen;
+  onChange: (patch: Partial<AdminScreen>) => void;
 }
 
 export function NumericFields({ screen, onChange }: NumericFieldsProps) {
-  const [min, max] = screen.acceptRange ?? [0, 0];
+  const min = screen.acceptRangeMin ?? 0;
+  const max = screen.acceptRangeMax ?? 0;
 
   return (
     <div className="space-y-4 border-t pt-2">
@@ -21,8 +19,8 @@ export function NumericFields({ screen, onChange }: NumericFieldsProps) {
         </Label>
         <Input
           id="unit-label"
-          value={screen.unit ?? ""}
-          onChange={(e) => onChange({ unit: e.target.value })}
+          value={screen.numericUnit ?? ""}
+          onChange={(e) => onChange({ numericUnit: e.target.value })}
           placeholder="Rp"
           className="md:text-base"
         />
@@ -37,7 +35,7 @@ export function NumericFields({ screen, onChange }: NumericFieldsProps) {
             id="min-range"
             type="number"
             value={min}
-            onChange={(e) => onChange({ acceptRange: [Number(e.target.value), max] })}
+            onChange={(e) => onChange({ acceptRangeMin: Number(e.target.value) })}
             className="md:text-base"
           />
         </div>
@@ -49,7 +47,7 @@ export function NumericFields({ screen, onChange }: NumericFieldsProps) {
             id="max-range"
             type="number"
             value={max}
-            onChange={(e) => onChange({ acceptRange: [min, Number(e.target.value)] })}
+            onChange={(e) => onChange({ acceptRangeMax: Number(e.target.value) })}
             className="md:text-base"
           />
         </div>

@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
 import { Badge } from "#/components/ui/badge.tsx";
-import type { contentStore } from "#/content/contentStore.ts";
+import type { AdminScreen } from "#/libs/admin-content-fns.ts";
 import ChoiceRenderer from "#/domains/personal-finance/screens/ChoiceRenderer.tsx";
 import ConceptRenderer from "#/domains/personal-finance/screens/ConceptRenderer.tsx";
 import NumericRenderer from "#/domains/personal-finance/screens/NumericRenderer.tsx";
 import AllocationRenderer from "#/domains/personal-finance/screens/AllocationRenderer.tsx";
 
-type ContentState = ReturnType<typeof contentStore.getState>;
-type ScreenItem = ContentState["screens"][string];
-
 interface ScreenPreviewCardProps {
-  screen: ScreenItem;
+  screen: AdminScreen;
 }
 
-function renderScreenContent(screen: ScreenItem) {
+function renderScreenContent(screen: AdminScreen) {
   switch (screen.type) {
     case "concept":
       return (
@@ -53,8 +50,11 @@ function renderScreenContent(screen: ScreenItem) {
           screen={{
             type: "numeric",
             prompt: screen.prompt || "(Belum ada teks pertanyaan)",
-            unit: screen.unit || "Rp",
-            acceptRange: screen.acceptRange || [0, 100],
+            unit: screen.numericUnit || "Rp",
+            acceptRange: [
+              screen.acceptRangeMin ?? 0,
+              screen.acceptRangeMax ?? 100,
+            ],
             explain: screen.explain || "",
           }}
           onChange={() => {}}
@@ -72,7 +72,9 @@ function renderScreenContent(screen: ScreenItem) {
             type: "allocation",
             prompt: screen.prompt || "(Belum ada teks pertanyaan)",
             categories,
-            rule: screen.rule || { category: categories[0], min: 20 },
+            rule: screen.rule
+              ? { category: screen.rule.categoryId, min: screen.rule.min }
+              : { category: categories[0], min: 20 },
             explain: screen.explain || "",
           }}
           onChange={() => {}}
@@ -87,13 +89,11 @@ export function ScreenPreviewCard({ screen }: ScreenPreviewCardProps) {
   const [debouncedScreen, setDebouncedScreen] = useState(screen);
 
   useEffect(() => {
-    // If switching to a different screen ID, update immediately
     if (debouncedScreen.id !== screen.id) {
       setDebouncedScreen(screen);
       return;
     }
 
-    // Debounce live updates when editing inputs
     const timer = setTimeout(() => {
       setDebouncedScreen(screen);
     }, 300);
