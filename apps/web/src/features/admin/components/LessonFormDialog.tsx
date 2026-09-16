@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "#/components/ui/button.tsx";
 import {
@@ -57,24 +58,29 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
     e.preventDefault();
     if (!title.trim()) return;
 
-    if (lesson) {
-      await updateMutation.mutateAsync({
-        id: lesson.id,
-        title: title.trim(),
-        icon: icon.trim() || undefined,
-      });
-    } else {
-      if (!id.trim()) return;
-      await createMutation.mutateAsync({
-        id: id.trim(),
-        unitId,
-        title: title.trim(),
-        icon: icon.trim() || undefined,
-      });
+    try {
+      if (lesson) {
+        await updateMutation.mutateAsync({
+          id: lesson.id,
+          title: title.trim(),
+          icon: icon.trim() || undefined,
+        });
+        toast.success("Lesson berhasil diperbarui");
+      } else {
+        if (!id.trim()) return;
+        await createMutation.mutateAsync({
+          id: id.trim(),
+          unitId,
+          title: title.trim(),
+          icon: icon.trim() || undefined,
+        });
+        toast.success("Lesson berhasil ditambahkan");
+      }
+      setOpen(false);
+      reset();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Gagal menyimpan lesson");
     }
-
-    setOpen(false);
-    reset();
   }
 
   const isEdit = !!lesson;
@@ -115,7 +121,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
               id="lesson-icon"
               value={icon}
               onChange={(e) => setIcon(e.target.value)}
-              placeholder="💰"
+              placeholder="&#128176;"
             />
           </div>
         </form>

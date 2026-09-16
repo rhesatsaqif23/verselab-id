@@ -4,6 +4,16 @@ import { Loader2, LogOut, Pencil } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "#/components/ui/avatar";
 import { Button } from "#/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "#/components/ui/alert-dialog";
 import { resolveSession, type ResolvedSession } from "#/libs/session.ts";
 import { useSignOut } from "#/features/auth/use-sign-out.ts";
 import EditProfileDialog from "./EditProfileDialog";
@@ -11,6 +21,7 @@ import EditProfileDialog from "./EditProfileDialog";
 export default function ProfileHeader() {
   const [session, setSession] = useState<ResolvedSession | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [logoutOpen, setLogoutOpen] = useState(false);
   const { signOut, pending } = useSignOut();
 
   useEffect(() => {
@@ -66,7 +77,7 @@ export default function ProfileHeader() {
         <Button
           variant="destructive"
           size="sm"
-          onClick={signOut}
+          onClick={() => setLogoutOpen(true)}
           disabled={pending}
           className="shrink-0"
         >
@@ -81,6 +92,28 @@ export default function ProfileHeader() {
         session={session}
         onUpdated={(s) => setSession(s)}
       />
+
+      <AlertDialog open={logoutOpen} onOpenChange={setLogoutOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Keluar dari akun?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Kamu perlu masuk kembali untuk melanjutkan belajar.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={pending}>Batal</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={signOut}
+              disabled={pending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {pending && <Loader2 className="mr-1.5 size-4 animate-spin" />}
+              Keluar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

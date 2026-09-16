@@ -4,6 +4,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { UserPlus } from "lucide-react";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Form } from "#/components/ui/form";
 import { authClient } from "#/libs/auth-client.ts";
@@ -18,7 +19,7 @@ export function RegisterPage() {
     resolver: zodResolver(registerSchema),
     defaultValues: { name: "", email: "", password: "" },
   });
-  const { handleSubmit, setError, setValue, formState } = form;
+  const { handleSubmit, setValue, formState } = form;
   const submitting = formState.isSubmitting;
 
   async function onSubmit(values: RegisterValues) {
@@ -28,7 +29,7 @@ export function RegisterPage() {
       password: values.password,
     });
     if (error) {
-      setError("root", { message: error.message ?? "Gagal membuat akun" });
+      toast.error(error.message ?? "Gagal membuat akun");
       return;
     }
     setValue("password", "");
@@ -74,9 +75,6 @@ export function RegisterPage() {
             autoComplete="new-password"
             disabled={submitting}
           />
-          {formState.errors.root && (
-            <p className="text-sm font-medium text-destructive">{formState.errors.root.message}</p>
-          )}
           <AuthSubmitButton loading={submitting}>Daftar</AuthSubmitButton>
         </form>
       </Form>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "#/components/ui/button.tsx";
 import { Label } from "#/components/ui/label.tsx";
@@ -24,7 +25,13 @@ export function ScreenForm({ screen, lessonId }: ScreenFormProps) {
   const saveMutation = useMutation({
     mutationFn: (patch: Parameters<typeof adminUpdateScreen>[0]["data"]) =>
       adminUpdateScreen({ data: patch }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
+      toast.success("Screen berhasil disimpan");
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Gagal menyimpan screen");
+    },
   });
 
   function handleChange<K extends keyof AdminScreen>(key: K, value: AdminScreen[K]) {
@@ -52,7 +59,10 @@ export function ScreenForm({ screen, lessonId }: ScreenFormProps) {
     if (JSON.stringify(formData.rule) !== JSON.stringify(screen.rule))
       patch.rule = formData.rule;
 
-    if (Object.keys(patch).length === 0) return;
+    if (Object.keys(patch).length === 0) {
+      toast.info("Tidak ada perubahan");
+      return;
+    }
     saveMutation.mutate({ id: screen.id, ...patch } as Parameters<typeof adminUpdateScreen>[0]["data"]);
   }
 

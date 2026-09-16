@@ -1,5 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { Pencil, Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AlertDialog,
@@ -41,7 +42,13 @@ export function LessonList({ unitId }: LessonListProps) {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => adminDeleteLesson({ data: { id } }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] });
+      toast.success("Lesson berhasil dihapus");
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Gagal menghapus lesson");
+    },
   });
 
   const allLessons: AdminLesson[] = lessons ?? [];
@@ -64,8 +71,9 @@ export function LessonList({ unitId }: LessonListProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="font-bold">Judul</TableHead>
-              <TableHead className="w-20 text-center font-bold">Urutan</TableHead>
+              <TableHead className="w-12 text-center font-bold">#</TableHead>
+              <TableHead className="font-bold">Lesson</TableHead>
+              <TableHead className="font-bold">Icon</TableHead>
               <TableHead className="w-24 text-right font-bold">Aksi</TableHead>
             </TableRow>
           </TableHeader>
@@ -73,14 +81,15 @@ export function LessonList({ unitId }: LessonListProps) {
             {isLoading &&
               Array.from({ length: 3 }).map((_, i) => (
                 <TableRow key={i}>
+                  <TableCell><Skeleton className="mx-auto h-5 w-6" /></TableCell>
                   <TableCell><Skeleton className="h-5 w-32" /></TableCell>
-                  <TableCell className="text-center"><Skeleton className="mx-auto h-5 w-6" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-8" /></TableCell>
                   <TableCell className="text-right"><Skeleton className="ml-auto h-8 w-20" /></TableCell>
                 </TableRow>
               ))}
             {!isLoading && allLessons.length === 0 && (
               <TableRow>
-                <TableCell colSpan={3} className="p-6 text-center text-base text-muted-foreground">
+                <TableCell colSpan={4} className="p-6 text-center text-base text-muted-foreground">
                   Belum ada lesson. Tambahkan lesson baru di atas.
                 </TableCell>
               </TableRow>
@@ -88,6 +97,9 @@ export function LessonList({ unitId }: LessonListProps) {
             {!isLoading &&
               allLessons.map((lesson, i) => (
                 <TableRow key={lesson.id} className="hover:bg-card/30">
+                  <TableCell className="text-center tabular-nums text-muted-foreground">
+                    {i + 1}
+                  </TableCell>
                   <TableCell>
                     <button
                       type="button"
@@ -99,13 +111,15 @@ export function LessonList({ unitId }: LessonListProps) {
                         })
                       }
                     >
-                      <div className="text-base font-medium text-foreground hover:underline">
+                      <div className="text-base font-semibold text-foreground hover:underline">
                         {lesson.title}
                       </div>
                       <div className="text-xs text-muted-foreground">{lesson.id}</div>
                     </button>
                   </TableCell>
-                  <TableCell className="text-center tabular-nums">{i + 1}</TableCell>
+                  <TableCell className="text-lg">
+                    {lesson.icon || "-"}
+                  </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">
                       <LessonFormDialog

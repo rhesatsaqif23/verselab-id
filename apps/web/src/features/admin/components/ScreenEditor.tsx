@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   adminGetScreens,
@@ -26,12 +27,24 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
   const createMutation = useMutation({
     mutationFn: (data: Parameters<typeof adminCreateScreen>[0]["data"]) =>
       adminCreateScreen({ data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
+      toast.success("Screen berhasil ditambahkan");
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Gagal menambahkan screen");
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => adminDeleteScreen({ data: { id } }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
+      toast.success("Screen berhasil dihapus");
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Gagal menghapus screen");
+    },
   });
 
   const reorderMutation = useMutation({

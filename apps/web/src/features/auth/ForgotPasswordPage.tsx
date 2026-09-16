@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "@tanstack/react-router";
 import { KeyRound, MailCheck } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Form } from "#/components/ui/form";
 import { Button } from "#/components/ui/button";
@@ -20,7 +21,7 @@ export function ForgotPasswordPage() {
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: { email: "" },
   });
-  const { handleSubmit, setError, formState } = form;
+  const { handleSubmit, formState } = form;
   const submitting = formState.isSubmitting;
 
   async function onSubmit(values: ForgotPasswordValues) {
@@ -29,7 +30,7 @@ export function ForgotPasswordPage() {
       redirectTo: `${env.apiOrigin}/reset-password`,
     });
     if (error) {
-      setError("root", { message: error.message ?? "Gagal mengirim tautan reset" });
+      toast.error(error.message ?? "Gagal mengirim tautan reset");
       return;
     }
     setSent(true);
@@ -80,9 +81,6 @@ export function ForgotPasswordPage() {
             autoComplete="email"
             disabled={submitting}
           />
-          {formState.errors.root && (
-            <p className="text-sm font-medium text-destructive">{formState.errors.root.message}</p>
-          )}
           <AuthSubmitButton loading={submitting}>Kirim tautan reset</AuthSubmitButton>
         </form>
       </Form>

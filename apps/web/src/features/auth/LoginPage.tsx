@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { LogIn } from "lucide-react";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Form } from "#/components/ui/form";
 import { authClient } from "#/libs/auth-client.ts";
@@ -17,7 +18,7 @@ export function LoginPage() {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: "", password: "" },
   });
-  const { handleSubmit, setError, setValue, formState } = form;
+  const { handleSubmit, setValue, formState } = form;
   const submitting = formState.isSubmitting;
 
   async function onSubmit(values: LoginValues) {
@@ -26,7 +27,7 @@ export function LoginPage() {
       password: values.password,
     });
     if (error) {
-      setError("root", { message: error.message ?? "Email atau kata sandi salah" });
+      toast.error(error.message ?? "Email atau kata sandi salah");
       return;
     }
     setValue("password", "");
@@ -73,9 +74,6 @@ export function LoginPage() {
               Lupa kata sandi?
             </Link>
           </div>
-          {formState.errors.root && (
-            <p className="text-sm font-medium text-destructive">{formState.errors.root.message}</p>
-          )}
           <AuthSubmitButton loading={submitting}>Masuk</AuthSubmitButton>
         </form>
       </Form>

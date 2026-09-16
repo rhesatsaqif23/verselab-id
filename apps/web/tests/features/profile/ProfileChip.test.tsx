@@ -2,7 +2,7 @@
 // resolveSession().profile and hides itself for anonymous sessions.
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import ProfileChip from "#/features/profile/ProfileChip.tsx";
 import type { ResolvedSession } from "#/libs/session.ts";
@@ -80,6 +80,13 @@ describe("ProfileChip", () => {
 
     const logoutButton = screen.getByRole("button", { name: "Keluar" });
     await user.click(logoutButton);
+
+    const dialog = screen.getByRole("alertdialog");
+    const confirmButton = within(dialog).getByRole("button", { name: "Keluar" });
+    await act(async () => {
+      fireEvent.click(confirmButton);
+      await new Promise((r) => setTimeout(r, 0));
+    });
 
     expect(signOutMock).toHaveBeenCalled();
     expect(navigateMock).toHaveBeenCalledWith({ to: "/" });

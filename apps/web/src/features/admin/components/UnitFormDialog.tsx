@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "#/components/ui/button.tsx";
 import {
@@ -85,39 +86,44 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
 
     const isEdit = !!unit;
 
-    if (isEdit) {
-      await updateMutation.mutateAsync({
-        id: unit.id,
-        title: title.trim(),
-        description: description.trim() || undefined,
-      });
-      if (selectedFile) {
-        const base64 = await fileToBase64(selectedFile);
-        await imageMutation.mutateAsync({
+    try {
+      if (isEdit) {
+        await updateMutation.mutateAsync({
           id: unit.id,
-          file: base64,
-          filename: selectedFile.name,
+          title: title.trim(),
+          description: description.trim() || undefined,
         });
-      }
-    } else {
-      if (!id.trim()) return;
-      await createMutation.mutateAsync({
-        id: id.trim(),
-        title: title.trim(),
-        description: description.trim() || undefined,
-      });
-      if (selectedFile && id.trim()) {
-        const base64 = await fileToBase64(selectedFile);
-        await imageMutation.mutateAsync({
+        if (selectedFile) {
+          const base64 = await fileToBase64(selectedFile);
+          await imageMutation.mutateAsync({
+            id: unit.id,
+            file: base64,
+            filename: selectedFile.name,
+          });
+        }
+        toast.success("Unit berhasil diperbarui");
+      } else {
+        if (!id.trim()) return;
+        await createMutation.mutateAsync({
           id: id.trim(),
-          file: base64,
-          filename: selectedFile.name,
+          title: title.trim(),
+          description: description.trim() || undefined,
         });
+        if (selectedFile && id.trim()) {
+          const base64 = await fileToBase64(selectedFile);
+          await imageMutation.mutateAsync({
+            id: id.trim(),
+            file: base64,
+            filename: selectedFile.name,
+          });
+        }
+        toast.success("Unit berhasil ditambahkan");
       }
+      setOpen(false);
+      reset();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Gagal menyimpan unit");
     }
-
-    setOpen(false);
-    reset();
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {

@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link } from "@tanstack/react-router";
 import { ShieldCheck } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Form } from "#/components/ui/form";
 import { Button } from "#/components/ui/button";
@@ -19,7 +20,7 @@ export function ResetPasswordPage({ token }: { token: string }) {
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: { password: "", confirmPassword: "" },
   });
-  const { handleSubmit, setError, setValue, formState } = form;
+  const { handleSubmit, setValue, formState } = form;
   const submitting = formState.isSubmitting;
 
   async function onSubmit(values: ResetPasswordValues) {
@@ -28,7 +29,7 @@ export function ResetPasswordPage({ token }: { token: string }) {
       token,
     });
     if (error) {
-      setError("root", { message: error.message ?? "Tautan reset tidak valid atau kedaluwarsa" });
+      toast.error(error.message ?? "Tautan reset tidak valid atau kedaluwarsa");
       return;
     }
     setValue("password", "");
@@ -75,9 +76,6 @@ export function ResetPasswordPage({ token }: { token: string }) {
             autoComplete="new-password"
             disabled={submitting}
           />
-          {formState.errors.root && (
-            <p className="text-sm font-medium text-destructive">{formState.errors.root.message}</p>
-          )}
           <AuthSubmitButton loading={submitting}>Simpan kata sandi</AuthSubmitButton>
         </form>
       </Form>

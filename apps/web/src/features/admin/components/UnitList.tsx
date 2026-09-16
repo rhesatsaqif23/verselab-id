@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { Pencil, Plus, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AlertDialog,
@@ -49,7 +50,13 @@ export function UnitList() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => adminDeleteUnit({ data: { id } }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-units"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-units"] });
+      toast.success("Unit berhasil dihapus");
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Gagal menghapus unit");
+    },
   });
 
   const allUnits: AdminUnit[] = units ?? [];
@@ -73,9 +80,10 @@ export function UnitList() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="font-bold">Judul</TableHead>
+              <TableHead className="w-12 text-center font-bold">#</TableHead>
+              <TableHead className="font-bold">Unit</TableHead>
+              <TableHead className="font-bold">Deskripsi</TableHead>
               <TableHead className="w-20 text-center font-bold">Gambar</TableHead>
-              <TableHead className="w-16 text-center font-bold">Urutan</TableHead>
               <TableHead className="w-24 text-right font-bold">Aksi</TableHead>
             </TableRow>
           </TableHeader>
@@ -83,15 +91,16 @@ export function UnitList() {
             {isLoading &&
               Array.from({ length: 3 }).map((_, i) => (
                 <TableRow key={i}>
+                  <TableCell><Skeleton className="mx-auto h-5 w-6" /></TableCell>
                   <TableCell><Skeleton className="h-5 w-32" /></TableCell>
+                  <TableCell><Skeleton className="h-5 w-48" /></TableCell>
                   <TableCell className="text-center"><Skeleton className="mx-auto size-12 rounded" /></TableCell>
-                  <TableCell className="text-center"><Skeleton className="mx-auto h-5 w-6" /></TableCell>
                   <TableCell className="text-right"><Skeleton className="ml-auto h-8 w-20" /></TableCell>
                 </TableRow>
               ))}
             {!isLoading && paged.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} className="p-6 text-center text-base text-muted-foreground">
+                <TableCell colSpan={5} className="p-6 text-center text-base text-muted-foreground">
                   Belum ada unit. Tambahkan unit baru di atas.
                 </TableCell>
               </TableRow>
@@ -99,6 +108,9 @@ export function UnitList() {
             {!isLoading &&
               paged.map((unit, i) => (
                 <TableRow key={unit.id} className="hover:bg-card/30">
+                  <TableCell className="text-center tabular-nums text-muted-foreground">
+                    {(page - 1) * PAGE_SIZE + i + 1}
+                  </TableCell>
                   <TableCell>
                     <button
                       type="button"
@@ -107,11 +119,16 @@ export function UnitList() {
                         navigate({ to: "/admin/$unitId", params: { unitId: unit.id } })
                       }
                     >
-                      <div className="text-base font-medium text-foreground hover:underline">
+                      <div className="text-base font-semibold text-foreground hover:underline">
                         {unit.title}
                       </div>
                       <div className="text-xs text-muted-foreground">{unit.id}</div>
                     </button>
+                  </TableCell>
+                  <TableCell>
+                    <p className="line-clamp-2 text-sm text-muted-foreground">
+                      {unit.description || "-"}
+                    </p>
                   </TableCell>
                   <TableCell className="text-center">
                     {unit.imageUrl ? (
@@ -123,9 +140,6 @@ export function UnitList() {
                     ) : (
                       <span className="text-xs text-muted-foreground">-</span>
                     )}
-                  </TableCell>
-                  <TableCell className="text-center tabular-nums">
-                    {(page - 1) * PAGE_SIZE + i + 1}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">

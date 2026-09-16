@@ -1,4 +1,5 @@
 import { Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,7 +28,13 @@ export function ScreenEditPanel({ activeScreen, lessonId }: ScreenEditPanelProps
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => adminDeleteScreen({ data: { id } }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
+      toast.success("Screen berhasil dihapus");
+    },
+    onError: (err: Error) => {
+      toast.error(err.message || "Gagal menghapus screen");
+    },
   });
 
   if (!activeScreen) {
