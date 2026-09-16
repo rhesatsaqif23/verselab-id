@@ -89,14 +89,14 @@ describe("UnitCard", () => {
     setMastery(0);
     render(<UnitCard unit={units[0]} />);
     expect(screen.getByText("Keuangan")).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /lanjut ke lesson berikutnya/i })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /mulai/i })).toBeInTheDocument();
   });
 
   it("navigates to the next lesson when clicked", async () => {
     setMastery(0);
     render(<UnitCard unit={units[1]} />);
     const user = userEvent.setup();
-    await user.click(screen.getByRole("link", { name: /lanjut ke lesson berikutnya/i }));
+    await user.click(screen.getByRole("link", { name: /mulai/i }));
     expect(navigateMock).toHaveBeenCalledWith({
       to: "/lesson/$lessonId",
       params: { lessonId: "persamaan" },

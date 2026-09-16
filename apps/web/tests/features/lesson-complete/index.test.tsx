@@ -17,7 +17,15 @@ vi.mock("@tanstack/react-router", () => ({
     to: string;
     params?: Record<string, string>;
     children: React.ReactNode;
-  }) => <a href={params ? `${to}/${params.lessonId}` : to}>{children}</a>,
+  }) => {
+    let href = to;
+    if (params) {
+      for (const [key, val] of Object.entries(params)) {
+        href = href.replace(`$${key}`, val);
+      }
+    }
+    return <a href={href}>{children}</a>;
+  },
 }));
 
 const summary: LessonCompleteSummary = {
@@ -90,6 +98,6 @@ describe("LessonCompletePage", () => {
     useLessonCompleteStore.getState().setSummary(summary);
     renderPage();
     const backLink = screen.getByRole("link", { name: "Lanjut" });
-    expect(backLink).toHaveAttribute("href", "/home");
+    expect(backLink).toHaveAttribute("href", "/units/saving-basics");
   });
 });

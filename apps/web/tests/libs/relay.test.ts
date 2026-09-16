@@ -44,7 +44,9 @@ describe("relay", () => {
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
     const [url, init] = fetchMock.mock.calls[0];
-    expect(String(url)).toBe(`${import.meta.env.VITE_API_ORIGIN}/v1/user/me`);
+    expect(String(url)).toBe(
+      `${import.meta.env.VITE_API_ORIGIN.replace(/localhost/, "127.0.0.1")}/v1/user/me`,
+    );
     const sent = new Headers(init.headers);
     expect(sent.get("cookie")).toBe("session_token=abc; Path=/; HttpOnly");
     expect(sent.get("accept")).toBe("application/json");

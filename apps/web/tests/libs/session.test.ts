@@ -32,7 +32,7 @@ describe("redirectIfAuthenticated", () => {
   });
 
   it("sends an onboarded user to the dashboard", () => {
-    expect(capture(() => redirectIfAuthenticated(authenticated(true)))?.to).toBe("/");
+    expect(capture(() => redirectIfAuthenticated(authenticated(true)))?.to).toBe("/home");
   });
 
   it("sends an un-onboarded user to onboarding", () => {

@@ -22,6 +22,15 @@ export const errorPlugin = new Elysia({ name: "error-handler" })
       return fail({ code: error.code, message: error.message, issues: error.issues });
     }
 
+    // Let Elysia framework errors (404, 422, etc.) pass through untouched.
+    const status =
+      typeof error === "object" && error !== null && "status" in error
+        ? Number((error as { status: unknown }).status)
+        : undefined;
+    if (status && status < 500) {
+      return;
+    }
+
     if (!isTest) {
       console.error(`[err] INTERNAL ${request.method} ${request.url} ${requestId}`);
       console.error(describeError(error));
