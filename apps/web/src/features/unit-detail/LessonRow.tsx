@@ -1,4 +1,4 @@
-import { Check, Lock } from "lucide-react";
+import { Check } from "lucide-react";
 import type { Lesson } from "#/engine/types.ts";
 import type { LessonStatus } from "./types.ts";
 import { getLessonIcon } from "./iconHelper.ts";
@@ -75,10 +75,6 @@ export default function LessonRow({
           <div className="absolute top-2.5 right-2.5 flex size-5 items-center justify-center rounded-full bg-success text-white shadow-xs">
             <Check className="size-3.5 stroke-3" />
           </div>
-        )}
-
-        {status === "unlocked" && (
-          <Lock className="absolute top-2.5 right-2.5 size-4 text-foreground/70 stroke-[2.5]" />
         )}
 
         {/* Center Lucide Icon */}

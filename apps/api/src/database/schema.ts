@@ -77,12 +77,7 @@ export const userDailyActivity = pgTable(
 
 // ── Content tables (units, lessons, screens) ────────────────────────────────
 
-export const screenTypeEnum = pgEnum("screen_type", [
-  "concept",
-  "choice",
-  "numeric",
-  "allocation",
-]);
+export const screenTypeEnum = pgEnum("screen_type", ["concept", "choice", "numeric", "allocation"]);
 
 export const contentUnits = pgTable(
   "content_units",

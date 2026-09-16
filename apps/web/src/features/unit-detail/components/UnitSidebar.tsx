@@ -97,6 +97,13 @@ export default function UnitSidebar({
               </p>
             )}
 
+            {unit.prerequisite && (
+              <p className="mt-1.5 text-xs font-medium leading-relaxed text-muted-foreground">
+                <span className="font-semibold text-primary">Rekomendasi: </span>
+                {unit.prerequisite}
+              </p>
+            )}
+
             {/* Progress bar */}
             <div className="mt-3.5 flex flex-col gap-1.5">
               <div className="flex justify-between text-sm font-semibold text-muted-foreground">

@@ -63,9 +63,7 @@ export const useProgressStore = create<ProgressState & ProgressActions>()((set) 
       completedLessons: data.completedLessons,
       activeDays: data.recentActivity,
       mastery: Object.fromEntries(data.units.map((u) => [u.unitId, u.mastery])),
-      masteryUpdatedAt: Object.fromEntries(
-        data.units.map((u) => [u.unitId, u.masteryUpdatedAt]),
-      ),
+      masteryUpdatedAt: Object.fromEntries(data.units.map((u) => [u.unitId, u.masteryUpdatedAt])),
     }),
 
   awardXp: (amount) => set((state) => ({ xp: Math.max(0, state.xp + amount) })),

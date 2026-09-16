@@ -110,12 +110,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -202,12 +198,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -217,9 +209,7 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {},
@@ -283,9 +273,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {},
@@ -452,12 +440,8 @@
           "name": "content_lessons_unit_id_content_units_id_fk",
           "tableFrom": "content_lessons",
           "tableTo": "content_units",
-          "columnsFrom": [
-            "unit_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["unit_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -610,12 +594,8 @@
           "name": "content_screens_lesson_id_content_lessons_id_fk",
           "tableFrom": "content_screens",
           "tableTo": "content_lessons",
-          "columnsFrom": [
-            "lesson_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["lesson_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -723,12 +703,8 @@
           "name": "user_daily_activity_user_id_user_id_fk",
           "tableFrom": "user_daily_activity",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -736,10 +712,7 @@
       "compositePrimaryKeys": {
         "user_daily_activity_user_id_date_pk": {
           "name": "user_daily_activity_user_id_date_pk",
-          "columns": [
-            "user_id",
-            "date"
-          ]
+          "columns": ["user_id", "date"]
         }
       },
       "uniqueConstraints": {},
@@ -804,12 +777,8 @@
           "name": "user_profiles_user_id_user_id_fk",
           "tableFrom": "user_profiles",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "no action",
           "onUpdate": "no action"
         }
@@ -885,12 +854,8 @@
           "name": "user_progress_user_id_user_id_fk",
           "tableFrom": "user_progress",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -938,12 +903,8 @@
           "name": "user_unit_progress_user_id_user_id_fk",
           "tableFrom": "user_unit_progress",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -951,10 +912,7 @@
       "compositePrimaryKeys": {
         "user_unit_progress_user_id_unit_id_pk": {
           "name": "user_unit_progress_user_id_unit_id_pk",
-          "columns": [
-            "user_id",
-            "unit_id"
-          ]
+          "columns": ["user_id", "unit_id"]
         }
       },
       "uniqueConstraints": {},
@@ -967,33 +925,17 @@
     "public.daily_goal": {
       "name": "daily_goal",
       "schema": "public",
-      "values": [
-        "casual",
-        "regular",
-        "serious"
-      ]
+      "values": ["casual", "regular", "serious"]
     },
     "public.purpose": {
       "name": "purpose",
       "schema": "public",
-      "values": [
-        "karier",
-        "pendidikan",
-        "investasi",
-        "wirausaha",
-        "pengembangan-diri",
-        "lainnya"
-      ]
+      "values": ["karier", "pendidikan", "investasi", "wirausaha", "pengembangan-diri", "lainnya"]
     },
     "public.screen_type": {
       "name": "screen_type",
       "schema": "public",
-      "values": [
-        "concept",
-        "choice",
-        "numeric",
-        "allocation"
-      ]
+      "values": ["concept", "choice", "numeric", "allocation"]
     }
   },
   "schemas": {},

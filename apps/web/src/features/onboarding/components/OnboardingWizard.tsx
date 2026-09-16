@@ -22,7 +22,7 @@ const TOTAL_STEPS = 4;
 export default function OnboardingWizard({ defaultName }: { defaultName?: string }) {
   const { submit, submitting, error } = useOnboarding();
   const [step, setStep] = useState(0);
-  const [displayName] = useState(defaultName ?? "");
+  const displayName = defaultName ?? "";
   const [purpose, setPurpose] = useState<string | undefined>();
   const [startUnitId, setStartUnitId] = useState<string | undefined>();
   const [dailyGoal, setDailyGoal] = useState<string | undefined>();

@@ -19,7 +19,7 @@ const buttonVariants = cva(
         secondary:
           "relative overflow-hidden bg-linear-to-r from-(--btn-secondary-from) via-(--btn-secondary-via) to-(--btn-secondary-to) text-(--btn-secondary-text) shadow-[0_4px_0_0_var(--btn-shadow),0_4px_12px_rgba(0,0,0,0.06)] hover:shadow-[0_3px_0_0_var(--btn-shadow),0_4px_10px_rgba(0,0,0,0.06)] hover:brightness-103 active:translate-y-[2px] active:shadow-[0_1px_0_0_var(--btn-shadow),0_2px_6px_rgba(0,0,0,0.06)]",
         ghost:
-          "text-(--btn-ghost-text) hover:bg-(--btn-ghost-hover) hover:text-(--btn-ghost-hover-text) hover:shadow-[0_4px_0_0_rgba(55,65,81,0.25),0_5px_12px_rgba(0,0,0,0.08)] active:translate-y-[3px] active:shadow-[0_2px_0_0_rgba(55,65,81,0.25),0_3px_8px_rgba(0,0,0,0.06)]",
+          "bg-transparent text-(--btn-ghost-text) shadow-none hover:bg-transparent hover:shadow-none active:bg-transparent active:shadow-none active:translate-y-0",
         shadowless:
           "text-(--btn-ghost-text) hover:bg-(--btn-ghost-hover) hover:text-(--btn-ghost-hover-text) active:bg-(--btn-ghost-active)",
         link: "text-(--btn-ghost-text) underline-offset-4 hover:underline hover:text-(--btn-ghost-hover-text)",

@@ -1,5 +1,5 @@
 // LessonMapCard: detailed lesson card for whiteboard canvas matching reference design.
-import { Check, Lock } from "lucide-react";
+import { Check } from "lucide-react";
 import type { Lesson } from "#/engine/types.ts";
 import type { LessonStatus } from "../types.ts";
 import { getLessonIcon } from "../iconHelper.ts";
@@ -72,9 +72,6 @@ export default function LessonMapCard({
               <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-success text-white">
                 <Check className="size-3.5 stroke-3" />
               </span>
-            )}
-            {status === "unlocked" && (
-              <Lock className="size-4 shrink-0 text-muted-foreground/60 stroke-[2.2]" />
             )}
           </div>
           <span className="text-sm font-medium text-muted-foreground pt-1">

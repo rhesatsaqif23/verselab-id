@@ -1,11 +1,7 @@
 import type { ProgressPatch, ServerProgress } from "@verselab/shared/schemas/progress";
 import { eq, and, gte, sql } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
-import {
-  userProgress,
-  userUnitProgress,
-  userDailyActivity,
-} from "../../database/schema.ts";
+import { userProgress, userUnitProgress, userDailyActivity } from "../../database/schema.ts";
 
 function addDays(dateStr: string, days: number): string {
   const d = new Date(dateStr + "T00:00:00Z");
@@ -66,12 +62,7 @@ export const progressService: ProgressService = {
     const activityRows = await db
       .select({ date: userDailyActivity.date })
       .from(userDailyActivity)
-      .where(
-        and(
-          eq(userDailyActivity.userId, userId),
-          gte(userDailyActivity.date, sevenDaysAgo),
-        ),
-      )
+      .where(and(eq(userDailyActivity.userId, userId), gte(userDailyActivity.date, sevenDaysAgo)))
       .orderBy(sql`${userDailyActivity.date} DESC`);
 
     return {
@@ -147,12 +138,7 @@ export const progressService: ProgressService = {
       const [existingUnit] = await db
         .select()
         .from(userUnitProgress)
-        .where(
-          and(
-            eq(userUnitProgress.userId, userId),
-            eq(userUnitProgress.unitId, unit.unitId),
-          ),
-        )
+        .where(and(eq(userUnitProgress.userId, userId), eq(userUnitProgress.unitId, unit.unitId)))
         .limit(1);
 
       const newMastery = Math.max(unit.mastery, existingUnit?.mastery ?? 0);
@@ -162,10 +148,7 @@ export const progressService: ProgressService = {
           .update(userUnitProgress)
           .set({ mastery: newMastery, masteryUpdatedAt: new Date() })
           .where(
-            and(
-              eq(userUnitProgress.userId, userId),
-              eq(userUnitProgress.unitId, unit.unitId),
-            ),
+            and(eq(userUnitProgress.userId, userId), eq(userUnitProgress.unitId, unit.unitId)),
           );
       } else {
         await db.insert(userUnitProgress).values({

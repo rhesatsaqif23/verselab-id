@@ -40,6 +40,7 @@ export type Unit = {
   id: string;
   title: string;
   description?: string;
+  prerequisite?: string;
   lessons: readonly Lesson[];
   imageUrl?: string;
 };

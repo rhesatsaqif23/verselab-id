@@ -20,8 +20,7 @@ export async function migrateLegacyProgress(): Promise<boolean> {
       units: Object.entries(local.mastery ?? {}).map(([unitId, mastery]) => ({
         unitId,
         mastery: mastery as number,
-        masteryUpdatedAt:
-          local.masteryUpdatedAt?.[unitId] ?? new Date().toISOString(),
+        masteryUpdatedAt: local.masteryUpdatedAt?.[unitId] ?? new Date().toISOString(),
       })),
       activityDate: local.lastActiveDate ?? undefined,
     };

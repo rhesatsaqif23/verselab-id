@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Lock, PlayCircle, RotateCcw } from "lucide-react";
+import { PlayCircle, RotateCcw } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { Card, CardContent } from "#/components/ui/card";
 import type { Lesson } from "#/engine/types.ts";
@@ -27,7 +27,7 @@ export default function LessonCta({ lesson, status, isVisible }: LessonCtaProps)
           </p>
 
           <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
-            {status === "previous" && (
+            {status === "previous" ? (
               <Button
                 asChild
                 size="lg"
@@ -38,9 +38,7 @@ export default function LessonCta({ lesson, status, isVisible }: LessonCtaProps)
                   Main Lagi
                 </Link>
               </Button>
-            )}
-
-            {status === "current" && (
+            ) : (
               <Button
                 asChild
                 size="lg"
@@ -50,18 +48,6 @@ export default function LessonCta({ lesson, status, isVisible }: LessonCtaProps)
                   <PlayCircle className="mr-2 size-5" />
                   Mulai
                 </Link>
-              </Button>
-            )}
-
-            {status === "unlocked" && (
-              <Button
-                disabled
-                size="lg"
-                variant="secondary"
-                className="w-full sm:w-auto text-base! font-bold! opacity-70"
-              >
-                <Lock className="mr-2 size-5" />
-                Terkunci
               </Button>
             )}
           </div>
