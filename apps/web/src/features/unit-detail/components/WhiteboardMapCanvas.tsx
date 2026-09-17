@@ -159,7 +159,7 @@ export default function WhiteboardMapCanvas({
           return (
             <div
               key={lesson.id}
-              className="absolute"
+              className="absolute z-10"
               style={{ left: `${node.x}px`, top: `${node.y}px`, width: `${CARD_WIDTH}px` }}
             >
               <LessonMapCard

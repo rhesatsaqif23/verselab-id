@@ -1,10 +1,21 @@
 // LessonPage: wires a lesson's screens to the player and awards progress on completion.
+import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import LessonPlayer, { type AnswerResult } from "#/engine/player/LessonPlayer.tsx";
 import { useLessonStore } from "#/engine/player/lessonStore.ts";
 import { XP_PER_LESSON, XP_PER_SCREEN, useProgressStore } from "#/engine/progress/progressStore.ts";
 import { useLessonCompleteStore } from "#/features/lesson-complete/store/lessonCompleteStore.ts";
 import { findLesson } from "#/content/index.ts";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "#/components/ui/alert-dialog.tsx";
 import { checkAnswer } from "../hooks/checkAnswer.ts";
 import { renderScreen } from "../components/renderScreen.tsx";
 
@@ -14,6 +25,7 @@ type LessonPageProps = {
 
 export default function LessonPage({ lessonId }: LessonPageProps) {
   const navigate = useNavigate();
+  const [showExitDialog, setShowExitDialog] = useState(false);
 
   const found = findLesson(lessonId);
   if (!found) {
@@ -31,6 +43,10 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
     .reduce((sum) => sum + XP_PER_SCREEN, 0);
 
   function handleExit() {
+    setShowExitDialog(true);
+  }
+
+  function confirmExit() {
     useLessonStore.getState().clear();
     navigate({ to: "/home" });
   }
@@ -66,13 +82,31 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
   }
 
   return (
-    <LessonPlayer
-      screens={lesson.screens}
-      renderScreen={renderScreen}
-      checkAnswer={checkAnswer}
-      onExit={handleExit}
-      onComplete={handleComplete}
-      xpEarned={xpEarned}
-    />
+    <>
+      <LessonPlayer
+        screens={lesson.screens}
+        renderScreen={renderScreen}
+        checkAnswer={checkAnswer}
+        onExit={handleExit}
+        onComplete={handleComplete}
+        xpEarned={xpEarned}
+      />
+
+      <AlertDialog open={showExitDialog} onOpenChange={setShowExitDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Keluar dari lesson?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Progress belajar saat ini tidak akan tersimpan. Kamu bisa mengulang dari awal kapan
+              saja.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Lanjut Belajar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmExit}>Keluar</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 }

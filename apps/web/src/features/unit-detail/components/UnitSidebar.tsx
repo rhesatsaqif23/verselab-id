@@ -103,7 +103,7 @@ export default function UnitSidebar({
                 <span>Progress Unit</span>
                 <span className="font-bold text-primary">{progressPercent}%</span>
               </div>
-              <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
                 <div
                   className="h-full rounded-full bg-primary transition-all duration-300"
                   style={{ width: `${progressPercent}%` }}
@@ -159,7 +159,7 @@ export default function UnitSidebar({
                       <span className="text-xs text-muted-foreground">
                         {lesson.screens.length} soal
                       </span>
-                      {lesson.prerequisite && (
+                      {lesson.prerequisite && !isCompleted && (
                         <span className="mt-1 text-xs leading-snug text-muted-foreground/70">
                           💡 {lesson.prerequisite}
                         </span>

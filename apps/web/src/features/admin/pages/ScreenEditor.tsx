@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -56,6 +56,12 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   const allScreens: AdminScreen[] = screens ?? [];
 
   const [selectedScreenId, setSelectedScreenId] = useState<string | null>(null);
+  const canSwitchRef = useRef<(() => boolean) | null>(null);
+
+  function handleSelectScreen(id: string) {
+    if (canSwitchRef.current && !canSwitchRef.current()) return;
+    setSelectedScreenId(id);
+  }
 
   useEffect(() => {
     if (allScreens.length > 0) {
@@ -90,21 +96,16 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
     let data: Parameters<typeof adminCreateScreen>[0]["data"];
 
     if (type === "concept") {
-      data = {
-        lessonId,
-        type: "concept",
-        prompt: "Pertanyaan Konsep Baru",
-        explain: "Penjelasan",
-      };
+      data = { lessonId, type: "concept", prompt: "", explain: "" };
     } else if (type === "choice") {
       data = {
         lessonId,
         type: "choice",
-        prompt: "Pertanyaan Pilihan Ganda Baru",
-        explain: "Penjelasan",
+        prompt: "",
+        explain: "",
         options: [
-          { id: "opt1", label: "Pilihan 1" },
-          { id: "opt2", label: "Pilihan 2" },
+          { id: "opt1", label: "" },
+          { id: "opt2", label: "" },
         ],
         correctId: "opt1",
       };
@@ -112,9 +113,9 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
       data = {
         lessonId,
         type: "numeric",
-        prompt: "Pertanyaan Angka Baru",
-        explain: "Penjelasan",
-        numericUnit: "Rp",
+        prompt: "",
+        explain: "",
+        numericUnit: "",
         acceptRangeMin: 0,
         acceptRangeMax: 100,
       };
@@ -122,10 +123,10 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
       data = {
         lessonId,
         type: "allocation",
-        prompt: "Pertanyaan Alokasi Baru",
-        explain: "Penjelasan",
-        categories: ["Tabungan", "Pengeluaran"],
-        rule: { type: "min", categoryId: "Tabungan", min: 20 },
+        prompt: "",
+        explain: "",
+        categories: [""],
+        rule: { type: "min", categoryId: "", min: 0 },
       };
     }
 
@@ -148,14 +149,20 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
           <ScreenListPanel
             screens={allScreens}
             selectedScreenId={selectedScreenId}
-            onSelectScreen={setSelectedScreenId}
+            onSelectScreen={handleSelectScreen}
             onMoveScreen={moveScreen}
             onDeleteScreen={handleDeleteScreen}
           />
         </div>
 
         <div className="md:col-span-7 lg:col-span-8">
-          <ScreenEditPanel activeScreen={activeScreen} lessonId={lessonId} />
+          <ScreenEditPanel
+            activeScreen={activeScreen}
+            lessonId={lessonId}
+            onRegisterValidator={(fn) => {
+              canSwitchRef.current = fn;
+            }}
+          />
         </div>
       </div>
     </div>

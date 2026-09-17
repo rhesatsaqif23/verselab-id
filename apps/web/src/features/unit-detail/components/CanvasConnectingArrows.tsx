@@ -7,7 +7,12 @@ type CanvasConnectingArrowsProps = {
 
 export default function CanvasConnectingArrows({ connections }: CanvasConnectingArrowsProps) {
   return (
-    <svg className="pointer-events-none absolute inset-0 overflow-visible h-full w-full">
+    <svg
+      className="pointer-events-none absolute left-0 top-0 z-0"
+      width="3000"
+      height="600"
+      fill="none"
+    >
       <defs>
         {/* Completed arrow marker */}
         <marker

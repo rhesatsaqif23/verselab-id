@@ -21,9 +21,10 @@ import { ScreenPreviewCard } from "./ScreenPreviewCard.tsx";
 interface ScreenEditPanelProps {
   activeScreen: AdminScreen | null;
   lessonId: string;
+  onRegisterValidator?: (fn: () => boolean) => void;
 }
 
-export function ScreenEditPanel({ activeScreen, lessonId }: ScreenEditPanelProps) {
+export function ScreenEditPanel({ activeScreen, lessonId, onRegisterValidator }: ScreenEditPanelProps) {
   const queryClient = useQueryClient();
 
   const deleteMutation = useMutation({
@@ -96,7 +97,7 @@ export function ScreenEditPanel({ activeScreen, lessonId }: ScreenEditPanelProps
           </div>
         </div>
 
-        <ScreenForm key={activeScreen.id} screen={activeScreen} lessonId={lessonId} />
+        <ScreenForm key={activeScreen.id} screen={activeScreen} lessonId={lessonId} onRegisterValidator={onRegisterValidator} />
       </div>
 
       <ScreenPreviewCard screen={activeScreen} />

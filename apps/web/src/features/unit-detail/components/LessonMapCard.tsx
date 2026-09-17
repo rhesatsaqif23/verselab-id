@@ -82,7 +82,7 @@ export default function LessonMapCard({
 
       {/* Middle row: Lesson description snippet */}
       <div className="mt-3.5 min-h-9">
-        {lesson.prerequisite ? (
+        {lesson.prerequisite && status !== "previous" ? (
           <p className="line-clamp-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
             💡 {lesson.prerequisite}
           </p>
@@ -111,16 +111,19 @@ export default function LessonMapCard({
         </div>
 
         {/* Progress track */}
-        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
           <div
-            className={`th-full rounded-full transition-all duration-300 ${
-              status === "previous"
-                ? "bg-success"
-                : status === "current"
-                  ? "bg-primary"
-                  : "bg-muted-foreground/30"
-            }`}
-            style={{ width: `${progressPercent}%` }}
+            className="h-full rounded-full transition-all duration-300"
+            style={{
+              width: `${progressPercent}%`,
+              backgroundColor:
+                status === "previous"
+                  ? "var(--color-success)"
+                  : status === "current"
+                    ? "var(--color-primary)"
+                    : "var(--color-muted-foreground)",
+              opacity: status === "unlocked" ? 0.3 : 1,
+            }}
           />
         </div>
       </div>

@@ -1,9 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { slugify } from "@verselab/shared/slug";
 import { Button } from "#/components/ui/button.tsx";
-import { Input } from "#/components/ui/input.tsx";
 import { Label } from "#/components/ui/label.tsx";
 import { Textarea } from "#/components/ui/textarea.tsx";
 import { adminUpdateScreen, type AdminScreen } from "#/libs/admin-content-fns.ts";
@@ -14,11 +12,30 @@ import { AllocationFields } from "./AllocationFields.tsx";
 interface ScreenFormProps {
   screen: AdminScreen;
   lessonId: string;
+  onRegisterValidator?: (fn: () => boolean) => void;
 }
 
-export function ScreenForm({ screen, lessonId }: ScreenFormProps) {
+export function ScreenForm({ screen, lessonId, onRegisterValidator }: ScreenFormProps) {
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState<AdminScreen>(() => screen);
+  const validateRef = useRef<() => boolean>(() => true);
+
+  useEffect(() => {
+    validateRef.current = () => {
+      const errors = validateForm();
+      if (errors.length > 0) {
+        errors.forEach((msg) => toast.error(msg));
+        return false;
+      }
+      return true;
+    };
+  });
+
+  useEffect(() => {
+    if (onRegisterValidator) {
+      onRegisterValidator(() => validateRef.current());
+    }
+  }, [onRegisterValidator]);
 
   const saveMutation = useMutation({
     mutationFn: (patch: Parameters<typeof adminUpdateScreen>[0]["data"]) =>
@@ -136,22 +153,6 @@ export function ScreenForm({ screen, lessonId }: ScreenFormProps) {
           rows={3}
           className="md:text-base"
         />
-      </div>
-
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor="screen-slug" className="text-base">
-          Slug (otomatis dari prompt)
-        </Label>
-        <Input
-          id="screen-slug"
-          value={formData.prompt.trim() ? slugify(formData.prompt) : ""}
-          disabled
-          placeholder="pertanyaan-prompt"
-          className="font-mono text-xs text-muted-foreground"
-        />
-        <p className="text-xs text-muted-foreground">
-          Slug dibuat otomatis dari prompt dan dijamin tidak duplikat.
-        </p>
       </div>
 
       <div className="flex flex-col gap-1.5">

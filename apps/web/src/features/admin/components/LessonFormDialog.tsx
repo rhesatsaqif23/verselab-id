@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { slugify } from "@verselab/shared/slug";
 import { Button } from "#/components/ui/button.tsx";
 import {
   Dialog,
@@ -118,19 +117,6 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
               placeholder="Mulai Menabung"
               required
             />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lesson-slug">Slug (otomatis dari judul)</Label>
-            <Input
-              id="lesson-slug"
-              value={title.trim() ? slugify(title) : ""}
-              disabled
-              placeholder="mulai-menabung"
-              className="font-mono text-xs text-muted-foreground"
-            />
-            <p className="text-xs text-muted-foreground">
-              Slug dibuat otomatis dari judul dan dijamin tidak duplikat.
-            </p>
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="lesson-icon">Icon (opsional)</Label>

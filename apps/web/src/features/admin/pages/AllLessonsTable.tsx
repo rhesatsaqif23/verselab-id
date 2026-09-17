@@ -39,7 +39,7 @@ import { LessonFormDialog } from "../components/LessonFormDialog.tsx";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
 
-const PAGE_SIZE = 15;
+const PAGE_SIZE = 10;
 
 type LessonSortKey = "title" | "unitTitle" | "createdAt";
 
