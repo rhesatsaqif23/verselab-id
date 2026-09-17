@@ -1,6 +1,6 @@
 // Lesson route: validates the lesson id and renders the lesson page.
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import LessonPage from "../features/lesson";
+import { LessonPage } from "../features/lesson";
 import { findLesson } from "../content";
 import { useLessonStore } from "../engine/player/lessonStore";
 

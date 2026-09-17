@@ -2,7 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { render, screen } from "@testing-library/react";
-import LessonCompletePage from "#/features/lesson-complete/index.tsx";
+import { LessonCompletePage } from "#/features/lesson-complete";
 import {
   useLessonCompleteStore,
   type LessonCompleteSummary,

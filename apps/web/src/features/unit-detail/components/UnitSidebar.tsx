@@ -4,7 +4,7 @@ import { Search, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 import type { Unit } from "#/engine/types.ts";
 import { Button } from "#/components/ui/button";
 import { useUnitSidebar } from "../hooks/useUnitSidebar.ts";
-import { getLessonIcon } from "../iconHelper.ts";
+import { getLessonIcon } from "./iconHelper.ts";
 
 type UnitSidebarProps = {
   unit: Unit;

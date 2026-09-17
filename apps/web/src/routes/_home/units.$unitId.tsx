@@ -1,7 +1,7 @@
 // Unit detail route: /units/$unitId — shows full unit info and lesson list.
 import { createFileRoute, notFound } from "@tanstack/react-router";
 import { findUnit } from "#/content/index.ts";
-import UnitDetailPage from "#/features/unit-detail/index.tsx";
+import { UnitDetailPage } from "#/features/unit-detail/index.tsx";
 
 export const Route = createFileRoute("/_home/units/$unitId")({
   loader: ({ params }) => {

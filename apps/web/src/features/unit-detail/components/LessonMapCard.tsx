@@ -2,7 +2,7 @@
 import { Check } from "lucide-react";
 import type { Lesson } from "#/engine/types.ts";
 import type { LessonStatus } from "../types.ts";
-import { getLessonIcon } from "../iconHelper.ts";
+import { getLessonIcon } from "./iconHelper.ts";
 
 type LessonMapCardProps = {
   lesson: Lesson;

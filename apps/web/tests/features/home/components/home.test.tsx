@@ -8,7 +8,7 @@ import DailyGoalCard from "#/features/home/components/DailyGoalCard.tsx";
 import UnitCard from "#/features/home/components/UnitCard.tsx";
 import ShuffleCard from "#/features/home/components/ShuffleCard.tsx";
 import UnitGrid from "#/features/home/components/UnitGrid.tsx";
-import { useHomeStore } from "#/features/home/store.ts";
+import { useHomeStore } from "#/features/home/store/homeStore.ts";
 import { units } from "#/content/index.ts";
 import { resetProgress, setMastery } from "../test-utils";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";

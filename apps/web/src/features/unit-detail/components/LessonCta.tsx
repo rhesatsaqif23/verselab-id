@@ -3,7 +3,7 @@ import { PlayCircle, RotateCcw } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { Card, CardContent } from "#/components/ui/card";
 import type { Lesson } from "#/engine/types.ts";
-import type { LessonStatus } from "./types.ts";
+import type { LessonStatus } from "../types.ts";
 
 type LessonCtaProps = {
   lesson: Lesson;

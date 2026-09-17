@@ -1,5 +1,5 @@
 import type { Unit } from "#/engine/types.ts";
-import type { LessonStatus } from "./types.ts";
+import type { LessonStatus } from "../types.ts";
 import LessonRow from "./LessonRow.tsx";
 
 type LessonListProps = {

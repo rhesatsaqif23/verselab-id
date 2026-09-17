@@ -4,7 +4,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "#/components/ui/s
 import { Button } from "#/components/ui/button.tsx";
 import { AdminBreadcrumb } from "#/features/admin/components/AdminBreadcrumb.tsx";
 import { AdminSidebar } from "#/features/admin/components/AdminSidebar.tsx";
-import { useSignOut } from "#/features/auth/use-sign-out.ts";
+import { useSignOut } from "#/features/auth/hooks/useSignOut.ts";
 import { LogOut } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({

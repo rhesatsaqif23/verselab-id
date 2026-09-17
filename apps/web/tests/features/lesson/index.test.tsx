@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import LessonPage from "#/features/lesson/index.tsx";
+import { LessonPage } from "#/features/lesson";
 import { useLessonStore } from "#/engine/player/lessonStore.ts";
 import { useProgressStore, XP_PER_SCREEN, XP_PER_LESSON } from "#/engine/progress/progressStore.ts";
 import { useLessonCompleteStore } from "#/features/lesson-complete/store/lessonCompleteStore.ts";

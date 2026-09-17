@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Search, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from "#/components/ui/alert-dialog.tsx";
 import { Button } from "#/components/ui/button.tsx";
+import { Input } from "#/components/ui/input.tsx";
 import { Skeleton } from "#/components/ui/skeleton.tsx";
 import { Badge } from "#/components/ui/badge.tsx";
 import {
@@ -35,8 +36,12 @@ import {
 } from "#/components/ui/pagination.tsx";
 import { adminGetAllScreens, adminDeleteScreen } from "#/libs/admin-content-fns.ts";
 import type { AdminScreenWithLesson } from "#/libs/admin-content-fns.ts";
+import { SortableHead } from "../components/SortableHead.tsx";
+import { useSortFilter } from "../hooks/useSortFilter.ts";
 
 const PAGE_SIZE = 15;
+
+type ScreenSortKey = "prompt" | "lessonTitle" | "type" | "createdAt";
 
 const typeLabels: Record<string, string> = {
   concept: "Konsep",
@@ -74,8 +79,31 @@ export function AllScreensTable() {
   });
 
   const all: AdminScreenWithLesson[] = screens ?? [];
-  const totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
-  const paged = all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const filterFn = useCallback(
+    (row: AdminScreenWithLesson) =>
+      `${row.prompt} ${row.lessonTitle} ${typeLabels[row.type] ?? row.type}`,
+    [],
+  );
+  const getValue = useCallback((row: AdminScreenWithLesson, key: ScreenSortKey) => {
+    if (key === "prompt") return row.prompt;
+    if (key === "lessonTitle") return row.lessonTitle;
+    if (key === "type") return row.type;
+    if (key === "createdAt") return new Date(row.createdAt);
+    return "";
+  }, []);
+
+  const { processed, sort, toggleSort, filter, setFilter } = useSortFilter<
+    AdminScreenWithLesson,
+    ScreenSortKey
+  >(all, "createdAt", filterFn, getValue);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filter, sort]);
+
+  const totalPages = Math.max(1, Math.ceil(processed.length / PAGE_SIZE));
+  const paged = processed.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div className="space-y-4">
@@ -83,14 +111,38 @@ export function AllScreensTable() {
         <h1 className="text-2xl font-black text-foreground">Layar</h1>
       </div>
 
+      <div className="relative w-full max-w-xs">
+        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          id="screens-filter"
+          placeholder="Cari layar..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="pl-9"
+        />
+      </div>
+
       <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-12 text-center font-bold">#</TableHead>
-              <TableHead className="max-w-xs font-bold">Prompt</TableHead>
-              <TableHead className="max-w-[10rem] font-bold">Pelajaran</TableHead>
-              <TableHead className="font-bold">Tipe</TableHead>
+              <SortableHead
+                label="Prompt"
+                sortKey="prompt"
+                sort={sort}
+                onToggle={toggleSort}
+                className="max-w-xs"
+              />
+              <SortableHead
+                label="Pelajaran"
+                sortKey="lessonTitle"
+                sort={sort}
+                onToggle={toggleSort}
+                className="max-w-[10rem]"
+              />
+              <SortableHead label="Tipe" sortKey="type" sort={sort} onToggle={toggleSort} />
+              <SortableHead label="Dibuat" sortKey="createdAt" sort={sort} onToggle={toggleSort} />
               <TableHead className="w-20 text-right font-bold">Aksi</TableHead>
             </TableRow>
           </TableHeader>
@@ -111,6 +163,9 @@ export function AllScreensTable() {
                   <TableCell>
                     <Skeleton className="h-6 w-20 rounded-full" />
                   </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
                   <TableCell className="text-center">
                     <div className="flex items-center justify-center gap-1">
                       <Skeleton className="size-8 rounded-lg" />
@@ -120,8 +175,10 @@ export function AllScreensTable() {
               ))}
             {!isLoading && paged.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="p-6 text-center text-base text-muted-foreground">
-                  Belum ada layar.
+                <TableCell colSpan={6} className="p-6 text-center text-base text-muted-foreground">
+                  {filter
+                    ? `Tidak ada layar yang cocok dengan "${filter}".`
+                    : "Belum ada layar."}
                 </TableCell>
               </TableRow>
             )}
@@ -152,6 +209,13 @@ export function AllScreensTable() {
                     <Badge variant={typeBadgeVariant[screen.type] ?? "outline"}>
                       {typeLabels[screen.type] ?? screen.type}
                     </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground tabular-nums">
+                    {new Date(screen.createdAt).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">

@@ -8,9 +8,9 @@ import {
   adminReorderScreens,
   type AdminScreen,
 } from "#/libs/admin-content-fns.ts";
-import { AddScreenDialog } from "./AddScreenDialog.tsx";
-import { ScreenListPanel } from "./ScreenListPanel.tsx";
-import { ScreenEditPanel } from "./ScreenEditPanel.tsx";
+import { AddScreenDialog } from "../components/AddScreenDialog.tsx";
+import { ScreenListPanel } from "../components/ScreenListPanel.tsx";
+import { ScreenEditPanel } from "../components/ScreenEditPanel.tsx";
 
 interface ScreenEditorProps {
   lessonId: string;

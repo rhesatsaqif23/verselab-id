@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import ProfileChip from "#/features/profile/ProfileChip.tsx";
+import ProfileChip from "#/features/profile/components/ProfileChip.tsx";
 import type { ResolvedSession } from "#/libs/session.ts";
 
 const { resolveSessionMock, navigateMock, signOutMock } = vi.hoisted(() => ({

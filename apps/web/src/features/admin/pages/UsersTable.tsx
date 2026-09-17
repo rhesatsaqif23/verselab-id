@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { Shield } from "lucide-react";
+import { Search, Shield } from "lucide-react";
 import { Badge } from "#/components/ui/badge.tsx";
+import { Input } from "#/components/ui/input.tsx";
 import { Skeleton } from "#/components/ui/skeleton.tsx";
 import {
   Table,
@@ -22,8 +23,12 @@ import {
 } from "#/components/ui/pagination.tsx";
 import { adminGetUsers } from "#/libs/admin-content-fns.ts";
 import type { AdminUser } from "#/libs/admin-content-fns.ts";
+import { SortableHead } from "../components/SortableHead.tsx";
+import { useSortFilter } from "../hooks/useSortFilter.ts";
 
 const PAGE_SIZE = 15;
+
+type UserSortKey = "displayName" | "email" | "role" | "onboardedAt" | "createdAt";
 
 function getInitial(name?: string | null, email?: string | null): string {
   const str = name?.trim() || email?.trim() || "?";
@@ -47,8 +52,32 @@ export function UsersTable() {
   }
 
   const all: AdminUser[] = users ?? [];
-  const totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
-  const paged = all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const filterFn = useCallback(
+    (row: AdminUser) =>
+      `${row.displayName ?? ""} ${row.name ?? ""} ${row.email ?? ""}`,
+    [],
+  );
+  const getValue = useCallback((row: AdminUser, key: UserSortKey) => {
+    if (key === "displayName") return row.displayName ?? row.name ?? "";
+    if (key === "email") return row.email ?? "";
+    if (key === "role") return row.role;
+    if (key === "onboardedAt") return row.onboardedAt ? new Date(row.onboardedAt) : null;
+    if (key === "createdAt") return new Date(row.createdAt);
+    return "";
+  }, []);
+
+  const { processed, sort, toggleSort, filter, setFilter } = useSortFilter<
+    AdminUser,
+    UserSortKey
+  >(all, "createdAt", filterFn, getValue);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filter, sort]);
+
+  const totalPages = Math.max(1, Math.ceil(processed.length / PAGE_SIZE));
+  const paged = processed.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div className="space-y-4">
@@ -56,16 +85,37 @@ export function UsersTable() {
         <h1 className="text-2xl font-black text-foreground">Pengguna</h1>
       </div>
 
+      <div className="relative w-full max-w-xs">
+        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          id="users-filter"
+          placeholder="Cari pengguna..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="pl-9"
+        />
+      </div>
+
       <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-12 text-center font-bold">#</TableHead>
-              <TableHead className="font-bold">Nama</TableHead>
-              <TableHead className="font-bold">Email</TableHead>
-              <TableHead className="font-bold">Role</TableHead>
-              <TableHead className="font-bold">Status</TableHead>
-              <TableHead className="font-bold">Terdaftar</TableHead>
+              <SortableHead label="Nama" sortKey="displayName" sort={sort} onToggle={toggleSort} />
+              <SortableHead label="Email" sortKey="email" sort={sort} onToggle={toggleSort} />
+              <SortableHead label="Role" sortKey="role" sort={sort} onToggle={toggleSort} />
+              <SortableHead
+                label="Status"
+                sortKey="onboardedAt"
+                sort={sort}
+                onToggle={toggleSort}
+              />
+              <SortableHead
+                label="Terdaftar"
+                sortKey="createdAt"
+                sort={sort}
+                onToggle={toggleSort}
+              />
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -101,7 +151,9 @@ export function UsersTable() {
             {!isLoading && paged.length === 0 && (
               <TableRow>
                 <TableCell colSpan={6} className="p-6 text-center text-base text-muted-foreground">
-                  Belum ada pengguna.
+                  {filter
+                    ? `Tidak ada pengguna yang cocok dengan "${filter}".`
+                    : "Belum ada pengguna."}
                 </TableCell>
               </TableRow>
             )}

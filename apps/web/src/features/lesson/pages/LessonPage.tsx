@@ -1,0 +1,78 @@
+// LessonPage: wires a lesson's screens to the player and awards progress on completion.
+import { useNavigate } from "@tanstack/react-router";
+import LessonPlayer, { type AnswerResult } from "#/engine/player/LessonPlayer.tsx";
+import { useLessonStore } from "#/engine/player/lessonStore.ts";
+import { XP_PER_LESSON, XP_PER_SCREEN, useProgressStore } from "#/engine/progress/progressStore.ts";
+import { useLessonCompleteStore } from "#/features/lesson-complete/store/lessonCompleteStore.ts";
+import { findLesson } from "#/content/index.ts";
+import { checkAnswer } from "../hooks/checkAnswer.ts";
+import { renderScreen } from "../components/renderScreen.tsx";
+
+type LessonPageProps = {
+  lessonId: string;
+};
+
+export default function LessonPage({ lessonId }: LessonPageProps) {
+  const navigate = useNavigate();
+
+  const found = findLesson(lessonId);
+  if (!found) {
+    return (
+      <div className="page-wrap flex min-h-screen items-center justify-center px-4">
+        <p className="text-lg text-muted">Lesson tidak ditemukan</p>
+      </div>
+    );
+  }
+
+  const { unit, lesson } = found;
+  const results = useLessonStore((s) => s.results);
+  const xpEarned = Object.values(results)
+    .filter((r) => r?.correct)
+    .reduce((sum) => sum + XP_PER_SCREEN, 0);
+
+  function handleExit() {
+    useLessonStore.getState().clear();
+    navigate({ to: "/home" });
+  }
+
+  function handleComplete(results: readonly AnswerResult[]) {
+    const answerResults = results.filter((r) => r.screen.type !== "concept");
+
+    const correctCount = answerResults.filter((r) => r.correct).length;
+    const wrongScreens = answerResults
+      .filter((r) => !r.correct)
+      .map((r) => ({ prompt: r.screen.prompt, explain: r.screen.explain }));
+
+    const masteryBefore = useProgressStore.getState().mastery[unit.id] ?? null;
+    for (const result of answerResults) {
+      useProgressStore.getState().awardScreenResult(unit.id, result.correct);
+    }
+    useProgressStore.getState().awardLessonCompletion(unit.id, lesson.id);
+    const masteryAfter = useProgressStore.getState().mastery[unit.id] ?? null;
+
+    const totalXpEarned = correctCount * XP_PER_SCREEN + XP_PER_LESSON;
+
+    useLessonCompleteStore.getState().setSummary({
+      unitId: unit.id,
+      unitName: unit.title,
+      totalScreens: answerResults.length,
+      correctCount,
+      wrongScreens,
+      xpEarned: totalXpEarned,
+      masteryBefore,
+      masteryAfter,
+    });
+    navigate({ to: "/lesson-complete" });
+  }
+
+  return (
+    <LessonPlayer
+      screens={lesson.screens}
+      renderScreen={renderScreen}
+      checkAnswer={checkAnswer}
+      onExit={handleExit}
+      onComplete={handleComplete}
+      xpEarned={xpEarned}
+    />
+  );
+}

@@ -1,5 +1,5 @@
 // lessonLayout: pure functions that derive canvas node positions and connection lines from lesson data.
-import type { LessonNodePosition, ConnectionLine } from "./types.ts";
+import type { LessonNodePosition, ConnectionLine } from "../types.ts";
 
 /** Card dimensions used for positioning and connection anchor math. */
 export const CARD_WIDTH = 340;

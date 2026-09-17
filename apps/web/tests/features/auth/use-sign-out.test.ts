@@ -5,7 +5,7 @@
 // path, which degrades to anonymous).
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { act, renderHook } from "@testing-library/react";
-import { useSignOut } from "#/features/auth/use-sign-out.ts";
+import { useSignOut } from "#/features/auth/hooks/useSignOut.ts";
 
 const { signOutMock, navigateMock } = vi.hoisted(() => ({
   signOutMock: vi.fn(),

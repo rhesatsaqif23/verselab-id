@@ -15,7 +15,7 @@ import {
   AlertDialogTitle,
 } from "#/components/ui/alert-dialog";
 import { findUnit } from "#/content/index.ts";
-import { useSignOut } from "#/features/auth/use-sign-out.ts";
+import { useSignOut } from "#/features/auth/hooks/useSignOut.ts";
 import { resolveSession, type ResolvedSession } from "#/libs/session.ts";
 import { cn } from "#/libs/utils.ts";
 

@@ -10,10 +10,10 @@ import { Form } from "#/components/ui/form";
 import { Button } from "#/components/ui/button";
 import { authClient, translateAuthError } from "#/libs/auth-client.ts";
 import { env } from "#/libs/env.ts";
-import { AuthField } from "./components/AuthField.tsx";
-import { AuthShell } from "./components/AuthShell.tsx";
-import { AuthSubmitButton } from "./components/AuthSubmitButton.tsx";
-import { forgotPasswordSchema, type ForgotPasswordValues } from "./schemas.ts";
+import { AuthField } from "../components/AuthField.tsx";
+import { AuthShell } from "../components/AuthShell.tsx";
+import { AuthSubmitButton } from "../components/AuthSubmitButton.tsx";
+import { forgotPasswordSchema, type ForgotPasswordValues } from "../types.ts";
 
 export function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);

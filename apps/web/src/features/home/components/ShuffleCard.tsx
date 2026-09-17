@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 import { units } from "#/content/index.ts";
-import { useHomeStore } from "../store.ts";
+import { useHomeStore } from "../store/homeStore.ts";
 import UnitCard from "./UnitCard.tsx";
 
 const COMMIT_THRESHOLD = 150;

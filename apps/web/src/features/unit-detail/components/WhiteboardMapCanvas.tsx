@@ -5,7 +5,7 @@ import { RotateCcw, ZoomIn, ZoomOut, Move } from "lucide-react";
 import type { Unit } from "#/engine/types.ts";
 import type { LessonStatus } from "../types.ts";
 import { useCanvasPan } from "../hooks/useCanvasPan.ts";
-import { buildNodes, buildConnections, CARD_WIDTH } from "../lessonLayout.ts";
+import { buildNodes, buildConnections, CARD_WIDTH } from "./lessonLayout.ts";
 import LessonMapCard from "./LessonMapCard.tsx";
 import CanvasConnectingArrows from "./CanvasConnectingArrows.tsx";
 import { Button } from "#/components/ui/button";

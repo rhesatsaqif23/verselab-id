@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ScreenEditor } from "#/features/admin/components/ScreenEditor.tsx";
+import { ScreenEditor } from "#/features/admin/pages/ScreenEditor.tsx";
 
 export const Route = createFileRoute("/admin/$unitId/$lessonId")({
   component: ScreenEditorRoute,

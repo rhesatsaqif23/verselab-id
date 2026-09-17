@@ -8,10 +8,10 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Form } from "#/components/ui/form";
 import { authClient, translateAuthError } from "#/libs/auth-client.ts";
-import { AuthField } from "./components/AuthField.tsx";
-import { AuthShell } from "./components/AuthShell.tsx";
-import { AuthSubmitButton } from "./components/AuthSubmitButton.tsx";
-import { registerSchema, type RegisterValues } from "./schemas.ts";
+import { AuthField } from "../components/AuthField.tsx";
+import { AuthShell } from "../components/AuthShell.tsx";
+import { AuthSubmitButton } from "../components/AuthSubmitButton.tsx";
+import { registerSchema, type RegisterValues } from "../types.ts";
 
 export function RegisterPage() {
   const navigate = useNavigate();

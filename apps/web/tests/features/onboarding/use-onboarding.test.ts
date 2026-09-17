@@ -3,7 +3,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { act, renderHook } from "@testing-library/react";
-import { useOnboarding } from "#/features/onboarding/hook/use-onboarding.ts";
+import { useOnboarding } from "#/features/onboarding/hooks/useOnboarding.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import { resetProgress } from "../home/test-utils.tsx";
 

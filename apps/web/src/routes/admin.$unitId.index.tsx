@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { LessonList } from "#/features/admin/components/LessonList.tsx";
+import { LessonList } from "#/features/admin/pages/LessonList.tsx";
 
 export const Route = createFileRoute("/admin/$unitId/")({
   component: LessonListRoute,

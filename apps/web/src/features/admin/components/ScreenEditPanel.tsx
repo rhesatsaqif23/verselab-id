@@ -1,4 +1,4 @@
-import { Trash2 } from "lucide-react";
+import { MonitorX, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -39,8 +39,18 @@ export function ScreenEditPanel({ activeScreen, lessonId }: ScreenEditPanelProps
 
   if (!activeScreen) {
     return (
-      <div className="flex h-64 items-center justify-center rounded-md border border-dashed p-8 text-center text-base text-muted-foreground">
-        Pilih screen dari daftar di sebelah kiri untuk mengedit detailnya.
+      <div className="flex h-64 flex-col items-center justify-center gap-3 rounded-xl border border-dashed bg-card p-8 text-center">
+        <div className="flex size-12 items-center justify-center rounded-full">
+          <MonitorX className="size-12 text-muted-foreground" />
+        </div>
+        <div className="space-y-1">
+          <p className="text-base font-semibold text-foreground">Belum ada screen dipilih</p>
+          <p className="text-sm text-muted-foreground">
+            Pilih screen dari daftar kiri, atau klik{" "}
+            <span className="font-medium text-primary">+ Tambah Screen</span> untuk membuat yang
+            baru.
+          </p>
+        </div>
       </div>
     );
   }

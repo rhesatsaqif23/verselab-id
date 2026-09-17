@@ -1,7 +1,7 @@
 // UnitGrid: grid of units with per-unit icons; selecting a unit changes the hero UnitCard.
 import { Card } from "#/components/ui/card";
 import { units } from "#/content/index.ts";
-import { useHomeStore } from "../store.ts";
+import { useHomeStore } from "../store/homeStore.ts";
 import { UNIT_ICONS } from "../constants.ts";
 
 export default function UnitGrid() {

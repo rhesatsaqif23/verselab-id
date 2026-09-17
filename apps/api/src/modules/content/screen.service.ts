@@ -1,7 +1,7 @@
 import type { CreateScreenInput, UpdateScreenInput } from "@verselab/shared/schemas/content";
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
-import { contentScreens, contentLessons, contentUnits } from "../../database/schema.ts";
+import { contentScreens, contentLessons } from "../../database/schema.ts";
 
 export type ScreenData = typeof contentScreens.$inferSelect;
 

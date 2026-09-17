@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Pencil, Plus, Trash2 } from "lucide-react";
+import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -15,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from "#/components/ui/alert-dialog.tsx";
 import { Button } from "#/components/ui/button.tsx";
+import { Input } from "#/components/ui/input.tsx";
 import { Skeleton } from "#/components/ui/skeleton.tsx";
 import {
   Table,
@@ -34,9 +35,13 @@ import {
 } from "#/components/ui/pagination.tsx";
 import { adminGetUnits, adminDeleteUnit } from "#/libs/admin-content-fns.ts";
 import type { AdminUnit } from "#/libs/admin-content-fns.ts";
-import { UnitFormDialog } from "./UnitFormDialog.tsx";
+import { UnitFormDialog } from "../components/UnitFormDialog.tsx";
+import { SortableHead } from "../components/SortableHead.tsx";
+import { useSortFilter } from "../hooks/useSortFilter.ts";
 
 const PAGE_SIZE = 10;
+
+type UnitSortKey = "title" | "description" | "createdAt";
 
 export function UnitList() {
   const queryClient = useQueryClient();
@@ -60,8 +65,29 @@ export function UnitList() {
   });
 
   const allUnits: AdminUnit[] = units ?? [];
-  const totalPages = Math.max(1, Math.ceil(allUnits.length / PAGE_SIZE));
-  const paged = allUnits.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  const filterFn = useCallback(
+    (row: AdminUnit) => `${row.title} ${row.description ?? ""}`,
+    [],
+  );
+  const getValue = useCallback((row: AdminUnit, key: UnitSortKey) => {
+    if (key === "title") return row.title;
+    if (key === "description") return row.description ?? "";
+    if (key === "createdAt") return new Date(row.createdAt);
+    return "";
+  }, []);
+
+  const { processed, sort, toggleSort, filter, setFilter } = useSortFilter<
+    AdminUnit,
+    UnitSortKey
+  >(allUnits, "createdAt", filterFn, getValue);
+
+  useEffect(() => {
+    setPage(1);
+  }, [filter, sort]);
+
+  const totalPages = Math.max(1, Math.ceil(processed.length / PAGE_SIZE));
+  const paged = processed.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div className="space-y-4">
@@ -76,14 +102,37 @@ export function UnitList() {
         />
       </div>
 
+      <div className="relative w-full max-w-xs">
+        <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          id="units-filter"
+          placeholder="Cari unit..."
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          className="pl-9"
+        />
+      </div>
+
       <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead className="w-12 text-center font-bold">#</TableHead>
-              <TableHead className="font-bold">Unit</TableHead>
-              <TableHead className="font-bold">Deskripsi</TableHead>
+              <SortableHead label="Unit" sortKey="title" sort={sort} onToggle={toggleSort} />
+              <SortableHead
+                label="Deskripsi"
+                sortKey="description"
+                sort={sort}
+                onToggle={toggleSort}
+              />
               <TableHead className="w-20 text-center font-bold">Gambar</TableHead>
+              <SortableHead
+                label="Dibuat"
+                sortKey="createdAt"
+                sort={sort}
+                onToggle={toggleSort}
+                className="w-24"
+              />
               <TableHead className="w-24 text-center font-bold">Aksi</TableHead>
             </TableRow>
           </TableHeader>
@@ -105,6 +154,9 @@ export function UnitList() {
                   <TableCell className="text-center">
                     <Skeleton className="mx-auto size-12 rounded-lg" />
                   </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-20" />
+                  </TableCell>
                   <TableCell className="text-center">
                     <div className="flex items-center justify-center gap-1">
                       <Skeleton className="size-8 rounded-lg" />
@@ -115,8 +167,10 @@ export function UnitList() {
               ))}
             {!isLoading && paged.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="p-6 text-center text-base text-muted-foreground">
-                  Belum ada unit. Tambahkan unit baru di atas.
+                <TableCell colSpan={6} className="p-6 text-center text-base text-muted-foreground">
+                  {filter
+                    ? `Tidak ada unit yang cocok dengan "${filter}".`
+                    : "Belum ada unit. Tambahkan unit baru di atas."}
                 </TableCell>
               </TableRow>
             )}
@@ -149,6 +203,13 @@ export function UnitList() {
                     ) : (
                       <span className="text-xs text-muted-foreground">-</span>
                     )}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground tabular-nums">
+                    {new Date(unit.createdAt).toLocaleDateString("id-ID", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-center gap-1">

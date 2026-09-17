@@ -2,7 +2,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { act, render, screen } from "@testing-library/react";
-import ProfilePage from "#/features/profile/index.tsx";
+import { ProfilePage } from "#/features/profile";
 import { resetProgress } from "../home/test-utils.tsx";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 

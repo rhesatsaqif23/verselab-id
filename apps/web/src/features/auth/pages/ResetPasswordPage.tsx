@@ -9,10 +9,10 @@ import { useForm } from "react-hook-form";
 import { Form } from "#/components/ui/form";
 import { Button } from "#/components/ui/button";
 import { authClient, translateAuthError } from "#/libs/auth-client.ts";
-import { AuthField } from "./components/AuthField.tsx";
-import { AuthShell } from "./components/AuthShell.tsx";
-import { AuthSubmitButton } from "./components/AuthSubmitButton.tsx";
-import { resetPasswordSchema, type ResetPasswordValues } from "./schemas.ts";
+import { AuthField } from "../components/AuthField.tsx";
+import { AuthShell } from "../components/AuthShell.tsx";
+import { AuthSubmitButton } from "../components/AuthSubmitButton.tsx";
+import { resetPasswordSchema, type ResetPasswordValues } from "../types.ts";
 
 export function ResetPasswordPage({ token }: { token: string }) {
   const [done, setDone] = useState(false);

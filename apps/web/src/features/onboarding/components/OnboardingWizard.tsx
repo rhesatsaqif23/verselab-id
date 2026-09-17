@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { Wrench } from "lucide-react";
-import { useOnboarding } from "../hook/use-onboarding.ts";
+import { useOnboarding } from "../hooks/useOnboarding.ts";
 import { STEP_BUBBLES } from "../constants.ts";
 import MascotBubble from "./MascotBubble";
 import OnboardingProgressBar from "./OnboardingProgressBar.tsx";

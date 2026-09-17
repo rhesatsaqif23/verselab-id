@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "#/components/ui/avatar";
 import { Button } from "#/components/ui/button";
 import { resolveSession, type ResolvedSession } from "#/libs/session.ts";
-import { useSignOut } from "#/features/auth/use-sign-out.ts";
+import { useSignOut } from "#/features/auth/hooks/useSignOut.ts";
 import EditProfileDialog from "./EditProfileDialog";
 
 export default function ProfileHeader() {
