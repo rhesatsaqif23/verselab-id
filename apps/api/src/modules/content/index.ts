@@ -27,10 +27,26 @@ export function createContentController(
         tags: ["content"],
         detail: { summary: "List all units" },
       })
+      .get(
+        "/units-by-slug/:slug",
+        async ({ params }) => ok(await unitSvc.getUnitBySlug(params.slug)),
+        {
+          tags: ["content"],
+          detail: { summary: "Get unit by slug" },
+        },
+      )
       .get("/units/:id", async ({ params }) => ok(await unitSvc.getUnit(params.id)), {
         tags: ["content"],
         detail: { summary: "Get unit by ID" },
       })
+      .get(
+        "/lessons-by-slug/:slug",
+        async ({ params }) => ok(await lessonSvc.getLessonBySlug(params.slug)),
+        {
+          tags: ["content"],
+          detail: { summary: "Get lesson by slug" },
+        },
+      )
       .get(
         "/lessons/:id",
         async ({ params }) => ok(await lessonSvc.getLessonWithScreens(params.id)),

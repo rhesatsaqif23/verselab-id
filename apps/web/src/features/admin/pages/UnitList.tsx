@@ -41,7 +41,7 @@ import { useSortFilter } from "../hooks/useSortFilter.ts";
 
 const PAGE_SIZE = 10;
 
-type UnitSortKey = "title" | "slug" | "description" | "createdAt";
+type UnitSortKey = "title" | "description" | "createdAt";
 
 export function UnitList() {
   const queryClient = useQueryClient();
@@ -66,13 +66,9 @@ export function UnitList() {
 
   const allUnits: AdminUnit[] = units ?? [];
 
-  const filterFn = useCallback(
-    (row: AdminUnit) => `${row.title} ${row.slug} ${row.description ?? ""}`,
-    [],
-  );
+  const filterFn = useCallback((row: AdminUnit) => `${row.title} ${row.description ?? ""}`, []);
   const getValue = useCallback((row: AdminUnit, key: UnitSortKey) => {
     if (key === "title") return row.title;
-    if (key === "slug") return row.slug;
     if (key === "description") return row.description ?? "";
     if (key === "createdAt") return new Date(row.createdAt);
     return "";
@@ -122,7 +118,6 @@ export function UnitList() {
             <TableRow>
               <TableHead className="w-12 text-center font-bold">#</TableHead>
               <SortableHead label="Unit" sortKey="title" sort={sort} onToggle={toggleSort} />
-              <SortableHead label="Slug" sortKey="slug" sort={sort} onToggle={toggleSort} />
               <SortableHead
                 label="Deskripsi"
                 sortKey="description"
@@ -152,9 +147,6 @@ export function UnitList() {
                     <Skeleton className="h-3 w-20" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-4 w-28" />
-                  </TableCell>
-                  <TableCell>
                     <Skeleton className="mb-1 h-4 w-64" />
                     <Skeleton className="h-4 w-40" />
                   </TableCell>
@@ -174,7 +166,7 @@ export function UnitList() {
               ))}
             {!isLoading && paged.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="p-6 text-center text-base text-muted-foreground">
+                <TableCell colSpan={6} className="p-6 text-center text-base text-muted-foreground">
                   {filter
                     ? `Tidak ada unit yang cocok dengan "${filter}".`
                     : "Belum ada unit. Tambahkan unit baru di atas."}
@@ -186,7 +178,9 @@ export function UnitList() {
                 <TableRow
                   key={unit.id}
                   className="cursor-pointer hover:bg-slate-100/70 transition-colors"
-                  onClick={() => navigate({ to: "/admin/$unitId", params: { unitId: unit.id } })}
+                  onClick={() =>
+                    navigate({ to: "/admin/$unitSlug", params: { unitSlug: unit.slug } })
+                  }
                 >
                   <TableCell className="text-center tabular-nums text-muted-foreground">
                     {(page - 1) * PAGE_SIZE + i + 1}
@@ -194,9 +188,6 @@ export function UnitList() {
                   <TableCell>
                     <div className="text-base font-semibold text-foreground">{unit.title}</div>
                     <div className="text-xs text-muted-foreground">{unit.id}</div>
-                  </TableCell>
-                  <TableCell>
-                    <code className="text-xs text-muted-foreground">{unit.slug}</code>
                   </TableCell>
                   <TableCell>
                     <p className="line-clamp-2 text-sm text-muted-foreground">

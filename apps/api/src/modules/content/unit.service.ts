@@ -9,6 +9,7 @@ export type UnitData = typeof contentUnits.$inferSelect;
 export type ContentUnitService = {
   listUnits: () => Promise<UnitData[]>;
   getUnit: (id: string) => Promise<UnitData | null>;
+  getUnitBySlug: (slug: string) => Promise<UnitData | null>;
   createUnit: (input: CreateUnitInput) => Promise<UnitData>;
   updateUnit: (id: string, input: UpdateUnitInput) => Promise<UnitData>;
   deleteUnit: (id: string) => Promise<void>;
@@ -35,6 +36,12 @@ export const contentUnitService: ContentUnitService = {
   async getUnit(id) {
     const db = getDb();
     const [row] = await db.select().from(contentUnits).where(eq(contentUnits.id, id)).limit(1);
+    return row ?? null;
+  },
+
+  async getUnitBySlug(slug) {
+    const db = getDb();
+    const [row] = await db.select().from(contentUnits).where(eq(contentUnits.slug, slug)).limit(1);
     return row ?? null;
   },
 

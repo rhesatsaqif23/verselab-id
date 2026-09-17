@@ -1,9 +1,11 @@
 // Seed content into the database from the static seed data.
 // Usage: bun run --cwd apps/api seed:content
 
+import { eq } from "drizzle-orm";
 import { seedUnits } from "./content-seed-data.ts";
 import { getDb } from "../database/index.ts";
 import { contentUnits, contentLessons, contentScreens } from "../database/schema.ts";
+import { resolveUniqueSlug } from "../modules/content/slug.ts";
 
 type SeedChoiceScreen = {
   type: "choice";
@@ -43,11 +45,20 @@ async function seedContent() {
 
   for (let unitIdx = 0; unitIdx < seedUnits.length; unitIdx++) {
     const unit = seedUnits[unitIdx];
+    const unitId = crypto.randomUUID();
+    const unitSlug = await resolveUniqueSlug({ title: unit.title }, async (candidate) => {
+      const rows = await db
+        .select({ id: contentUnits.id })
+        .from(contentUnits)
+        .where(eq(contentUnits.slug, candidate))
+        .limit(1);
+      return rows.length > 0;
+    });
 
     await db.insert(contentUnits).values({
-      id: unit.id,
+      id: unitId,
       title: unit.title,
-      slug: unit.id,
+      slug: unitSlug,
       description: unit.description,
       imageUrl: unit.imageUrl,
       sortOrder: unitIdx,
@@ -56,12 +67,21 @@ async function seedContent() {
 
     for (let lessonIdx = 0; lessonIdx < unit.lessons.length; lessonIdx++) {
       const lesson = unit.lessons[lessonIdx];
+      const lessonId = crypto.randomUUID();
+      const lessonSlug = await resolveUniqueSlug({ title: lesson.title }, async (candidate) => {
+        const rows = await db
+          .select({ id: contentLessons.id })
+          .from(contentLessons)
+          .where(eq(contentLessons.slug, candidate))
+          .limit(1);
+        return rows.length > 0;
+      });
 
       await db.insert(contentLessons).values({
-        id: lesson.id,
-        unitId: unit.id,
+        id: lessonId,
+        unitId,
         title: lesson.title,
-        slug: lesson.id,
+        slug: lessonSlug,
         icon: lesson.icon,
         sortOrder: lessonIdx,
       });
@@ -69,12 +89,21 @@ async function seedContent() {
 
       for (let screenIdx = 0; screenIdx < lesson.screens.length; screenIdx++) {
         const screen = lesson.screens[screenIdx];
+        const screenId = crypto.randomUUID();
+        const screenSlug = await resolveUniqueSlug({ title: screen.prompt }, async (candidate) => {
+          const rows = await db
+            .select({ id: contentScreens.id })
+            .from(contentScreens)
+            .where(eq(contentScreens.slug, candidate))
+            .limit(1);
+          return rows.length > 0;
+        });
 
         const base = {
-          id: `${lesson.id}-screen-${screenIdx}`,
-          lessonId: lesson.id,
+          id: screenId,
+          lessonId,
           type: screen.type,
-          slug: `${lesson.id}-screen-${screenIdx}`,
+          slug: screenSlug,
           prompt: screen.prompt,
           explain: screen.explain,
           sortOrder: screenIdx,

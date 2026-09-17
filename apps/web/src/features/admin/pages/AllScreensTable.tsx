@@ -41,7 +41,7 @@ import { useSortFilter } from "../hooks/useSortFilter.ts";
 
 const PAGE_SIZE = 15;
 
-type ScreenSortKey = "prompt" | "slug" | "lessonTitle" | "type" | "createdAt";
+type ScreenSortKey = "prompt" | "lessonTitle" | "type" | "createdAt";
 
 const typeLabels: Record<string, string> = {
   concept: "Konsep",
@@ -82,12 +82,11 @@ export function AllScreensTable() {
 
   const filterFn = useCallback(
     (row: AdminScreenWithLesson) =>
-      `${row.prompt} ${row.slug} ${row.lessonTitle} ${typeLabels[row.type] ?? row.type}`,
+      `${row.prompt} ${row.lessonTitle} ${typeLabels[row.type] ?? row.type}`,
     [],
   );
   const getValue = useCallback((row: AdminScreenWithLesson, key: ScreenSortKey) => {
     if (key === "prompt") return row.prompt;
-    if (key === "slug") return row.slug;
     if (key === "lessonTitle") return row.lessonTitle;
     if (key === "type") return row.type;
     if (key === "createdAt") return new Date(row.createdAt);
@@ -135,7 +134,6 @@ export function AllScreensTable() {
                 onToggle={toggleSort}
                 className="max-w-xs"
               />
-              <SortableHead label="Slug" sortKey="slug" sort={sort} onToggle={toggleSort} />
               <SortableHead
                 label="Pelajaran"
                 sortKey="lessonTitle"
@@ -145,7 +143,7 @@ export function AllScreensTable() {
               />
               <SortableHead label="Tipe" sortKey="type" sort={sort} onToggle={toggleSort} />
               <SortableHead label="Dibuat" sortKey="createdAt" sort={sort} onToggle={toggleSort} />
-              <TableHead className="w-20 text-right font-bold">Aksi</TableHead>
+              <TableHead className="w-20 font-bold">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -158,9 +156,6 @@ export function AllScreensTable() {
                   <TableCell className="max-w-xs">
                     <Skeleton className="mb-1 h-5 w-56" />
                     <Skeleton className="h-3 w-28" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-24" />
                   </TableCell>
                   <TableCell className="max-w-[10rem]">
                     <Skeleton className="h-4 w-28" />
@@ -180,14 +175,24 @@ export function AllScreensTable() {
               ))}
             {!isLoading && paged.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="p-6 text-center text-base text-muted-foreground">
+                <TableCell colSpan={6} className="p-6 text-center text-base text-muted-foreground">
                   {filter ? `Tidak ada layar yang cocok dengan "${filter}".` : "Belum ada layar."}
                 </TableCell>
               </TableRow>
             )}
             {!isLoading &&
               paged.map((screen, i) => (
-                <TableRow key={screen.id} className="hover:bg-card/30">
+                <TableRow
+                  key={screen.id}
+                  className="cursor-pointer hover:bg-slate-100/70 transition-colors"
+                  onClick={() =>
+                    navigate({
+                      to: "/admin/$unitSlug/$lessonSlug",
+                      params: { unitSlug: screen.unitSlug, lessonSlug: screen.lessonSlug },
+                      search: { screenId: screen.id },
+                    })
+                  }
+                >
                   <TableCell className="text-center tabular-nums text-muted-foreground">
                     {(page - 1) * PAGE_SIZE + i + 1}
                   </TableCell>
@@ -199,9 +204,6 @@ export function AllScreensTable() {
                       {screen.prompt}
                     </div>
                     <div className="truncate text-xs text-muted-foreground">{screen.id}</div>
-                  </TableCell>
-                  <TableCell>
-                    <code className="text-xs text-muted-foreground">{screen.slug}</code>
                   </TableCell>
                   <TableCell className="max-w-[10rem]">
                     <span
@@ -231,8 +233,9 @@ export function AllScreensTable() {
                         aria-label="Edit layar"
                         onClick={() =>
                           navigate({
-                            to: "/admin/$unitId/$lessonId",
-                            params: { unitId: screen.unitId, lessonId: screen.lessonId },
+                            to: "/admin/$unitSlug/$lessonSlug",
+                            params: { unitSlug: screen.unitSlug, lessonSlug: screen.lessonSlug },
+                            search: { screenId: screen.id },
                           })
                         }
                       >

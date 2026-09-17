@@ -14,9 +14,10 @@ import { ScreenEditPanel } from "../components/ScreenEditPanel.tsx";
 
 interface ScreenEditorProps {
   lessonId: string;
+  initialScreenId?: string;
 }
 
-export function ScreenEditor({ lessonId }: ScreenEditorProps) {
+export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   const queryClient = useQueryClient();
 
   const { data: screens, isLoading } = useQuery({
@@ -58,13 +59,19 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
 
   useEffect(() => {
     if (allScreens.length > 0) {
-      if (!selectedScreenId || !allScreens.some((s) => s.id === selectedScreenId)) {
+      if (!selectedScreenId) {
+        if (initialScreenId && allScreens.some((s) => s.id === initialScreenId)) {
+          setSelectedScreenId(initialScreenId);
+        } else {
+          setSelectedScreenId(allScreens[0].id);
+        }
+      } else if (!allScreens.some((s) => s.id === selectedScreenId)) {
         setSelectedScreenId(allScreens[0].id);
       }
     } else {
       setSelectedScreenId(null);
     }
-  }, [allScreens, selectedScreenId]);
+  }, [allScreens, selectedScreenId, initialScreenId]);
 
   const activeScreen = allScreens.find((s) => s.id === selectedScreenId) ?? null;
 

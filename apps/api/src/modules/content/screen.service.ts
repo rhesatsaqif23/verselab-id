@@ -1,12 +1,17 @@
 import type { CreateScreenInput, UpdateScreenInput } from "@verselab/shared/schemas/content";
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
-import { contentScreens, contentLessons } from "../../database/schema.ts";
+import { contentScreens, contentLessons, contentUnits } from "../../database/schema.ts";
 import { resolveUniqueSlug } from "./slug.ts";
 
 export type ScreenData = typeof contentScreens.$inferSelect;
 
-export type ScreenWithLesson = ScreenData & { lessonTitle: string };
+export type ScreenWithLesson = ScreenData & {
+  lessonTitle: string;
+  unitId: string;
+  unitSlug: string;
+  lessonSlug: string;
+};
 
 export type ContentScreenService = {
   listScreens: (lessonId: string) => Promise<ScreenData[]>;
@@ -60,10 +65,13 @@ export const contentScreenService: ContentScreenService = {
         createdAt: contentScreens.createdAt,
         updatedAt: contentScreens.updatedAt,
         lessonTitle: contentLessons.title,
+        lessonSlug: contentLessons.slug,
         unitId: contentLessons.unitId,
+        unitSlug: contentUnits.slug,
       })
       .from(contentScreens)
       .innerJoin(contentLessons, eq(contentScreens.lessonId, contentLessons.id))
+      .innerJoin(contentUnits, eq(contentLessons.unitId, contentUnits.id))
       .orderBy(asc(contentScreens.sortOrder));
     return rows;
   },

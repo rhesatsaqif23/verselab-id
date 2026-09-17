@@ -8,12 +8,13 @@ export type LessonData = typeof contentLessons.$inferSelect;
 
 export type LessonWithScreens = LessonData & { screens: (typeof contentScreens.$inferSelect)[] };
 
-export type LessonWithUnit = LessonData & { unitTitle: string };
+export type LessonWithUnit = LessonData & { unitTitle: string; unitSlug: string };
 
 export type ContentLessonService = {
   listLessons: (unitId: string) => Promise<LessonData[]>;
   listAllLessons: () => Promise<LessonWithUnit[]>;
   getLesson: (id: string) => Promise<LessonData | null>;
+  getLessonBySlug: (slug: string) => Promise<LessonData | null>;
   getLessonWithScreens: (id: string) => Promise<LessonWithScreens | null>;
   createLesson: (input: CreateLessonInput) => Promise<LessonData>;
   updateLesson: (id: string, input: UpdateLessonInput) => Promise<LessonData>;
@@ -55,6 +56,7 @@ export const contentLessonService: ContentLessonService = {
         createdAt: contentLessons.createdAt,
         updatedAt: contentLessons.updatedAt,
         unitTitle: contentUnits.title,
+        unitSlug: contentUnits.slug,
       })
       .from(contentLessons)
       .innerJoin(contentUnits, eq(contentLessons.unitId, contentUnits.id))
@@ -65,6 +67,16 @@ export const contentLessonService: ContentLessonService = {
   async getLesson(id) {
     const db = getDb();
     const [row] = await db.select().from(contentLessons).where(eq(contentLessons.id, id)).limit(1);
+    return row ?? null;
+  },
+
+  async getLessonBySlug(slug) {
+    const db = getDb();
+    const [row] = await db
+      .select()
+      .from(contentLessons)
+      .where(eq(contentLessons.slug, slug))
+      .limit(1);
     return row ?? null;
   },
 

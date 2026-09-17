@@ -16,30 +16,9 @@ interface ScreenFormProps {
   lessonId: string;
 }
 
-function createEmptyForm(type: AdminScreen["type"]): AdminScreen {
-  return {
-    id: "",
-    lessonId: "",
-    type,
-    slug: "",
-    prompt: "",
-    explain: "",
-    options: null,
-    correctId: null,
-    numericUnit: null,
-    acceptRangeMin: null,
-    acceptRangeMax: null,
-    categories: null,
-    rule: null,
-    sortOrder: 0,
-    createdAt: new Date(0),
-    updatedAt: new Date(0),
-  };
-}
-
 export function ScreenForm({ screen, lessonId }: ScreenFormProps) {
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState<AdminScreen>(() => createEmptyForm(screen.type));
+  const [formData, setFormData] = useState<AdminScreen>(() => screen);
 
   const saveMutation = useMutation({
     mutationFn: (patch: Parameters<typeof adminUpdateScreen>[0]["data"]) =>

@@ -22,7 +22,7 @@ import { Route as HomeAboutRouteImport } from './routes/_home/about'
 import { Route as HomeHomeRouteImport } from './routes/_home/home'
 import { Route as HomeProfileRouteImport } from './routes/_home/profile'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminUnitIdRouteImport } from './routes/admin.$unitId'
+import { Route as AdminUnitSlugRouteImport } from './routes/admin.$unitSlug'
 import { Route as AdminLayarRouteImport } from './routes/admin.layar'
 import { Route as AdminPelajaranRouteImport } from './routes/admin.pelajaran'
 import { Route as AdminPenggunaRouteImport } from './routes/admin.pengguna'
@@ -30,8 +30,8 @@ import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding.index'
 import { Route as OnboardingWelcomeRouteImport } from './routes/onboarding.welcome'
 import { Route as HomeUnitsUnitIdRouteImport } from './routes/_home/units.$unitId'
-import { Route as AdminUnitIdIndexRouteImport } from './routes/admin.$unitId.index'
-import { Route as AdminUnitIdLessonIdRouteImport } from './routes/admin.$unitId.$lessonId'
+import { Route as AdminUnitSlugIndexRouteImport } from './routes/admin.$unitSlug.index'
+import { Route as AdminUnitSlugLessonSlugRouteImport } from './routes/admin.$unitSlug.$lessonSlug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -97,9 +97,9 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminUnitIdRoute = AdminUnitIdRouteImport.update({
-  id: '/$unitId',
-  path: '/$unitId',
+const AdminUnitSlugRoute = AdminUnitSlugRouteImport.update({
+  id: '/$unitSlug',
+  path: '/$unitSlug',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminLayarRoute = AdminLayarRouteImport.update({
@@ -137,15 +137,15 @@ const HomeUnitsUnitIdRoute = HomeUnitsUnitIdRouteImport.update({
   path: '/units/$unitId',
   getParentRoute: () => HomeRoute,
 } as any)
-const AdminUnitIdIndexRoute = AdminUnitIdIndexRouteImport.update({
+const AdminUnitSlugIndexRoute = AdminUnitSlugIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AdminUnitIdRoute,
+  getParentRoute: () => AdminUnitSlugRoute,
 } as any)
-const AdminUnitIdLessonIdRoute = AdminUnitIdLessonIdRouteImport.update({
-  id: '/$lessonId',
-  path: '/$lessonId',
-  getParentRoute: () => AdminUnitIdRoute,
+const AdminUnitSlugLessonSlugRoute = AdminUnitSlugLessonSlugRouteImport.update({
+  id: '/$lessonSlug',
+  path: '/$lessonSlug',
+  getParentRoute: () => AdminUnitSlugRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -160,7 +160,7 @@ export interface FileRoutesByFullPath {
   '/about': typeof HomeAboutRoute
   '/home': typeof HomeHomeRoute
   '/profile': typeof HomeProfileRoute
-  '/admin/$unitId': typeof AdminUnitIdRouteWithChildren
+  '/admin/$unitSlug': typeof AdminUnitSlugRouteWithChildren
   '/admin/layar': typeof AdminLayarRoute
   '/admin/pelajaran': typeof AdminPelajaranRoute
   '/admin/pengguna': typeof AdminPenggunaRoute
@@ -169,8 +169,8 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/units/$unitId': typeof HomeUnitsUnitIdRoute
-  '/admin/$unitId/$lessonId': typeof AdminUnitIdLessonIdRoute
-  '/admin/$unitId/': typeof AdminUnitIdIndexRoute
+  '/admin/$unitSlug/$lessonSlug': typeof AdminUnitSlugLessonSlugRoute
+  '/admin/$unitSlug/': typeof AdminUnitSlugIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -190,8 +190,8 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
   '/units/$unitId': typeof HomeUnitsUnitIdRoute
-  '/admin/$unitId/$lessonId': typeof AdminUnitIdLessonIdRoute
-  '/admin/$unitId': typeof AdminUnitIdIndexRoute
+  '/admin/$unitSlug/$lessonSlug': typeof AdminUnitSlugLessonSlugRoute
+  '/admin/$unitSlug': typeof AdminUnitSlugIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -207,7 +207,7 @@ export interface FileRoutesById {
   '/_home/about': typeof HomeAboutRoute
   '/_home/home': typeof HomeHomeRoute
   '/_home/profile': typeof HomeProfileRoute
-  '/admin/$unitId': typeof AdminUnitIdRouteWithChildren
+  '/admin/$unitSlug': typeof AdminUnitSlugRouteWithChildren
   '/admin/layar': typeof AdminLayarRoute
   '/admin/pelajaran': typeof AdminPelajaranRoute
   '/admin/pengguna': typeof AdminPenggunaRoute
@@ -216,8 +216,8 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
   '/_home/units/$unitId': typeof HomeUnitsUnitIdRoute
-  '/admin/$unitId/$lessonId': typeof AdminUnitIdLessonIdRoute
-  '/admin/$unitId/': typeof AdminUnitIdIndexRoute
+  '/admin/$unitSlug/$lessonSlug': typeof AdminUnitSlugLessonSlugRoute
+  '/admin/$unitSlug/': typeof AdminUnitSlugIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -233,7 +233,7 @@ export interface FileRouteTypes {
     | '/about'
     | '/home'
     | '/profile'
-    | '/admin/$unitId'
+    | '/admin/$unitSlug'
     | '/admin/layar'
     | '/admin/pelajaran'
     | '/admin/pengguna'
@@ -242,8 +242,8 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/onboarding/'
     | '/units/$unitId'
-    | '/admin/$unitId/$lessonId'
-    | '/admin/$unitId/'
+    | '/admin/$unitSlug/$lessonSlug'
+    | '/admin/$unitSlug/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -263,8 +263,8 @@ export interface FileRouteTypes {
     | '/admin'
     | '/onboarding'
     | '/units/$unitId'
-    | '/admin/$unitId/$lessonId'
-    | '/admin/$unitId'
+    | '/admin/$unitSlug/$lessonSlug'
+    | '/admin/$unitSlug'
   id:
     | '__root__'
     | '/'
@@ -279,7 +279,7 @@ export interface FileRouteTypes {
     | '/_home/about'
     | '/_home/home'
     | '/_home/profile'
-    | '/admin/$unitId'
+    | '/admin/$unitSlug'
     | '/admin/layar'
     | '/admin/pelajaran'
     | '/admin/pengguna'
@@ -288,8 +288,8 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/onboarding/'
     | '/_home/units/$unitId'
-    | '/admin/$unitId/$lessonId'
-    | '/admin/$unitId/'
+    | '/admin/$unitSlug/$lessonSlug'
+    | '/admin/$unitSlug/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -398,11 +398,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/$unitId': {
-      id: '/admin/$unitId'
-      path: '/$unitId'
-      fullPath: '/admin/$unitId'
-      preLoaderRoute: typeof AdminUnitIdRouteImport
+    '/admin/$unitSlug': {
+      id: '/admin/$unitSlug'
+      path: '/$unitSlug'
+      fullPath: '/admin/$unitSlug'
+      preLoaderRoute: typeof AdminUnitSlugRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/layar': {
@@ -454,19 +454,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeUnitsUnitIdRouteImport
       parentRoute: typeof HomeRoute
     }
-    '/admin/$unitId/': {
-      id: '/admin/$unitId/'
+    '/admin/$unitSlug/': {
+      id: '/admin/$unitSlug/'
       path: '/'
-      fullPath: '/admin/$unitId/'
-      preLoaderRoute: typeof AdminUnitIdIndexRouteImport
-      parentRoute: typeof AdminUnitIdRoute
+      fullPath: '/admin/$unitSlug/'
+      preLoaderRoute: typeof AdminUnitSlugIndexRouteImport
+      parentRoute: typeof AdminUnitSlugRoute
     }
-    '/admin/$unitId/$lessonId': {
-      id: '/admin/$unitId/$lessonId'
-      path: '/$lessonId'
-      fullPath: '/admin/$unitId/$lessonId'
-      preLoaderRoute: typeof AdminUnitIdLessonIdRouteImport
-      parentRoute: typeof AdminUnitIdRoute
+    '/admin/$unitSlug/$lessonSlug': {
+      id: '/admin/$unitSlug/$lessonSlug'
+      path: '/$lessonSlug'
+      fullPath: '/admin/$unitSlug/$lessonSlug'
+      preLoaderRoute: typeof AdminUnitSlugLessonSlugRouteImport
+      parentRoute: typeof AdminUnitSlugRoute
     }
   }
 }
@@ -487,22 +487,22 @@ const HomeRouteChildren: HomeRouteChildren = {
 
 const HomeRouteWithChildren = HomeRoute._addFileChildren(HomeRouteChildren)
 
-interface AdminUnitIdRouteChildren {
-  AdminUnitIdLessonIdRoute: typeof AdminUnitIdLessonIdRoute
-  AdminUnitIdIndexRoute: typeof AdminUnitIdIndexRoute
+interface AdminUnitSlugRouteChildren {
+  AdminUnitSlugLessonSlugRoute: typeof AdminUnitSlugLessonSlugRoute
+  AdminUnitSlugIndexRoute: typeof AdminUnitSlugIndexRoute
 }
 
-const AdminUnitIdRouteChildren: AdminUnitIdRouteChildren = {
-  AdminUnitIdLessonIdRoute: AdminUnitIdLessonIdRoute,
-  AdminUnitIdIndexRoute: AdminUnitIdIndexRoute,
+const AdminUnitSlugRouteChildren: AdminUnitSlugRouteChildren = {
+  AdminUnitSlugLessonSlugRoute: AdminUnitSlugLessonSlugRoute,
+  AdminUnitSlugIndexRoute: AdminUnitSlugIndexRoute,
 }
 
-const AdminUnitIdRouteWithChildren = AdminUnitIdRoute._addFileChildren(
-  AdminUnitIdRouteChildren,
+const AdminUnitSlugRouteWithChildren = AdminUnitSlugRoute._addFileChildren(
+  AdminUnitSlugRouteChildren,
 )
 
 interface AdminRouteChildren {
-  AdminUnitIdRoute: typeof AdminUnitIdRouteWithChildren
+  AdminUnitSlugRoute: typeof AdminUnitSlugRouteWithChildren
   AdminLayarRoute: typeof AdminLayarRoute
   AdminPelajaranRoute: typeof AdminPelajaranRoute
   AdminPenggunaRoute: typeof AdminPenggunaRoute
@@ -510,7 +510,7 @@ interface AdminRouteChildren {
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
-  AdminUnitIdRoute: AdminUnitIdRouteWithChildren,
+  AdminUnitSlugRoute: AdminUnitSlugRouteWithChildren,
   AdminLayarRoute: AdminLayarRoute,
   AdminPelajaranRoute: AdminPelajaranRoute,
   AdminPenggunaRoute: AdminPenggunaRoute,

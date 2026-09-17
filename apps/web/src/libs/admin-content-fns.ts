@@ -56,6 +56,12 @@ export const adminGetUnits = createServerFn({ method: "GET" }).handler(async () 
   return apiCall<AdminUnit[]>("/v1/content/units") ?? [];
 });
 
+export const adminGetUnitBySlug = createServerFn({ method: "GET" })
+  .validator((data: { slug: string }) => data)
+  .handler(async ({ data }) => {
+    return apiCall<AdminUnit>(`/v1/content/units-by-slug/${encodeURIComponent(data.slug)}`);
+  });
+
 export const adminCreateUnit = createServerFn({ method: "POST" })
   .validator(
     (data: { id?: string; title: string; description?: string; imageUrl?: string }) => data,
@@ -119,6 +125,12 @@ export const adminGetLessons = createServerFn({ method: "GET" })
   .validator((data: { unitId: string }) => data)
   .handler(async ({ data }) => {
     return apiCall<AdminLesson[]>(`/v1/content/units/${data.unitId}/lessons`) ?? [];
+  });
+
+export const adminGetLessonBySlug = createServerFn({ method: "GET" })
+  .validator((data: { slug: string }) => data)
+  .handler(async ({ data }) => {
+    return apiCall<AdminLesson>(`/v1/content/lessons-by-slug/${encodeURIComponent(data.slug)}`);
   });
 
 export const adminCreateLesson = createServerFn({ method: "POST" })
@@ -187,13 +199,18 @@ export const adminGetScreens = createServerFn({ method: "GET" })
 
 // ── List-all endpoints ─────────────────────────────────────────────────────
 
-export type AdminLessonWithUnit = AdminLesson & { unitTitle: string };
+export type AdminLessonWithUnit = AdminLesson & { unitTitle: string; unitSlug: string };
 
 export const adminGetAllLessons = createServerFn({ method: "GET" }).handler(async () => {
   return apiCall<AdminLessonWithUnit[]>("/v1/content/lessons-all") ?? [];
 });
 
-export type AdminScreenWithLesson = AdminScreen & { lessonTitle: string; unitId: string };
+export type AdminScreenWithLesson = AdminScreen & {
+  lessonTitle: string;
+  unitId: string;
+  unitSlug: string;
+  lessonSlug: string;
+};
 
 export const adminGetAllScreens = createServerFn({ method: "GET" }).handler(async () => {
   return apiCall<AdminScreenWithLesson[]>("/v1/content/screens-all") ?? [];

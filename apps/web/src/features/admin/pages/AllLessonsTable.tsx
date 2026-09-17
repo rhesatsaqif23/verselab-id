@@ -41,7 +41,7 @@ import { useSortFilter } from "../hooks/useSortFilter.ts";
 
 const PAGE_SIZE = 15;
 
-type LessonSortKey = "title" | "slug" | "unitTitle" | "createdAt";
+type LessonSortKey = "title" | "unitTitle" | "createdAt";
 
 export function AllLessonsTable() {
   const queryClient = useQueryClient();
@@ -65,14 +65,12 @@ export function AllLessonsTable() {
   });
 
   const all: AdminLessonWithUnit[] = lessons ?? [];
-
   const filterFn = useCallback(
-    (row: AdminLessonWithUnit) => `${row.title} ${row.slug} ${row.unitTitle} ${row.icon ?? ""}`,
+    (row: AdminLessonWithUnit) => `${row.title} ${row.unitTitle} ${row.icon ?? ""}`,
     [],
   );
   const getValue = useCallback((row: AdminLessonWithUnit, key: LessonSortKey) => {
     if (key === "title") return row.title;
-    if (key === "slug") return row.slug;
     if (key === "unitTitle") return row.unitTitle;
     if (key === "createdAt") return new Date(row.createdAt);
     return "";
@@ -113,7 +111,6 @@ export function AllLessonsTable() {
             <TableRow>
               <TableHead className="w-12 text-center font-bold">#</TableHead>
               <SortableHead label="Pelajaran" sortKey="title" sort={sort} onToggle={toggleSort} />
-              <SortableHead label="Slug" sortKey="slug" sort={sort} onToggle={toggleSort} />
               <SortableHead label="Unit" sortKey="unitTitle" sort={sort} onToggle={toggleSort} />
               <TableHead className="font-bold">Ikon</TableHead>
               <SortableHead label="Dibuat" sortKey="createdAt" sort={sort} onToggle={toggleSort} />
@@ -130,9 +127,6 @@ export function AllLessonsTable() {
                   <TableCell>
                     <Skeleton className="mb-1 h-5 w-44" />
                     <Skeleton className="h-3 w-24" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-24" />
                   </TableCell>
                   <TableCell>
                     <Skeleton className="h-4 w-28" />
@@ -153,7 +147,7 @@ export function AllLessonsTable() {
               ))}
             {!isLoading && paged.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="p-6 text-center text-base text-muted-foreground">
+                <TableCell colSpan={6} className="p-6 text-center text-base text-muted-foreground">
                   {filter
                     ? `Tidak ada pelajaran yang cocok dengan "${filter}".`
                     : "Belum ada pelajaran."}
@@ -167,8 +161,8 @@ export function AllLessonsTable() {
                   className="cursor-pointer hover:bg-slate-100/70 transition-colors"
                   onClick={() =>
                     navigate({
-                      to: "/admin/$unitId/$lessonId",
-                      params: { unitId: lesson.unitId, lessonId: lesson.id },
+                      to: "/admin/$unitSlug/$lessonSlug",
+                      params: { unitSlug: lesson.unitSlug, lessonSlug: lesson.slug },
                     })
                   }
                 >
@@ -178,9 +172,6 @@ export function AllLessonsTable() {
                   <TableCell>
                     <div className="text-base font-semibold text-foreground">{lesson.title}</div>
                     <div className="text-xs text-muted-foreground">{lesson.id}</div>
-                  </TableCell>
-                  <TableCell>
-                    <code className="text-xs text-muted-foreground">{lesson.slug}</code>
                   </TableCell>
                   <TableCell>
                     <span className="text-sm text-muted-foreground">{lesson.unitTitle}</span>

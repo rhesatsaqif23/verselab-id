@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { Search, Shield } from "lucide-react";
+import { Search } from "lucide-react";
 import { Badge } from "#/components/ui/badge.tsx";
 import { Input } from "#/components/ui/input.tsx";
 import { Skeleton } from "#/components/ui/skeleton.tsx";
@@ -191,10 +191,7 @@ export function UsersTable() {
                       <span className="text-sm text-muted-foreground">{u.email}</span>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={u.role === "admin" ? "default" : "secondary"}>
-                        {u.role === "admin" && <Shield className="mr-1 size-3" />}
-                        {u.role}
-                      </Badge>
+                      <Badge variant={u.role === "admin" ? "default" : "secondary"}>{u.role}</Badge>
                     </TableCell>
                     <TableCell>
                       <Badge variant={u.onboardedAt ? "default" : "outline"}>
