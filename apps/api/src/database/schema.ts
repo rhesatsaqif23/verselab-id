@@ -9,6 +9,7 @@ import {
   primaryKey,
   jsonb,
   index,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema.ts";
 
@@ -86,6 +87,7 @@ export const contentUnits = pgTable(
   {
     id: text("id").primaryKey(),
     title: text("title").notNull(),
+    slug: text("slug").notNull(),
     description: text("description"),
     imageUrl: text("image_url"),
     sortOrder: integer("sort_order").notNull().default(0),
@@ -94,6 +96,7 @@ export const contentUnits = pgTable(
   },
   (t) => ({
     sortIdx: index("content_units_sort_idx").on(t.sortOrder),
+    slugIdx: uniqueIndex("content_units_slug_idx").on(t.slug),
   }),
 );
 
@@ -105,6 +108,7 @@ export const contentLessons = pgTable(
       .notNull()
       .references(() => contentUnits.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
+    slug: text("slug").notNull(),
     icon: text("icon"),
     sortOrder: integer("sort_order").notNull().default(0),
     createdAt: timestamp("created_at").notNull().defaultNow(),
@@ -113,6 +117,7 @@ export const contentLessons = pgTable(
   (t) => ({
     unitIdx: index("content_lessons_unit_idx").on(t.unitId),
     sortIdx: index("content_lessons_sort_idx").on(t.unitId, t.sortOrder),
+    slugIdx: uniqueIndex("content_lessons_slug_idx").on(t.slug),
   }),
 );
 
@@ -124,6 +129,7 @@ export const contentScreens = pgTable(
       .notNull()
       .references(() => contentLessons.id, { onDelete: "cascade" }),
     type: screenTypeEnum("type").notNull(),
+    slug: text("slug").notNull(),
     prompt: text("prompt").notNull(),
     explain: text("explain").notNull(),
     // choice fields
@@ -143,5 +149,6 @@ export const contentScreens = pgTable(
   (t) => ({
     lessonIdx: index("content_screens_lesson_idx").on(t.lessonId),
     sortIdx: index("content_screens_sort_idx").on(t.lessonId, t.sortOrder),
+    slugIdx: uniqueIndex("content_screens_slug_idx").on(t.slug),
   }),
 );

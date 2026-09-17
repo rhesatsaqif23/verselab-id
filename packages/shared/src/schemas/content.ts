@@ -1,10 +1,15 @@
 import { z } from "zod";
 
+// ── Slug helper ──────────────────────────────────────────────────────────────
+
+const slugSchema = z.string().trim().min(1).max(200);
+
 // ── Unit ────────────────────────────────────────────────────────────────────
 
 export const createUnitSchema = z.object({
   id: z.string().trim().min(1).max(100).optional(),
   title: z.string().trim().min(1).max(200),
+  slug: slugSchema.optional(),
   description: z.string().trim().max(500).optional(),
   imageUrl: z.string().url().optional(),
   sortOrder: z.number().int().min(0).optional(),
@@ -12,6 +17,7 @@ export const createUnitSchema = z.object({
 
 export const updateUnitSchema = z.object({
   title: z.string().trim().min(1).max(200).optional(),
+  slug: slugSchema.optional(),
   description: z.string().trim().max(500).optional().nullable(),
   imageUrl: z.string().url().optional().nullable(),
   sortOrder: z.number().int().min(0).optional(),
@@ -23,12 +29,14 @@ export const createLessonSchema = z.object({
   id: z.string().trim().min(1).max(100).optional(),
   unitId: z.string().trim().min(1).max(100),
   title: z.string().trim().min(1).max(200),
+  slug: slugSchema.optional(),
   icon: z.string().trim().max(50).optional(),
   sortOrder: z.number().int().min(0).optional(),
 });
 
 export const updateLessonSchema = z.object({
   title: z.string().trim().min(1).max(200).optional(),
+  slug: slugSchema.optional(),
   icon: z.string().trim().max(50).optional().nullable(),
   sortOrder: z.number().int().min(0).optional(),
 });
@@ -52,6 +60,7 @@ export const createScreenSchema = z.object({
   id: z.string().trim().min(1).max(100).optional(),
   lessonId: z.string().trim().min(1).max(100),
   type: screenTypeSchema,
+  slug: slugSchema.optional(),
   prompt: z.string().trim().min(1),
   explain: z.string().trim().min(1),
   // choice
@@ -69,6 +78,7 @@ export const createScreenSchema = z.object({
 
 export const updateScreenSchema = z.object({
   type: screenTypeSchema.optional(),
+  slug: slugSchema.optional(),
   prompt: z.string().trim().min(1).optional(),
   explain: z.string().trim().min(1).optional(),
   // choice

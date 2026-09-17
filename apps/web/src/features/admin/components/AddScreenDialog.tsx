@@ -87,7 +87,9 @@ export function AddScreenDialog({ onAdd }: AddScreenDialogProps) {
         </DialogHeader>
         <div className="flex flex-col gap-4 py-2">
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="screen-type">Tipe Screen</Label>
+            <Label htmlFor="screen-type">
+              Tipe Screen <span className="text-destructive">*</span>
+            </Label>
             <Select value={type} onValueChange={(val) => setType(val as ScreenType)}>
               <SelectTrigger id="screen-type" className="w-full">
                 <SelectValue placeholder="Pilih tipe" />

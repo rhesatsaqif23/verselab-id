@@ -2,6 +2,7 @@ import type { CreateLessonInput, UpdateLessonInput } from "@verselab/shared/sche
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
 import { contentLessons, contentScreens, contentUnits } from "../../database/schema.ts";
+import { resolveUniqueSlug } from "./slug.ts";
 
 export type LessonData = typeof contentLessons.$inferSelect;
 
@@ -48,6 +49,7 @@ export const contentLessonService: ContentLessonService = {
         id: contentLessons.id,
         unitId: contentLessons.unitId,
         title: contentLessons.title,
+        slug: contentLessons.slug,
         icon: contentLessons.icon,
         sortOrder: contentLessons.sortOrder,
         createdAt: contentLessons.createdAt,
@@ -88,12 +90,24 @@ export const contentLessonService: ContentLessonService = {
     const db = getDb();
     const sortOrder = input.sortOrder ?? (await getMaxSortOrder(input.unitId)) + 1;
     const id = input.id || crypto.randomUUID();
+    const slug = await resolveUniqueSlug(
+      { requestedSlug: input.slug, title: input.title },
+      async (candidate) => {
+        const rows = await db
+          .select({ id: contentLessons.id })
+          .from(contentLessons)
+          .where(eq(contentLessons.slug, candidate))
+          .limit(1);
+        return rows.length > 0;
+      },
+    );
     const [row] = await db
       .insert(contentLessons)
       .values({
         id,
         unitId: input.unitId,
         title: input.title,
+        slug,
         icon: input.icon,
         sortOrder,
       })
@@ -103,9 +117,23 @@ export const contentLessonService: ContentLessonService = {
 
   async updateLesson(id, input) {
     const db = getDb();
+    let slug: string | undefined;
+    if (input.title) {
+      slug = await resolveUniqueSlug(
+        { requestedSlug: input.slug, title: input.title },
+        async (candidate) => {
+          const rows = await db
+            .select({ id: contentLessons.id })
+            .from(contentLessons)
+            .where(eq(contentLessons.slug, candidate))
+            .limit(1);
+          return rows.length > 0 && rows[0].id !== id;
+        },
+      );
+    }
     const [row] = await db
       .update(contentLessons)
-      .set({ ...input, updatedAt: new Date() })
+      .set({ ...input, ...(slug ? { slug } : {}), updatedAt: new Date() })
       .where(eq(contentLessons.id, id))
       .returning();
     if (!row) throw new Error("Lesson not found");

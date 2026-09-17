@@ -31,6 +31,7 @@ async function apiMutate<T>(path: string, init: RequestInit): Promise<ApiRespons
 export type AdminUnit = {
   id: string;
   title: string;
+  slug: string;
   description: string | null;
   imageUrl: string | null;
   sortOrder: number;
@@ -42,6 +43,7 @@ export type AdminLesson = {
   id: string;
   unitId: string;
   title: string;
+  slug: string;
   icon: string | null;
   sortOrder: number;
   createdAt: Date;
@@ -162,6 +164,7 @@ export type AdminScreen = {
   id: string;
   lessonId: string;
   type: "concept" | "choice" | "numeric" | "allocation";
+  slug: string;
   prompt: string;
   explain: string;
   options: { id: string; label: string }[] | null;

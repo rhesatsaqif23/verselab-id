@@ -2,6 +2,7 @@ import type { CreateUnitInput, UpdateUnitInput } from "@verselab/shared/schemas/
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
 import { contentUnits } from "../../database/schema.ts";
+import { resolveUniqueSlug } from "./slug.ts";
 
 export type UnitData = typeof contentUnits.$inferSelect;
 
@@ -41,11 +42,23 @@ export const contentUnitService: ContentUnitService = {
     const db = getDb();
     const sortOrder = input.sortOrder ?? (await getMaxSortOrder()) + 1;
     const id = input.id || crypto.randomUUID();
+    const slug = await resolveUniqueSlug(
+      { requestedSlug: input.slug, title: input.title },
+      async (candidate) => {
+        const rows = await db
+          .select({ id: contentUnits.id })
+          .from(contentUnits)
+          .where(eq(contentUnits.slug, candidate))
+          .limit(1);
+        return rows.length > 0;
+      },
+    );
     const [row] = await db
       .insert(contentUnits)
       .values({
         id,
         title: input.title,
+        slug,
         description: input.description,
         imageUrl: input.imageUrl,
         sortOrder,
@@ -56,9 +69,23 @@ export const contentUnitService: ContentUnitService = {
 
   async updateUnit(id, input) {
     const db = getDb();
+    let slug: string | undefined;
+    if (input.title) {
+      slug = await resolveUniqueSlug(
+        { requestedSlug: input.slug, title: input.title },
+        async (candidate) => {
+          const rows = await db
+            .select({ id: contentUnits.id })
+            .from(contentUnits)
+            .where(eq(contentUnits.slug, candidate))
+            .limit(1);
+          return rows.length > 0 && rows[0].id !== id;
+        },
+      );
+    }
     const [row] = await db
       .update(contentUnits)
-      .set({ ...input, updatedAt: new Date() })
+      .set({ ...input, ...(slug ? { slug } : {}), updatedAt: new Date() })
       .where(eq(contentUnits.id, id))
       .returning();
     if (!row) throw new Error("Unit not found");

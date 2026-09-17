@@ -2,6 +2,7 @@ import type { CreateScreenInput, UpdateScreenInput } from "@verselab/shared/sche
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
 import { contentScreens, contentLessons } from "../../database/schema.ts";
+import { resolveUniqueSlug } from "./slug.ts";
 
 export type ScreenData = typeof contentScreens.$inferSelect;
 
@@ -45,6 +46,7 @@ export const contentScreenService: ContentScreenService = {
         id: contentScreens.id,
         lessonId: contentScreens.lessonId,
         type: contentScreens.type,
+        slug: contentScreens.slug,
         prompt: contentScreens.prompt,
         explain: contentScreens.explain,
         options: contentScreens.options,
@@ -76,12 +78,24 @@ export const contentScreenService: ContentScreenService = {
     const db = getDb();
     const sortOrder = input.sortOrder ?? (await getMaxSortOrder(input.lessonId)) + 1;
     const id = input.id || crypto.randomUUID();
+    const slug = await resolveUniqueSlug(
+      { requestedSlug: input.slug, title: input.prompt },
+      async (candidate) => {
+        const rows = await db
+          .select({ id: contentScreens.id })
+          .from(contentScreens)
+          .where(eq(contentScreens.slug, candidate))
+          .limit(1);
+        return rows.length > 0;
+      },
+    );
     const [row] = await db
       .insert(contentScreens)
       .values({
         id,
         lessonId: input.lessonId,
         type: input.type,
+        slug,
         prompt: input.prompt,
         explain: input.explain,
         options: input.options,
@@ -99,9 +113,23 @@ export const contentScreenService: ContentScreenService = {
 
   async updateScreen(id, input) {
     const db = getDb();
+    let slug: string | undefined;
+    if (input.prompt) {
+      slug = await resolveUniqueSlug(
+        { requestedSlug: input.slug, title: input.prompt },
+        async (candidate) => {
+          const rows = await db
+            .select({ id: contentScreens.id })
+            .from(contentScreens)
+            .where(eq(contentScreens.slug, candidate))
+            .limit(1);
+          return rows.length > 0 && rows[0].id !== id;
+        },
+      );
+    }
     const [row] = await db
       .update(contentScreens)
-      .set({ ...input, updatedAt: new Date() })
+      .set({ ...input, ...(slug ? { slug } : {}), updatedAt: new Date() })
       .where(eq(contentScreens.id, id))
       .returning();
     if (!row) throw new Error("Screen not found");

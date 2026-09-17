@@ -8,8 +8,8 @@ interface NumericFieldsProps {
 }
 
 export function NumericFields({ screen, onChange }: NumericFieldsProps) {
-  const min = screen.acceptRangeMin ?? 0;
-  const max = screen.acceptRangeMax ?? 0;
+  const min = screen.acceptRangeMin ?? "";
+  const max = screen.acceptRangeMax ?? "";
 
   return (
     <div className="space-y-4 border-t pt-2">
@@ -29,25 +29,33 @@ export function NumericFields({ screen, onChange }: NumericFieldsProps) {
       <div className="grid grid-cols-2 gap-4">
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="min-range" className="text-base">
-            Rentang Diterima (Min)
+            Rentang Diterima (Min) <span className="text-destructive">*</span>
           </Label>
           <Input
             id="min-range"
             type="number"
             value={min}
-            onChange={(e) => onChange({ acceptRangeMin: Number(e.target.value) })}
+            onChange={(e) =>
+              onChange({
+                acceptRangeMin: e.target.value === "" ? null : Number(e.target.value),
+              })
+            }
             className="md:text-base"
           />
         </div>
         <div className="flex flex-col gap-1.5">
           <Label htmlFor="max-range" className="text-base">
-            Rentang Diterima (Max)
+            Rentang Diterima (Max) <span className="text-destructive">*</span>
           </Label>
           <Input
             id="max-range"
             type="number"
             value={max}
-            onChange={(e) => onChange({ acceptRangeMax: Number(e.target.value) })}
+            onChange={(e) =>
+              onChange({
+                acceptRangeMax: e.target.value === "" ? null : Number(e.target.value),
+              })
+            }
             className="md:text-base"
           />
         </div>

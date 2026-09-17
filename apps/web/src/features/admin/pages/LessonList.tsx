@@ -31,7 +31,7 @@ import { LessonFormDialog } from "../components/LessonFormDialog.tsx";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
 
-type LessonSortKey = "title" | "icon";
+type LessonSortKey = "title" | "slug" | "icon";
 
 interface LessonListProps {
   unitId: string;
@@ -59,9 +59,13 @@ export function LessonList({ unitId }: LessonListProps) {
 
   const allLessons: AdminLesson[] = lessons ?? [];
 
-  const filterFn = useCallback((row: AdminLesson) => `${row.title} ${row.icon ?? ""}`, []);
+  const filterFn = useCallback(
+    (row: AdminLesson) => `${row.title} ${row.slug} ${row.icon ?? ""}`,
+    [],
+  );
   const getValue = useCallback((row: AdminLesson, key: LessonSortKey) => {
     if (key === "title") return row.title;
+    if (key === "slug") return row.slug;
     if (key === "icon") return row.icon ?? "";
     return "";
   }, []);
@@ -102,6 +106,7 @@ export function LessonList({ unitId }: LessonListProps) {
             <TableRow>
               <TableHead className="w-12 text-center font-bold">#</TableHead>
               <SortableHead label="Lesson" sortKey="title" sort={sort} onToggle={toggleSort} />
+              <SortableHead label="Slug" sortKey="slug" sort={sort} onToggle={toggleSort} />
               <SortableHead label="Icon" sortKey="icon" sort={sort} onToggle={toggleSort} />
               <TableHead className="w-24 text-center font-bold">Aksi</TableHead>
             </TableRow>
@@ -118,6 +123,9 @@ export function LessonList({ unitId }: LessonListProps) {
                     <Skeleton className="h-3 w-24" />
                   </TableCell>
                   <TableCell>
+                    <Skeleton className="h-4 w-24" />
+                  </TableCell>
+                  <TableCell>
                     <Skeleton className="h-4 w-8" />
                   </TableCell>
                   <TableCell className="text-center">
@@ -130,7 +138,7 @@ export function LessonList({ unitId }: LessonListProps) {
               ))}
             {!isLoading && processed.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} className="p-6 text-center text-base text-muted-foreground">
+                <TableCell colSpan={5} className="p-6 text-center text-base text-muted-foreground">
                   {filter
                     ? `Tidak ada lesson yang cocok dengan "${filter}".`
                     : "Belum ada lesson. Tambahkan lesson baru di atas."}
@@ -155,6 +163,9 @@ export function LessonList({ unitId }: LessonListProps) {
                   <TableCell>
                     <div className="text-base font-semibold text-foreground">{lesson.title}</div>
                     <div className="text-xs text-muted-foreground">{lesson.id}</div>
+                  </TableCell>
+                  <TableCell>
+                    <code className="text-xs text-muted-foreground">{lesson.slug}</code>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {lesson.icon || "-"}

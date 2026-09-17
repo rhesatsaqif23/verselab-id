@@ -53,7 +53,9 @@ export function AllocationFields({ screen, onChange }: AllocationFieldsProps) {
   return (
     <div className="space-y-4 border-t pt-2">
       <div className="flex items-center justify-between">
-        <Label className="text-base">Kategori Alokasi</Label>
+        <Label className="text-base">
+          Kategori Alokasi <span className="text-destructive">*</span>
+        </Label>
         <Button variant="outline" size="sm" className="text-sm" onClick={handleAddCategory}>
           <Plus className="mr-1 size-3.5" /> Tambah Kategori
         </Button>
@@ -87,7 +89,7 @@ export function AllocationFields({ screen, onChange }: AllocationFieldsProps) {
         <div className="grid grid-cols-3 gap-2">
           <div className="col-span-1 flex flex-col gap-1.5">
             <Label htmlFor="rule-category" className="text-sm">
-              Kategori
+              Kategori <span className="text-destructive">*</span>
             </Label>
             <Select
               value={rule.categoryId}
@@ -108,7 +110,7 @@ export function AllocationFields({ screen, onChange }: AllocationFieldsProps) {
 
           <div className="col-span-1 flex flex-col gap-1.5">
             <Label htmlFor="rule-min" className="text-sm">
-              Min (%)
+              Min (%) <span className="text-destructive">*</span>
             </Label>
             <Input
               id="rule-min"

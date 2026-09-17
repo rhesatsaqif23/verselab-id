@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Trash2, Upload, UploadCloud } from "lucide-react";
+import { slugify } from "@verselab/shared/slug";
 import { Button } from "#/components/ui/button.tsx";
 import {
   Dialog,
@@ -27,6 +28,9 @@ interface UnitFormDialogProps {
   unit?: AdminUnit;
 }
 
+const EMPTY_TITLE = "";
+const EMPTY_DESCRIPTION = "";
+
 function fileToBase64(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -44,9 +48,9 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
   const queryClient = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState(unit?.title ?? "");
-  const [description, setDescription] = useState(unit?.description ?? "");
-  const [previewUrl, setPreviewUrl] = useState(unit?.imageUrl ?? "");
+  const [title, setTitle] = useState(EMPTY_TITLE);
+  const [description, setDescription] = useState(EMPTY_DESCRIPTION);
+  const [previewUrl, setPreviewUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const createMutation = useMutation({
@@ -68,9 +72,9 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
   });
 
   function reset() {
-    setTitle(unit?.title ?? "");
-    setDescription(unit?.description ?? "");
-    setPreviewUrl(unit?.imageUrl ?? "");
+    setTitle(EMPTY_TITLE);
+    setDescription(EMPTY_DESCRIPTION);
+    setPreviewUrl("");
     setSelectedFile(null);
     if (fileRef.current) fileRef.current.value = "";
   }
@@ -82,7 +86,10 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      toast.error("Judul Unit wajib diisi");
+      return;
+    }
 
     const isEdit = !!unit;
 
@@ -150,7 +157,9 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
             </div>
           )}
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="unit-title">Judul Unit</Label>
+            <Label htmlFor="unit-title">
+              Judul Unit <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="unit-title"
               value={title}
@@ -158,6 +167,19 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
               placeholder="Keuangan"
               required
             />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="unit-slug">Slug (otomatis dari judul)</Label>
+            <Input
+              id="unit-slug"
+              value={title.trim() ? slugify(title) : ""}
+              disabled
+              placeholder="keuangan"
+              className="font-mono text-xs text-muted-foreground"
+            />
+            <p className="text-xs text-muted-foreground">
+              Slug dibuat otomatis dari judul dan dijamin tidak duplikat.
+            </p>
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="unit-desc">Deskripsi (opsional)</Label>

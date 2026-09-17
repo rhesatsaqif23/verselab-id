@@ -54,8 +54,7 @@ export function UsersTable() {
   const all: AdminUser[] = users ?? [];
 
   const filterFn = useCallback(
-    (row: AdminUser) =>
-      `${row.displayName ?? ""} ${row.name ?? ""} ${row.email ?? ""}`,
+    (row: AdminUser) => `${row.displayName ?? ""} ${row.name ?? ""} ${row.email ?? ""}`,
     [],
   );
   const getValue = useCallback((row: AdminUser, key: UserSortKey) => {
@@ -67,10 +66,12 @@ export function UsersTable() {
     return "";
   }, []);
 
-  const { processed, sort, toggleSort, filter, setFilter } = useSortFilter<
-    AdminUser,
-    UserSortKey
-  >(all, "createdAt", filterFn, getValue);
+  const { processed, sort, toggleSort, filter, setFilter } = useSortFilter<AdminUser, UserSortKey>(
+    all,
+    "createdAt",
+    filterFn,
+    getValue,
+  );
 
   useEffect(() => {
     setPage(1);

@@ -1,7 +1,9 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { slugify } from "@verselab/shared/slug";
 import { Button } from "#/components/ui/button.tsx";
+import { Input } from "#/components/ui/input.tsx";
 import { Label } from "#/components/ui/label.tsx";
 import { Textarea } from "#/components/ui/textarea.tsx";
 import { adminUpdateScreen, type AdminScreen } from "#/libs/admin-content-fns.ts";
@@ -14,13 +16,30 @@ interface ScreenFormProps {
   lessonId: string;
 }
 
+function createEmptyForm(type: AdminScreen["type"]): AdminScreen {
+  return {
+    id: "",
+    lessonId: "",
+    type,
+    slug: "",
+    prompt: "",
+    explain: "",
+    options: null,
+    correctId: null,
+    numericUnit: null,
+    acceptRangeMin: null,
+    acceptRangeMax: null,
+    categories: null,
+    rule: null,
+    sortOrder: 0,
+    createdAt: new Date(0),
+    updatedAt: new Date(0),
+  };
+}
+
 export function ScreenForm({ screen, lessonId }: ScreenFormProps) {
   const queryClient = useQueryClient();
-  const [formData, setFormData] = useState(screen);
-
-  useEffect(() => {
-    setFormData(screen);
-  }, [screen.id]);
+  const [formData, setFormData] = useState<AdminScreen>(() => createEmptyForm(screen.type));
 
   const saveMutation = useMutation({
     mutationFn: (patch: Parameters<typeof adminUpdateScreen>[0]["data"]) =>
@@ -42,26 +61,81 @@ export function ScreenForm({ screen, lessonId }: ScreenFormProps) {
     setFormData((prev) => ({ ...prev, ...patch }));
   }
 
-  function handleSave() {
-    const patch: Record<string, unknown> = {};
-    if (formData.prompt !== screen.prompt) patch.prompt = formData.prompt;
-    if (formData.explain !== screen.explain) patch.explain = formData.explain;
-    if (JSON.stringify(formData.options) !== JSON.stringify(screen.options))
-      patch.options = formData.options;
-    if (formData.correctId !== screen.correctId) patch.correctId = formData.correctId;
-    if (formData.numericUnit !== screen.numericUnit) patch.numericUnit = formData.numericUnit;
-    if (formData.acceptRangeMin !== screen.acceptRangeMin)
-      patch.acceptRangeMin = formData.acceptRangeMin;
-    if (formData.acceptRangeMax !== screen.acceptRangeMax)
-      patch.acceptRangeMax = formData.acceptRangeMax;
-    if (JSON.stringify(formData.categories) !== JSON.stringify(screen.categories))
-      patch.categories = formData.categories;
-    if (JSON.stringify(formData.rule) !== JSON.stringify(screen.rule)) patch.rule = formData.rule;
+  function validateForm(): string[] {
+    const errors: string[] = [];
+    if (!formData.prompt.trim()) errors.push("Pertanyaan / Prompt wajib diisi");
 
-    if (Object.keys(patch).length === 0) {
-      toast.info("Tidak ada perubahan");
+    if (!formData.explain.trim()) errors.push("Penjelasan wajib diisi");
+
+    if (formData.type === "choice") {
+      const options = formData.options ?? [];
+      if (options.length < 2) errors.push("Minimal 2 pilihan jawaban");
+      if (options.some((o) => !o.label.trim())) errors.push("Semua pilihan jawaban wajib diisi");
+      if (!formData.correctId) errors.push("Jawaban benar wajib dipilih");
+    }
+
+    if (formData.type === "numeric") {
+      if (formData.acceptRangeMin == null) errors.push("Rentang diterima (Min) wajib diisi");
+      if (formData.acceptRangeMax == null) errors.push("Rentang diterima (Max) wajib diisi");
+    }
+
+    if (formData.type === "allocation") {
+      const categories = formData.categories ?? [];
+      if (categories.length === 0) errors.push("Minimal 1 kategori alokasi");
+      if (categories.some((c) => !c.trim())) errors.push("Semua kategori alokasi wajib diisi");
+      if (!formData.rule?.categoryId) errors.push("Kategori aturan wajib dipilih");
+      if (formData.rule?.min == null) errors.push("Min (%) aturan wajib diisi");
+    }
+
+    return errors;
+  }
+
+  function handleSave() {
+    const errors = validateForm();
+    if (errors.length > 0) {
+      errors.forEach((msg) => toast.error(msg));
       return;
     }
+
+    const patch: Partial<AdminScreen> = {
+      prompt: formData.prompt.trim(),
+      explain: formData.explain.trim(),
+    };
+
+    if (formData.type === "choice") {
+      patch.options = formData.options ?? [];
+      patch.correctId = formData.correctId || null;
+      patch.numericUnit = null;
+      patch.acceptRangeMin = null;
+      patch.acceptRangeMax = null;
+      patch.categories = null;
+      patch.rule = null;
+    } else if (formData.type === "numeric") {
+      patch.options = null;
+      patch.correctId = null;
+      patch.numericUnit = formData.numericUnit?.trim() || null;
+      patch.acceptRangeMin = formData.acceptRangeMin;
+      patch.acceptRangeMax = formData.acceptRangeMax;
+      patch.categories = null;
+      patch.rule = null;
+    } else if (formData.type === "allocation") {
+      patch.options = null;
+      patch.correctId = null;
+      patch.numericUnit = null;
+      patch.acceptRangeMin = null;
+      patch.acceptRangeMax = null;
+      patch.categories = formData.categories ?? [];
+      patch.rule = formData.rule;
+    } else {
+      patch.options = null;
+      patch.correctId = null;
+      patch.numericUnit = null;
+      patch.acceptRangeMin = null;
+      patch.acceptRangeMax = null;
+      patch.categories = null;
+      patch.rule = null;
+    }
+
     saveMutation.mutate({ id: screen.id, ...patch } as Parameters<
       typeof adminUpdateScreen
     >[0]["data"]);
@@ -73,7 +147,7 @@ export function ScreenForm({ screen, lessonId }: ScreenFormProps) {
     <div className="space-y-4">
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="prompt" className="text-base">
-          Pertanyaan / Prompt
+          Pertanyaan / Prompt <span className="text-destructive">*</span>
         </Label>
         <Textarea
           id="prompt"
@@ -86,8 +160,24 @@ export function ScreenForm({ screen, lessonId }: ScreenFormProps) {
       </div>
 
       <div className="flex flex-col gap-1.5">
+        <Label htmlFor="screen-slug" className="text-base">
+          Slug (otomatis dari prompt)
+        </Label>
+        <Input
+          id="screen-slug"
+          value={formData.prompt.trim() ? slugify(formData.prompt) : ""}
+          disabled
+          placeholder="pertanyaan-prompt"
+          className="font-mono text-xs text-muted-foreground"
+        />
+        <p className="text-xs text-muted-foreground">
+          Slug dibuat otomatis dari prompt dan dijamin tidak duplikat.
+        </p>
+      </div>
+
+      <div className="flex flex-col gap-1.5">
         <Label htmlFor="explain" className="text-base">
-          Penjelasan
+          Penjelasan <span className="text-destructive">*</span>
         </Label>
         <Textarea
           id="explain"
@@ -99,9 +189,9 @@ export function ScreenForm({ screen, lessonId }: ScreenFormProps) {
         />
       </div>
 
-      {screen.type === "choice" && <ChoiceFields screen={formData} onChange={handlePatch} />}
-      {screen.type === "numeric" && <NumericFields screen={formData} onChange={handlePatch} />}
-      {screen.type === "allocation" && (
+      {formData.type === "choice" && <ChoiceFields screen={formData} onChange={handlePatch} />}
+      {formData.type === "numeric" && <NumericFields screen={formData} onChange={handlePatch} />}
+      {formData.type === "allocation" && (
         <AllocationFields screen={formData} onChange={handlePatch} />
       )}
 

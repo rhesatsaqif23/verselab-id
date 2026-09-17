@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { slugify } from "@verselab/shared/slug";
 import { Button } from "#/components/ui/button.tsx";
 import {
   Dialog,
@@ -18,6 +19,9 @@ import {
   type AdminLesson,
 } from "#/libs/admin-content-fns.ts";
 
+const EMPTY_TITLE = "";
+const EMPTY_ICON = "";
+
 interface LessonFormDialogProps {
   trigger: React.ReactNode;
   unitId: string;
@@ -27,8 +31,8 @@ interface LessonFormDialogProps {
 export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogProps) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState(lesson?.title ?? "");
-  const [icon, setIcon] = useState(lesson?.icon ?? "");
+  const [title, setTitle] = useState(EMPTY_TITLE);
+  const [icon, setIcon] = useState(EMPTY_ICON);
 
   const createMutation = useMutation({
     mutationFn: (data: { id?: string; unitId: string; title: string; icon?: string }) =>
@@ -43,8 +47,8 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   });
 
   function reset() {
-    setTitle(lesson?.title ?? "");
-    setIcon(lesson?.icon ?? "");
+    setTitle(EMPTY_TITLE);
+    setIcon(EMPTY_ICON);
   }
 
   function handleOpenChange(next: boolean) {
@@ -54,7 +58,10 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!title.trim()) return;
+    if (!title.trim()) {
+      toast.error("Judul Lesson wajib diisi");
+      return;
+    }
 
     try {
       if (lesson) {
@@ -101,7 +108,9 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
             </div>
           )}
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lesson-title">Judul Lesson</Label>
+            <Label htmlFor="lesson-title">
+              Judul Lesson <span className="text-destructive">*</span>
+            </Label>
             <Input
               id="lesson-title"
               value={title}
@@ -109,6 +118,19 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
               placeholder="Mulai Menabung"
               required
             />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="lesson-slug">Slug (otomatis dari judul)</Label>
+            <Input
+              id="lesson-slug"
+              value={title.trim() ? slugify(title) : ""}
+              disabled
+              placeholder="mulai-menabung"
+              className="font-mono text-xs text-muted-foreground"
+            />
+            <p className="text-xs text-muted-foreground">
+              Slug dibuat otomatis dari judul dan dijamin tidak duplikat.
+            </p>
           </div>
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="lesson-icon">Icon (opsional)</Label>

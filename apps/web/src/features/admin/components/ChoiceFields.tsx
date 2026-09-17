@@ -47,7 +47,9 @@ export function ChoiceFields({ screen, onChange }: ChoiceFieldsProps) {
   return (
     <div className="space-y-4 border-t pt-2">
       <div className="flex items-center justify-between">
-        <Label className="text-base">Pilihan Jawaban</Label>
+        <Label className="text-base">
+          Pilihan Jawaban <span className="text-destructive">*</span>
+        </Label>
         <Button variant="shadowless" size="sm" className="text-sm" onClick={handleAddOption}>
           <Plus className="mr-1 size-3.5" /> Tambah Pilihan
         </Button>
@@ -78,7 +80,7 @@ export function ChoiceFields({ screen, onChange }: ChoiceFieldsProps) {
 
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="correct-id" className="text-base">
-          Jawaban Benar
+          Jawaban Benar <span className="text-destructive">*</span>
         </Label>
         <Select
           value={screen.correctId ?? ""}

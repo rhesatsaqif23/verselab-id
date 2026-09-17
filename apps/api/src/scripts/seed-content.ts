@@ -47,6 +47,7 @@ async function seedContent() {
     await db.insert(contentUnits).values({
       id: unit.id,
       title: unit.title,
+      slug: unit.id,
       description: unit.description,
       imageUrl: unit.imageUrl,
       sortOrder: unitIdx,
@@ -60,6 +61,7 @@ async function seedContent() {
         id: lesson.id,
         unitId: unit.id,
         title: lesson.title,
+        slug: lesson.id,
         icon: lesson.icon,
         sortOrder: lessonIdx,
       });
@@ -72,6 +74,7 @@ async function seedContent() {
           id: `${lesson.id}-screen-${screenIdx}`,
           lessonId: lesson.id,
           type: screen.type,
+          slug: `${lesson.id}-screen-${screenIdx}`,
           prompt: screen.prompt,
           explain: screen.explain,
           sortOrder: screenIdx,
