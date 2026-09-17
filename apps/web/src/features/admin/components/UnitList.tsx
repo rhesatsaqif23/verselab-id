@@ -84,27 +84,32 @@ export function UnitList() {
               <TableHead className="font-bold">Unit</TableHead>
               <TableHead className="font-bold">Deskripsi</TableHead>
               <TableHead className="w-20 text-center font-bold">Gambar</TableHead>
-              <TableHead className="w-24 text-right font-bold">Aksi</TableHead>
+              <TableHead className="w-24 text-center font-bold">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading &&
               Array.from({ length: 3 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell>
-                    <Skeleton className="mx-auto h-5 w-6" />
+                  <TableCell className="text-center">
+                    <Skeleton className="mx-auto h-4 w-5" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="mb-1 h-5 w-36" />
+                    <Skeleton className="h-3 w-20" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-5 w-48" />
+                    <Skeleton className="mb-1 h-4 w-64" />
+                    <Skeleton className="h-4 w-40" />
                   </TableCell>
                   <TableCell className="text-center">
-                    <Skeleton className="mx-auto size-12 rounded" />
+                    <Skeleton className="mx-auto size-12 rounded-lg" />
                   </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="ml-auto h-8 w-20" />
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <Skeleton className="size-8 rounded-lg" />
+                      <Skeleton className="size-8 rounded-lg" />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -117,23 +122,17 @@ export function UnitList() {
             )}
             {!isLoading &&
               paged.map((unit, i) => (
-                <TableRow key={unit.id} className="hover:bg-card/30">
+                <TableRow
+                  key={unit.id}
+                  className="cursor-pointer hover:bg-slate-100/70 transition-colors"
+                  onClick={() => navigate({ to: "/admin/$unitId", params: { unitId: unit.id } })}
+                >
                   <TableCell className="text-center tabular-nums text-muted-foreground">
                     {(page - 1) * PAGE_SIZE + i + 1}
                   </TableCell>
                   <TableCell>
-                    <button
-                      type="button"
-                      className="text-left"
-                      onClick={() =>
-                        navigate({ to: "/admin/$unitId", params: { unitId: unit.id } })
-                      }
-                    >
-                      <div className="text-base font-semibold text-foreground hover:underline">
-                        {unit.title}
-                      </div>
-                      <div className="text-xs text-muted-foreground">{unit.id}</div>
-                    </button>
+                    <div className="text-base font-semibold text-foreground">{unit.title}</div>
+                    <div className="text-xs text-muted-foreground">{unit.id}</div>
                   </TableCell>
                   <TableCell>
                     <p className="line-clamp-2 text-sm text-muted-foreground">
@@ -151,8 +150,8 @@ export function UnitList() {
                       <span className="text-xs text-muted-foreground">-</span>
                     )}
                   </TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-1">
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-center gap-1">
                       <UnitFormDialog
                         trigger={
                           <Button variant="shadowless" size="icon" aria-label="Edit unit">

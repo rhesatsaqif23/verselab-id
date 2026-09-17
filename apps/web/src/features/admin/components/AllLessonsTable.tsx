@@ -77,27 +77,31 @@ export function AllLessonsTable() {
               <TableHead className="font-bold">Pelajaran</TableHead>
               <TableHead className="font-bold">Unit</TableHead>
               <TableHead className="font-bold">Ikon</TableHead>
-              <TableHead className="w-24 text-right font-bold">Aksi</TableHead>
+              <TableHead className="w-24 text-center font-bold">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading &&
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell>
-                    <Skeleton className="mx-auto h-5 w-6" />
+                  <TableCell className="text-center">
+                    <Skeleton className="mx-auto h-4 w-5" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-5 w-32" />
+                    <Skeleton className="mb-1 h-5 w-44" />
+                    <Skeleton className="h-3 w-24" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="h-4 w-28" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-5 w-8" />
+                    <Skeleton className="h-4 w-8" />
                   </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="ml-auto h-8 w-20" />
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <Skeleton className="size-8 rounded-lg" />
+                      <Skeleton className="size-8 rounded-lg" />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -110,33 +114,31 @@ export function AllLessonsTable() {
             )}
             {!isLoading &&
               paged.map((lesson, i) => (
-                <TableRow key={lesson.id} className="hover:bg-card/30">
+                <TableRow
+                  key={lesson.id}
+                  className="cursor-pointer hover:bg-slate-100/70 transition-colors"
+                  onClick={() =>
+                    navigate({
+                      to: "/admin/$unitId/$lessonId",
+                      params: { unitId: lesson.unitId, lessonId: lesson.id },
+                    })
+                  }
+                >
                   <TableCell className="text-center tabular-nums text-muted-foreground">
                     {(page - 1) * PAGE_SIZE + i + 1}
                   </TableCell>
                   <TableCell>
-                    <button
-                      type="button"
-                      className="text-left"
-                      onClick={() =>
-                        navigate({
-                          to: "/admin/$unitId/$lessonId",
-                          params: { unitId: lesson.unitId, lessonId: lesson.id },
-                        })
-                      }
-                    >
-                      <div className="text-base font-semibold text-foreground hover:underline">
-                        {lesson.title}
-                      </div>
-                      <div className="text-xs text-muted-foreground">{lesson.id}</div>
-                    </button>
+                    <div className="text-base font-semibold text-foreground">{lesson.title}</div>
+                    <div className="text-xs text-muted-foreground">{lesson.id}</div>
                   </TableCell>
                   <TableCell>
                     <span className="text-sm text-muted-foreground">{lesson.unitTitle}</span>
                   </TableCell>
-                  <TableCell className="text-lg">{lesson.icon || "-"}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-1">
+                  <TableCell className="text-sm text-muted-foreground">
+                    {lesson.icon || "-"}
+                  </TableCell>
+                  <TableCell onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-center gap-1">
                       <LessonFormDialog
                         unitId={lesson.unitId}
                         lesson={lesson}

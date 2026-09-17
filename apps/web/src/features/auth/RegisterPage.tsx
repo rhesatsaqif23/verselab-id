@@ -7,7 +7,7 @@ import { UserPlus } from "lucide-react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Form } from "#/components/ui/form";
-import { authClient } from "#/libs/auth-client.ts";
+import { authClient, translateAuthError } from "#/libs/auth-client.ts";
 import { AuthField } from "./components/AuthField.tsx";
 import { AuthShell } from "./components/AuthShell.tsx";
 import { AuthSubmitButton } from "./components/AuthSubmitButton.tsx";
@@ -29,7 +29,7 @@ export function RegisterPage() {
       password: values.password,
     });
     if (error) {
-      toast.error(error.message ?? "Gagal membuat akun");
+      toast.error(translateAuthError(error, "Gagal membuat akun"));
       return;
     }
     setValue("password", "");

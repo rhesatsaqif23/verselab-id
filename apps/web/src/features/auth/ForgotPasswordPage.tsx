@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Form } from "#/components/ui/form";
 import { Button } from "#/components/ui/button";
-import { authClient } from "#/libs/auth-client.ts";
+import { authClient, translateAuthError } from "#/libs/auth-client.ts";
 import { env } from "#/libs/env.ts";
 import { AuthField } from "./components/AuthField.tsx";
 import { AuthShell } from "./components/AuthShell.tsx";
@@ -30,7 +30,7 @@ export function ForgotPasswordPage() {
       redirectTo: `${env.apiOrigin}/reset-password`,
     });
     if (error) {
-      toast.error(error.message ?? "Gagal mengirim tautan reset");
+      toast.error(translateAuthError(error, "Gagal mengirim tautan reset"));
       return;
     }
     setSent(true);

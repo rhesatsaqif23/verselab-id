@@ -40,10 +40,11 @@ export const contentUnitService: ContentUnitService = {
   async createUnit(input) {
     const db = getDb();
     const sortOrder = input.sortOrder ?? (await getMaxSortOrder()) + 1;
+    const id = input.id || crypto.randomUUID();
     const [row] = await db
       .insert(contentUnits)
       .values({
-        id: input.id,
+        id,
         title: input.title,
         description: input.description,
         imageUrl: input.imageUrl,

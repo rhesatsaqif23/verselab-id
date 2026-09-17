@@ -27,12 +27,11 @@ interface LessonFormDialogProps {
 export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogProps) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [id, setId] = useState(lesson?.id ?? "");
   const [title, setTitle] = useState(lesson?.title ?? "");
   const [icon, setIcon] = useState(lesson?.icon ?? "");
 
   const createMutation = useMutation({
-    mutationFn: (data: { id: string; unitId: string; title: string; icon?: string }) =>
+    mutationFn: (data: { id?: string; unitId: string; title: string; icon?: string }) =>
       adminCreateLesson({ data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] }),
   });
@@ -44,7 +43,6 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   });
 
   function reset() {
-    setId(lesson?.id ?? "");
     setTitle(lesson?.title ?? "");
     setIcon(lesson?.icon ?? "");
   }
@@ -67,9 +65,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
         });
         toast.success("Lesson berhasil diperbarui");
       } else {
-        if (!id.trim()) return;
         await createMutation.mutateAsync({
-          id: id.trim(),
           unitId,
           title: title.trim(),
           icon: icon.trim() || undefined,
@@ -94,17 +90,16 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
           <DialogTitle>{isEdit ? "Edit Lesson" : "Tambah Lesson"}</DialogTitle>
         </DialogHeader>
         <form id="lesson-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lesson-id">ID Lesson</Label>
-            <Input
-              id="lesson-id"
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-              placeholder="nabung-awal"
-              disabled={isEdit}
-              required
-            />
-          </div>
+          {isEdit && (
+            <div className="flex flex-col gap-1.5">
+              <Label>ID Lesson</Label>
+              <Input
+                value={lesson.id}
+                disabled
+                className="font-mono text-xs text-muted-foreground"
+              />
+            </div>
+          )}
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="lesson-title">Judul Lesson</Label>
             <Input

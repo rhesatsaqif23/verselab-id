@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Form } from "#/components/ui/form";
 import { Button } from "#/components/ui/button";
-import { authClient } from "#/libs/auth-client.ts";
+import { authClient, translateAuthError } from "#/libs/auth-client.ts";
 import { AuthField } from "./components/AuthField.tsx";
 import { AuthShell } from "./components/AuthShell.tsx";
 import { AuthSubmitButton } from "./components/AuthSubmitButton.tsx";
@@ -29,7 +29,7 @@ export function ResetPasswordPage({ token }: { token: string }) {
       token,
     });
     if (error) {
-      toast.error(error.message ?? "Tautan reset tidak valid atau kedaluwarsa");
+      toast.error(translateAuthError(error, "Tautan reset tidak valid atau kedaluwarsa"));
       return;
     }
     setValue("password", "");

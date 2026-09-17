@@ -1,7 +1,7 @@
 import type { CreateScreenInput, UpdateScreenInput } from "@verselab/shared/schemas/content";
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
-import { contentScreens, contentLessons } from "../../database/schema.ts";
+import { contentScreens, contentLessons, contentUnits } from "../../database/schema.ts";
 
 export type ScreenData = typeof contentScreens.$inferSelect;
 
@@ -58,6 +58,7 @@ export const contentScreenService: ContentScreenService = {
         createdAt: contentScreens.createdAt,
         updatedAt: contentScreens.updatedAt,
         lessonTitle: contentLessons.title,
+        unitId: contentLessons.unitId,
       })
       .from(contentScreens)
       .innerJoin(contentLessons, eq(contentScreens.lessonId, contentLessons.id))
@@ -74,10 +75,11 @@ export const contentScreenService: ContentScreenService = {
   async createScreen(input) {
     const db = getDb();
     const sortOrder = input.sortOrder ?? (await getMaxSortOrder(input.lessonId)) + 1;
+    const id = input.id || crypto.randomUUID();
     const [row] = await db
       .insert(contentScreens)
       .values({
-        id: input.id,
+        id,
         lessonId: input.lessonId,
         type: input.type,
         prompt: input.prompt,

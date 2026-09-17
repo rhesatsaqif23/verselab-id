@@ -87,10 +87,11 @@ export const contentLessonService: ContentLessonService = {
   async createLesson(input) {
     const db = getDb();
     const sortOrder = input.sortOrder ?? (await getMaxSortOrder(input.unitId)) + 1;
+    const id = input.id || crypto.randomUUID();
     const [row] = await db
       .insert(contentLessons)
       .values({
-        id: input.id,
+        id,
         unitId: input.unitId,
         title: input.title,
         icon: input.icon,

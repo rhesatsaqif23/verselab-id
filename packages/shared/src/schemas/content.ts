@@ -3,7 +3,7 @@ import { z } from "zod";
 // ── Unit ────────────────────────────────────────────────────────────────────
 
 export const createUnitSchema = z.object({
-  id: z.string().trim().min(1).max(100),
+  id: z.string().trim().min(1).max(100).optional(),
   title: z.string().trim().min(1).max(200),
   description: z.string().trim().max(500).optional(),
   imageUrl: z.string().url().optional(),
@@ -20,7 +20,7 @@ export const updateUnitSchema = z.object({
 // ── Lesson ──────────────────────────────────────────────────────────────────
 
 export const createLessonSchema = z.object({
-  id: z.string().trim().min(1).max(100),
+  id: z.string().trim().min(1).max(100).optional(),
   unitId: z.string().trim().min(1).max(100),
   title: z.string().trim().min(1).max(200),
   icon: z.string().trim().max(50).optional(),
@@ -49,7 +49,7 @@ const allocationRuleSchema = z.object({
 });
 
 export const createScreenSchema = z.object({
-  id: z.string().trim().min(1).max(100),
+  id: z.string().trim().min(1).max(100).optional(),
   lessonId: z.string().trim().min(1).max(100),
   type: screenTypeSchema,
   prompt: z.string().trim().min(1),

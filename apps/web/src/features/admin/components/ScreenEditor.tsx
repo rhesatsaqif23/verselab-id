@@ -84,7 +84,6 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
 
     if (type === "concept") {
       data = {
-        id: `screen-${Date.now()}`,
         lessonId,
         type: "concept",
         prompt: "Pertanyaan Konsep Baru",
@@ -92,7 +91,6 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
       };
     } else if (type === "choice") {
       data = {
-        id: `screen-${Date.now()}`,
         lessonId,
         type: "choice",
         prompt: "Pertanyaan Pilihan Ganda Baru",
@@ -105,7 +103,6 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
       };
     } else if (type === "numeric") {
       data = {
-        id: `screen-${Date.now()}`,
         lessonId,
         type: "numeric",
         prompt: "Pertanyaan Angka Baru",
@@ -116,7 +113,6 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
       };
     } else {
       data = {
-        id: `screen-${Date.now()}`,
         lessonId,
         type: "allocation",
         prompt: "Pertanyaan Alokasi Baru",

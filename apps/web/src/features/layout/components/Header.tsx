@@ -1,11 +1,12 @@
 // Header: sticky top nav with streak/XP badges and animated active indicator.
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import ThemeToggle from "./ThemeToggle";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
-import { Flame } from "lucide-react";
+import { Flame, ShieldCheck } from "lucide-react";
 import { navItems } from "../constants.ts";
+import { resolveSession } from "#/libs/session.ts";
 
 function NavItem({
   to,
@@ -53,6 +54,21 @@ export default function Header() {
   const isActive = (path: string) => location.pathname === path;
   const streak = useProgressStore((s) => s.streak);
   const xp = useProgressStore((s) => s.xp);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let active = true;
+    resolveSession()
+      .then((s) => {
+        if (active && s.status === "authenticated" && s.role === "admin") {
+          setIsAdmin(true);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card">
@@ -65,6 +81,14 @@ export default function Header() {
           {navItems.map(({ to, label, icon }) => (
             <NavItem key={to} to={to} label={label} icon={icon} isActive={isActive(to)} />
           ))}
+          {isAdmin && (
+            <NavItem
+              to="/admin"
+              label="Admin"
+              icon={ShieldCheck}
+              isActive={location.pathname.startsWith("/admin")}
+            />
+          )}
         </div>
 
         <div className="ml-auto flex items-center gap-3">

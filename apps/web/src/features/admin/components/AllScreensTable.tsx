@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { useNavigate } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Trash2 } from "lucide-react";
+import { Pencil, Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,6 +54,7 @@ const typeBadgeVariant: Record<string, "default" | "secondary" | "outline"> = {
 
 export function AllScreensTable() {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   const [page, setPage] = useState(1);
 
   const { data: screens, isLoading } = useQuery({
@@ -86,30 +88,33 @@ export function AllScreensTable() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-12 text-center font-bold">#</TableHead>
-              <TableHead className="font-bold">Prompt</TableHead>
-              <TableHead className="font-bold">Pelajaran</TableHead>
+              <TableHead className="max-w-xs font-bold">Prompt</TableHead>
+              <TableHead className="max-w-[10rem] font-bold">Pelajaran</TableHead>
               <TableHead className="font-bold">Tipe</TableHead>
-              <TableHead className="w-24 text-right font-bold">Aksi</TableHead>
+              <TableHead className="w-20 text-right font-bold">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading &&
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell>
-                    <Skeleton className="mx-auto h-5 w-6" />
+                  <TableCell className="text-center">
+                    <Skeleton className="mx-auto h-4 w-5" />
+                  </TableCell>
+                  <TableCell className="max-w-xs">
+                    <Skeleton className="mb-1 h-5 w-56" />
+                    <Skeleton className="h-3 w-28" />
+                  </TableCell>
+                  <TableCell className="max-w-[10rem]">
+                    <Skeleton className="h-4 w-28" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-5 w-48" />
+                    <Skeleton className="h-6 w-20 rounded-full" />
                   </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-5 w-24" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-5 w-16" />
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Skeleton className="ml-auto h-8 w-20" />
+                  <TableCell className="text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <Skeleton className="size-8 rounded-lg" />
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -126,14 +131,22 @@ export function AllScreensTable() {
                   <TableCell className="text-center tabular-nums text-muted-foreground">
                     {(page - 1) * PAGE_SIZE + i + 1}
                   </TableCell>
-                  <TableCell>
-                    <div className="text-base font-medium text-foreground line-clamp-1">
+                  <TableCell className="max-w-xs">
+                    <div
+                      className="truncate text-base font-medium text-foreground"
+                      title={screen.prompt}
+                    >
                       {screen.prompt}
                     </div>
-                    <div className="text-xs text-muted-foreground">{screen.id}</div>
+                    <div className="truncate text-xs text-muted-foreground">{screen.id}</div>
                   </TableCell>
-                  <TableCell>
-                    <span className="text-sm text-muted-foreground">{screen.lessonTitle}</span>
+                  <TableCell className="max-w-[10rem]">
+                    <span
+                      className="block truncate text-sm text-muted-foreground"
+                      title={screen.lessonTitle}
+                    >
+                      {screen.lessonTitle}
+                    </span>
                   </TableCell>
                   <TableCell>
                     <Badge variant={typeBadgeVariant[screen.type] ?? "outline"}>
@@ -142,6 +155,19 @@ export function AllScreensTable() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">
+                      <Button
+                        variant="shadowless"
+                        size="icon"
+                        aria-label="Edit layar"
+                        onClick={() =>
+                          navigate({
+                            to: "/admin/$unitId/$lessonId",
+                            params: { unitId: screen.unitId, lessonId: screen.lessonId },
+                          })
+                        }
+                      >
+                        <Pencil className="size-4" />
+                      </Button>
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button

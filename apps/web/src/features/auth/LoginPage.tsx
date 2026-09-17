@@ -1,12 +1,11 @@
 // LoginPage: email + password sign-in via the Better Auth client.
-"use client";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { LogIn } from "lucide-react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { Form } from "#/components/ui/form";
-import { authClient } from "#/libs/auth-client.ts";
+import { authClient, translateAuthError } from "#/libs/auth-client.ts";
 import { AuthField } from "./components/AuthField.tsx";
 import { AuthShell } from "./components/AuthShell.tsx";
 import { AuthSubmitButton } from "./components/AuthSubmitButton.tsx";
@@ -27,7 +26,7 @@ export function LoginPage() {
       password: values.password,
     });
     if (error) {
-      toast.error(error.message ?? "Email atau kata sandi salah");
+      toast.error(translateAuthError(error, "Email atau kata sandi salah"));
       return;
     }
     setValue("password", "");

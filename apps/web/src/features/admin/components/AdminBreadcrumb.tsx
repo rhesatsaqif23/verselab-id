@@ -1,4 +1,4 @@
-import { Link, useMatches } from "@tanstack/react-router";
+import { Link, useLocation } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
 import {
   Breadcrumb,
@@ -16,19 +16,30 @@ const segmentLabels: Record<string, string> = {
   pengguna: "Pengguna",
 };
 
-export function AdminBreadcrumb() {
-  const matches = useMatches();
+function formatSegmentLabel(seg: string): string {
+  if (segmentLabels[seg]) return segmentLabels[seg];
+  return seg
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
-  const crumbs = matches
-    .filter((m) => m.pathname !== "/")
-    .map((m) => {
-      const segments = m.pathname.split("/").filter(Boolean);
-      return segments.map((seg) => ({
-        segment: seg,
-        label: segmentLabels[seg] ?? seg.charAt(0).toUpperCase() + seg.slice(1),
-      }));
-    })
-    .flat();
+export function AdminBreadcrumb() {
+  const location = useLocation();
+  const segments = location.pathname.split("/").filter(Boolean);
+
+  if (segments.length === 0) {
+    return null;
+  }
+
+  const crumbs = segments.map((seg, i) => {
+    const path = "/" + segments.slice(0, i + 1).join("/");
+    return {
+      segment: seg,
+      path,
+      label: formatSegmentLabel(seg),
+    };
+  });
 
   if (crumbs.length <= 1) {
     return (
@@ -47,9 +58,8 @@ export function AdminBreadcrumb() {
       <BreadcrumbList>
         {crumbs.map((crumb, i) => {
           const isLast = i === crumbs.length - 1;
-          const path = "/" + crumbs.slice(0, i + 1).join("/");
           return (
-            <BreadcrumbItem key={path}>
+            <BreadcrumbItem key={crumb.path}>
               {i > 0 && (
                 <BreadcrumbSeparator>
                   <ChevronRight className="size-3.5" />
@@ -59,7 +69,7 @@ export function AdminBreadcrumb() {
                 <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
               ) : (
                 <BreadcrumbLink asChild>
-                  <Link to={path}>{crumb.label}</Link>
+                  <Link to={crumb.path}>{crumb.label}</Link>
                 </BreadcrumbLink>
               )}
             </BreadcrumbItem>

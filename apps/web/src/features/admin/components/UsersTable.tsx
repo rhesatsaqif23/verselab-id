@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
-import { Shield, User } from "lucide-react";
+import { Shield } from "lucide-react";
 import { Badge } from "#/components/ui/badge.tsx";
 import { Skeleton } from "#/components/ui/skeleton.tsx";
 import {
@@ -24,6 +24,11 @@ import { adminGetUsers } from "#/libs/admin-content-fns.ts";
 import type { AdminUser } from "#/libs/admin-content-fns.ts";
 
 const PAGE_SIZE = 15;
+
+function getInitial(name?: string | null, email?: string | null): string {
+  const str = name?.trim() || email?.trim() || "?";
+  return str.charAt(0).toUpperCase();
+}
 
 export function UsersTable() {
   const [page, setPage] = useState(1);
@@ -67,23 +72,29 @@ export function UsersTable() {
             {isLoading &&
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell>
-                    <Skeleton className="mx-auto h-5 w-6" />
+                  <TableCell className="text-center">
+                    <Skeleton className="mx-auto h-4 w-5" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-5 w-32" />
+                    <div className="flex items-center gap-3">
+                      <Skeleton className="size-9 shrink-0 rounded-full" />
+                      <div>
+                        <Skeleton className="mb-1 h-5 w-36" />
+                        <Skeleton className="h-3 w-20" />
+                      </div>
+                    </div>
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-5 w-40" />
+                    <Skeleton className="h-4 w-40" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-5 w-16" />
+                    <Skeleton className="h-6 w-16 rounded-full" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-5 w-16" />
+                    <Skeleton className="h-6 w-16 rounded-full" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-5 w-24" />
+                    <Skeleton className="h-4 w-24" />
                   </TableCell>
                 </TableRow>
               ))}
@@ -95,57 +106,60 @@ export function UsersTable() {
               </TableRow>
             )}
             {!isLoading &&
-              paged.map((u, i) => (
-                <TableRow key={u.id} className="hover:bg-card/30">
-                  <TableCell className="text-center tabular-nums text-muted-foreground">
-                    {(page - 1) * PAGE_SIZE + i + 1}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {u.avatarUrl || u.image ? (
-                        <img
-                          src={u.avatarUrl ?? u.image ?? ""}
-                          alt={u.name}
-                          className="size-8 rounded-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex size-8 items-center justify-center rounded-full bg-muted">
-                          <User className="size-4 text-muted-foreground" />
+              paged.map((u, i) => {
+                const userName = u.displayName || u.name || "User";
+                const initial = getInitial(userName, u.email);
+
+                return (
+                  <TableRow key={u.id} className="hover:bg-slate-100/70 transition-colors">
+                    <TableCell className="text-center tabular-nums text-muted-foreground">
+                      {(page - 1) * PAGE_SIZE + i + 1}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        {u.avatarUrl || u.image ? (
+                          <img
+                            src={u.avatarUrl ?? u.image ?? ""}
+                            alt={userName}
+                            className="size-9 shrink-0 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm font-bold text-primary shadow-xs">
+                            {initial}
+                          </div>
+                        )}
+                        <div>
+                          <div className="text-base font-semibold text-foreground">{userName}</div>
+                          <div className="text-xs text-muted-foreground">{u.id.slice(0, 8)}...</div>
                         </div>
-                      )}
-                      <div>
-                        <div className="text-base font-semibold text-foreground">
-                          {u.displayName || u.name}
-                        </div>
-                        <div className="text-xs text-muted-foreground">{u.id.slice(0, 8)}...</div>
                       </div>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm text-muted-foreground">{u.email}</span>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={u.role === "admin" ? "default" : "secondary"}>
-                      {u.role === "admin" && <Shield className="mr-1 size-3" />}
-                      {u.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={u.onboardedAt ? "default" : "outline"}>
-                      {u.onboardedAt ? "Aktif" : "Belum Onboard"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <span className="text-sm text-muted-foreground">
-                      {new Date(u.createdAt).toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </span>
-                  </TableCell>
-                </TableRow>
-              ))}
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm text-muted-foreground">{u.email}</span>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={u.role === "admin" ? "default" : "secondary"}>
+                        {u.role === "admin" && <Shield className="mr-1 size-3" />}
+                        {u.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={u.onboardedAt ? "default" : "outline"}>
+                        {u.onboardedAt ? "Aktif" : "Belum Onboard"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-sm text-muted-foreground">
+                        {new Date(u.createdAt).toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
       </div>

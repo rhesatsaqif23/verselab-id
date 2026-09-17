@@ -55,7 +55,9 @@ export const adminGetUnits = createServerFn({ method: "GET" }).handler(async () 
 });
 
 export const adminCreateUnit = createServerFn({ method: "POST" })
-  .validator((data: { id: string; title: string; description?: string; imageUrl?: string }) => data)
+  .validator(
+    (data: { id?: string; title: string; description?: string; imageUrl?: string }) => data,
+  )
   .handler(async ({ data }) => {
     return apiMutate<AdminUnit>("/v1/content/units", {
       method: "POST",
@@ -118,7 +120,7 @@ export const adminGetLessons = createServerFn({ method: "GET" })
   });
 
 export const adminCreateLesson = createServerFn({ method: "POST" })
-  .validator((data: { id: string; unitId: string; title: string; icon?: string }) => data)
+  .validator((data: { id?: string; unitId: string; title: string; icon?: string }) => data)
   .handler(async ({ data }) => {
     return apiMutate<AdminLesson>("/v1/content/lessons", {
       method: "POST",
@@ -188,7 +190,7 @@ export const adminGetAllLessons = createServerFn({ method: "GET" }).handler(asyn
   return apiCall<AdminLessonWithUnit[]>("/v1/content/lessons-all") ?? [];
 });
 
-export type AdminScreenWithLesson = AdminScreen & { lessonTitle: string };
+export type AdminScreenWithLesson = AdminScreen & { lessonTitle: string; unitId: string };
 
 export const adminGetAllScreens = createServerFn({ method: "GET" }).handler(async () => {
   return apiCall<AdminScreenWithLesson[]>("/v1/content/screens-all") ?? [];
@@ -213,7 +215,7 @@ export const adminGetUsers = createServerFn({ method: "GET" }).handler(async () 
 export const adminCreateScreen = createServerFn({ method: "POST" })
   .validator(
     (data: {
-      id: string;
+      id?: string;
       lessonId: string;
       type: "concept" | "choice" | "numeric" | "allocation";
       prompt: string;

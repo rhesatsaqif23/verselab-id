@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Trash2, Upload, UploadCloud } from "lucide-react";
 import { Button } from "#/components/ui/button.tsx";
 import {
   Dialog,
@@ -13,6 +14,7 @@ import {
 import { Input } from "#/components/ui/input.tsx";
 import { Label } from "#/components/ui/label.tsx";
 import { Textarea } from "#/components/ui/textarea.tsx";
+import { cn } from "#/libs/utils.ts";
 import {
   adminCreateUnit,
   adminUpdateUnit,
@@ -42,14 +44,13 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
   const queryClient = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
   const [open, setOpen] = useState(false);
-  const [id, setId] = useState(unit?.id ?? "");
   const [title, setTitle] = useState(unit?.title ?? "");
   const [description, setDescription] = useState(unit?.description ?? "");
   const [previewUrl, setPreviewUrl] = useState(unit?.imageUrl ?? "");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const createMutation = useMutation({
-    mutationFn: (data: { id: string; title: string; description?: string }) =>
+    mutationFn: (data: { id?: string; title: string; description?: string }) =>
       adminCreateUnit({ data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-units"] }),
   });
@@ -67,7 +68,6 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
   });
 
   function reset() {
-    setId(unit?.id ?? "");
     setTitle(unit?.title ?? "");
     setDescription(unit?.description ?? "");
     setPreviewUrl(unit?.imageUrl ?? "");
@@ -103,16 +103,15 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
         }
         toast.success("Unit berhasil diperbarui");
       } else {
-        if (!id.trim()) return;
-        await createMutation.mutateAsync({
-          id: id.trim(),
+        const result = await createMutation.mutateAsync({
           title: title.trim(),
           description: description.trim() || undefined,
         });
-        if (selectedFile && id.trim()) {
+        const newId = result?.ok ? result.data.id : undefined;
+        if (selectedFile && newId) {
           const base64 = await fileToBase64(selectedFile);
           await imageMutation.mutateAsync({
-            id: id.trim(),
+            id: newId,
             file: base64,
             filename: selectedFile.name,
           });
@@ -144,17 +143,12 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
           <DialogTitle>{isEdit ? "Edit Unit" : "Tambah Unit"}</DialogTitle>
         </DialogHeader>
         <form id="unit-form" onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="unit-id">ID Unit</Label>
-            <Input
-              id="unit-id"
-              value={id}
-              onChange={(e) => setId(e.target.value)}
-              placeholder="keuangan"
-              disabled={isEdit}
-              required
-            />
-          </div>
+          {isEdit && (
+            <div className="flex flex-col gap-1.5">
+              <Label>ID Unit</Label>
+              <Input value={unit.id} disabled className="font-mono text-xs text-muted-foreground" />
+            </div>
+          )}
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="unit-title">Judul Unit</Label>
             <Input
@@ -185,36 +179,80 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
               onChange={handleFileChange}
               className="hidden"
             />
-            {previewUrl ? (
-              <div className="flex items-center gap-3">
-                <img src={previewUrl} alt="Preview" className="size-16 rounded object-cover" />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedFile(null);
-                    setPreviewUrl(unit?.imageUrl ?? "");
-                    if (fileRef.current) fileRef.current.value = "";
-                  }}
-                >
-                  Hapus
-                </Button>
-              </div>
-            ) : (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => fileRef.current?.click()}
-              >
-                Pilih Gambar
-              </Button>
-            )}
+            <div
+              onClick={() => fileRef.current?.click()}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={(e) => {
+                e.preventDefault();
+                const file = e.dataTransfer.files?.[0];
+                if (file && file.type.startsWith("image/")) {
+                  setSelectedFile(file);
+                  setPreviewUrl(URL.createObjectURL(file));
+                }
+              }}
+              className={cn(
+                "group relative flex h-36 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed transition-all duration-200",
+                previewUrl
+                  ? "border-border bg-white"
+                  : "border-primary/50 bg-white hover:border-primary hover:bg-primary/5",
+              )}
+            >
+              {previewUrl ? (
+                <>
+                  <img
+                    src={previewUrl}
+                    alt="Preview"
+                    className="size-full object-contain p-3 transition-transform duration-200 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 backdrop-blur-[2px] transition-opacity duration-200 group-hover:opacity-100">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="h-8 gap-1.5 px-3 text-xs font-semibold shadow-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        fileRef.current?.click();
+                      }}
+                    >
+                      <Upload className="size-3.5" />
+                      Ganti
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      className="h-8 gap-1.5 px-3 text-xs font-semibold shadow-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedFile(null);
+                        setPreviewUrl("");
+                        if (fileRef.current) fileRef.current.value = "";
+                      }}
+                    >
+                      <Trash2 className="size-3.5" />
+                      Hapus
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center p-4 text-center">
+                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-white">
+                    <UploadCloud className="size-5" />
+                  </div>
+                  <span className="mt-2 text-xs sm:text-sm font-semibold text-foreground">
+                    Klik atau seret gambar ke sini
+                  </span>
+                  <span className="mt-0.5 text-xs text-muted-foreground">
+                    PNG, JPG, WEBP, atau SVG
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </form>
-        <DialogFooter>
-          <Button type="submit" form="unit-form" disabled={isPending}>
+        <DialogFooter className="sm:justify-center justify-center">
+          <Button type="submit" form="unit-form" disabled={isPending} className="min-w-36">
             {isPending ? "Menyimpan..." : isEdit ? "Simpan Perubahan" : "Tambah Unit"}
           </Button>
         </DialogFooter>

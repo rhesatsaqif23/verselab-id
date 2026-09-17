@@ -61,7 +61,7 @@ export default function ProfileHeader() {
           size="sm"
           onClick={signOut}
           disabled={pending}
-          className="shrink-0 text-destructive hover:bg-destructive/10 hover:text-destructive"
+          className="shrink-0 hover:bg-destructive/10"
         >
           {pending ? (
             <Loader2 className="mr-1.5 size-4 animate-spin" />
