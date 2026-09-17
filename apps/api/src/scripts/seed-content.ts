@@ -5,9 +5,28 @@ import { seedUnits } from "./content-seed-data.ts";
 import { getDb } from "../database/index.ts";
 import { contentUnits, contentLessons, contentScreens } from "../database/schema.ts";
 
-type SeedChoiceScreen = { type: "choice"; prompt: string; explain: string; options: { id: string; label: string }[]; correctId: string };
-type SeedNumericScreen = { type: "numeric"; prompt: string; explain: string; numericUnit: string; acceptRangeMin: number; acceptRangeMax: number };
-type SeedAllocationScreen = { type: "allocation"; prompt: string; explain: string; categories: string[]; rule: { type: string; categoryId: string; min?: number; max?: number } };
+type SeedChoiceScreen = {
+  type: "choice";
+  prompt: string;
+  explain: string;
+  options: { id: string; label: string }[];
+  correctId: string;
+};
+type SeedNumericScreen = {
+  type: "numeric";
+  prompt: string;
+  explain: string;
+  numericUnit: string;
+  acceptRangeMin: number;
+  acceptRangeMax: number;
+};
+type SeedAllocationScreen = {
+  type: "allocation";
+  prompt: string;
+  explain: string;
+  categories: string[];
+  rule: { type: string; categoryId: string; min?: number; max?: number };
+};
 
 async function seedContent() {
   const db = getDb();
@@ -95,7 +114,9 @@ async function seedContent() {
     }
   }
 
-  console.log(`[seed] Done! Inserted ${unitCount} units, ${lessonCount} lessons, ${screenCount} screens.`);
+  console.log(
+    `[seed] Done! Inserted ${unitCount} units, ${lessonCount} lessons, ${screenCount} screens.`,
+  );
 }
 
 seedContent()

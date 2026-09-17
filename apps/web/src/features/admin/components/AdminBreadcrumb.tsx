@@ -11,7 +11,9 @@ import {
 
 const segmentLabels: Record<string, string> = {
   admin: "Admin",
-  users: "Users",
+  pelajaran: "Pelajaran",
+  layar: "Layar",
+  pengguna: "Pengguna",
 };
 
 export function AdminBreadcrumb() {
@@ -48,7 +50,11 @@ export function AdminBreadcrumb() {
           const path = "/" + crumbs.slice(0, i + 1).join("/");
           return (
             <BreadcrumbItem key={path}>
-              {i > 0 && <BreadcrumbSeparator><ChevronRight className="size-3" /></BreadcrumbSeparator>}
+              {i > 0 && (
+                <BreadcrumbSeparator>
+                  <ChevronRight className="size-3.5" />
+                </BreadcrumbSeparator>
+              )}
               {isLast ? (
                 <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
               ) : (

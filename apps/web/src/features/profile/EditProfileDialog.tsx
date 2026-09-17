@@ -105,8 +105,15 @@ export default function EditProfileDialog({ open, onOpenChange, session, onUpdat
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="name" className="text-sm">Nama</Label>
-            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="text-base" />
+            <Label htmlFor="name" className="text-sm">
+              Nama
+            </Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="text-base"
+            />
           </div>
         </div>
 

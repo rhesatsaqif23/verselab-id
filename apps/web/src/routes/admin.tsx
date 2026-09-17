@@ -24,12 +24,16 @@ function AdminLayout() {
     <SidebarProvider>
       <AdminSidebar />
       <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border px-4">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-border bg-white px-4">
           <SidebarTrigger className="-ml-1" />
           <AdminBreadcrumb />
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-1">
             <Link to="/home">
-              <Button variant="ghost" size="sm" className="text-sm font-semibold text-muted-foreground hover:text-foreground gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-[15px] font-semibold text-foreground hover:text-primary gap-2"
+              >
                 Lihat Situs
               </Button>
             </Link>
@@ -38,7 +42,7 @@ function AdminLayout() {
               size="sm"
               onClick={signOut}
               disabled={pending}
-              className="text-sm font-semibold text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-2"
+              className="text-[15px] font-semibold text-foreground hover:text-destructive hover:bg-destructive/10 gap-2"
             >
               <LogOut className="size-4" />
               Keluar

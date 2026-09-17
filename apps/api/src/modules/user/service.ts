@@ -5,10 +5,23 @@ import { getDb } from "../../database/index.ts";
 import { userProfiles } from "../../database/schema.ts";
 import { user as authUserTable } from "../../database/auth-schema.ts";
 
+export type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  image: string | null;
+  createdAt: Date;
+  displayName: string | null;
+  avatarUrl: string | null;
+  onboardedAt: Date | null;
+};
+
 export type UserService = {
   getMe: (user: User) => Promise<{ user: User; profile: Profile | null; role: string }>;
   updateProfile: (userId: string, input: UpdateProfileInput) => Promise<Profile>;
   uploadAvatar: (userId: string, file: File) => Promise<{ avatarUrl: string }>;
+  listAllUsers: () => Promise<AdminUser[]>;
 };
 
 function toProfile(row: typeof userProfiles.$inferSelect): Profile {
@@ -88,5 +101,27 @@ export const userService: UserService = {
       .where(eq(userProfiles.userId, userId));
 
     return { avatarUrl };
+  },
+
+  async listAllUsers() {
+    const db = getDb();
+    const rows = await db
+      .select({
+        id: authUserTable.id,
+        name: authUserTable.name,
+        email: authUserTable.email,
+        role: authUserTable.role,
+        image: authUserTable.image,
+        createdAt: authUserTable.createdAt,
+        displayName: userProfiles.displayName,
+        avatarUrl: userProfiles.avatarUrl,
+        onboardedAt: userProfiles.onboardedAt,
+      })
+      .from(authUserTable)
+      .leftJoin(userProfiles, eq(authUserTable.id, userProfiles.userId));
+    return rows.map((r) => ({
+      ...r,
+      role: r.role ?? "user",
+    }));
   },
 };

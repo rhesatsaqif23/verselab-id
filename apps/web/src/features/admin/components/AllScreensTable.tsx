@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Trash2 } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -16,6 +15,7 @@ import {
 } from "#/components/ui/alert-dialog.tsx";
 import { Button } from "#/components/ui/button.tsx";
 import { Skeleton } from "#/components/ui/skeleton.tsx";
+import { Badge } from "#/components/ui/badge.tsx";
 import {
   Table,
   TableBody,
@@ -32,48 +32,53 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "#/components/ui/pagination.tsx";
-import { adminGetUnits, adminDeleteUnit } from "#/libs/admin-content-fns.ts";
-import type { AdminUnit } from "#/libs/admin-content-fns.ts";
-import { UnitFormDialog } from "./UnitFormDialog.tsx";
+import { adminGetAllScreens, adminDeleteScreen } from "#/libs/admin-content-fns.ts";
+import type { AdminScreenWithLesson } from "#/libs/admin-content-fns.ts";
 
-const PAGE_SIZE = 10;
+const PAGE_SIZE = 15;
 
-export function UnitList() {
+const typeLabels: Record<string, string> = {
+  concept: "Konsep",
+  choice: "Pilihan Ganda",
+  numeric: "Numerik",
+  allocation: "Alokasi",
+};
+
+const typeBadgeVariant: Record<string, "default" | "secondary" | "outline"> = {
+  concept: "default",
+  choice: "secondary",
+  numeric: "outline",
+  allocation: "outline",
+};
+
+export function AllScreensTable() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
   const [page, setPage] = useState(1);
 
-  const { data: units, isLoading } = useQuery({
-    queryKey: ["admin-units"],
-    queryFn: () => adminGetUnits(),
+  const { data: screens, isLoading } = useQuery({
+    queryKey: ["admin-all-screens"],
+    queryFn: () => adminGetAllScreens(),
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => adminDeleteUnit({ data: { id } }),
+    mutationFn: (id: string) => adminDeleteScreen({ data: { id } }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-units"] });
-      toast.success("Unit berhasil dihapus");
+      queryClient.invalidateQueries({ queryKey: ["admin-all-screens"] });
+      toast.success("Layar berhasil dihapus");
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Gagal menghapus unit");
+      toast.error(err.message || "Gagal menghapus layar");
     },
   });
 
-  const allUnits: AdminUnit[] = units ?? [];
-  const totalPages = Math.max(1, Math.ceil(allUnits.length / PAGE_SIZE));
-  const paged = allUnits.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const all: AdminScreenWithLesson[] = screens ?? [];
+  const totalPages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
+  const paged = all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-black text-foreground">Konten</h1>
-        <UnitFormDialog
-          trigger={
-            <Button size="sm" className="w-36 text-sm">
-              <Plus className="size-4" /> Tambah Unit
-            </Button>
-          }
-        />
+        <h1 className="text-2xl font-black text-foreground">Layar</h1>
       </div>
 
       <div className="rounded-md border bg-card">
@@ -81,27 +86,27 @@ export function UnitList() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-12 text-center font-bold">#</TableHead>
-              <TableHead className="font-bold">Unit</TableHead>
-              <TableHead className="font-bold">Deskripsi</TableHead>
-              <TableHead className="w-20 text-center font-bold">Gambar</TableHead>
+              <TableHead className="font-bold">Prompt</TableHead>
+              <TableHead className="font-bold">Pelajaran</TableHead>
+              <TableHead className="font-bold">Tipe</TableHead>
               <TableHead className="w-24 text-right font-bold">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading &&
-              Array.from({ length: 3 }).map((_, i) => (
+              Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
                   <TableCell>
                     <Skeleton className="mx-auto h-5 w-6" />
                   </TableCell>
                   <TableCell>
-                    <Skeleton className="h-5 w-32" />
-                  </TableCell>
-                  <TableCell>
                     <Skeleton className="h-5 w-48" />
                   </TableCell>
-                  <TableCell className="text-center">
-                    <Skeleton className="mx-auto size-12 rounded" />
+                  <TableCell>
+                    <Skeleton className="h-5 w-24" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-5 w-16" />
                   </TableCell>
                   <TableCell className="text-right">
                     <Skeleton className="ml-auto h-8 w-20" />
@@ -111,81 +116,55 @@ export function UnitList() {
             {!isLoading && paged.length === 0 && (
               <TableRow>
                 <TableCell colSpan={5} className="p-6 text-center text-base text-muted-foreground">
-                  Belum ada unit. Tambahkan unit baru di atas.
+                  Belum ada layar.
                 </TableCell>
               </TableRow>
             )}
             {!isLoading &&
-              paged.map((unit, i) => (
-                <TableRow key={unit.id} className="hover:bg-card/30">
+              paged.map((screen, i) => (
+                <TableRow key={screen.id} className="hover:bg-card/30">
                   <TableCell className="text-center tabular-nums text-muted-foreground">
                     {(page - 1) * PAGE_SIZE + i + 1}
                   </TableCell>
                   <TableCell>
-                    <button
-                      type="button"
-                      className="text-left"
-                      onClick={() =>
-                        navigate({ to: "/admin/$unitId", params: { unitId: unit.id } })
-                      }
-                    >
-                      <div className="text-base font-semibold text-foreground hover:underline">
-                        {unit.title}
-                      </div>
-                      <div className="text-xs text-muted-foreground">{unit.id}</div>
-                    </button>
+                    <div className="text-base font-medium text-foreground line-clamp-1">
+                      {screen.prompt}
+                    </div>
+                    <div className="text-xs text-muted-foreground">{screen.id}</div>
                   </TableCell>
                   <TableCell>
-                    <p className="line-clamp-2 text-sm text-muted-foreground">
-                      {unit.description || "-"}
-                    </p>
+                    <span className="text-sm text-muted-foreground">{screen.lessonTitle}</span>
                   </TableCell>
-                  <TableCell className="text-center">
-                    {unit.imageUrl ? (
-                      <img
-                        src={unit.imageUrl}
-                        alt={unit.title}
-                        className="mx-auto size-12 rounded object-cover"
-                      />
-                    ) : (
-                      <span className="text-xs text-muted-foreground">-</span>
-                    )}
+                  <TableCell>
+                    <Badge variant={typeBadgeVariant[screen.type] ?? "outline"}>
+                      {typeLabels[screen.type] ?? screen.type}
+                    </Badge>
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-1">
-                      <UnitFormDialog
-                        trigger={
-                          <Button variant="shadowless" size="icon" aria-label="Edit unit">
-                            <Pencil className="size-4" />
-                          </Button>
-                        }
-                        unit={unit}
-                      />
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button
                             variant="shadowless"
                             size="icon"
                             className="text-destructive hover:text-destructive"
-                            aria-label="Hapus unit"
+                            aria-label="Hapus layar"
                           >
                             <Trash2 className="size-4" />
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent size="sm">
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Hapus unit?</AlertDialogTitle>
+                            <AlertDialogTitle>Hapus layar?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Tindakan ini akan menghapus unit{" "}
-                              <span className="font-medium text-foreground">{unit.title}</span>{" "}
-                              beserta semua lesson dan screen di dalamnya secara permanen.
+                              Tindakan ini akan menghapus layar ini secara permanen.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Batal</AlertDialogCancel>
                             <AlertDialogAction
                               variant="destructive"
-                              onClick={() => deleteMutation.mutate(unit.id)}
+                              onClick={() => deleteMutation.mutate(screen.id)}
                             >
                               Hapus
                             </AlertDialogAction>

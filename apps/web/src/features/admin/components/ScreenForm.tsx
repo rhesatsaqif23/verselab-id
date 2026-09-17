@@ -56,14 +56,15 @@ export function ScreenForm({ screen, lessonId }: ScreenFormProps) {
       patch.acceptRangeMax = formData.acceptRangeMax;
     if (JSON.stringify(formData.categories) !== JSON.stringify(screen.categories))
       patch.categories = formData.categories;
-    if (JSON.stringify(formData.rule) !== JSON.stringify(screen.rule))
-      patch.rule = formData.rule;
+    if (JSON.stringify(formData.rule) !== JSON.stringify(screen.rule)) patch.rule = formData.rule;
 
     if (Object.keys(patch).length === 0) {
       toast.info("Tidak ada perubahan");
       return;
     }
-    saveMutation.mutate({ id: screen.id, ...patch } as Parameters<typeof adminUpdateScreen>[0]["data"]);
+    saveMutation.mutate({ id: screen.id, ...patch } as Parameters<
+      typeof adminUpdateScreen
+    >[0]["data"]);
   }
 
   const isPending = saveMutation.isPending;

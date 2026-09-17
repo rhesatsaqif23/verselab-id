@@ -52,7 +52,13 @@ export default function ProfilePage() {
           </div>
           <div className="space-y-3">
             {units.map((unit) => (
-              <UnitProgressCard key={unit.id} unitId={unit.id} title={unit.title} description={unit.description} imageUrl={unit.imageUrl} />
+              <UnitProgressCard
+                key={unit.id}
+                unitId={unit.id}
+                title={unit.title}
+                description={unit.description}
+                imageUrl={unit.imageUrl}
+              />
             ))}
           </div>
         </section>

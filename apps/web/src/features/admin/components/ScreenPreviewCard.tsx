@@ -9,7 +9,10 @@ interface ScreenPreviewCardProps {
 }
 
 function adminScreenToScreen(admin: AdminScreen): Screen {
-  const base = { prompt: admin.prompt || "(Belum ada teks pertanyaan)", explain: admin.explain || "" };
+  const base = {
+    prompt: admin.prompt || "(Belum ada teks pertanyaan)",
+    explain: admin.explain || "",
+  };
 
   switch (admin.type) {
     case "concept":

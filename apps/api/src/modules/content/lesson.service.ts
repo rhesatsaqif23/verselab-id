@@ -1,14 +1,17 @@
 import type { CreateLessonInput, UpdateLessonInput } from "@verselab/shared/schemas/content";
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
-import { contentLessons, contentScreens } from "../../database/schema.ts";
+import { contentLessons, contentScreens, contentUnits } from "../../database/schema.ts";
 
 export type LessonData = typeof contentLessons.$inferSelect;
 
-export type LessonWithScreens = LessonData & { screens: typeof contentScreens.$inferSelect[] };
+export type LessonWithScreens = LessonData & { screens: (typeof contentScreens.$inferSelect)[] };
+
+export type LessonWithUnit = LessonData & { unitTitle: string };
 
 export type ContentLessonService = {
   listLessons: (unitId: string) => Promise<LessonData[]>;
+  listAllLessons: () => Promise<LessonWithUnit[]>;
   getLesson: (id: string) => Promise<LessonData | null>;
   getLessonWithScreens: (id: string) => Promise<LessonWithScreens | null>;
   createLesson: (input: CreateLessonInput) => Promise<LessonData>;
@@ -38,13 +41,28 @@ export const contentLessonService: ContentLessonService = {
       .orderBy(asc(contentLessons.sortOrder));
   },
 
+  async listAllLessons() {
+    const db = getDb();
+    const rows = await db
+      .select({
+        id: contentLessons.id,
+        unitId: contentLessons.unitId,
+        title: contentLessons.title,
+        icon: contentLessons.icon,
+        sortOrder: contentLessons.sortOrder,
+        createdAt: contentLessons.createdAt,
+        updatedAt: contentLessons.updatedAt,
+        unitTitle: contentUnits.title,
+      })
+      .from(contentLessons)
+      .innerJoin(contentUnits, eq(contentLessons.unitId, contentUnits.id))
+      .orderBy(asc(contentLessons.sortOrder));
+    return rows;
+  },
+
   async getLesson(id) {
     const db = getDb();
-    const [row] = await db
-      .select()
-      .from(contentLessons)
-      .where(eq(contentLessons.id, id))
-      .limit(1);
+    const [row] = await db.select().from(contentLessons).where(eq(contentLessons.id, id)).limit(1);
     return row ?? null;
   },
 

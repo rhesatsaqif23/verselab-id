@@ -2,7 +2,9 @@
 // This is the single source of truth for the initial DB seed.
 
 type SeedChoiceOption = { id: string; label: string };
-type SeedAllocationRule = { type: "min"; categoryId: string; min: number } | { type: "max"; categoryId: string; max: number };
+type SeedAllocationRule =
+  | { type: "min"; categoryId: string; min: number }
+  | { type: "max"; categoryId: string; max: number };
 
 type SeedScreenBase = {
   type: "concept" | "choice" | "numeric" | "allocation";
@@ -1047,8 +1049,7 @@ export const seedUnits: SeedUnit[] = [
             numericUnit: "unit",
             acceptRangeMin: 95,
             acceptRangeMax: 105,
-            explain:
-              "Kontribusi = 100 − 40 = 60 ribu. Unit impas = 6.000.000 ÷ 60.000 = 100 unit.",
+            explain: "Kontribusi = 100 − 40 = 60 ribu. Unit impas = 6.000.000 ÷ 60.000 = 100 unit.",
           },
           {
             type: "allocation",

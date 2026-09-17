@@ -24,7 +24,9 @@ async function seedAdmin() {
     return;
   }
 
-  console.log(`[seed] ${ADMIN_EMAIL} not found. Admin must register first, then re-run this script.`);
+  console.log(
+    `[seed] ${ADMIN_EMAIL} not found. Admin must register first, then re-run this script.`,
+  );
   console.log(`[seed] Alternatively, create the user via the app and run again.`);
 }
 

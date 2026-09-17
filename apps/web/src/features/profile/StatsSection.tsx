@@ -45,9 +45,7 @@ export default function StatsSection({ dailyGoal }: { dailyGoal: DailyGoal }) {
           <CardContent className="p-0 flex items-center gap-3">
             {s.icon}
             <div className="min-w-0">
-              <p className="text-xl font-black text-foreground">
-                {s.value}
-              </p>
+              <p className="text-xl font-black text-foreground">{s.value}</p>
               <p className="text-sm text-muted truncate">{s.label}</p>
             </div>
           </CardContent>

@@ -80,7 +80,10 @@ export function ChoiceFields({ screen, onChange }: ChoiceFieldsProps) {
         <Label htmlFor="correct-id" className="text-base">
           Jawaban Benar
         </Label>
-        <Select value={screen.correctId ?? ""} onValueChange={(val) => onChange({ correctId: val })}>
+        <Select
+          value={screen.correctId ?? ""}
+          onValueChange={(val) => onChange({ correctId: val })}
+        >
           <SelectTrigger id="correct-id" className="w-full text-base">
             <SelectValue placeholder="Pilih jawaban benar" />
           </SelectTrigger>

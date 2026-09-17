@@ -29,6 +29,7 @@ const stubService = {
   getMe: async (user: User) => ({ user, profile, role: "user" }),
   updateProfile: async () => profile,
   uploadAvatar: async () => ({ avatarUrl: "/uploads/avatars/u-1.jpg" }),
+  listAllUsers: async () => [],
 };
 
 describe("user module", () => {

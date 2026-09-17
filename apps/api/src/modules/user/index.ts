@@ -1,5 +1,6 @@
 import { Elysia } from "elysia";
 import { authContext } from "../../middleware/auth.ts";
+import { requireAdmin } from "../../middleware/rbac.ts";
 import { ok } from "../../libs/response.ts";
 import { userService, type UserService } from "./service.ts";
 import { updateProfileSchema } from "@verselab/shared/schemas/profile";
@@ -47,5 +48,14 @@ export function createUserController(service: UserService = userService) {
           description: "Uploads an avatar image (JPEG/PNG, max 2MB) for the authenticated user.",
         },
       },
-    );
+    )
+    .use(requireAdmin)
+    .get("/all", async () => ok(await service.listAllUsers()), {
+      admin: true,
+      tags: ["user"],
+      detail: {
+        summary: "List all users (admin)",
+        description: "Returns all users with their profiles. Admin only.",
+      },
+    });
 }

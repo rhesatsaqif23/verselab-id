@@ -26,6 +26,15 @@
   --color-input: #e5e7eb;
   --color-ring: #2c5ead;
 
+  --color-sidebar: #ffffff;
+  --color-sidebar-foreground: #1a1a1a;
+  --color-sidebar-primary: #2c5ead;
+  --color-sidebar-primary-foreground: #ffffff;
+  --color-sidebar-accent: #f1f5f9;
+  --color-sidebar-accent-foreground: #1a1a1a;
+  --color-sidebar-border: #e5e7eb;
+  --color-sidebar-ring: #2c5ead;
+
   --radius: 0.75rem;
 
   /* Button gradients — used by button.tsx */
@@ -116,6 +125,15 @@
   --color-input: #2a3040;
   --color-ring: #4bb8fa;
 
+  --color-sidebar: #1a1f2e;
+  --color-sidebar-foreground: #f5f5f5;
+  --color-sidebar-primary: #4bb8fa;
+  --color-sidebar-primary-foreground: #1a1a1a;
+  --color-sidebar-accent: #212736;
+  --color-sidebar-accent-foreground: #f5f5f5;
+  --color-sidebar-border: #2a3040;
+  --color-sidebar-ring: #4bb8fa;
+
   --radius: 0.75rem;
 
   --btn-from: #1591dc;
@@ -198,6 +216,14 @@
   --color-border: var(--border);
   --color-input: var(--color-input);
   --color-ring: var(--color-ring);
+  --color-sidebar: var(--color-sidebar);
+  --color-sidebar-foreground: var(--color-sidebar-foreground);
+  --color-sidebar-primary: var(--color-sidebar-primary);
+  --color-sidebar-primary-foreground: var(--color-sidebar-primary-foreground);
+  --color-sidebar-accent: var(--color-sidebar-accent);
+  --color-sidebar-accent-foreground: var(--color-sidebar-accent-foreground);
+  --color-sidebar-border: var(--color-sidebar-border);
+  --color-sidebar-ring: var(--color-sidebar-ring);
   --color-chart-1: var(--color-primary);
   --color-chart-2: var(--color-accent);
   --color-chart-3: var(--color-primary-bright);

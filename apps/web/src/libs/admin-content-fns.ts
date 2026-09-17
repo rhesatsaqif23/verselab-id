@@ -65,7 +65,9 @@ export const adminCreateUnit = createServerFn({ method: "POST" })
   });
 
 export const adminUpdateUnit = createServerFn({ method: "POST" })
-  .validator((data: { id: string; title?: string; description?: string; imageUrl?: string }) => data)
+  .validator(
+    (data: { id: string; title?: string; description?: string; imageUrl?: string }) => data,
+  )
   .handler(async ({ data }) => {
     const { id, ...patch } = data;
     return apiMutate<AdminUnit>(`/v1/content/units/${id}`, {
@@ -116,9 +118,7 @@ export const adminGetLessons = createServerFn({ method: "GET" })
   });
 
 export const adminCreateLesson = createServerFn({ method: "POST" })
-  .validator(
-    (data: { id: string; unitId: string; title: string; icon?: string }) => data,
-  )
+  .validator((data: { id: string; unitId: string; title: string; icon?: string }) => data)
   .handler(async ({ data }) => {
     return apiMutate<AdminLesson>("/v1/content/lessons", {
       method: "POST",
@@ -128,9 +128,7 @@ export const adminCreateLesson = createServerFn({ method: "POST" })
   });
 
 export const adminUpdateLesson = createServerFn({ method: "POST" })
-  .validator(
-    (data: { id: string; title?: string; icon?: string }) => data,
-  )
+  .validator((data: { id: string; title?: string; icon?: string }) => data)
   .handler(async ({ data }) => {
     const { id, ...patch } = data;
     return apiMutate<AdminLesson>(`/v1/content/lessons/${id}`, {
@@ -181,6 +179,36 @@ export const adminGetScreens = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     return apiCall<AdminScreen[]>(`/v1/content/lessons/${data.lessonId}/screens`) ?? [];
   });
+
+// ── List-all endpoints ─────────────────────────────────────────────────────
+
+export type AdminLessonWithUnit = AdminLesson & { unitTitle: string };
+
+export const adminGetAllLessons = createServerFn({ method: "GET" }).handler(async () => {
+  return apiCall<AdminLessonWithUnit[]>("/v1/content/lessons-all") ?? [];
+});
+
+export type AdminScreenWithLesson = AdminScreen & { lessonTitle: string };
+
+export const adminGetAllScreens = createServerFn({ method: "GET" }).handler(async () => {
+  return apiCall<AdminScreenWithLesson[]>("/v1/content/screens-all") ?? [];
+});
+
+export type AdminUser = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  image: string | null;
+  createdAt: Date;
+  displayName: string | null;
+  avatarUrl: string | null;
+  onboardedAt: Date | null;
+};
+
+export const adminGetUsers = createServerFn({ method: "GET" }).handler(async () => {
+  return apiCall<AdminUser[]>("/v1/user/all") ?? [];
+});
 
 export const adminCreateScreen = createServerFn({ method: "POST" })
   .validator(

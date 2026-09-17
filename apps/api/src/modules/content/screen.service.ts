@@ -1,12 +1,15 @@
 import type { CreateScreenInput, UpdateScreenInput } from "@verselab/shared/schemas/content";
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
-import { contentScreens } from "../../database/schema.ts";
+import { contentScreens, contentLessons } from "../../database/schema.ts";
 
 export type ScreenData = typeof contentScreens.$inferSelect;
 
+export type ScreenWithLesson = ScreenData & { lessonTitle: string };
+
 export type ContentScreenService = {
   listScreens: (lessonId: string) => Promise<ScreenData[]>;
+  listAllScreens: () => Promise<ScreenWithLesson[]>;
   getScreen: (id: string) => Promise<ScreenData | null>;
   createScreen: (input: CreateScreenInput) => Promise<ScreenData>;
   updateScreen: (id: string, input: UpdateScreenInput) => Promise<ScreenData>;
@@ -35,13 +38,36 @@ export const contentScreenService: ContentScreenService = {
       .orderBy(asc(contentScreens.sortOrder));
   },
 
+  async listAllScreens() {
+    const db = getDb();
+    const rows = await db
+      .select({
+        id: contentScreens.id,
+        lessonId: contentScreens.lessonId,
+        type: contentScreens.type,
+        prompt: contentScreens.prompt,
+        explain: contentScreens.explain,
+        options: contentScreens.options,
+        correctId: contentScreens.correctId,
+        numericUnit: contentScreens.numericUnit,
+        acceptRangeMin: contentScreens.acceptRangeMin,
+        acceptRangeMax: contentScreens.acceptRangeMax,
+        categories: contentScreens.categories,
+        rule: contentScreens.rule,
+        sortOrder: contentScreens.sortOrder,
+        createdAt: contentScreens.createdAt,
+        updatedAt: contentScreens.updatedAt,
+        lessonTitle: contentLessons.title,
+      })
+      .from(contentScreens)
+      .innerJoin(contentLessons, eq(contentScreens.lessonId, contentLessons.id))
+      .orderBy(asc(contentScreens.sortOrder));
+    return rows;
+  },
+
   async getScreen(id) {
     const db = getDb();
-    const [row] = await db
-      .select()
-      .from(contentScreens)
-      .where(eq(contentScreens.id, id))
-      .limit(1);
+    const [row] = await db.select().from(contentScreens).where(eq(contentScreens.id, id)).limit(1);
     return row ?? null;
   },
 

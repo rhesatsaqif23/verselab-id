@@ -43,7 +43,8 @@ export default function GoalHarian({ onUpdated }: Props) {
     };
   }, []);
 
-  const currentGoal = session?.status === "authenticated" ? (session.profile?.dailyGoal ?? "regular") : "regular";
+  const currentGoal =
+    session?.status === "authenticated" ? (session.profile?.dailyGoal ?? "regular") : "regular";
   const hasChanges = selected !== currentGoal;
 
   async function handleConfirm() {
@@ -87,9 +88,7 @@ export default function GoalHarian({ onUpdated }: Props) {
                   selected === g.value ? "border-primary" : "border-muted-foreground/30"
                 }`}
               >
-                {selected === g.value && (
-                  <span className="size-2.5 rounded-full bg-primary" />
-                )}
+                {selected === g.value && <span className="size-2.5 rounded-full bg-primary" />}
               </span>
               <div className="flex-1 min-w-0">
                 <p className="text-base font-semibold text-foreground">{g.label}</p>

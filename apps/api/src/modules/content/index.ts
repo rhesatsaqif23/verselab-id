@@ -39,22 +39,26 @@ export function createContentController(
           detail: { summary: "Get lesson with screens" },
         },
       )
+      .get("/lessons-all", async () => ok(await lessonSvc.listAllLessons()), {
+        tags: ["content"],
+        detail: { summary: "List all lessons with unit info" },
+      })
+      .get("/screens-all", async () => ok(await screenSvc.listAllScreens()), {
+        tags: ["content"],
+        detail: { summary: "List all screens with lesson info" },
+      })
 
       // ── Admin endpoints (auth + requireAdmin) ─────────────────────────
       .use(authContext)
       .use(requireAdmin)
 
       // --- Unit CRUD ---
-      .post(
-        "/units",
-        async ({ body }) => ok(await unitSvc.createUnit(body)),
-        {
-          body: createUnitSchema,
-          admin: true,
-          tags: ["content"],
-          detail: { summary: "Create unit (admin)" },
-        },
-      )
+      .post("/units", async ({ body }) => ok(await unitSvc.createUnit(body)), {
+        body: createUnitSchema,
+        admin: true,
+        tags: ["content"],
+        detail: { summary: "Create unit (admin)" },
+      })
       .patch(
         "/units/:id",
         async ({ params, body }) => ok(await unitSvc.updateUnit(params.id, body)),
@@ -104,25 +108,17 @@ export function createContentController(
       )
 
       // --- Lesson CRUD ---
-      .get(
-        "/units/:id/lessons",
-        async ({ params }) => ok(await lessonSvc.listLessons(params.id)),
-        {
-          admin: true,
-          tags: ["content"],
-          detail: { summary: "List lessons for unit (admin)" },
-        },
-      )
-      .post(
-        "/lessons",
-        async ({ body }) => ok(await lessonSvc.createLesson(body)),
-        {
-          body: createLessonSchema,
-          admin: true,
-          tags: ["content"],
-          detail: { summary: "Create lesson (admin)" },
-        },
-      )
+      .get("/units/:id/lessons", async ({ params }) => ok(await lessonSvc.listLessons(params.id)), {
+        admin: true,
+        tags: ["content"],
+        detail: { summary: "List lessons for unit (admin)" },
+      })
+      .post("/lessons", async ({ body }) => ok(await lessonSvc.createLesson(body)), {
+        body: createLessonSchema,
+        admin: true,
+        tags: ["content"],
+        detail: { summary: "Create lesson (admin)" },
+      })
       .patch(
         "/lessons/:id",
         async ({ params, body }) => ok(await lessonSvc.updateLesson(params.id, body)),
@@ -169,16 +165,12 @@ export function createContentController(
           detail: { summary: "List screens for lesson (admin)" },
         },
       )
-      .post(
-        "/screens",
-        async ({ body }) => ok(await screenSvc.createScreen(body)),
-        {
-          body: createScreenSchema,
-          admin: true,
-          tags: ["content"],
-          detail: { summary: "Create screen (admin)" },
-        },
-      )
+      .post("/screens", async ({ body }) => ok(await screenSvc.createScreen(body)), {
+        body: createScreenSchema,
+        admin: true,
+        tags: ["content"],
+        detail: { summary: "Create screen (admin)" },
+      })
       .patch(
         "/screens/:id",
         async ({ params, body }) => ok(await screenSvc.updateScreen(params.id, body)),

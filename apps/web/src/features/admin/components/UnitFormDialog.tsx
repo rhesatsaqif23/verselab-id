@@ -187,11 +187,7 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
             />
             {previewUrl ? (
               <div className="flex items-center gap-3">
-                <img
-                  src={previewUrl}
-                  alt="Preview"
-                  className="size-16 rounded object-cover"
-                />
+                <img src={previewUrl} alt="Preview" className="size-16 rounded object-cover" />
                 <Button
                   type="button"
                   variant="outline"

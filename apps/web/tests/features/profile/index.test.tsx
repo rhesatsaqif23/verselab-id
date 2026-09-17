@@ -60,7 +60,9 @@ describe("ProfilePage", () => {
   it("renders per-unit progress cards with descriptions", async () => {
     await renderPage();
     expect(screen.getByText("Keuangan")).toBeInTheDocument();
-    expect(screen.getByText("Menabung, anggaran, cicilan, dan nilai waktu uang.")).toBeInTheDocument();
+    expect(
+      screen.getByText("Menabung, anggaran, cicilan, dan nilai waktu uang."),
+    ).toBeInTheDocument();
     expect(screen.getByText("Akuntansi")).toBeInTheDocument();
     expect(screen.getByText("Manajemen Produk")).toBeInTheDocument();
     expect(screen.getByText("Kewirausahaan")).toBeInTheDocument();

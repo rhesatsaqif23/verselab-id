@@ -152,10 +152,7 @@ export function ScreenEditor({ lessonId }: ScreenEditorProps) {
         </div>
 
         <div className="md:col-span-7 lg:col-span-8">
-          <ScreenEditPanel
-            activeScreen={activeScreen}
-            lessonId={lessonId}
-          />
+          <ScreenEditPanel activeScreen={activeScreen} lessonId={lessonId} />
         </div>
       </div>
     </div>

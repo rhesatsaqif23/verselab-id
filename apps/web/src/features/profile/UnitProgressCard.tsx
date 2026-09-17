@@ -15,11 +15,7 @@ export default function UnitProgressCard({ unitId, title, description, imageUrl 
   return (
     <Card>
       <CardContent className="p-4 flex items-center gap-4">
-        <img
-          src={imageUrl}
-          alt={title}
-          className="size-14 shrink-0 rounded-2xl object-cover"
-        />
+        <img src={imageUrl} alt={title} className="size-14 shrink-0 rounded-2xl object-cover" />
         <div className="flex-1 min-w-0 space-y-1.5">
           <div className="flex items-center justify-between">
             <p className="text-base font-bold text-foreground">{title}</p>
@@ -33,9 +29,7 @@ export default function UnitProgressCard({ unitId, title, description, imageUrl 
               style={{ width: `${pct}%` }}
             />
           </div>
-          {description && (
-            <p className="text-sm text-muted truncate">{description}</p>
-          )}
+          {description && <p className="text-sm text-muted truncate">{description}</p>}
         </div>
       </CardContent>
     </Card>
