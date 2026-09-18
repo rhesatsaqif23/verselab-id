@@ -60,7 +60,7 @@ export const contentLessonService: ContentLessonService = {
         slug: contentLessons.slug,
         description: contentLessons.description,
         icon: contentLessons.icon,
-        prerequisite: contentLessons.prerequisite,
+        prerequisiteIds: contentLessons.prerequisiteIds,
         sortOrder: contentLessons.sortOrder,
         createdAt: contentLessons.createdAt,
         updatedAt: contentLessons.updatedAt,
@@ -130,7 +130,7 @@ export const contentLessonService: ContentLessonService = {
       slug: lesson.content_lessons.slug,
       description: lesson.content_lessons.description,
       icon: lesson.content_lessons.icon,
-      prerequisite: lesson.content_lessons.prerequisite,
+      prerequisiteIds: lesson.content_lessons.prerequisiteIds,
       sortOrder: lesson.content_lessons.sortOrder,
       createdAt: lesson.content_lessons.createdAt,
       updatedAt: lesson.content_lessons.updatedAt,
@@ -164,7 +164,7 @@ export const contentLessonService: ContentLessonService = {
         slug,
         description: input.description,
         icon: input.icon,
-        prerequisite: input.prerequisite,
+        prerequisiteIds: input.prerequisiteIds,
         sortOrder,
       })
       .returning();

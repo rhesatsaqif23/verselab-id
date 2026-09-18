@@ -34,7 +34,7 @@ export type Lesson = {
   title: string;
   description?: string;
   icon?: string;
-  prerequisite?: string;
+  prerequisiteIds?: string[];
   screens: readonly Screen[];
 };
 

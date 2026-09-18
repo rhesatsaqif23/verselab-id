@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { toast } from "sonner";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "#/components/ui/button.tsx";
 import {
   Dialog,
@@ -15,13 +15,9 @@ import { Label } from "#/components/ui/label.tsx";
 import {
   adminCreateLesson,
   adminUpdateLesson,
+  adminGetAllLessons,
   type AdminLesson,
 } from "#/libs/admin-content-fns.ts";
-
-const EMPTY_TITLE = "";
-const EMPTY_DESCRIPTION = "";
-const EMPTY_ICON = "";
-const EMPTY_PREREQUISITE = "";
 
 interface LessonFormDialogProps {
   trigger: React.ReactNode;
@@ -32,10 +28,19 @@ interface LessonFormDialogProps {
 export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogProps) {
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
-  const [title, setTitle] = useState(EMPTY_TITLE);
-  const [description, setDescription] = useState(EMPTY_DESCRIPTION);
-  const [icon, setIcon] = useState(EMPTY_ICON);
-  const [prerequisite, setPrerequisite] = useState(EMPTY_PREREQUISITE);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [icon, setIcon] = useState("");
+  const [prerequisiteIds, setPrerequisiteIds] = useState<string[]>([]);
+
+  const { data: allLessons = [] } = useQuery({
+    queryKey: ["admin-all-lessons"],
+    queryFn: () => adminGetAllLessons(),
+  });
+
+  const otherLessons = (allLessons ?? []).filter(
+    (l) => l.unitId === unitId && l.id !== lesson?.id,
+  );
 
   const createMutation = useMutation({
     mutationFn: (data: {
@@ -44,7 +49,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
       title: string;
       description?: string;
       icon?: string;
-      prerequisite?: string;
+      prerequisiteIds?: string[];
     }) => adminCreateLesson({ data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] }),
   });
@@ -55,28 +60,34 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
       title?: string;
       description?: string | null;
       icon?: string;
-      prerequisite?: string | null;
+      prerequisiteIds?: string[] | null;
     }) => adminUpdateLesson({ data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] }),
   });
 
   function reset() {
-    setTitle(EMPTY_TITLE);
-    setDescription(EMPTY_DESCRIPTION);
-    setIcon(EMPTY_ICON);
-    setPrerequisite(EMPTY_PREREQUISITE);
+    setTitle("");
+    setDescription("");
+    setIcon("");
+    setPrerequisiteIds([]);
   }
 
   function handleOpenChange(next: boolean) {
     setOpen(next);
     if (next) {
-      setTitle(lesson?.title ?? EMPTY_TITLE);
-      setDescription(lesson?.description ?? EMPTY_DESCRIPTION);
-      setIcon(lesson?.icon ?? EMPTY_ICON);
-      setPrerequisite(lesson?.prerequisite ?? EMPTY_PREREQUISITE);
+      setTitle(lesson?.title ?? "");
+      setDescription(lesson?.description ?? "");
+      setIcon(lesson?.icon ?? "");
+      setPrerequisiteIds(lesson?.prerequisiteIds ?? []);
     } else {
       reset();
     }
+  }
+
+  function togglePrerequisite(id: string) {
+    setPrerequisiteIds((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id],
+    );
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -93,7 +104,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
           title: title.trim(),
           description: description.trim() || null,
           icon: icon.trim() || undefined,
-          prerequisite: prerequisite.trim() || null,
+          prerequisiteIds: prerequisiteIds.length > 0 ? prerequisiteIds : null,
         });
         toast.success("Lesson berhasil diperbarui");
       } else {
@@ -102,7 +113,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
           title: title.trim(),
           description: description.trim() || undefined,
           icon: icon.trim() || undefined,
-          prerequisite: prerequisite.trim() || undefined,
+          prerequisiteIds: prerequisiteIds.length > 0 ? prerequisiteIds : undefined,
         });
         toast.success("Lesson berhasil ditambahkan");
       }
@@ -164,15 +175,33 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
               placeholder="&#128176;"
             />
           </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lesson-prereq">Prasyarat (opsional)</Label>
-            <Input
-              id="lesson-prereq"
-              value={prerequisite}
-              onChange={(e) => setPrerequisite(e.target.value)}
-              placeholder="Disarankan selesaikan ... terlebih dahulu."
-            />
-          </div>
+          {otherLessons.length > 0 && (
+            <div className="flex flex-col gap-1.5">
+              <Label>Prasyarat (opsional)</Label>
+              <p className="text-xs text-muted-foreground">
+                Pilih lesson yang harus diselesaikan terlebih dahulu.
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {otherLessons.map((l) => {
+                  const isSelected = prerequisiteIds.includes(l.id);
+                  return (
+                    <button
+                      key={l.id}
+                      type="button"
+                      onClick={() => togglePrerequisite(l.id)}
+                      className={`rounded-full border px-3 py-1 text-xs font-medium transition-colors ${
+                        isSelected
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border bg-card text-muted-foreground hover:border-primary/40"
+                      }`}
+                    >
+                      {l.title}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </form>
         <DialogFooter>
           <Button type="submit" form="lesson-form" disabled={isPending}>

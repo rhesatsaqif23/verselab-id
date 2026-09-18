@@ -63,6 +63,8 @@ export default function MateriPage() {
     setIsCtaVisible(true);
   };
 
+  const allLessons = units.flatMap((u) => u.lessons);
+
   return (
     <main className="relative mx-auto flex min-h-[calc(100vh-140px)] w-full max-w-6xl flex-col gap-12 px-4 py-8 sm:px-6 lg:px-8">
       {units.map((unit) => (
@@ -89,7 +91,7 @@ export default function MateriPage() {
       {selectedLesson && (
         <div className="fixed bottom-6 inset-x-0 z-30 flex justify-center px-4 sm:px-8 pointer-events-none">
           <div className="w-full max-w-2xl pointer-events-auto">
-            <LessonCta lesson={selectedLesson} status={selectedStatus} isVisible={isCtaVisible} />
+            <LessonCta lesson={selectedLesson} status={selectedStatus} isVisible={isCtaVisible} allLessons={allLessons} />
           </div>
         </div>
       )}

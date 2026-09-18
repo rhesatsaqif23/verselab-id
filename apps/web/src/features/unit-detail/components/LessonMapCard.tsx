@@ -86,10 +86,6 @@ export default function LessonMapCard({
           <p className="line-clamp-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
             {lesson.description}
           </p>
-        ) : lesson.prerequisite && status !== "previous" ? (
-          <p className="line-clamp-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
-            💡 {lesson.prerequisite}
-          </p>
         ) : (
           <p className="line-clamp-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
             Pahami konsep dan latihan interaktif untuk menguasai topik ini.

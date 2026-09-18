@@ -44,7 +44,7 @@ export type AdminLesson = {
   slug: string;
   description: string | null;
   icon: string | null;
-  prerequisite: string | null;
+  prerequisiteIds: string[] | null;
   sortOrder: number;
   createdAt: string;
   updatedAt: string;
@@ -141,7 +141,7 @@ export const adminCreateLesson = createServerFn({ method: "POST" })
       title: string;
       description?: string;
       icon?: string;
-      prerequisite?: string;
+      prerequisiteIds?: string[];
     }) => data,
   )
   .handler(async ({ data }) => {
@@ -159,7 +159,7 @@ export const adminUpdateLesson = createServerFn({ method: "POST" })
       title?: string;
       description?: string | null;
       icon?: string;
-      prerequisite?: string | null;
+      prerequisiteIds?: string[] | null;
     }) => data,
   )
   .handler(async ({ data }) => {

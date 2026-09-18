@@ -66,6 +66,7 @@ export default function UnitDetailPage({ unit }: Props) {
           completedLessons={completedLessons}
           selectedLesson={selectedLesson}
           status={selectedStatus}
+          allLessons={[...unit.lessons]}
         />
       </div>
     </div>

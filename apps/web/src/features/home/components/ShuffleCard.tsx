@@ -75,8 +75,8 @@ export default function ShuffleCard() {
     0,
     units.findIndex((u) => u.id === selectedUnitId),
   );
-  const prevUnit = units[(activeIndex - 1 + units.length) % units.length];
-  const nextUnit = units[(activeIndex + 1) % units.length];
+  const prevUnit = units.length > 0 ? units[(activeIndex - 1 + units.length) % units.length] : undefined;
+  const nextUnit = units.length > 0 ? units[(activeIndex + 1) % units.length] : undefined;
 
   const committed = Math.abs(dragX) >= COMMIT_THRESHOLD || turning;
 
@@ -120,20 +120,22 @@ export default function ShuffleCard() {
   }
 
   const commitNext = useCallback(() => {
+    if (!nextUnit) return;
     commitSourceRef.current = "drag";
     setSelectedUnit(nextUnit.id);
     setOrder((prev) =>
       prev[0] === selectedUnitId ? [nextUnit.id, ...prev.filter((id) => id !== nextUnit.id)] : prev,
     );
-  }, [nextUnit.id, selectedUnitId, setSelectedUnit]);
+  }, [nextUnit, selectedUnitId, setSelectedUnit]);
 
   const commitPrev = useCallback(() => {
+    if (!prevUnit) return;
     commitSourceRef.current = "drag";
     setSelectedUnit(prevUnit.id);
     setOrder((prev) =>
       prev[0] === selectedUnitId ? [prevUnit.id, ...prev.filter((id) => id !== prevUnit.id)] : prev,
     );
-  }, [prevUnit.id, selectedUnitId, setSelectedUnit]);
+  }, [prevUnit, selectedUnitId, setSelectedUnit]);
 
   const onPointerDown = useCallback((e: React.PointerEvent) => {
     if (e.button !== 0) return;

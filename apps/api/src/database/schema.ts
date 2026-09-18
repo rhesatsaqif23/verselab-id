@@ -112,7 +112,7 @@ export const contentLessons = pgTable(
     slug: text("slug").notNull(),
     description: text("description"),
     icon: text("icon"),
-    prerequisite: text("prerequisite"),
+    prerequisiteIds: text("prerequisite_ids").array(),
     sortOrder: integer("sort_order").notNull().default(0),
     createdAt: timestamp("created_at").notNull().defaultNow(),
     updatedAt: timestamp("updated_at").notNull().defaultNow(),

@@ -1,15 +1,18 @@
 // UnitMapBottomBar: Floating bottom status bar and CTA for whiteboard canvas matching reference design.
+import { useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { PlayCircle, RotateCcw, Sparkles } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import type { Lesson, Unit } from "#/engine/types.ts";
 import type { LessonStatus } from "../types.ts";
+import { PrerequisiteDialog } from "./PrerequisiteDialog.tsx";
 
 type UnitMapBottomBarProps = {
   unit: Unit;
   completedLessons: string[];
   selectedLesson: Lesson | null;
   status: LessonStatus;
+  allLessons: Lesson[];
 };
 
 export default function UnitMapBottomBar({
@@ -17,6 +20,7 @@ export default function UnitMapBottomBar({
   completedLessons,
   selectedLesson,
   status,
+  allLessons,
 }: UnitMapBottomBarProps) {
   const completedCount = unit.lessons.filter((l) => completedLessons.includes(l.id)).length;
   const totalCount = unit.lessons.length;
@@ -25,59 +29,86 @@ export default function UnitMapBottomBar({
   const currentLesson =
     selectedLesson ?? unit.lessons.find((l) => !completedLessons.includes(l.id)) ?? unit.lessons[0];
 
+  const [showPrereqDialog, setShowPrereqDialog] = useState(false);
+
   if (!currentLesson) return null;
 
-  return (
-    <div className="pointer-events-none absolute bottom-5 inset-x-0 z-30 flex justify-center px-4 sm:px-8">
-      <div className="pointer-events-auto flex w-full max-w-3xl items-center justify-between gap-4 rounded-3xl border-2 border-border bg-card/95 p-3.5 sm:px-6 shadow-2xl backdrop-blur-md">
-        {/* Left: Unit Progress summary */}
-        <div className="flex items-center gap-3.5">
-          {/* Circular progress badge */}
-          <div className="relative flex size-12 shrink-0 items-center justify-center rounded-full border-2 border-primary/30 bg-primary/10">
-            <span className="text-sm font-black text-primary">{progressPercent}%</span>
-          </div>
+  const hasUnmetPrereqs =
+    currentLesson.prerequisiteIds?.some((id) => !completedLessons.includes(id)) ?? false;
 
-          <div className="flex flex-col gap-0.5">
-            <span className="text-sm sm:text-base font-black text-foreground truncate max-w-50 sm:max-w-80">
-              {currentLesson.title}
-            </span>
-            {(currentLesson.description || currentLesson.prerequisite) && (
-              <span className="text-xs text-muted-foreground truncate max-w-50 sm:max-w-80">
-                {currentLesson.description || `💡 ${currentLesson.prerequisite}`}
+  function handleStartClick(e: React.MouseEvent) {
+    if (hasUnmetPrereqs && status !== "previous") {
+      e.preventDefault();
+      e.stopPropagation();
+      setShowPrereqDialog(true);
+    }
+  }
+
+  return (
+    <>
+      <div className="pointer-events-none absolute bottom-5 inset-x-0 z-30 flex justify-center px-4 sm:px-8">
+        <div className="pointer-events-auto flex w-full max-w-3xl items-center justify-between gap-4 rounded-3xl border-2 border-border bg-card/95 p-3.5 sm:px-6 shadow-2xl backdrop-blur-md">
+          {/* Left: Unit Progress summary */}
+          <div className="flex items-center gap-3.5">
+            {/* Circular progress badge */}
+            <div className="relative flex size-12 shrink-0 items-center justify-center rounded-full border-2 border-primary/30 bg-primary/10">
+              <span className="text-sm font-black text-primary">{progressPercent}%</span>
+            </div>
+
+            <div className="flex flex-col gap-0.5">
+              <span className="text-sm sm:text-base font-black text-foreground truncate max-w-50 sm:max-w-80">
+                {currentLesson.title}
               </span>
-            )}
-            <div className="mt-0.5 flex items-center gap-2 text-sm font-semibold text-primary">
-              <span className="flex items-center gap-1">
-                <Sparkles className="size-3" />
-                {currentLesson.screens.length * 10} XP
-              </span>
-              <span>&bull;</span>
-              <span>
-                {completedCount} dari {totalCount} Topik Selesai
-              </span>
+              {currentLesson.description && (
+                <span className="text-xs text-muted-foreground truncate max-w-50 sm:max-w-80">
+                  {currentLesson.description}
+                </span>
+              )}
+              <div className="mt-0.5 flex items-center gap-2 text-sm font-semibold text-primary">
+                <span className="flex items-center gap-1">
+                  <Sparkles className="size-3" />
+                  {currentLesson.screens.length * 10} XP
+                </span>
+                <span>&bull;</span>
+                <span>
+                  {completedCount} dari {totalCount} Topik Selesai
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Right: Mulai CTA Button */}
-        <div className="flex items-center shrink-0">
-          {status === "previous" ? (
-            <Button asChild size="lg" className="rounded-2xl px-6 sm:px-8 font-bold text-base">
-              <Link to="/lesson/$lessonId" params={{ lessonId: currentLesson.id }}>
-                <RotateCcw className="mr-2 size-5" />
-                Main Lagi
-              </Link>
-            </Button>
-          ) : (
-            <Button asChild size="lg" className="rounded-2xl px-6 sm:px-8 font-bold text-base">
-              <Link to="/lesson/$lessonId" params={{ lessonId: currentLesson.id }}>
-                <PlayCircle className="mr-2 size-5" />
-                Mulai Belajar
-              </Link>
-            </Button>
-          )}
+          {/* Right: Mulai CTA Button */}
+          <div className="flex items-center shrink-0">
+            {status === "previous" ? (
+              <Button asChild size="lg" className="rounded-2xl px-6 sm:px-8 font-bold text-base">
+                <Link to="/lesson/$lessonId" params={{ lessonId: currentLesson.id }}>
+                  <RotateCcw className="mr-2 size-5" />
+                  Main Lagi
+                </Link>
+              </Button>
+            ) : (
+              <Button asChild size="lg" className="rounded-2xl px-6 sm:px-8 font-bold text-base">
+                <Link
+                  to="/lesson/$lessonId"
+                  params={{ lessonId: currentLesson.id }}
+                  onClick={handleStartClick}
+                >
+                  <PlayCircle className="mr-2 size-5" />
+                  Mulai Belajar
+                </Link>
+              </Button>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+
+      <PrerequisiteDialog
+        open={showPrereqDialog}
+        onOpenChange={setShowPrereqDialog}
+        lesson={currentLesson}
+        allLessons={allLessons}
+        completedLessons={completedLessons}
+      />
+    </>
   );
 }

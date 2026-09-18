@@ -38,7 +38,7 @@ type SeedLesson = {
   title: string;
   description?: string;
   icon: string;
-  prerequisite?: string;
+  prerequisiteIds?: string[];
   screens: SeedScreen[];
 };
 
@@ -133,7 +133,7 @@ export const seedUnits: SeedUnit[] = [
         title: "Uang Sekarang vs Masa Depan",
         description: "Kenapa 1 juta hari ini bernilai lebih dari 1 juta di masa depan.",
         icon: "TrendingUp",
-        prerequisite: "Disarankan selesaikan Kenapa Nabung Lebih Awal terlebih dahulu.",
+        prerequisiteIds: ["nabung-awal"],
         screens: [
           {
             type: "choice",
@@ -202,7 +202,7 @@ export const seedUnits: SeedUnit[] = [
         title: "Membuat Anggaran Sederhana",
         description: "Susun anggaran bulanan praktis yang bisa langsung kamu terapkan.",
         icon: "PieChart",
-        prerequisite: "Disarankan selesaikan Uang Sekarang vs Masa Depan terlebih dahulu.",
+        prerequisiteIds: ["nilai-waktu-uang"],
         screens: [
           {
             type: "choice",
@@ -271,7 +271,7 @@ export const seedUnits: SeedUnit[] = [
         title: "Memahami Bunga Pinjaman",
         description: "Kenali cara kerja bunga pinjaman dan dampaknya terhadap keuangan kamu.",
         icon: "CreditCard",
-        prerequisite: "Disarankan selesaikan Membuat Anggaran Sederhana terlebih dahulu.",
+        prerequisiteIds: ["anggaran-bulanan"],
         screens: [
           {
             type: "choice",
@@ -427,7 +427,7 @@ export const seedUnits: SeedUnit[] = [
         title: "Mencatat Transaksi: Debit dan Kredit",
         description: "Cara mencatat setiap transaksi bisnis dengan benar menggunakan debit dan kredit.",
         icon: "ArrowLeftRight",
-        prerequisite: "Disarankan selesaikan Persamaan Dasar: Aset, Utang, dan Modal terlebih dahulu.",
+        prerequisiteIds: ["persamaan"],
         screens: [
           {
             type: "choice",
@@ -500,7 +500,7 @@ export const seedUnits: SeedUnit[] = [
         title: "Laporan Laba Rugi: Untung atau Rugi",
         description: "Baca laporan laba rugi untuk mengetahui apakah bisnis kamu menguntungkan.",
         icon: "FileText",
-        prerequisite: "Disarankan selesaikan Mencatat Transaksi: Debit dan Kredit terlebih dahulu.",
+        prerequisiteIds: ["transaksi"],
         screens: [
           {
             type: "choice",
@@ -571,7 +571,7 @@ export const seedUnits: SeedUnit[] = [
         title: "Arus Kas: Uang yang Benar-Benar Masuk dan Keluar",
         description: "Pahami perbedaan antara laba dan arus kas aktual dalam bisnis.",
         icon: "Banknote",
-        prerequisite: "Disarankan selesaikan Laporan Laba Rugi: Untung atau Rugi terlebih dahulu.",
+        prerequisiteIds: ["laba-rugi"],
         screens: [
           {
             type: "choice",
@@ -724,7 +724,7 @@ export const seedUnits: SeedUnit[] = [
         title: "Memilih Fitur yang Paling Penting Dulu",
         description: "Rencanakan fitur mana yang harus dibangun terlebih dahulu berdasarkan dampak.",
         icon: "ListFilter",
-        prerequisite: "Disarankan selesaikan Mulai dari Masalah, Bukan dari Fitur terlebih dahulu.",
+        prerequisiteIds: ["menemukan-masalah"],
         screens: [
           {
             type: "choice",
@@ -797,7 +797,7 @@ export const seedUnits: SeedUnit[] = [
         title: "Metrik yang Benar: Aktivasi dan Retensi",
         description: "Ukur keberhasilan produk kamu dengan metrik yang tepat.",
         icon: "BarChart3",
-        prerequisite: "Disarankan selesaikan Memilih Fitur yang Paling Penting Dulu terlebih dahulu.",
+        prerequisiteIds: ["prioritas-fitur"],
         screens: [
           {
             type: "choice",
@@ -869,7 +869,7 @@ export const seedUnits: SeedUnit[] = [
         title: "MVP: Menguji Asumsi dengan Usaha Terkecil",
         description: "Bangun MVP untuk menguji asumsi bisnis dengan modal seminimal mungkin.",
         icon: "Rocket",
-        prerequisite: "Disarankan selesaikan Metrik yang Benar: Aktivasi dan Retensi terlebih dahulu.",
+        prerequisiteIds: ["metrik-produk"],
         screens: [
           {
             type: "choice",
@@ -1022,7 +1022,7 @@ export const seedUnits: SeedUnit[] = [
         title: "Titik Impas (Break-Even)",
         description: "Tahu kapan bisnis kamu mulai menguntungkan dan menutup semua biaya.",
         icon: "Target",
-        prerequisite: "Disarankan selesaikan Unit Ekonomi: Untung dari Setiap Produk Terjual terlebih dahulu.",
+        prerequisiteIds: ["unit-ekonomi"],
         screens: [
           {
             type: "choice",
@@ -1093,7 +1093,7 @@ export const seedUnits: SeedUnit[] = [
         title: "Menentukan Harga Jual",
         description: "Strategi menentukan harga jual yang tepat untuk produk kamu.",
         icon: "Tag",
-        prerequisite: "Disarankan selesaikan Titik Impas (Break-Even) terlebih dahulu.",
+        prerequisiteIds: ["titik-impas"],
         screens: [
           {
             type: "choice",
@@ -1164,7 +1164,7 @@ export const seedUnits: SeedUnit[] = [
         title: "Validasi Ide sebelum Mengeluarkan Uang",
         description: "Uji ide bisnis kamu sebelum menghabiskan uang untuk membangunnya.",
         icon: "Lightbulb",
-        prerequisite: "Disarankan selesaikan Menentukan Harga Jual terlebih dahulu.",
+        prerequisiteIds: ["menentukan-harga"],
         screens: [
           {
             type: "choice",
