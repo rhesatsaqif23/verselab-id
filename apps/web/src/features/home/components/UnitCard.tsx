@@ -1,6 +1,8 @@
 // UnitCard: single card for one unit with next lesson, mastery progress, and CTA.
+import { useCallback } from "react";
 import { PlayCircle } from "lucide-react";
 import { Link, useLoaderData } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "#/components/ui/button";
 import { Card, CardContent } from "#/components/ui/card";
 import { Badge } from "#/components/ui/badge";
@@ -8,12 +10,17 @@ import type { Unit } from "#/engine/types.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import { todayString } from "#/libs/date.ts";
 import { decayedMastery } from "#/engine/progress/decay.ts";
+import { getUnitWithContent, getLesson } from "#/libs/content-fns.ts";
+
+const UNIT_STALE = 5 * 60 * 1000;
+const LESSON_STALE = 5 * 60 * 1000;
 
 type UnitCardProps = {
   unit: Unit;
 };
 
 export default function UnitCard({ unit }: UnitCardProps) {
+  const queryClient = useQueryClient();
   const routeData = useLoaderData({ strict: false }) as
     | { units: Unit[] }
     | undefined;
@@ -53,8 +60,28 @@ export default function UnitCard({ unit }: UnitCardProps) {
 
   const isRecommended = unit.id === recommendedUnitId;
 
+  const prefetchUnit = useCallback(() => {
+    queryClient.prefetchQuery({
+      queryKey: ["unit", unit.id],
+      queryFn: () => getUnitWithContent({ data: unit.id }),
+      staleTime: UNIT_STALE,
+    });
+  }, [queryClient, unit.id]);
+
+  const prefetchLesson = useCallback(() => {
+    if (!currentLesson) return;
+    queryClient.prefetchQuery({
+      queryKey: ["lesson", currentLesson.id],
+      queryFn: () => getLesson({ data: currentLesson.id }),
+      staleTime: LESSON_STALE,
+    });
+  }, [queryClient, currentLesson]);
+
   return (
-    <Card className="group relative overflow-hidden border-2 border-border p-0 transition-all hover:border-primary/40 cursor-grab">
+    <Card
+      className="group relative overflow-hidden border-2 border-border p-0 transition-all hover:border-primary/40 cursor-grab"
+      onMouseEnter={prefetchUnit}
+    >
       <CardContent className="p-0">
         <div className="relative flex flex-col items-center gap-5 px-8 py-8 text-center">
           {/* Soft radial bg decoration */}
@@ -99,7 +126,11 @@ export default function UnitCard({ unit }: UnitCardProps) {
           {/* CTA button: Mulai opening current lesson directly */}
           {currentLesson && (
             <Button asChild size="lg" className="relative z-10 mt-1 w-full pointer-events-auto">
-              <Link to="/lesson/$lessonId" params={{ lessonId: currentLesson.id }}>
+              <Link
+                to="/lesson/$lessonId"
+                params={{ lessonId: currentLesson.id }}
+                onMouseEnter={prefetchLesson}
+              >
                 <PlayCircle className="mr-2 size-6" />
                 Mulai
               </Link>

@@ -16,6 +16,12 @@ import { todayString } from "#/libs/date.ts";
 
 const { navigateMock } = vi.hoisted(() => ({ navigateMock: vi.fn() }));
 
+vi.mock("@tanstack/react-query", () => ({
+  useQueryClient: () => ({
+    prefetchQuery: vi.fn().mockResolvedValue(undefined),
+  }),
+}));
+
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => navigateMock,
   useLoaderData: () => ({ units }),

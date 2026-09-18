@@ -1,9 +1,14 @@
+import { useCallback } from "react";
 import { Link } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import { PlayCircle, RotateCcw } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import { Card, CardContent } from "#/components/ui/card";
 import type { Lesson } from "#/engine/types.ts";
 import type { LessonStatus } from "../types.ts";
+import { getLesson } from "#/libs/content-fns.ts";
+
+const LESSON_STALE = 5 * 60 * 1000;
 
 type LessonCtaProps = {
   lesson: Lesson;
@@ -12,6 +17,16 @@ type LessonCtaProps = {
 };
 
 export default function LessonCta({ lesson, status, isVisible }: LessonCtaProps) {
+  const queryClient = useQueryClient();
+
+  const prefetchLesson = useCallback(() => {
+    queryClient.prefetchQuery({
+      queryKey: ["lesson", lesson.id],
+      queryFn: () => getLesson({ data: lesson.id }),
+      staleTime: LESSON_STALE,
+    });
+  }, [queryClient, lesson.id]);
+
   return (
     <div
       className={`w-full transition-all duration-300 ease-in-out ${
@@ -40,7 +55,11 @@ export default function LessonCta({ lesson, status, isVisible }: LessonCtaProps)
                 size="lg"
                 className="w-full sm:w-auto text-base! font-bold! shadow-md"
               >
-                <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }}>
+                <Link
+                  to="/lesson/$lessonId"
+                  params={{ lessonId: lesson.id }}
+                  onMouseEnter={prefetchLesson}
+                >
                   <RotateCcw className="mr-2 size-5" />
                   Main Lagi
                 </Link>
@@ -51,7 +70,11 @@ export default function LessonCta({ lesson, status, isVisible }: LessonCtaProps)
                 size="lg"
                 className="w-full sm:w-auto text-base! font-bold! shadow-md"
               >
-                <Link to="/lesson/$lessonId" params={{ lessonId: lesson.id }}>
+                <Link
+                  to="/lesson/$lessonId"
+                  params={{ lessonId: lesson.id }}
+                  onMouseEnter={prefetchLesson}
+                >
                   <PlayCircle className="mr-2 size-5" />
                   Mulai
                 </Link>
