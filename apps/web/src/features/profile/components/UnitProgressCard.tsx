@@ -1,14 +1,22 @@
 // UnitProgressCard: per-unit progress with unit image.
 import { Card, CardContent } from "#/components/ui/card";
-import { findUnit } from "#/content/index.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
+import type { Lesson } from "#/engine/types.ts";
 
-type Props = { unitId: string; title: string; description?: string; imageUrl: string };
+type Props = {
+  title: string;
+  description?: string;
+  imageUrl: string;
+  lessons: readonly Lesson[];
+};
 
-export default function UnitProgressCard({ unitId, title, description, imageUrl }: Props) {
+export default function UnitProgressCard({
+  title,
+  description,
+  imageUrl,
+  lessons,
+}: Props) {
   const completedLessons = useProgressStore((s) => s.completedLessons);
-  const unit = findUnit(unitId);
-  const lessons = unit?.lessons ?? [];
   const doneCount = lessons.filter((l) => completedLessons.includes(l.id)).length;
   const pct = lessons.length > 0 ? Math.round((doneCount / lessons.length) * 100) : 0;
 

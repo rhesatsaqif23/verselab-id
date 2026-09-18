@@ -7,10 +7,11 @@ import userEvent from "@testing-library/user-event";
 import ProfileChip from "#/features/profile/components/ProfileChip.tsx";
 import type { ResolvedSession } from "#/libs/session.ts";
 
-const { resolveSessionMock, navigateMock, signOutMock } = vi.hoisted(() => ({
+const { resolveSessionMock, navigateMock, signOutMock, getUnitMock } = vi.hoisted(() => ({
   resolveSessionMock: vi.fn(),
   navigateMock: vi.fn(),
   signOutMock: vi.fn(),
+  getUnitMock: vi.fn(),
 }));
 
 vi.mock("#/libs/session.ts", () => ({
@@ -25,6 +26,10 @@ vi.mock("#/libs/auth-client.ts", () => ({
   authClient: {
     signOut: signOutMock,
   },
+}));
+
+vi.mock("#/libs/content-fns.ts", () => ({
+  getUnit: getUnitMock,
 }));
 
 const authenticated: ResolvedSession = {
@@ -52,6 +57,8 @@ beforeEach(() => {
   resolveSessionMock.mockReset();
   navigateMock.mockReset();
   signOutMock.mockReset();
+  getUnitMock.mockReset();
+  getUnitMock.mockResolvedValue({ id: "kewirausahaan", title: "Kewirausahaan" });
 });
 
 // Render inside act, then yield to the event loop so React 19's scheduler can

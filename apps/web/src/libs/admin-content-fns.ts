@@ -35,8 +35,8 @@ export type AdminUnit = {
   description: string | null;
   imageUrl: string | null;
   sortOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type AdminLesson = {
@@ -47,8 +47,8 @@ export type AdminLesson = {
   icon: string | null;
   prerequisite: string | null;
   sortOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
 
 // ── Unit CRUD ──────────────────────────────────────────────────────────────
@@ -193,8 +193,8 @@ export type AdminScreen = {
   categories: string[] | null;
   rule: { type: string; categoryId: string; min?: number; max?: number } | null;
   sortOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export const adminGetScreens = createServerFn({ method: "GET" })

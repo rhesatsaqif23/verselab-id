@@ -1,14 +1,17 @@
 // ProfilePage: avatar, stats, goal harian, and per-unit progress.
 "use client";
 import { useEffect, useState } from "react";
-import { units } from "#/content/index.ts";
+import { useLoaderData } from "@tanstack/react-router";
 import { resolveSession, type ResolvedSession } from "#/libs/session.ts";
+import type { Unit } from "#/engine/types.ts";
 import ProfileHeader from "../components/ProfileHeader";
 import StatsSection from "../components/StatsSection";
 import GoalHarian from "../components/GoalHarian";
 import UnitProgressCard from "../components/UnitProgressCard";
 
 export default function ProfilePage() {
+  const routeData = useLoaderData({ strict: false }) as { units: Unit[] } | undefined;
+  const units = routeData?.units ?? [];
   const [session, setSession] = useState<ResolvedSession | null>(null);
 
   useEffect(() => {
@@ -54,10 +57,10 @@ export default function ProfilePage() {
             {units.map((unit) => (
               <UnitProgressCard
                 key={unit.id}
-                unitId={unit.id}
                 title={unit.title}
-                description={unit.description}
-                imageUrl={unit.imageUrl}
+                description={unit.description ?? undefined}
+                imageUrl={unit.imageUrl ?? "/unit/placeholder.webp"}
+                lessons={unit.lessons}
               />
             ))}
           </div>

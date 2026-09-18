@@ -1,6 +1,7 @@
 // Test helpers for resetting the progress store.
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
-import { units } from "#/content/index.ts";
+
+const UNIT_IDS = ["keuangan", "akuntansi", "manajemen-produk", "kewirausahaan"];
 
 export function resetProgress() {
   localStorage.clear();
@@ -17,6 +18,6 @@ export function resetProgress() {
 
 export function setMastery(value: number) {
   useProgressStore.setState({
-    mastery: Object.fromEntries(units.map((u) => [u.id, value])),
+    mastery: Object.fromEntries(UNIT_IDS.map((id) => [id, value])),
   });
 }

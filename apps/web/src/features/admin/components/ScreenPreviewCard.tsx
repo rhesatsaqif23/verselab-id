@@ -47,7 +47,7 @@ function adminScreenToScreen(admin: AdminScreen): Screen {
         ...base,
         categories,
         rule: admin.rule
-          ? { category: admin.rule.categoryId, min: admin.rule.min }
+          ? { category: admin.rule.categoryId, min: admin.rule.min, max: admin.rule.max }
           : { category: categories[0], min: 20 },
       };
     }

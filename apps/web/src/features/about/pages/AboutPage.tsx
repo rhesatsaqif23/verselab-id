@@ -1,6 +1,6 @@
 // MateriPage: displays all units using the same components (UnitHeader and LessonList) as UnitDetail.
 import { useState, useEffect, useRef } from "react";
-import { units } from "#/content/index.ts";
+import { useLoaderData } from "@tanstack/react-router";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import type { Lesson, Unit } from "#/engine/types.ts";
 import type { LessonStatus } from "../../unit-detail/types.ts";
@@ -9,6 +9,8 @@ import LessonList from "../../unit-detail/components/LessonList.tsx";
 import LessonCta from "../../unit-detail/components/LessonCta.tsx";
 
 export default function MateriPage() {
+  const routeData = useLoaderData({ strict: false }) as { units: Unit[] } | undefined;
+  const units = routeData?.units ?? [];
   const completedLessons = useProgressStore((s) => s.completedLessons);
 
   // Track selection globally across all units: { unitId, lessonId }

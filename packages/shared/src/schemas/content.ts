@@ -55,7 +55,8 @@ const choiceOptionSchema = z.object({
 const allocationRuleSchema = z.object({
   type: z.literal("min"),
   categoryId: z.string(),
-  min: z.number(),
+  min: z.number().optional(),
+  max: z.number().optional(),
 });
 
 export const createScreenSchema = z.object({

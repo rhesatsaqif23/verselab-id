@@ -40,13 +40,13 @@ export const getProgress = createServerFn({ method: "GET" }).handler(async () =>
   return apiGet<ServerProgress>("/v1/progress");
 });
 
-export const putProgress = createServerFn({ method: "GET" })
+export const putProgress = createServerFn({ method: "POST" })
   .validator((patch: ProgressPatch) => patch)
   .handler(async ({ data }) => {
     return apiPut<ServerProgress>("/v1/progress", data);
   });
 
-export const updateDailyGoal = createServerFn({ method: "GET" })
+export const updateDailyGoal = createServerFn({ method: "POST" })
   .validator((data: { minutes: number }) => data)
   .handler(async ({ data }) => {
     return apiPatch<ServerProgress>("/v1/progress/daily-goal", data);

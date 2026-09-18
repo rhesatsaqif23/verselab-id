@@ -15,8 +15,6 @@ import {
   Zap,
 } from "lucide-react";
 import { dailyGoalToMinutes, type DailyGoal } from "@verselab/shared/schemas/profile";
-import { units } from "#/content/units.ts";
-import { UNIT_ICONS } from "#/features/home/constants.ts";
 
 export { dailyGoalToMinutes, type DailyGoal };
 
@@ -45,17 +43,16 @@ export const PURPOSE_OPTIONS: {
   { value: "lainnya", label: "Lainnya", icon: MoreHorizontal },
 ];
 
-export const START_UNIT_OPTIONS: {
-  id: string;
-  title: string;
-  description: string;
-  icon: LucideIcon;
-}[] = units.map((u) => ({
-  id: u.id,
-  title: u.title,
-  description: u.description,
-  icon: UNIT_ICONS[u.id] ?? BookOpen,
-}));
+export const ICON_MAP: Record<string, LucideIcon> = {
+  karier: Briefcase,
+  pendidikan: GraduationCap,
+  investasi: TrendingUp,
+  wirausaha: Rocket,
+  "pengembangan-diri": Brain,
+  lainnya: MoreHorizontal,
+};
+
+export const DEFAULT_ICON = BookOpen;
 
 /** Speech-bubble text for each wizard step. */
 export const STEP_BUBBLES: Record<number, (name?: string) => string> = {

@@ -9,10 +9,16 @@ import UnitCard from "#/features/home/components/UnitCard.tsx";
 import ShuffleCard from "#/features/home/components/ShuffleCard.tsx";
 import UnitGrid from "#/features/home/components/UnitGrid.tsx";
 import { useHomeStore } from "#/features/home/store/homeStore.ts";
-import { units } from "#/content/index.ts";
 import { resetProgress, setMastery } from "../test-utils";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import { todayString } from "#/libs/date.ts";
+
+const units = [
+  { id: "keuangan", title: "Keuangan", description: "Menabung, anggaran, cicilan, dan nilai waktu uang.", imageUrl: "/unit/keuangan.webp", lessons: [{ id: "nabung-awal", title: "Nabung Awal", screens: [] }] },
+  { id: "akuntansi", title: "Akuntansi", description: "Persamaan dasar, pencatatan transaksi, laba rugi, dan arus kas.", imageUrl: "/unit/akuntansi.webp", lessons: [{ id: "persamaan", title: "Persamaan", screens: [] }] },
+  { id: "manajemen-produk", title: "Manajemen Produk", description: "Temukan masalah, prioritaskan fitur, ukur metrik, validasi MVP.", imageUrl: "/unit/manajemen-produk.webp", lessons: [{ id: "menemukan-masalah", title: "Menemukan Masalah", screens: [] }] },
+  { id: "kewirausahaan", title: "Kewirausahaan", description: "Unit ekonomi, titik impas, harga, dan validasi ide.", imageUrl: "/unit/kewirausahaan.webp", lessons: [{ id: "unit-ekonomi", title: "Unit Ekonomi", screens: [] }] },
+];
 
 const { navigateMock } = vi.hoisted(() => ({ navigateMock: vi.fn() }));
 

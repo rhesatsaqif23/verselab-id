@@ -5,6 +5,7 @@ import { resolveSession } from "#/libs/session.ts";
 import { loadProgress } from "#/engine/progress/sync.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import { migrateLegacyProgress } from "#/engine/progress/migrate.ts";
+import { getAllUnits } from "#/libs/content-fns.ts";
 
 export const Route = createFileRoute("/_home")({
   beforeLoad: async () => {
@@ -16,11 +17,12 @@ export const Route = createFileRoute("/_home")({
       throw redirect({ to: "/onboarding" });
     }
 
-    const progress = await loadProgress();
+    const [progress, units] = await Promise.all([loadProgress(), getAllUnits()]);
     if (progress) {
       useProgressStore.getState().hydrateFromServer(progress);
     }
     await migrateLegacyProgress();
+    return { units };
   },
   component: HomeLayout,
 });

@@ -8,6 +8,10 @@ import type { OnboardingState } from "#/features/onboarding/types.ts";
 
 const { navigateMock } = vi.hoisted(() => ({ navigateMock: vi.fn() }));
 
+vi.mock("#/libs/content-fns.ts", () => ({
+  getUnit: vi.fn().mockResolvedValue({ id: "kewirausahaan", title: "Kewirausahaan" }),
+}));
+
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => navigateMock,
   Link: ({

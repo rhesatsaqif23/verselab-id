@@ -4,6 +4,7 @@ type DbScreen = {
   id: string;
   lessonId: string;
   type: "concept" | "choice" | "numeric" | "allocation";
+  slug?: string;
   prompt: string;
   explain: string;
   options: { id: string; label: string }[] | null;

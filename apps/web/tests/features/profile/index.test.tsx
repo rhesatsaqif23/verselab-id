@@ -14,6 +14,38 @@ vi.mock("#/libs/session.ts", () => ({
   resolveSession: resolveSessionMock,
 }));
 
+vi.mock("@tanstack/react-router", () => ({
+  useLoaderData: () => ({
+    units: [
+      { id: "keuangan", title: "Keuangan", description: "Menabung, anggaran, cicilan, dan nilai waktu uang.", imageUrl: "/unit/keuangan.webp", lessons: [
+        { id: "nabung-awal", title: "Nabung Awal", screens: [] },
+        { id: "nilai-waktu-uang", title: "Nilai Waktu Uang", screens: [] },
+        { id: "anggaran-bulanan", title: "Anggaran Bulanan", screens: [] },
+        { id: "hutang-cicilan", title: "Hutang & Cicilan", screens: [] },
+      ] },
+      { id: "akuntansi", title: "Akuntansi", description: "Persamaan dasar, pencatatan transaksi, laba rugi, dan arus kas.", imageUrl: "/unit/akuntansi.webp", lessons: [
+        { id: "persamaan", title: "Persamaan", screens: [] },
+        { id: "transaksi", title: "Transaksi", screens: [] },
+        { id: "laba-rugi", title: "Laba Rugi", screens: [] },
+        { id: "arus-kas", title: "Arus Kas", screens: [] },
+      ] },
+      { id: "manajemen-produk", title: "Manajemen Produk", description: "Temukan masalah, prioritaskan fitur, ukur metrik, validasi MVP.", imageUrl: "/unit/manajemen-produk.webp", lessons: [
+        { id: "menemukan-masalah", title: "Menemukan Masalah", screens: [] },
+        { id: "prioritas-fitur", title: "Prioritas Fitur", screens: [] },
+        { id: "metrik-produk", title: "Metrik Produk", screens: [] },
+        { id: "mvp-validasi", title: "MVP Validasi", screens: [] },
+      ] },
+      { id: "kewirausahaan", title: "Kewirausahaan", description: "Unit ekonomi, titik impas, harga, dan validasi ide.", imageUrl: "/unit/kewirausahaan.webp", lessons: [
+        { id: "unit-ekonomi", title: "Unit Ekonomi", screens: [] },
+        { id: "titik-impas", title: "Titik Impas", screens: [] },
+        { id: "menentukan-harga", title: "Menentukan Harga", screens: [] },
+        { id: "validasi-ide", title: "Validasi Ide", screens: [] },
+      ] },
+    ],
+  }),
+  useNavigate: () => vi.fn(),
+}));
+
 beforeEach(() => {
   resetProgress();
   resolveSessionMock.mockReset();

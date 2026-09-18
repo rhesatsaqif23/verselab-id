@@ -14,21 +14,27 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "#/components/ui/alert-dialog";
-import { findUnit } from "#/content/index.ts";
+import { getUnit } from "#/libs/content-fns.ts";
 import { useSignOut } from "#/features/auth/hooks/useSignOut.ts";
 import { resolveSession, type ResolvedSession } from "#/libs/session.ts";
 import { cn } from "#/libs/utils.ts";
 
 export default function ProfileChip({ className }: { className?: string }) {
   const [session, setSession] = useState<ResolvedSession | null>(null);
+  const [unitTitle, setUnitTitle] = useState<string | null>(null);
   const [logoutOpen, setLogoutOpen] = useState(false);
   const { signOut, pending } = useSignOut();
 
   useEffect(() => {
     let active = true;
     resolveSession()
-      .then((result) => {
-        if (active) setSession(result);
+      .then(async (result) => {
+        if (!active) return;
+        setSession(result);
+        if (result?.status === "authenticated" && result.profile?.startUnitId) {
+          const unit = await getUnit({ data: result.profile.startUnitId });
+          if (active) setUnitTitle(unit?.title ?? null);
+        }
       })
       .catch(() => {
         if (active) setSession({ status: "anonymous" });
@@ -40,7 +46,6 @@ export default function ProfileChip({ className }: { className?: string }) {
 
   if (session?.status !== "authenticated") return null;
 
-  const unit = session.profile ? findUnit(session.profile.startUnitId) : undefined;
   const initial = (session.user.name ?? "?").charAt(0).toUpperCase();
 
   return (
@@ -56,7 +61,9 @@ export default function ProfileChip({ className }: { className?: string }) {
         </span>
         <span className="flex min-w-0 flex-1 flex-col leading-tight">
           <span className="truncate text-sm font-bold text-foreground">{session.user.name}</span>
-          {unit && <span className="text-xs font-medium text-muted">{unit.title}</span>}
+          {unitTitle && (
+            <span className="text-xs font-medium text-muted">{unitTitle}</span>
+          )}
         </span>
         <Button
           type="button"

@@ -13,6 +13,12 @@ vi.mock("#/engine/progress/sync.ts", () => ({
   scheduleSync: vi.fn(),
 }));
 
+vi.mock("#/libs/api.ts", () => ({
+  getProgress: vi.fn().mockResolvedValue(null),
+  putProgress: vi.fn().mockResolvedValue(null),
+  updateDailyGoal: vi.fn().mockResolvedValue(null),
+}));
+
 const store = () => useProgressStore.getState();
 
 beforeEach(() => {
