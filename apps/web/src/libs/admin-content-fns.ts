@@ -45,6 +45,7 @@ export type AdminLesson = {
   title: string;
   slug: string;
   icon: string | null;
+  prerequisite: string | null;
   sortOrder: number;
   createdAt: Date;
   updatedAt: Date;
@@ -134,7 +135,10 @@ export const adminGetLessonBySlug = createServerFn({ method: "GET" })
   });
 
 export const adminCreateLesson = createServerFn({ method: "POST" })
-  .validator((data: { id?: string; unitId: string; title: string; icon?: string }) => data)
+  .validator(
+    (data: { id?: string; unitId: string; title: string; icon?: string; prerequisite?: string }) =>
+      data,
+  )
   .handler(async ({ data }) => {
     return apiMutate<AdminLesson>("/v1/content/lessons", {
       method: "POST",
@@ -144,7 +148,9 @@ export const adminCreateLesson = createServerFn({ method: "POST" })
   });
 
 export const adminUpdateLesson = createServerFn({ method: "POST" })
-  .validator((data: { id: string; title?: string; icon?: string }) => data)
+  .validator(
+    (data: { id: string; title?: string; icon?: string; prerequisite?: string | null }) => data,
+  )
   .handler(async ({ data }) => {
     const { id, ...patch } = data;
     return apiMutate<AdminLesson>(`/v1/content/lessons/${id}`, {

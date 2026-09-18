@@ -52,6 +52,7 @@ export const contentLessonService: ContentLessonService = {
         title: contentLessons.title,
         slug: contentLessons.slug,
         icon: contentLessons.icon,
+        prerequisite: contentLessons.prerequisite,
         sortOrder: contentLessons.sortOrder,
         createdAt: contentLessons.createdAt,
         updatedAt: contentLessons.updatedAt,
@@ -121,6 +122,7 @@ export const contentLessonService: ContentLessonService = {
         title: input.title,
         slug,
         icon: input.icon,
+        prerequisite: input.prerequisite,
         sortOrder,
       })
       .returning();

@@ -80,7 +80,14 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
 
   function handleOpenChange(next: boolean) {
     setOpen(next);
-    if (!next) reset();
+    if (next) {
+      setTitle(unit?.title ?? EMPTY_TITLE);
+      setDescription(unit?.description ?? EMPTY_DESCRIPTION);
+      setPreviewUrl(unit?.imageUrl ?? "");
+      setSelectedFile(null);
+    } else {
+      reset();
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -144,7 +151,7 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent>
+      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{isEdit ? "Edit Unit" : "Tambah Unit"}</DialogTitle>
         </DialogHeader>

@@ -20,6 +20,7 @@ import {
 
 const EMPTY_TITLE = "";
 const EMPTY_ICON = "";
+const EMPTY_PREREQUISITE = "";
 
 interface LessonFormDialogProps {
   trigger: React.ReactNode;
@@ -32,15 +33,21 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(EMPTY_TITLE);
   const [icon, setIcon] = useState(EMPTY_ICON);
+  const [prerequisite, setPrerequisite] = useState(EMPTY_PREREQUISITE);
 
   const createMutation = useMutation({
-    mutationFn: (data: { id?: string; unitId: string; title: string; icon?: string }) =>
-      adminCreateLesson({ data }),
+    mutationFn: (data: {
+      id?: string;
+      unitId: string;
+      title: string;
+      icon?: string;
+      prerequisite?: string;
+    }) => adminCreateLesson({ data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] }),
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: { id: string; title?: string; icon?: string }) =>
+    mutationFn: (data: { id: string; title?: string; icon?: string; prerequisite?: string | null }) =>
       adminUpdateLesson({ data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] }),
   });
@@ -48,11 +55,18 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   function reset() {
     setTitle(EMPTY_TITLE);
     setIcon(EMPTY_ICON);
+    setPrerequisite(EMPTY_PREREQUISITE);
   }
 
   function handleOpenChange(next: boolean) {
     setOpen(next);
-    if (!next) reset();
+    if (next) {
+      setTitle(lesson?.title ?? EMPTY_TITLE);
+      setIcon(lesson?.icon ?? EMPTY_ICON);
+      setPrerequisite(lesson?.prerequisite ?? EMPTY_PREREQUISITE);
+    } else {
+      reset();
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -68,6 +82,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
           id: lesson.id,
           title: title.trim(),
           icon: icon.trim() || undefined,
+          prerequisite: prerequisite.trim() || null,
         });
         toast.success("Lesson berhasil diperbarui");
       } else {
@@ -75,6 +90,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
           unitId,
           title: title.trim(),
           icon: icon.trim() || undefined,
+          prerequisite: prerequisite.trim() || undefined,
         });
         toast.success("Lesson berhasil ditambahkan");
       }
@@ -91,7 +107,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent>
+      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{isEdit ? "Edit Lesson" : "Tambah Lesson"}</DialogTitle>
         </DialogHeader>
@@ -125,6 +141,15 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
               value={icon}
               onChange={(e) => setIcon(e.target.value)}
               placeholder="&#128176;"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="lesson-prereq">Prasyarat (opsional)</Label>
+            <Input
+              id="lesson-prereq"
+              value={prerequisite}
+              onChange={(e) => setPrerequisite(e.target.value)}
+              placeholder="Disarankan selesaikan ... terlebih dahulu."
             />
           </div>
         </form>

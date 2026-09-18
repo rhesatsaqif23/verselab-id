@@ -45,7 +45,6 @@ async function seedContent() {
 
   for (let unitIdx = 0; unitIdx < seedUnits.length; unitIdx++) {
     const unit = seedUnits[unitIdx];
-    const unitId = crypto.randomUUID();
     const unitSlug = await resolveUniqueSlug({ title: unit.title }, async (candidate) => {
       const rows = await db
         .select({ id: contentUnits.id })
@@ -56,7 +55,7 @@ async function seedContent() {
     });
 
     await db.insert(contentUnits).values({
-      id: unitId,
+      id: unit.id,
       title: unit.title,
       slug: unitSlug,
       description: unit.description,
@@ -67,7 +66,6 @@ async function seedContent() {
 
     for (let lessonIdx = 0; lessonIdx < unit.lessons.length; lessonIdx++) {
       const lesson = unit.lessons[lessonIdx];
-      const lessonId = crypto.randomUUID();
       const lessonSlug = await resolveUniqueSlug({ title: lesson.title }, async (candidate) => {
         const rows = await db
           .select({ id: contentLessons.id })
@@ -78,18 +76,19 @@ async function seedContent() {
       });
 
       await db.insert(contentLessons).values({
-        id: lessonId,
-        unitId,
+        id: lesson.id,
+        unitId: unit.id,
         title: lesson.title,
         slug: lessonSlug,
         icon: lesson.icon,
+        prerequisite: lesson.prerequisite ?? null,
         sortOrder: lessonIdx,
       });
       lessonCount++;
 
       for (let screenIdx = 0; screenIdx < lesson.screens.length; screenIdx++) {
         const screen = lesson.screens[screenIdx];
-        const screenId = crypto.randomUUID();
+        const screenId = `${lesson.id}-${screenIdx + 1}`;
         const screenSlug = await resolveUniqueSlug({ title: screen.prompt }, async (candidate) => {
           const rows = await db
             .select({ id: contentScreens.id })
@@ -101,7 +100,7 @@ async function seedContent() {
 
         const base = {
           id: screenId,
-          lessonId,
+          lessonId: lesson.id,
           type: screen.type,
           slug: screenSlug,
           prompt: screen.prompt,

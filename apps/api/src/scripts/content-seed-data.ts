@@ -34,12 +34,15 @@ type SeedAllocationScreen = SeedScreenBase & {
 type SeedScreen = SeedScreenBase | SeedChoiceScreen | SeedNumericScreen | SeedAllocationScreen;
 
 type SeedLesson = {
+  id: string;
   title: string;
   icon: string;
+  prerequisite?: string;
   screens: SeedScreen[];
 };
 
 type SeedUnit = {
+  id: string;
   title: string;
   description: string;
   imageUrl: string;
@@ -49,11 +52,13 @@ type SeedUnit = {
 export const seedUnits: SeedUnit[] = [
   // ── Keuangan ────────────────────────────────────────────────────────────
   {
+    id: "keuangan",
     title: "Keuangan",
     description: "Menabung, anggaran, cicilan, dan nilai waktu uang.",
     imageUrl: "/unit/keuangan.webp",
     lessons: [
       {
+        id: "nabung-awal",
         title: "Kenapa Nabung Lebih Awal Jauh Lebih Untung",
         icon: "PiggyBank",
         screens: [
@@ -122,8 +127,10 @@ export const seedUnits: SeedUnit[] = [
         ],
       },
       {
+        id: "nilai-waktu-uang",
         title: "Uang Sekarang vs Masa Depan",
         icon: "TrendingUp",
+        prerequisite: "Disarankan selesaikan Kenapa Nabung Lebih Awal terlebih dahulu.",
         screens: [
           {
             type: "choice",
@@ -188,8 +195,10 @@ export const seedUnits: SeedUnit[] = [
         ],
       },
       {
+        id: "anggaran-bulanan",
         title: "Membuat Anggaran Sederhana",
         icon: "PieChart",
+        prerequisite: "Disarankan selesaikan Uang Sekarang vs Masa Depan terlebih dahulu.",
         screens: [
           {
             type: "choice",
@@ -254,8 +263,10 @@ export const seedUnits: SeedUnit[] = [
         ],
       },
       {
+        id: "hutang-cicilan",
         title: "Memahami Bunga Pinjaman",
         icon: "CreditCard",
+        prerequisite: "Disarankan selesaikan Membuat Anggaran Sederhana terlebih dahulu.",
         screens: [
           {
             type: "choice",
@@ -329,11 +340,13 @@ export const seedUnits: SeedUnit[] = [
 
   // ── Akuntansi ───────────────────────────────────────────────────────────
   {
+    id: "akuntansi",
     title: "Akuntansi",
     description: "Persamaan dasar, pencatatan transaksi, laba rugi, dan arus kas.",
     imageUrl: "/unit/akuntansi.webp",
     lessons: [
       {
+        id: "persamaan",
         title: "Persamaan Dasar: Aset, Utang, dan Modal",
         icon: "Scale",
         screens: [
@@ -404,8 +417,10 @@ export const seedUnits: SeedUnit[] = [
         ],
       },
       {
+        id: "transaksi",
         title: "Mencatat Transaksi: Debit dan Kredit",
         icon: "ArrowLeftRight",
+        prerequisite: "Disarankan selesaikan Persamaan Dasar: Aset, Utang, dan Modal terlebih dahulu.",
         screens: [
           {
             type: "choice",
@@ -474,8 +489,10 @@ export const seedUnits: SeedUnit[] = [
         ],
       },
       {
+        id: "laba-rugi",
         title: "Laporan Laba Rugi: Untung atau Rugi",
         icon: "FileText",
+        prerequisite: "Disarankan selesaikan Mencatat Transaksi: Debit dan Kredit terlebih dahulu.",
         screens: [
           {
             type: "choice",
@@ -542,8 +559,10 @@ export const seedUnits: SeedUnit[] = [
         ],
       },
       {
+        id: "arus-kas",
         title: "Arus Kas: Uang yang Benar-Benar Masuk dan Keluar",
         icon: "Banknote",
+        prerequisite: "Disarankan selesaikan Laporan Laba Rugi: Untung atau Rugi terlebih dahulu.",
         screens: [
           {
             type: "choice",
@@ -616,11 +635,13 @@ export const seedUnits: SeedUnit[] = [
 
   // ── Manajemen Produk ────────────────────────────────────────────────────
   {
+    id: "manajemen-produk",
     title: "Manajemen Produk",
     description: "Temukan masalah, prioritaskan fitur, ukur metrik, validasi MVP.",
     imageUrl: "/unit/manajemen-produk.webp",
     lessons: [
       {
+        id: "menemukan-masalah",
         title: "Mulai dari Masalah, Bukan dari Fitur",
         icon: "Search",
         screens: [
@@ -689,8 +710,10 @@ export const seedUnits: SeedUnit[] = [
         ],
       },
       {
+        id: "prioritas-fitur",
         title: "Memilih Fitur yang Paling Penting Dulu",
         icon: "ListFilter",
+        prerequisite: "Disarankan selesaikan Mulai dari Masalah, Bukan dari Fitur terlebih dahulu.",
         screens: [
           {
             type: "choice",
@@ -759,8 +782,10 @@ export const seedUnits: SeedUnit[] = [
         ],
       },
       {
+        id: "metrik-produk",
         title: "Metrik yang Benar: Aktivasi dan Retensi",
         icon: "BarChart3",
+        prerequisite: "Disarankan selesaikan Memilih Fitur yang Paling Penting Dulu terlebih dahulu.",
         screens: [
           {
             type: "choice",
@@ -828,8 +853,10 @@ export const seedUnits: SeedUnit[] = [
         ],
       },
       {
+        id: "mvp-validasi",
         title: "MVP: Menguji Asumsi dengan Usaha Terkecil",
         icon: "Rocket",
+        prerequisite: "Disarankan selesaikan Metrik yang Benar: Aktivasi dan Retensi terlebih dahulu.",
         screens: [
           {
             type: "choice",
@@ -900,11 +927,13 @@ export const seedUnits: SeedUnit[] = [
 
   // ── Kewirausahaan ───────────────────────────────────────────────────────
   {
+    id: "kewirausahaan",
     title: "Kewirausahaan",
     description: "Unit ekonomi, titik impas, harga, dan validasi ide.",
     imageUrl: "/unit/kewirausahaan.webp",
     lessons: [
       {
+        id: "unit-ekonomi",
         title: "Unit Ekonomi: Untung dari Setiap Produk Terjual",
         icon: "Coins",
         screens: [
@@ -975,8 +1004,10 @@ export const seedUnits: SeedUnit[] = [
         ],
       },
       {
+        id: "titik-impas",
         title: "Titik Impas (Break-Even)",
         icon: "Target",
+        prerequisite: "Disarankan selesaikan Unit Ekonomi: Untung dari Setiap Produk Terjual terlebih dahulu.",
         screens: [
           {
             type: "choice",
@@ -1043,8 +1074,10 @@ export const seedUnits: SeedUnit[] = [
         ],
       },
       {
+        id: "menentukan-harga",
         title: "Menentukan Harga Jual",
         icon: "Tag",
+        prerequisite: "Disarankan selesaikan Titik Impas (Break-Even) terlebih dahulu.",
         screens: [
           {
             type: "choice",
@@ -1111,8 +1144,10 @@ export const seedUnits: SeedUnit[] = [
         ],
       },
       {
+        id: "validasi-ide",
         title: "Validasi Ide sebelum Mengeluarkan Uang",
         icon: "Lightbulb",
+        prerequisite: "Disarankan selesaikan Menentukan Harga Jual terlebih dahulu.",
         screens: [
           {
             type: "choice",

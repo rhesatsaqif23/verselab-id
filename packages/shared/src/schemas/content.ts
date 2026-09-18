@@ -31,6 +31,7 @@ export const createLessonSchema = z.object({
   title: z.string().trim().min(1).max(200),
   slug: slugSchema.optional(),
   icon: z.string().trim().max(50).optional(),
+  prerequisite: z.string().trim().max(200).optional(),
   sortOrder: z.number().int().min(0).optional(),
 });
 
@@ -38,6 +39,7 @@ export const updateLessonSchema = z.object({
   title: z.string().trim().min(1).max(200).optional(),
   slug: slugSchema.optional(),
   icon: z.string().trim().max(50).optional().nullable(),
+  prerequisite: z.string().trim().max(200).optional().nullable(),
   sortOrder: z.number().int().min(0).optional(),
 });
 
