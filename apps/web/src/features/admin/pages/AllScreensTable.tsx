@@ -53,8 +53,8 @@ const typeLabels: Record<string, string> = {
 const typeBadgeClass: Record<string, string> = {
   concept: "bg-primary-soft text-primary",
   choice: "bg-secondary text-secondary-foreground",
-  numeric: "bg-fire-light text-fire",
-  allocation: "bg-success/15 text-success",
+  numeric: "bg-numeric-soft text-numeric",
+  allocation: "bg-allocation-soft text-allocation",
 };
 
 export function AllScreensTable() {
@@ -182,7 +182,17 @@ export function AllScreensTable() {
             )}
             {!isLoading &&
               paged.map((screen, i) => (
-                <TableRow key={screen.id} className="hover:bg-card/30">
+                <TableRow
+                  key={screen.id}
+                  className="cursor-pointer hover:bg-card/30"
+                  onClick={() =>
+                    navigate({
+                      to: "/admin/$unitSlug/$lessonSlug",
+                      params: { unitSlug: screen.unitSlug, lessonSlug: screen.lessonSlug },
+                      search: { screenId: screen.id },
+                    })
+                  }
+                >
                   <TableCell className="text-center tabular-nums text-muted-foreground">
                     {(page - 1) * PAGE_SIZE + i + 1}
                   </TableCell>
@@ -221,7 +231,7 @@ export function AllScreensTable() {
                     })}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center justify-end gap-1">
+                    <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
                       <Button
                         variant="shadowless"
                         size="icon"
@@ -230,6 +240,7 @@ export function AllScreensTable() {
                           navigate({
                             to: "/admin/$unitSlug/$lessonSlug",
                             params: { unitSlug: screen.unitSlug, lessonSlug: screen.lessonSlug },
+                            search: { screenId: screen.id },
                           })
                         }
                       >

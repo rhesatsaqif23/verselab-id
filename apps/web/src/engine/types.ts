@@ -32,6 +32,7 @@ export type Screen =
 export type Lesson = {
   id: string;
   title: string;
+  description?: string;
   icon?: string;
   prerequisite?: string;
   screens: readonly Screen[];

@@ -41,9 +41,9 @@ export default function LessonCta({ lesson, status, isVisible }: LessonCtaProps)
             <p className="text-base font-bold text-foreground sm:text-lg truncate">
               {lesson.title}
             </p>
-            {lesson.prerequisite && (
+            {(lesson.description || lesson.prerequisite) && (
               <p className="mt-0.5 text-xs font-medium text-muted-foreground">
-                💡 {lesson.prerequisite}
+                {lesson.description || `💡 ${lesson.prerequisite}`}
               </p>
             )}
           </div>

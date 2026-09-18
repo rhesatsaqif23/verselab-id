@@ -36,6 +36,7 @@ type SeedScreen = SeedScreenBase | SeedChoiceScreen | SeedNumericScreen | SeedAl
 type SeedLesson = {
   id: string;
   title: string;
+  description?: string;
   icon: string;
   prerequisite?: string;
   screens: SeedScreen[];
@@ -60,6 +61,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "nabung-awal",
         title: "Kenapa Nabung Lebih Awal Jauh Lebih Untung",
+        description: "Pahami kekuatan bunga bertabla dan mengapa waktu adalah aset terbesar dalam menabung.",
         icon: "PiggyBank",
         screens: [
           {
@@ -129,6 +131,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "nilai-waktu-uang",
         title: "Uang Sekarang vs Masa Depan",
+        description: "Kenapa 1 juta hari ini bernilai lebih dari 1 juta di masa depan.",
         icon: "TrendingUp",
         prerequisite: "Disarankan selesaikan Kenapa Nabung Lebih Awal terlebih dahulu.",
         screens: [
@@ -197,6 +200,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "anggaran-bulanan",
         title: "Membuat Anggaran Sederhana",
+        description: "Susun anggaran bulanan praktis yang bisa langsung kamu terapkan.",
         icon: "PieChart",
         prerequisite: "Disarankan selesaikan Uang Sekarang vs Masa Depan terlebih dahulu.",
         screens: [
@@ -265,6 +269,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "hutang-cicilan",
         title: "Memahami Bunga Pinjaman",
+        description: "Kenali cara kerja bunga pinjaman dan dampaknya terhadap keuangan kamu.",
         icon: "CreditCard",
         prerequisite: "Disarankan selesaikan Membuat Anggaran Sederhana terlebih dahulu.",
         screens: [
@@ -348,6 +353,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "persamaan",
         title: "Persamaan Dasar: Aset, Utang, dan Modal",
+        description: "Pelajari fondasi akuntansi: hubungan antara aset, utang, dan modal.",
         icon: "Scale",
         screens: [
           {
@@ -419,6 +425,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "transaksi",
         title: "Mencatat Transaksi: Debit dan Kredit",
+        description: "Cara mencatat setiap transaksi bisnis dengan benar menggunakan debit dan kredit.",
         icon: "ArrowLeftRight",
         prerequisite: "Disarankan selesaikan Persamaan Dasar: Aset, Utang, dan Modal terlebih dahulu.",
         screens: [
@@ -491,6 +498,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "laba-rugi",
         title: "Laporan Laba Rugi: Untung atau Rugi",
+        description: "Baca laporan laba rugi untuk mengetahui apakah bisnis kamu menguntungkan.",
         icon: "FileText",
         prerequisite: "Disarankan selesaikan Mencatat Transaksi: Debit dan Kredit terlebih dahulu.",
         screens: [
@@ -561,6 +569,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "arus-kas",
         title: "Arus Kas: Uang yang Benar-Benar Masuk dan Keluar",
+        description: "Pahami perbedaan antara laba dan arus kas aktual dalam bisnis.",
         icon: "Banknote",
         prerequisite: "Disarankan selesaikan Laporan Laba Rugi: Untung atau Rugi terlebih dahulu.",
         screens: [
@@ -643,6 +652,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "menemukan-masalah",
         title: "Mulai dari Masalah, Bukan dari Fitur",
+        description: "Temukan masalah nyata pengguna sebelum mulai membangun solusi.",
         icon: "Search",
         screens: [
           {
@@ -712,6 +722,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "prioritas-fitur",
         title: "Memilih Fitur yang Paling Penting Dulu",
+        description: "Rencanakan fitur mana yang harus dibangun terlebih dahulu berdasarkan dampak.",
         icon: "ListFilter",
         prerequisite: "Disarankan selesaikan Mulai dari Masalah, Bukan dari Fitur terlebih dahulu.",
         screens: [
@@ -784,6 +795,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "metrik-produk",
         title: "Metrik yang Benar: Aktivasi dan Retensi",
+        description: "Ukur keberhasilan produk kamu dengan metrik yang tepat.",
         icon: "BarChart3",
         prerequisite: "Disarankan selesaikan Memilih Fitur yang Paling Penting Dulu terlebih dahulu.",
         screens: [
@@ -855,6 +867,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "mvp-validasi",
         title: "MVP: Menguji Asumsi dengan Usaha Terkecil",
+        description: "Bangun MVP untuk menguji asumsi bisnis dengan modal seminimal mungkin.",
         icon: "Rocket",
         prerequisite: "Disarankan selesaikan Metrik yang Benar: Aktivasi dan Retensi terlebih dahulu.",
         screens: [
@@ -935,6 +948,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "unit-ekonomi",
         title: "Unit Ekonomi: Untung dari Setiap Produk Terjual",
+        description: "Hitung margin dan keuntungan dari setiap unit produk yang kamu jual.",
         icon: "Coins",
         screens: [
           {
@@ -1006,6 +1020,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "titik-impas",
         title: "Titik Impas (Break-Even)",
+        description: "Tahu kapan bisnis kamu mulai menguntungkan dan menutup semua biaya.",
         icon: "Target",
         prerequisite: "Disarankan selesaikan Unit Ekonomi: Untung dari Setiap Produk Terjual terlebih dahulu.",
         screens: [
@@ -1076,6 +1091,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "menentukan-harga",
         title: "Menentukan Harga Jual",
+        description: "Strategi menentukan harga jual yang tepat untuk produk kamu.",
         icon: "Tag",
         prerequisite: "Disarankan selesaikan Titik Impas (Break-Even) terlebih dahulu.",
         screens: [
@@ -1146,6 +1162,7 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "validasi-ide",
         title: "Validasi Ide sebelum Mengeluarkan Uang",
+        description: "Uji ide bisnis kamu sebelum menghabiskan uang untuk membangunnya.",
         icon: "Lightbulb",
         prerequisite: "Disarankan selesaikan Menentukan Harga Jual terlebih dahulu.",
         screens: [

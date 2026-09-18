@@ -44,18 +44,18 @@ export default function UnitGrid() {
                     : "border-border hover:-translate-y-0.5 hover:border-primary/40",
                 ].join(" ")}
               >
-                <div className="flex h-12 w-12 items-center justify-center">
+                <div className="flex h-16 w-16 items-center justify-center">
                   {unit.imageUrl ? (
                     <img
                       src={unit.imageUrl}
                       alt={unit.title}
-                      className="h-11 w-11 object-contain pointer-events-none select-none"
+                      className="h-14 w-14 object-contain pointer-events-none select-none"
                       draggable={false}
                     />
                   ) : (
                     Icon && (
-                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
-                        <Icon className="h-6 w-6 text-primary" />
+                      <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
+                        <Icon className="h-8 w-8 text-primary" />
                       </div>
                     )
                   )}

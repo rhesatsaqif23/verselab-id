@@ -80,6 +80,7 @@ async function seedContent() {
         unitId: unit.id,
         title: lesson.title,
         slug: lessonSlug,
+        description: lesson.description ?? null,
         icon: lesson.icon,
         prerequisite: lesson.prerequisite ?? null,
         sortOrder: lessonIdx,

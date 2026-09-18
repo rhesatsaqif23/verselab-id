@@ -82,7 +82,11 @@ export default function LessonMapCard({
 
       {/* Middle row: Lesson description snippet */}
       <div className="mt-3.5 min-h-9">
-        {lesson.prerequisite && status !== "previous" ? (
+        {lesson.description ? (
+          <p className="line-clamp-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
+            {lesson.description}
+          </p>
+        ) : lesson.prerequisite && status !== "previous" ? (
           <p className="line-clamp-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
             💡 {lesson.prerequisite}
           </p>

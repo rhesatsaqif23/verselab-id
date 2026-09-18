@@ -82,6 +82,12 @@
   --color-fire: #f97316;
   --color-fire-dark: #783d0d;
 
+  /* Badge screen-type colors (3rd & 4th) */
+  --color-numeric: #f97316;
+  --color-numeric-soft: #fff3e0;
+  --color-allocation: #16a34a;
+  --color-allocation-soft: #dcfce7;
+
   /* Misc surface */
   --color-feature-hover: #d4cfc4;
 
@@ -176,6 +182,12 @@
   --color-fire: #f97316;
   --color-fire-dark: #783d0d;
 
+  /* Badge screen-type colors (3rd & 4th) */
+  --color-numeric: #fb923c;
+  --color-numeric-soft: rgba(249, 115, 22, 0.15);
+  --color-allocation: #4ade80;
+  --color-allocation-soft: rgba(34, 197, 94, 0.15);
+
   /* Misc surface */
   --color-feature-hover: #403c36;
 
@@ -247,6 +259,11 @@
   --color-fire-light: var(--color-fire-light);
   --color-fire: var(--color-fire);
   --color-fire-dark: var(--color-fire-dark);
+  /* Badge screen-type (3rd & 4th) */
+  --color-numeric: var(--color-numeric);
+  --color-numeric-soft: var(--color-numeric-soft);
+  --color-allocation: var(--color-allocation);
+  --color-allocation-soft: var(--color-allocation-soft);
   /* Misc */
   --color-feature-hover: var(--color-feature-hover);
 }

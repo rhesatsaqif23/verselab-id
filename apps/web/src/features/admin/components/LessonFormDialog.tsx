@@ -19,6 +19,7 @@ import {
 } from "#/libs/admin-content-fns.ts";
 
 const EMPTY_TITLE = "";
+const EMPTY_DESCRIPTION = "";
 const EMPTY_ICON = "";
 const EMPTY_PREREQUISITE = "";
 
@@ -32,6 +33,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(EMPTY_TITLE);
+  const [description, setDescription] = useState(EMPTY_DESCRIPTION);
   const [icon, setIcon] = useState(EMPTY_ICON);
   const [prerequisite, setPrerequisite] = useState(EMPTY_PREREQUISITE);
 
@@ -40,6 +42,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
       id?: string;
       unitId: string;
       title: string;
+      description?: string;
       icon?: string;
       prerequisite?: string;
     }) => adminCreateLesson({ data }),
@@ -47,13 +50,19 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: { id: string; title?: string; icon?: string; prerequisite?: string | null }) =>
-      adminUpdateLesson({ data }),
+    mutationFn: (data: {
+      id: string;
+      title?: string;
+      description?: string | null;
+      icon?: string;
+      prerequisite?: string | null;
+    }) => adminUpdateLesson({ data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] }),
   });
 
   function reset() {
     setTitle(EMPTY_TITLE);
+    setDescription(EMPTY_DESCRIPTION);
     setIcon(EMPTY_ICON);
     setPrerequisite(EMPTY_PREREQUISITE);
   }
@@ -62,6 +71,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
     setOpen(next);
     if (next) {
       setTitle(lesson?.title ?? EMPTY_TITLE);
+      setDescription(lesson?.description ?? EMPTY_DESCRIPTION);
       setIcon(lesson?.icon ?? EMPTY_ICON);
       setPrerequisite(lesson?.prerequisite ?? EMPTY_PREREQUISITE);
     } else {
@@ -81,6 +91,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
         await updateMutation.mutateAsync({
           id: lesson.id,
           title: title.trim(),
+          description: description.trim() || null,
           icon: icon.trim() || undefined,
           prerequisite: prerequisite.trim() || null,
         });
@@ -89,6 +100,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
         await createMutation.mutateAsync({
           unitId,
           title: title.trim(),
+          description: description.trim() || undefined,
           icon: icon.trim() || undefined,
           prerequisite: prerequisite.trim() || undefined,
         });
@@ -132,6 +144,15 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Mulai Menabung"
               required
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="lesson-description">Deskripsi (opsional)</Label>
+            <Input
+              id="lesson-description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Pahami konsep dan latihan interaktif untuk menguasai topik ini."
             />
           </div>
           <div className="flex flex-col gap-1.5">

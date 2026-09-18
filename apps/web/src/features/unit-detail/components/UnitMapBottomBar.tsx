@@ -41,9 +41,9 @@ export default function UnitMapBottomBar({
             <span className="text-sm sm:text-base font-black text-foreground truncate max-w-50 sm:max-w-80">
               {currentLesson.title}
             </span>
-            {currentLesson.prerequisite && (
+            {(currentLesson.description || currentLesson.prerequisite) && (
               <span className="text-xs text-muted-foreground truncate max-w-50 sm:max-w-80">
-                💡 {currentLesson.prerequisite}
+                {currentLesson.description || `💡 ${currentLesson.prerequisite}`}
               </span>
             )}
             <div className="mt-0.5 flex items-center gap-2 text-sm font-semibold text-primary">

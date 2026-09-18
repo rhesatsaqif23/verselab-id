@@ -16,14 +16,12 @@ async function apiCall<T>(path: string, init?: RequestInit): Promise<T | null> {
   }
 }
 
-async function apiMutate<T>(path: string, init: RequestInit): Promise<ApiResponse<T> | null> {
-  try {
-    const res = await relayRequest(path, init);
-    if (!res.ok) return { ok: false, error: { code: "HTTP_ERROR", message: String(res.status) } };
-    return (await res.json()) as ApiResponse<T>;
-  } catch {
-    return null;
-  }
+async function apiMutate<T>(path: string, init: RequestInit): Promise<T> {
+  const res = await relayRequest(path, init);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const body = (await res.json()) as ApiResponse<T>;
+  if (!body.ok) throw new Error(body.error.message);
+  return body.data;
 }
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -44,6 +42,7 @@ export type AdminLesson = {
   unitId: string;
   title: string;
   slug: string;
+  description: string | null;
   icon: string | null;
   prerequisite: string | null;
   sortOrder: number;
@@ -136,8 +135,14 @@ export const adminGetLessonBySlug = createServerFn({ method: "GET" })
 
 export const adminCreateLesson = createServerFn({ method: "POST" })
   .validator(
-    (data: { id?: string; unitId: string; title: string; icon?: string; prerequisite?: string }) =>
-      data,
+    (data: {
+      id?: string;
+      unitId: string;
+      title: string;
+      description?: string;
+      icon?: string;
+      prerequisite?: string;
+    }) => data,
   )
   .handler(async ({ data }) => {
     return apiMutate<AdminLesson>("/v1/content/lessons", {
@@ -149,7 +154,13 @@ export const adminCreateLesson = createServerFn({ method: "POST" })
 
 export const adminUpdateLesson = createServerFn({ method: "POST" })
   .validator(
-    (data: { id: string; title?: string; icon?: string; prerequisite?: string | null }) => data,
+    (data: {
+      id: string;
+      title?: string;
+      description?: string | null;
+      icon?: string;
+      prerequisite?: string | null;
+    }) => data,
   )
   .handler(async ({ data }) => {
     const { id, ...patch } = data;

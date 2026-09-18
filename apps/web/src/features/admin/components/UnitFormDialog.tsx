@@ -120,7 +120,7 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
           title: title.trim(),
           description: description.trim() || undefined,
         });
-        const newId = result?.ok ? result.data.id : undefined;
+        const newId = result?.id;
         if (selectedFile && newId) {
           const base64 = await fileToBase64(selectedFile);
           await imageMutation.mutateAsync({

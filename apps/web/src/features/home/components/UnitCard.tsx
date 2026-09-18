@@ -110,8 +110,8 @@ export default function UnitCard({ unit }: UnitCardProps) {
           />
 
           {/* Current lesson indicator row (replacing progress bar) */}
-          {currentLesson && (
-            <div className="relative z-10 flex w-full items-center justify-between gap-3 rounded-xl border border-border/70 bg-card/70 px-4 py-3 text-left shadow-xs backdrop-blur-xs">
+          <div className="relative z-10 flex w-full items-center justify-between gap-3 rounded-xl border border-border/70 bg-card/70 px-4 py-3 text-left shadow-xs backdrop-blur-xs">
+            {currentLesson ? (
               <div className="flex min-w-0 items-center gap-3">
                 <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary font-bold text-white shadow-sm ring-2 ring-primary/30">
                   <span className="text-sm">{activeIndex + 1}</span>
@@ -120,11 +120,13 @@ export default function UnitCard({ unit }: UnitCardProps) {
                   {currentLesson.title}
                 </span>
               </div>
-            </div>
-          )}
+            ) : (
+              <span className="text-sm text-muted-foreground">Belum ada lesson</span>
+            )}
+          </div>
 
           {/* CTA button: Mulai opening current lesson directly */}
-          {currentLesson && (
+          {currentLesson ? (
             <Button asChild size="lg" className="relative z-10 mt-1 w-full pointer-events-auto">
               <Link
                 to="/lesson/$lessonId"
@@ -134,6 +136,15 @@ export default function UnitCard({ unit }: UnitCardProps) {
                 <PlayCircle className="mr-2 size-6" />
                 Mulai
               </Link>
+            </Button>
+          ) : (
+            <Button
+              size="lg"
+              disabled
+              className="relative z-10 mt-1 w-full pointer-events-none opacity-50"
+            >
+              <PlayCircle className="mr-2 size-6" />
+              Mulai
             </Button>
           )}
         </div>

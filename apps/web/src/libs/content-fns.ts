@@ -40,6 +40,7 @@ type RawLesson = {
   unitId: string;
   title: string;
   slug?: string;
+  description: string | null;
   icon: string | null;
   prerequisite: string | null;
   sortOrder: number;

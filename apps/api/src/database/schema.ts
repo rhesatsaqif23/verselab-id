@@ -110,6 +110,7 @@ export const contentLessons = pgTable(
       .references(() => contentUnits.id, { onDelete: "cascade" }),
     title: text("title").notNull(),
     slug: text("slug").notNull(),
+    description: text("description"),
     icon: text("icon"),
     prerequisite: text("prerequisite"),
     sortOrder: integer("sort_order").notNull().default(0),
