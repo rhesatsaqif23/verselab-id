@@ -13,10 +13,15 @@ export type UnitWithContent = UnitData & {
   lessons: (LessonRow & { screens: ScreenRow[] })[];
 };
 
+export type UnitWithContentSingle = UnitData & {
+  lessons: (LessonRow & { screens: ScreenRow[] })[];
+};
+
 export type ContentUnitService = {
   listUnits: () => Promise<UnitData[]>;
   listUnitsWithContent: () => Promise<UnitWithContent[]>;
   getUnit: (id: string) => Promise<UnitData | null>;
+  getUnitWithContent: (id: string) => Promise<UnitWithContentSingle | null>;
   getUnitBySlug: (slug: string) => Promise<UnitData | null>;
   createUnit: (input: CreateUnitInput) => Promise<UnitData>;
   updateUnit: (id: string, input: UpdateUnitInput) => Promise<UnitData>;
@@ -79,6 +84,31 @@ export const contentUnitService: ContentUnitService = {
     const db = getDb();
     const [row] = await db.select().from(contentUnits).where(eq(contentUnits.id, id)).limit(1);
     return row ?? null;
+  },
+
+  async getUnitWithContent(id) {
+    const db = getDb();
+    const [unit] = await db.select().from(contentUnits).where(eq(contentUnits.id, id)).limit(1);
+    if (!unit) return null;
+
+    const lessons = await db
+      .select()
+      .from(contentLessons)
+      .where(eq(contentLessons.unitId, id))
+      .orderBy(asc(contentLessons.sortOrder));
+
+    const lessonsWithScreens = await Promise.all(
+      lessons.map(async (lesson) => {
+        const screens = await db
+          .select()
+          .from(contentScreens)
+          .where(eq(contentScreens.lessonId, lesson.id))
+          .orderBy(asc(contentScreens.sortOrder));
+        return { ...lesson, screens };
+      }),
+    );
+
+    return { ...unit, lessons: lessonsWithScreens };
   },
 
   async getUnitBySlug(slug) {

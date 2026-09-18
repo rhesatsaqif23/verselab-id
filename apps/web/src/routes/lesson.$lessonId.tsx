@@ -1,21 +1,23 @@
 // Lesson route: validates the lesson id and renders the lesson page.
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { getLesson } from "#/libs/content-fns.ts";
 import { LessonPage } from "../features/lesson";
-import { findLesson } from "../content";
 import { useLessonStore } from "../engine/player/lessonStore";
 
 export const Route = createFileRoute("/lesson/$lessonId")({
-  beforeLoad: ({ params }) => {
-    const found = findLesson(params.lessonId);
-    if (!found) {
+  loader: async ({ params }) => {
+    const lesson = await getLesson({ data: params.lessonId });
+    if (!lesson) {
       throw redirect({ to: "/home" });
     }
-    useLessonStore.getState().startLesson(found.lesson.screens.length);
+    useLessonStore.getState().startLesson(lesson.screens.length);
+    return { lesson };
   },
   component: LessonRoute,
 });
 
 function LessonRoute() {
   const { lessonId } = Route.useParams();
-  return <LessonPage lessonId={lessonId} />;
+  const { lesson } = Route.useLoaderData();
+  return <LessonPage lessonId={lessonId} lesson={lesson} />;
 }

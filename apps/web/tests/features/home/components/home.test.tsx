@@ -18,6 +18,7 @@ const { navigateMock } = vi.hoisted(() => ({ navigateMock: vi.fn() }));
 
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => navigateMock,
+  useLoaderData: () => ({ units }),
   Link: ({
     to,
     params,

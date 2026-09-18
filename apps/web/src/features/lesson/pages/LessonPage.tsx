@@ -5,7 +5,6 @@ import LessonPlayer, { type AnswerResult } from "#/engine/player/LessonPlayer.ts
 import { useLessonStore } from "#/engine/player/lessonStore.ts";
 import { XP_PER_LESSON, XP_PER_SCREEN, useProgressStore } from "#/engine/progress/progressStore.ts";
 import { useLessonCompleteStore } from "#/features/lesson-complete/store/lessonCompleteStore.ts";
-import { findLesson } from "#/content/index.ts";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,16 +17,19 @@ import {
 } from "#/components/ui/alert-dialog.tsx";
 import { checkAnswer } from "../hooks/checkAnswer.ts";
 import { renderScreen } from "../components/renderScreen.tsx";
+import type { LessonWithUnit } from "#/libs/content-fns.ts";
 
 type LessonPageProps = {
   lessonId: string;
+  lesson?: LessonWithUnit;
 };
 
-export default function LessonPage({ lessonId }: LessonPageProps) {
+export default function LessonPage({ lessonId, lesson: lessonProp }: LessonPageProps) {
   const navigate = useNavigate();
   const [showExitDialog, setShowExitDialog] = useState(false);
 
-  const found = findLesson(lessonId);
+  const found = lessonProp;
+
   if (!found) {
     return (
       <div className="page-wrap flex min-h-screen items-center justify-center px-4">
@@ -36,7 +38,9 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
     );
   }
 
-  const { unit, lesson } = found;
+  const lesson = found;
+  const unitId = found.unitId;
+  const unitTitle = found.unitTitle;
   const results = useLessonStore((s) => s.results);
   const xpEarned = Object.values(results)
     .filter((r) => r?.correct)
@@ -59,18 +63,18 @@ export default function LessonPage({ lessonId }: LessonPageProps) {
       .filter((r) => !r.correct)
       .map((r) => ({ prompt: r.screen.prompt, explain: r.screen.explain }));
 
-    const masteryBefore = useProgressStore.getState().mastery[unit.id] ?? null;
+    const masteryBefore = useProgressStore.getState().mastery[unitId] ?? null;
     for (const result of answerResults) {
-      useProgressStore.getState().awardScreenResult(unit.id, result.correct);
+      useProgressStore.getState().awardScreenResult(unitId, result.correct);
     }
-    useProgressStore.getState().awardLessonCompletion(unit.id, lesson.id);
-    const masteryAfter = useProgressStore.getState().mastery[unit.id] ?? null;
+    useProgressStore.getState().awardLessonCompletion(unitId, lessonId);
+    const masteryAfter = useProgressStore.getState().mastery[unitId] ?? null;
 
     const totalXpEarned = correctCount * XP_PER_SCREEN + XP_PER_LESSON;
 
     useLessonCompleteStore.getState().setSummary({
-      unitId: unit.id,
-      unitName: unit.title,
+      unitId,
+      unitName: unitTitle,
       totalScreens: answerResults.length,
       correctCount,
       wrongScreens,

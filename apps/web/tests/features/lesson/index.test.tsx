@@ -49,15 +49,7 @@ const fixtureScreens: Screen[] = [
   },
 ];
 
-vi.mock("#/content/index.ts", () => ({
-  findLesson: () => ({
-    unit: { id: "unit-test", title: "Unit Test", lessons: [] },
-    lesson: { id: "test-lesson", title: "Test Lesson", screens: fixtureScreens },
-  }),
-  todayString: () => "2026-08-13",
-}));
-
-vi.mock("#/features/lesson/renderScreen.tsx", () => ({
+vi.mock("#/features/lesson/components/renderScreen.tsx", () => ({
   renderScreen: (screen: Screen, onChange: (answer: unknown) => void) => {
     switch (screen.type) {
       case "choice":
@@ -85,6 +77,14 @@ vi.mock("#/features/lesson/renderScreen.tsx", () => ({
         return null;
     }
   },
+}));
+
+vi.mock("#/content/index.ts", () => ({
+  findLesson: () => ({
+    unit: { id: "unit-test", title: "Unit Test", lessons: [] },
+    lesson: { id: "test-lesson", title: "Test Lesson", screens: fixtureScreens },
+  }),
+  todayString: () => "2026-08-13",
 }));
 
 vi.mock("#/features/lesson/checkAnswer.ts", () => ({
@@ -118,8 +118,16 @@ beforeEach(() => {
 });
 
 describe("LessonPage award flow", () => {
+  const testLesson = {
+    id: "test-lesson",
+    title: "Test Lesson",
+    unitId: "unit-test",
+    unitTitle: "Unit Test",
+    screens: fixtureScreens,
+  };
+
   it("awards XP and mastery correctly, excludes concept from wrong list", async () => {
-    render(<LessonPage lessonId="test-lesson" />);
+    render(<LessonPage lessonId="test-lesson" lesson={testLesson} />);
     const user = userEvent.setup();
 
     // Screen 0: choice — answer correctly
@@ -158,7 +166,7 @@ describe("LessonPage award flow", () => {
   });
 
   it("records wrong answers and excludes concept from mastery penalties", async () => {
-    render(<LessonPage lessonId="test-lesson" />);
+    render(<LessonPage lessonId="test-lesson" lesson={testLesson} />);
     const user = userEvent.setup();
 
     // Screen 0: choice — answer wrong

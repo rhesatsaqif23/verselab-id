@@ -1,6 +1,6 @@
 // UnitCard: single card for one unit with next lesson, mastery progress, and CTA.
 import { PlayCircle } from "lucide-react";
-import { Link } from "@tanstack/react-router";
+import { Link, useLoaderData } from "@tanstack/react-router";
 import { Button } from "#/components/ui/button";
 import { Card, CardContent } from "#/components/ui/card";
 import { Badge } from "#/components/ui/badge";
@@ -8,13 +8,16 @@ import type { Unit } from "#/engine/types.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import { todayString } from "#/libs/date.ts";
 import { decayedMastery } from "#/engine/progress/decay.ts";
-import { units } from "#/content/index.ts";
 
 type UnitCardProps = {
   unit: Unit;
 };
 
 export default function UnitCard({ unit }: UnitCardProps) {
+  const routeData = useLoaderData({ strict: false }) as
+    | { units: Unit[] }
+    | undefined;
+  const units = routeData?.units ?? [];
   const completedLessons = useProgressStore((s) => s.completedLessons);
   const mastery = useProgressStore((s) => s.mastery);
   const updatedAt = useProgressStore((s) => s.masteryUpdatedAt);

@@ -1,12 +1,25 @@
 // UnitGrid: grid of units with per-unit icons; selecting a unit changes the hero UnitCard.
+import { useEffect } from "react";
+import { useLoaderData } from "@tanstack/react-router";
 import { Card } from "#/components/ui/card";
-import { units } from "#/content/index.ts";
 import { useHomeStore } from "../store/homeStore.ts";
 import { UNIT_ICONS } from "../constants.ts";
+import type { Unit } from "#/engine/types.ts";
 
 export default function UnitGrid() {
+  const routeData = useLoaderData({ strict: false }) as
+    | { units: Unit[] }
+    | undefined;
+  const units = routeData?.units ?? [];
   const selectedUnitId = useHomeStore((s) => s.selectedUnitId);
   const setSelectedUnit = useHomeStore((s) => s.setSelectedUnit);
+  const initSelectedUnit = useHomeStore((s) => s.initSelectedUnit);
+
+  useEffect(() => {
+    if (units.length > 0 && !selectedUnitId) {
+      initSelectedUnit(units);
+    }
+  }, [units, selectedUnitId, initSelectedUnit]);
 
   return (
     <section className="w-full px-6 sm:px-10">

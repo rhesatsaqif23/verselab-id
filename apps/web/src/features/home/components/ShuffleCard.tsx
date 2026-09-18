@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useNavigate } from "@tanstack/react-router";
-import { units } from "#/content/index.ts";
+import { useNavigate, useLoaderData } from "@tanstack/react-router";
 import { useHomeStore } from "../store/homeStore.ts";
 import UnitCard from "./UnitCard.tsx";
+import type { Unit } from "#/engine/types.ts";
 
 const COMMIT_THRESHOLD = 150;
 const TURN_THRESHOLD = 280;
@@ -25,6 +25,10 @@ const CSS_TRANSITION = `all ${COMMIT_MS}ms cubic-bezier(0.25, 0.1, 0.25, 1)`;
 
 export default function ShuffleCard() {
   const navigate = useNavigate();
+  const routeData = useLoaderData({ strict: false }) as
+    | { units: Unit[] }
+    | undefined;
+  const units = routeData?.units ?? [];
   const selectedUnitId = useHomeStore((s) => s.selectedUnitId);
   const setSelectedUnit = useHomeStore((s) => s.setSelectedUnit);
 

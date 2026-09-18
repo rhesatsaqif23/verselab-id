@@ -62,7 +62,11 @@ type RawScreen = {
   sortOrder: number;
 };
 
-type RawLessonWithScreens = RawLesson & { screens: RawScreen[] };
+type RawLessonFull = RawLesson & {
+  screens: RawScreen[];
+  unitTitle: string;
+  unitSlug: string;
+};
 
 type RawUnitWithContent = RawUnit & {
   lessons: (RawLesson & { screens: RawScreen[] })[];
@@ -83,12 +87,23 @@ export const getUnit = createServerFn({ method: "GET" })
     return mapUnit({ ...raw, lessons: [] });
   });
 
+export const getUnitWithContent = createServerFn({ method: "GET" })
+  .validator((id: string) => id)
+  .handler(async ({ data: id }): Promise<Unit | null> => {
+    const raw = await apiFetch<RawUnitWithContent>(`/v1/content/units/${id}/with-content`);
+    if (!raw) return null;
+    return mapUnit(raw);
+  });
+
+export type LessonWithUnit = Lesson & { unitId: string; unitTitle: string };
+
 export const getLesson = createServerFn({ method: "GET" })
   .validator((id: string) => id)
-  .handler(async ({ data: id }): Promise<Lesson | null> => {
-    const raw = await apiFetch<RawLessonWithScreens>(`/v1/content/lessons/${id}`);
+  .handler(async ({ data: id }): Promise<LessonWithUnit | null> => {
+    const raw = await apiFetch<RawLessonFull>(`/v1/content/lessons/${id}/full`);
     if (!raw) return null;
-    return mapLesson(raw);
+    const lesson = mapLesson(raw);
+    return { ...lesson, unitId: raw.unitId, unitTitle: raw.unitTitle };
   });
 
 export const getAllUnits = createServerFn({ method: "GET" }).handler(async () => {

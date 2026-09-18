@@ -10,12 +10,19 @@ export type LessonWithScreens = LessonData & { screens: (typeof contentScreens.$
 
 export type LessonWithUnit = LessonData & { unitTitle: string; unitSlug: string };
 
+export type LessonFull = LessonData & {
+  screens: (typeof contentScreens.$inferSelect)[];
+  unitTitle: string;
+  unitSlug: string;
+};
+
 export type ContentLessonService = {
   listLessons: (unitId: string) => Promise<LessonData[]>;
   listAllLessons: () => Promise<LessonWithUnit[]>;
   getLesson: (id: string) => Promise<LessonData | null>;
   getLessonBySlug: (slug: string) => Promise<LessonData | null>;
   getLessonWithScreens: (id: string) => Promise<LessonWithScreens | null>;
+  getLessonFull: (id: string) => Promise<LessonFull | null>;
   createLesson: (input: CreateLessonInput) => Promise<LessonData>;
   updateLesson: (id: string, input: UpdateLessonInput) => Promise<LessonData>;
   deleteLesson: (id: string) => Promise<void>;
@@ -97,6 +104,38 @@ export const contentLessonService: ContentLessonService = {
       .orderBy(asc(contentScreens.sortOrder));
 
     return { ...lesson, screens };
+  },
+
+  async getLessonFull(id) {
+    const db = getDb();
+    const [lesson] = await db
+      .select()
+      .from(contentLessons)
+      .innerJoin(contentUnits, eq(contentLessons.unitId, contentUnits.id))
+      .where(eq(contentLessons.id, id))
+      .limit(1);
+    if (!lesson) return null;
+
+    const screens = await db
+      .select()
+      .from(contentScreens)
+      .where(eq(contentScreens.lessonId, id))
+      .orderBy(asc(contentScreens.sortOrder));
+
+    return {
+      id: lesson.content_lessons.id,
+      unitId: lesson.content_lessons.unitId,
+      title: lesson.content_lessons.title,
+      slug: lesson.content_lessons.slug,
+      icon: lesson.content_lessons.icon,
+      prerequisite: lesson.content_lessons.prerequisite,
+      sortOrder: lesson.content_lessons.sortOrder,
+      createdAt: lesson.content_lessons.createdAt,
+      updatedAt: lesson.content_lessons.updatedAt,
+      screens,
+      unitTitle: lesson.content_units.title,
+      unitSlug: lesson.content_units.slug,
+    };
   },
 
   async createLesson(input) {

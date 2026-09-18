@@ -44,6 +44,14 @@ export function createContentController(
         detail: { summary: "Get unit by ID" },
       })
       .get(
+        "/units/:id/with-content",
+        async ({ params }) => ok(await unitSvc.getUnitWithContent(params.id)),
+        {
+          tags: ["content"],
+          detail: { summary: "Get unit by ID with lessons and screens" },
+        },
+      )
+      .get(
         "/lessons-by-slug/:slug",
         async ({ params }) => ok(await lessonSvc.getLessonBySlug(params.slug)),
         {
@@ -57,6 +65,14 @@ export function createContentController(
         {
           tags: ["content"],
           detail: { summary: "Get lesson with screens" },
+        },
+      )
+      .get(
+        "/lessons/:id/full",
+        async ({ params }) => ok(await lessonSvc.getLessonFull(params.id)),
+        {
+          tags: ["content"],
+          detail: { summary: "Get lesson with screens and unit info" },
         },
       )
       .get("/lessons-all", async () => ok(await lessonSvc.listAllLessons()), {
