@@ -24,7 +24,11 @@ interface ScreenEditPanelProps {
   onRegisterValidator?: (fn: () => boolean) => void;
 }
 
-export function ScreenEditPanel({ activeScreen, lessonId, onRegisterValidator }: ScreenEditPanelProps) {
+export function ScreenEditPanel({
+  activeScreen,
+  lessonId,
+  onRegisterValidator,
+}: ScreenEditPanelProps) {
   const queryClient = useQueryClient();
 
   const deleteMutation = useMutation({
@@ -97,7 +101,12 @@ export function ScreenEditPanel({ activeScreen, lessonId, onRegisterValidator }:
           </div>
         </div>
 
-        <ScreenForm key={activeScreen.id} screen={activeScreen} lessonId={lessonId} onRegisterValidator={onRegisterValidator} />
+        <ScreenForm
+          key={activeScreen.id}
+          screen={activeScreen}
+          lessonId={lessonId}
+          onRegisterValidator={onRegisterValidator}
+        />
       </div>
 
       <ScreenPreviewCard screen={activeScreen} />

@@ -7,11 +7,14 @@ import { useOnboarding } from "#/features/onboarding/hooks/useOnboarding.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import { resetProgress } from "../home/test-utils.tsx";
 
-const { navigateMock, submitOnboardingMock, putProgressMock } = vi.hoisted(() => ({
-  navigateMock: vi.fn(),
-  submitOnboardingMock: vi.fn(),
-  putProgressMock: vi.fn(),
-}));
+const { navigateMock, submitOnboardingMock, putProgressMock, updateDailyGoalMock } = vi.hoisted(
+  () => ({
+    navigateMock: vi.fn(),
+    submitOnboardingMock: vi.fn(),
+    putProgressMock: vi.fn(),
+    updateDailyGoalMock: vi.fn(),
+  }),
+);
 
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => navigateMock,
@@ -25,6 +28,8 @@ vi.mock("#/features/onboarding/api.ts", () => ({
 
 vi.mock("#/libs/api.ts", () => ({
   putProgress: putProgressMock,
+  updateDailyGoal: updateDailyGoalMock,
+  getProgress: vi.fn(),
 }));
 
 const values = {
@@ -46,6 +51,8 @@ beforeEach(() => {
   navigateMock.mockReset();
   submitOnboardingMock.mockReset();
   putProgressMock.mockReset();
+  updateDailyGoalMock.mockReset();
+  updateDailyGoalMock.mockResolvedValue({});
 });
 
 describe("useOnboarding", () => {

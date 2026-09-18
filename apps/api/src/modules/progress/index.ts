@@ -4,6 +4,8 @@ import { ok } from "../../libs/response.ts";
 import { progressService, type ProgressService } from "./service.ts";
 import { progressPatchSchema } from "@verselab/shared/schemas/progress";
 
+const updateDailyGoalSchema = progressPatchSchema.pick({ dailyGoalMinutes: true });
+
 export function createProgressController(service: ProgressService = progressService) {
   return new Elysia({ prefix: "/progress" })
     .use(authContext)
@@ -36,6 +38,22 @@ export function createProgressController(service: ProgressService = progressServ
           summary: "Sync progress",
           description:
             "Merges a partial progress patch from the client. XP and mastery use max(local, server). Completed lessons are unioned.",
+        },
+      },
+    )
+    .patch(
+      "/daily-goal",
+      async ({ user, body }) => {
+        const data = await service.updateDailyGoal(user.id, body.dailyGoalMinutes!);
+        return ok(data);
+      },
+      {
+        body: updateDailyGoalSchema,
+        auth: true,
+        tags: ["progress"],
+        detail: {
+          summary: "Update daily goal",
+          description: "Updates the daily learning goal in minutes.",
         },
       },
     );

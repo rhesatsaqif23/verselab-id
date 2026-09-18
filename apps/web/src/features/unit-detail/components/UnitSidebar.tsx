@@ -159,11 +159,6 @@ export default function UnitSidebar({
                       <span className="text-xs text-muted-foreground">
                         {lesson.screens.length} soal
                       </span>
-                      {lesson.prerequisite && !isCompleted && (
-                        <span className="mt-1 text-xs leading-snug text-muted-foreground/70">
-                          💡 {lesson.prerequisite}
-                        </span>
-                      )}
                     </div>
 
                     {/* Completion badge */}

@@ -17,7 +17,6 @@
     "test": "bun run --cwd apps/api test && bun run --cwd apps/web test"
   },
   "dependencies": {
-    "@elysiajs/static": "^1.4.10",
     "@tanstack/react-query": "^5.103.0"
   },
   "devDependencies": {

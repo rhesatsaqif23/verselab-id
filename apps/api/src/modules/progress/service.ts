@@ -41,6 +41,7 @@ function streakOnActivity(
 export type ProgressService = {
   getProgress: (userId: string) => Promise<ServerProgress>;
   putProgress: (userId: string, patch: ProgressPatch) => Promise<ServerProgress>;
+  updateDailyGoal: (userId: string, minutes: number) => Promise<ServerProgress>;
 };
 
 export const progressService: ProgressService = {
@@ -77,6 +78,7 @@ export const progressService: ProgressService = {
         masteryUpdatedAt: r.masteryUpdatedAt.toISOString(),
       })),
       recentActivity: activityRows.map((r) => r.date),
+      dailyGoalMinutes: progressRow?.dailyGoalMinutes ?? 10,
     };
   },
 
@@ -119,6 +121,7 @@ export const progressService: ProgressService = {
           streakFreeze: streakResult.streakFreeze,
           lastActiveDate: streakResult.lastActiveDate,
           completedLessons: mergedLessons,
+          dailyGoalMinutes: patch.dailyGoalMinutes ?? existing.dailyGoalMinutes,
           updatedAt: new Date(),
         })
         .where(eq(userProgress.userId, userId));
@@ -130,6 +133,7 @@ export const progressService: ProgressService = {
         streakFreeze: streakResult.streakFreeze,
         lastActiveDate: streakResult.lastActiveDate,
         completedLessons: mergedLessons,
+        dailyGoalMinutes: patch.dailyGoalMinutes ?? 10,
       });
     }
 
@@ -168,6 +172,15 @@ export const progressService: ProgressService = {
     }
 
     // Return fresh state
+    return this.getProgress(userId);
+  },
+
+  async updateDailyGoal(userId, minutes) {
+    const db = getDb();
+    await db
+      .update(userProgress)
+      .set({ dailyGoalMinutes: minutes, updatedAt: new Date() })
+      .where(eq(userProgress.userId, userId));
     return this.getProgress(userId);
   },
 };

@@ -17,6 +17,7 @@ export const progressPatchSchema = z.object({
     )
     .optional(),
   activityDate: z.string().optional(),
+  dailyGoalMinutes: z.number().int().min(3).max(20).optional(),
 });
 
 export type ProgressPatch = z.infer<typeof progressPatchSchema>;
@@ -36,6 +37,7 @@ export const serverProgressSchema = z.object({
     }),
   ),
   recentActivity: z.array(z.string()),
+  dailyGoalMinutes: z.number(),
 });
 
 export type ServerProgress = z.infer<typeof serverProgressSchema>;

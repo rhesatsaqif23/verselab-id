@@ -46,6 +46,7 @@ export const userProgress = pgTable("user_progress", {
   streakFreeze: integer("streak_freeze").notNull().default(0),
   lastActiveDate: date("last_active_date"),
   completedLessons: text("completed_lessons").array().notNull().default([]),
+  dailyGoalMinutes: integer("daily_goal_minutes").notNull().default(10),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });

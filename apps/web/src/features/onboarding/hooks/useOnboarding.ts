@@ -20,7 +20,7 @@ export function useOnboarding() {
     try {
       const result = await submitOnboarding({ data: values });
       const minutes = dailyGoalToMinutes[result.profile.dailyGoal] as DailyGoalMinutes;
-      setDailyGoal(minutes);
+      await setDailyGoal(minutes);
       await putProgress({
         data: {
           xp: 0,

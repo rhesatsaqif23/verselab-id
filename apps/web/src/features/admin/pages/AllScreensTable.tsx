@@ -17,7 +17,6 @@ import {
 import { Button } from "#/components/ui/button.tsx";
 import { Input } from "#/components/ui/input.tsx";
 import { Skeleton } from "#/components/ui/skeleton.tsx";
-import { Badge } from "#/components/ui/badge.tsx";
 import {
   Table,
   TableBody,
@@ -36,6 +35,7 @@ import {
 } from "#/components/ui/pagination.tsx";
 import { adminGetAllScreens, adminDeleteScreen } from "#/libs/admin-content-fns.ts";
 import type { AdminScreenWithLesson } from "#/libs/admin-content-fns.ts";
+import { cn } from "#/libs/utils.ts";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
 
@@ -50,11 +50,11 @@ const typeLabels: Record<string, string> = {
   allocation: "Alokasi",
 };
 
-const typeBadgeVariant: Record<string, "default" | "secondary" | "outline"> = {
-  concept: "default",
-  choice: "secondary",
-  numeric: "outline",
-  allocation: "outline",
+const typeBadgeClass: Record<string, string> = {
+  concept: "bg-primary-soft text-primary",
+  choice: "bg-secondary text-secondary-foreground",
+  numeric: "bg-fire-light text-fire",
+  allocation: "bg-success/15 text-success",
 };
 
 export function AllScreensTable() {
@@ -139,11 +139,11 @@ export function AllScreensTable() {
                 sortKey="lessonTitle"
                 sort={sort}
                 onToggle={toggleSort}
-                className="max-w-[10rem]"
+                className="max-w-40"
               />
               <SortableHead label="Tipe" sortKey="type" sort={sort} onToggle={toggleSort} />
               <SortableHead label="Dibuat" sortKey="createdAt" sort={sort} onToggle={toggleSort} />
-              <TableHead className="w-20 font-bold">Aksi</TableHead>
+              <TableHead className="w-20 text-right font-bold">Aksi</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -157,7 +157,7 @@ export function AllScreensTable() {
                     <Skeleton className="mb-1 h-5 w-56" />
                     <Skeleton className="h-3 w-28" />
                   </TableCell>
-                  <TableCell className="max-w-[10rem]">
+                  <TableCell className="max-w-40">
                     <Skeleton className="h-4 w-28" />
                   </TableCell>
                   <TableCell>
@@ -182,17 +182,7 @@ export function AllScreensTable() {
             )}
             {!isLoading &&
               paged.map((screen, i) => (
-                <TableRow
-                  key={screen.id}
-                  className="cursor-pointer hover:bg-slate-100/70 transition-colors"
-                  onClick={() =>
-                    navigate({
-                      to: "/admin/$unitSlug/$lessonSlug",
-                      params: { unitSlug: screen.unitSlug, lessonSlug: screen.lessonSlug },
-                      search: { screenId: screen.id },
-                    })
-                  }
-                >
+                <TableRow key={screen.id} className="hover:bg-card/30">
                   <TableCell className="text-center tabular-nums text-muted-foreground">
                     {(page - 1) * PAGE_SIZE + i + 1}
                   </TableCell>
@@ -205,7 +195,7 @@ export function AllScreensTable() {
                     </div>
                     <div className="truncate text-xs text-muted-foreground">{screen.id}</div>
                   </TableCell>
-                  <TableCell className="max-w-[10rem]">
+                  <TableCell className="max-w-40">
                     <span
                       className="block truncate text-sm text-muted-foreground"
                       title={screen.lessonTitle}
@@ -214,9 +204,14 @@ export function AllScreensTable() {
                     </span>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={typeBadgeVariant[screen.type] ?? "outline"}>
+                    <span
+                      className={cn(
+                        "inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-full border border-transparent px-2 py-0.5 text-xs font-semibold whitespace-nowrap",
+                        typeBadgeClass[screen.type],
+                      )}
+                    >
                       {typeLabels[screen.type] ?? screen.type}
-                    </Badge>
+                    </span>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground tabular-nums">
                     {new Date(screen.createdAt).toLocaleDateString("id-ID", {
@@ -235,7 +230,6 @@ export function AllScreensTable() {
                           navigate({
                             to: "/admin/$unitSlug/$lessonSlug",
                             params: { unitSlug: screen.unitSlug, lessonSlug: screen.lessonSlug },
-                            search: { screenId: screen.id },
                           })
                         }
                       >
