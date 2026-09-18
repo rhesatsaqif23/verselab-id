@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getRequestHeaders } from "@tanstack/react-start/server";
 import { env } from "#/libs/env.ts";
+import { mapUnit, mapLesson } from "#/libs/content-mapper.ts";
+import type { Unit, Lesson } from "#/engine/types.ts";
 
 type ApiOk<T> = { ok: true; data: T };
 type ApiFail = { ok: false; error: { code: string; message: string } };
@@ -22,30 +24,32 @@ async function apiFetch<T>(path: string): Promise<T | null> {
   }
 }
 
-export type ContentUnit = {
+// ── Raw DB types (internal) ─────────────────────────────────────────────────
+
+type RawUnit = {
   id: string;
   title: string;
+  slug?: string;
   description: string | null;
   imageUrl: string | null;
   sortOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
 };
 
-export type ContentLesson = {
+type RawLesson = {
   id: string;
   unitId: string;
   title: string;
+  slug?: string;
   icon: string | null;
+  prerequisite: string | null;
   sortOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
 };
 
-export type ContentScreen = {
+type RawScreen = {
   id: string;
   lessonId: string;
   type: "concept" | "choice" | "numeric" | "allocation";
+  slug?: string;
   prompt: string;
   explain: string;
   options: { id: string; label: string }[] | null;
@@ -56,24 +60,38 @@ export type ContentScreen = {
   categories: string[] | null;
   rule: { type: string; categoryId: string; min?: number; max?: number } | null;
   sortOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
 };
 
-export type LessonWithScreens = ContentLesson & { screens: ContentScreen[] };
+type RawLessonWithScreens = RawLesson & { screens: RawScreen[] };
+
+type RawUnitWithContent = RawUnit & {
+  lessons: (RawLesson & { screens: RawScreen[] })[];
+};
+
+// ── Public server functions (return engine types) ────────────────────────────
 
 export const getUnits = createServerFn({ method: "GET" }).handler(async () => {
-  return apiFetch<ContentUnit[]>("/v1/content/units") ?? [];
+  const data = await apiFetch<RawUnit[]>("/v1/content/units");
+  return (data ?? []).map((u) => mapUnit({ ...u, lessons: [] }));
 });
 
 export const getUnit = createServerFn({ method: "GET" })
   .validator((id: string) => id)
-  .handler(async ({ data: id }) => {
-    return apiFetch<ContentUnit>(`/v1/content/units/${id}`);
+  .handler(async ({ data: id }): Promise<Unit | null> => {
+    const raw = await apiFetch<RawUnit>(`/v1/content/units/${id}`);
+    if (!raw) return null;
+    return mapUnit({ ...raw, lessons: [] });
   });
 
 export const getLesson = createServerFn({ method: "GET" })
   .validator((id: string) => id)
-  .handler(async ({ data: id }) => {
-    return apiFetch<LessonWithScreens>(`/v1/content/lessons/${id}`);
+  .handler(async ({ data: id }): Promise<Lesson | null> => {
+    const raw = await apiFetch<RawLessonWithScreens>(`/v1/content/lessons/${id}`);
+    if (!raw) return null;
+    return mapLesson(raw);
   });
+
+export const getAllUnits = createServerFn({ method: "GET" }).handler(async () => {
+  const data = await apiFetch<RawUnitWithContent[]>("/v1/content/units-with-content");
+  return (data ?? []).map(mapUnit);
+});

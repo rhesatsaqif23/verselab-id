@@ -1,13 +1,21 @@
 import type { CreateUnitInput, UpdateUnitInput } from "@verselab/shared/schemas/content";
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
-import { contentUnits } from "../../database/schema.ts";
+import { contentUnits, contentLessons, contentScreens } from "../../database/schema.ts";
 import { resolveUniqueSlug } from "./slug.ts";
 
 export type UnitData = typeof contentUnits.$inferSelect;
 
+type LessonRow = typeof contentLessons.$inferSelect;
+type ScreenRow = typeof contentScreens.$inferSelect;
+
+export type UnitWithContent = UnitData & {
+  lessons: (LessonRow & { screens: ScreenRow[] })[];
+};
+
 export type ContentUnitService = {
   listUnits: () => Promise<UnitData[]>;
+  listUnitsWithContent: () => Promise<UnitWithContent[]>;
   getUnit: (id: string) => Promise<UnitData | null>;
   getUnitBySlug: (slug: string) => Promise<UnitData | null>;
   createUnit: (input: CreateUnitInput) => Promise<UnitData>;
@@ -31,6 +39,40 @@ export const contentUnitService: ContentUnitService = {
   async listUnits() {
     const db = getDb();
     return db.select().from(contentUnits).orderBy(asc(contentUnits.sortOrder));
+  },
+
+  async listUnitsWithContent() {
+    const db = getDb();
+    const units = await db.select().from(contentUnits).orderBy(asc(contentUnits.sortOrder));
+
+    const allLessons = await db
+      .select()
+      .from(contentLessons)
+      .orderBy(asc(contentLessons.sortOrder));
+
+    const allScreens = await db
+      .select()
+      .from(contentScreens)
+      .orderBy(asc(contentScreens.sortOrder));
+
+    const screensByLesson = new Map<string, ScreenRow[]>();
+    for (const screen of allScreens) {
+      const list = screensByLesson.get(screen.lessonId) ?? [];
+      list.push(screen);
+      screensByLesson.set(screen.lessonId, list);
+    }
+
+    const lessonsByUnit = new Map<string, (LessonRow & { screens: ScreenRow[] })[]>();
+    for (const lesson of allLessons) {
+      const lessons = lessonsByUnit.get(lesson.unitId) ?? [];
+      lessons.push({ ...lesson, screens: screensByLesson.get(lesson.id) ?? [] });
+      lessonsByUnit.set(lesson.unitId, lessons);
+    }
+
+    return units.map((unit) => ({
+      ...unit,
+      lessons: lessonsByUnit.get(unit.id) ?? [],
+    }));
   },
 
   async getUnit(id) {
