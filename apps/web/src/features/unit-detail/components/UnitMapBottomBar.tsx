@@ -33,6 +33,7 @@ export default function UnitMapBottomBar({
 
   if (!currentLesson) return null;
 
+  const hasNoScreens = currentLesson.screens.length === 0;
   const hasUnmetPrereqs =
     currentLesson.prerequisiteIds?.some((id) => !completedLessons.includes(id)) ?? false;
 
@@ -80,22 +81,46 @@ export default function UnitMapBottomBar({
           {/* Right: Mulai CTA Button */}
           <div className="flex items-center shrink-0">
             {status === "previous" ? (
-              <Button asChild size="lg" className="rounded-2xl px-6 sm:px-8 font-bold text-base">
-                <Link to="/lesson/$lessonId" params={{ lessonId: currentLesson.id }}>
-                  <RotateCcw className="mr-2 size-5" />
-                  Main Lagi
-                </Link>
+              <Button
+                asChild={currentLesson.screens.length > 0}
+                size="lg"
+                disabled={hasNoScreens}
+                className="rounded-2xl px-6 sm:px-8 font-bold text-base"
+              >
+                {currentLesson.screens.length > 0 ? (
+                  <Link to="/lesson/$lessonId" params={{ lessonId: currentLesson.id }}>
+                    <RotateCcw className="mr-2 size-5" />
+                    Main Lagi
+                  </Link>
+                ) : (
+                  <span>
+                    <RotateCcw className="mr-2 size-5" />
+                    Main Lagi
+                  </span>
+                )}
               </Button>
             ) : (
-              <Button asChild size="lg" className="rounded-2xl px-6 sm:px-8 font-bold text-base">
-                <Link
-                  to="/lesson/$lessonId"
-                  params={{ lessonId: currentLesson.id }}
-                  onClick={handleStartClick}
-                >
-                  <PlayCircle className="mr-2 size-5" />
-                  Mulai Belajar
-                </Link>
+              <Button
+                asChild={!hasNoScreens && !hasUnmetPrereqs}
+                size="lg"
+                disabled={hasNoScreens}
+                className="rounded-2xl px-6 sm:px-8 font-bold text-base"
+              >
+                {hasNoScreens ? (
+                  <span>
+                    <PlayCircle className="mr-2 size-5" />
+                    Belum ada soal
+                  </span>
+                ) : (
+                  <Link
+                    to="/lesson/$lessonId"
+                    params={{ lessonId: currentLesson.id }}
+                    onClick={handleStartClick}
+                  >
+                    <PlayCircle className="mr-2 size-5" />
+                    Mulai Belajar
+                  </Link>
+                )}
               </Button>
             )}
           </div>

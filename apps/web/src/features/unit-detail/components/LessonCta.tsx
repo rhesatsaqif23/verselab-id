@@ -24,6 +24,7 @@ export default function LessonCta({ lesson, status, isVisible, allLessons = [] }
   const completedLessons = useProgressStore((s) => s.completedLessons);
   const [showPrereqDialog, setShowPrereqDialog] = useState(false);
 
+  const hasNoScreens = lesson.screens.length === 0;
   const hasUnmetPrereqs =
     lesson.prerequisiteIds?.some((id) => !completedLessons.includes(id)) ?? false;
 
@@ -68,34 +69,50 @@ export default function LessonCta({ lesson, status, isVisible, allLessons = [] }
             <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
               {status === "previous" ? (
                 <Button
-                  asChild
+                  asChild={lesson.screens.length > 0}
                   size="lg"
+                  disabled={hasNoScreens}
                   className="w-full sm:w-auto text-base! font-bold! shadow-md"
                 >
-                  <Link
-                    to="/lesson/$lessonId"
-                    params={{ lessonId: lesson.id }}
-                    onMouseEnter={prefetchLesson}
-                  >
-                    <RotateCcw className="mr-2 size-5" />
-                    Main Lagi
-                  </Link>
+                  {lesson.screens.length > 0 ? (
+                    <Link
+                      to="/lesson/$lessonId"
+                      params={{ lessonId: lesson.id }}
+                      onMouseEnter={prefetchLesson}
+                    >
+                      <RotateCcw className="mr-2 size-5" />
+                      Main Lagi
+                    </Link>
+                  ) : (
+                    <span>
+                      <RotateCcw className="mr-2 size-5" />
+                      Main Lagi
+                    </span>
+                  )}
                 </Button>
               ) : (
                 <Button
-                  asChild
+                  asChild={!hasNoScreens && !hasUnmetPrereqs}
                   size="lg"
+                  disabled={hasNoScreens}
                   className="w-full sm:w-auto text-base! font-bold! shadow-md"
                 >
-                  <Link
-                    to="/lesson/$lessonId"
-                    params={{ lessonId: lesson.id }}
-                    onMouseEnter={prefetchLesson}
-                    onClick={handleStartClick}
-                  >
-                    <PlayCircle className="mr-2 size-5" />
-                    Mulai
-                  </Link>
+                  {hasNoScreens ? (
+                    <span>
+                      <PlayCircle className="mr-2 size-5" />
+                      Belum ada soal
+                    </span>
+                  ) : (
+                    <Link
+                      to="/lesson/$lessonId"
+                      params={{ lessonId: lesson.id }}
+                      onMouseEnter={prefetchLesson}
+                      onClick={handleStartClick}
+                    >
+                      <PlayCircle className="mr-2 size-5" />
+                      Mulai
+                    </Link>
+                  )}
                 </Button>
               )}
             </div>

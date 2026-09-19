@@ -119,7 +119,7 @@ const awardLessonCompletion = (set: any, unitId: string, lessonId: string): void
       streakFreeze: result.streakFreeze,
       lastActiveDate: result.lastActiveDate,
       activeDays,
-      mastery: { ...state.mastery, [unitId]: state.mastery[unitId] ?? 50 },
+      mastery: { ...state.mastery, [unitId]: state.mastery[unitId] || 50 },
       masteryUpdatedAt: { ...state.masteryUpdatedAt, [unitId]: today },
       completedLessons: completed,
     };

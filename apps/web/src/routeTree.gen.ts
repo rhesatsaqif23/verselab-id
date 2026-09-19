@@ -18,8 +18,8 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as HomeAboutRouteImport } from './routes/_home/about'
 import { Route as HomeHomeRouteImport } from './routes/_home/home'
+import { Route as HomeMaterialRouteImport } from './routes/_home/material'
 import { Route as HomeProfileRouteImport } from './routes/_home/profile'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminUnitSlugRouteImport } from './routes/admin.$unitSlug'
@@ -77,14 +77,14 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HomeAboutRoute = HomeAboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => HomeRoute,
-} as any)
 const HomeHomeRoute = HomeHomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => HomeRoute,
+} as any)
+const HomeMaterialRoute = HomeMaterialRouteImport.update({
+  id: '/material',
+  path: '/material',
   getParentRoute: () => HomeRoute,
 } as any)
 const HomeProfileRoute = HomeProfileRouteImport.update({
@@ -157,8 +157,8 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof OnboardingRouteWithChildren
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/about': typeof HomeAboutRoute
   '/home': typeof HomeHomeRoute
+  '/material': typeof HomeMaterialRoute
   '/profile': typeof HomeProfileRoute
   '/admin/$unitSlug': typeof AdminUnitSlugRouteWithChildren
   '/admin/layar': typeof AdminLayarRoute
@@ -179,8 +179,8 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/about': typeof HomeAboutRoute
   '/home': typeof HomeHomeRoute
+  '/material': typeof HomeMaterialRoute
   '/profile': typeof HomeProfileRoute
   '/admin/layar': typeof AdminLayarRoute
   '/admin/pelajaran': typeof AdminPelajaranRoute
@@ -204,8 +204,8 @@ export interface FileRoutesById {
   '/onboarding': typeof OnboardingRouteWithChildren
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/_home/about': typeof HomeAboutRoute
   '/_home/home': typeof HomeHomeRoute
+  '/_home/material': typeof HomeMaterialRoute
   '/_home/profile': typeof HomeProfileRoute
   '/admin/$unitSlug': typeof AdminUnitSlugRouteWithChildren
   '/admin/layar': typeof AdminLayarRoute
@@ -230,8 +230,8 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/register'
     | '/reset-password'
-    | '/about'
     | '/home'
+    | '/material'
     | '/profile'
     | '/admin/$unitSlug'
     | '/admin/layar'
@@ -252,8 +252,8 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/reset-password'
-    | '/about'
     | '/home'
+    | '/material'
     | '/profile'
     | '/admin/layar'
     | '/admin/pelajaran'
@@ -276,8 +276,8 @@ export interface FileRouteTypes {
     | '/onboarding'
     | '/register'
     | '/reset-password'
-    | '/_home/about'
     | '/_home/home'
+    | '/_home/material'
     | '/_home/profile'
     | '/admin/$unitSlug'
     | '/admin/layar'
@@ -370,18 +370,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_home/about': {
-      id: '/_home/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof HomeAboutRouteImport
-      parentRoute: typeof HomeRoute
-    }
     '/_home/home': {
       id: '/_home/home'
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeHomeRouteImport
+      parentRoute: typeof HomeRoute
+    }
+    '/_home/material': {
+      id: '/_home/material'
+      path: '/material'
+      fullPath: '/material'
+      preLoaderRoute: typeof HomeMaterialRouteImport
       parentRoute: typeof HomeRoute
     }
     '/_home/profile': {
@@ -472,15 +472,15 @@ declare module '@tanstack/react-router' {
 }
 
 interface HomeRouteChildren {
-  HomeAboutRoute: typeof HomeAboutRoute
   HomeHomeRoute: typeof HomeHomeRoute
+  HomeMaterialRoute: typeof HomeMaterialRoute
   HomeProfileRoute: typeof HomeProfileRoute
   HomeUnitsUnitIdRoute: typeof HomeUnitsUnitIdRoute
 }
 
 const HomeRouteChildren: HomeRouteChildren = {
-  HomeAboutRoute: HomeAboutRoute,
   HomeHomeRoute: HomeHomeRoute,
+  HomeMaterialRoute: HomeMaterialRoute,
   HomeProfileRoute: HomeProfileRoute,
   HomeUnitsUnitIdRoute: HomeUnitsUnitIdRoute,
 }

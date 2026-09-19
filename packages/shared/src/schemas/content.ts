@@ -66,8 +66,8 @@ export const createScreenSchema = z.object({
   lessonId: z.string().trim().min(1).max(100),
   type: screenTypeSchema,
   slug: slugSchema.optional(),
-  prompt: z.string().trim().min(1),
-  explain: z.string().trim().min(1),
+  prompt: z.string().max(5000).optional().default(""),
+  explain: z.string().max(5000).optional().default(""),
   // choice
   options: z.array(choiceOptionSchema).optional(),
   correctId: z.string().optional(),

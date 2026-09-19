@@ -37,7 +37,7 @@ export function AdminSidebar() {
           )}
         >
           <Link
-            to="/admin"
+            to="/home"
             className={cn(
               "flex items-center no-underline transition-all duration-200",
               isCollapsed ? "justify-center gap-0" : "gap-2.5",

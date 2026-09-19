@@ -7,7 +7,7 @@ import { useLessonStore } from "../engine/player/lessonStore";
 export const Route = createFileRoute("/lesson/$lessonId")({
   loader: async ({ params }) => {
     const lesson = await getLesson({ data: params.lessonId });
-    if (!lesson) {
+    if (!lesson || lesson.screens.length === 0) {
       throw redirect({ to: "/home" });
     }
     useLessonStore.getState().startLesson(lesson.screens.length);

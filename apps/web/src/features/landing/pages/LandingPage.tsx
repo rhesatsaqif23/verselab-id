@@ -69,7 +69,7 @@ export function LandingPage() {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="w-full sm:w-auto">
-              <Link to="/about">
+              <Link to="/material">
                 <BookOpen />
                 Jelajahi materi
               </Link>

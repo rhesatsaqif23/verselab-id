@@ -83,7 +83,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  to="/about"
+                  to="/material"
                   className="text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
                 >
                   Peta Kurikulum
