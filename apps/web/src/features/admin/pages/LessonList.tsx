@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { formatAdminDate } from "#/libs/date.ts";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,7 +32,7 @@ import { LessonFormDialog } from "../components/LessonFormDialog.tsx";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
 
-type LessonSortKey = "title" | "icon";
+type LessonSortKey = "title" | "icon" | "createdAt";
 
 interface LessonListProps {
   unitId: string;
@@ -60,17 +61,21 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
 
   const allLessons: AdminLesson[] = lessons ?? [];
 
-  const filterFn = useCallback((row: AdminLesson) => `${row.title} ${row.icon ?? ""}`, []);
+  const filterFn = useCallback(
+    (row: AdminLesson) => `${row.title} ${row.slug} ${row.icon ?? ""}`,
+    [],
+  );
   const getValue = useCallback((row: AdminLesson, key: LessonSortKey) => {
     if (key === "title") return row.title;
     if (key === "icon") return row.icon ?? "";
+    if (key === "createdAt") return new Date(row.createdAt);
     return "";
   }, []);
 
   const { processed, sort, toggleSort, filter, setFilter } = useSortFilter<
     AdminLesson,
     LessonSortKey
-  >(allLessons, "title", filterFn, getValue);
+  >(allLessons, "createdAt", filterFn, getValue);
 
   return (
     <div className="space-y-4">
@@ -102,8 +107,14 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
           <TableHeader>
             <TableRow>
               <TableHead className="w-12 text-center font-bold">#</TableHead>
-              <SortableHead label="Lesson" sortKey="title" sort={sort} onToggle={toggleSort} />
-              <SortableHead label="Icon" sortKey="icon" sort={sort} onToggle={toggleSort} />
+              <SortableHead label="Pelajaran" sortKey="title" sort={sort} onToggle={toggleSort} />
+              <SortableHead label="Ikon" sortKey="icon" sort={sort} onToggle={toggleSort} />
+              <SortableHead
+                label="Dibuat"
+                sortKey="createdAt"
+                sort={sort}
+                onToggle={toggleSort}
+              />
               <TableHead className="w-24 text-center font-bold">Aksi</TableHead>
             </TableRow>
           </TableHeader>
@@ -121,6 +132,9 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
                   <TableCell>
                     <Skeleton className="h-4 w-8" />
                   </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-16" />
+                  </TableCell>
                   <TableCell className="text-center">
                     <div className="flex items-center justify-center gap-1">
                       <Skeleton className="size-8 rounded-lg" />
@@ -131,7 +145,7 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
               ))}
             {!isLoading && processed.length === 0 && (
               <TableRow>
-                <TableCell colSpan={4} className="p-6 text-center text-base text-muted-foreground">
+                <TableCell colSpan={5} className="p-6 text-center text-base text-muted-foreground">
                   {filter
                     ? `Tidak ada lesson yang cocok dengan "${filter}".`
                     : "Belum ada lesson. Tambahkan lesson baru di atas."}
@@ -155,10 +169,13 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
                   </TableCell>
                   <TableCell>
                     <div className="text-base font-semibold text-foreground">{lesson.title}</div>
-                    <div className="text-xs text-muted-foreground">{lesson.id}</div>
+                    <div className="text-xs text-muted-foreground">{lesson.slug}</div>
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {lesson.icon || "-"}
+                  </TableCell>
+                  <TableCell className="text-sm text-muted-foreground">
+                    {formatAdminDate(lesson.createdAt)}
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-center gap-1">

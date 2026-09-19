@@ -37,3 +37,12 @@ export async function loadProgress(): Promise<ServerProgress | null> {
     return null;
   }
 }
+
+/** Clear pending sync state (call on sign-out to prevent cross-account writes). */
+export function resetSync(): void {
+  if (syncTimer) {
+    clearTimeout(syncTimer);
+    syncTimer = null;
+  }
+  pendingPatch = {};
+}

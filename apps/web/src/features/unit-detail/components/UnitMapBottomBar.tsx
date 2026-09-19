@@ -108,7 +108,6 @@ export default function UnitMapBottomBar({
               >
                 {hasNoScreens ? (
                   <span>
-                    <PlayCircle className="mr-2 size-5" />
                     Belum ada soal
                   </span>
                 ) : (

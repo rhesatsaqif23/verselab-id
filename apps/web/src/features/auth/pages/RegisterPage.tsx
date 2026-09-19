@@ -17,7 +17,7 @@ export function RegisterPage() {
   const navigate = useNavigate();
   const form = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { name: "", email: "", password: "" },
+    defaultValues: { name: "", email: "", password: "", confirmPassword: "" },
   });
   const { handleSubmit, setValue, formState } = form;
   const submitting = formState.isSubmitting;
@@ -72,6 +72,14 @@ export function RegisterPage() {
             label="Kata sandi"
             type="password"
             placeholder="Minimal 8 karakter"
+            autoComplete="new-password"
+            disabled={submitting}
+          />
+          <AuthField
+            name="confirmPassword"
+            label="Konfirmasi kata sandi"
+            type="password"
+            placeholder="Ulangi kata sandi"
             autoComplete="new-password"
             disabled={submitting}
           />

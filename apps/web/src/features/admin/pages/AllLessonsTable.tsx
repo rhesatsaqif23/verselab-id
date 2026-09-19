@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Pencil, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { formatAdminDate } from "#/libs/date.ts";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -180,11 +181,7 @@ export function AllLessonsTable() {
                     {lesson.icon || "-"}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground tabular-nums">
-                    {new Date(lesson.createdAt).toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                    {formatAdminDate(lesson.createdAt)}
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-center gap-1">

@@ -155,6 +155,12 @@ export function ScreenForm({ screen, lessonId, onRegisterValidator }: ScreenForm
         />
       </div>
 
+      {formData.type === "choice" && <ChoiceFields screen={formData} onChange={handlePatch} />}
+      {formData.type === "numeric" && <NumericFields screen={formData} onChange={handlePatch} />}
+      {formData.type === "allocation" && (
+        <AllocationFields screen={formData} onChange={handlePatch} />
+      )}
+
       <div className="flex flex-col gap-1.5">
         <Label htmlFor="explain" className="text-base">
           Penjelasan <span className="text-destructive">*</span>
@@ -168,12 +174,6 @@ export function ScreenForm({ screen, lessonId, onRegisterValidator }: ScreenForm
           className="md:text-base"
         />
       </div>
-
-      {formData.type === "choice" && <ChoiceFields screen={formData} onChange={handlePatch} />}
-      {formData.type === "numeric" && <NumericFields screen={formData} onChange={handlePatch} />}
-      {formData.type === "allocation" && (
-        <AllocationFields screen={formData} onChange={handlePatch} />
-      )}
 
       <div className="flex justify-end border-t pt-4">
         <Button onClick={handleSave} disabled={isPending} size="sm">

@@ -37,6 +37,7 @@ type ProgressActions = {
   setDailyGoal: (minutes: DailyGoalMinutes) => void;
   registerActivity: (date?: string) => void;
   refreshFromServer: () => void;
+  reset: () => void;
 };
 
 function clamp(value: number, min: number, max: number): number {
@@ -192,6 +193,21 @@ const refreshFromServer = (set: any): void => {
   });
 };
 
+const resetFn = (set: any): void => {
+  set({
+    hydrated: false,
+    xp: 0,
+    dailyGoalMinutes: 10 as DailyGoalMinutes,
+    streak: 0,
+    streakFreeze: 0,
+    lastActiveDate: null,
+    activeDays: [],
+    mastery: {},
+    masteryUpdatedAt: {},
+    completedLessons: [],
+  });
+};
+
 const storeCreator = (set: any) => ({
   hydrated: false,
   xp: 0,
@@ -211,6 +227,7 @@ const storeCreator = (set: any) => ({
   setDailyGoal: (minutes: DailyGoalMinutes) => setDailyGoalFn(set, minutes),
   registerActivity: (date?: string) => registerActivity(set, date),
   refreshFromServer: () => refreshFromServer(set),
+  reset: () => resetFn(set),
 });
 
 export const useProgressStore = create<ProgressState & ProgressActions>()(storeCreator);

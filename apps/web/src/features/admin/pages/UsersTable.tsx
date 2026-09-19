@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
+import { formatAdminDate } from "#/libs/date.ts";
 import { Badge } from "#/components/ui/badge.tsx";
 import { Input } from "#/components/ui/input.tsx";
 import { Skeleton } from "#/components/ui/skeleton.tsx";
@@ -200,11 +201,7 @@ export function UsersTable() {
                     </TableCell>
                     <TableCell>
                       <span className="text-sm text-muted-foreground">
-                        {new Date(u.createdAt).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
+                        {formatAdminDate(u.createdAt)}
                       </span>
                     </TableCell>
                   </TableRow>

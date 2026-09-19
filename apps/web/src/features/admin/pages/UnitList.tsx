@@ -3,6 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { formatAdminDate } from "#/libs/date.ts";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -206,11 +207,7 @@ export function UnitList() {
                     )}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground tabular-nums">
-                    {new Date(unit.createdAt).toLocaleDateString("id-ID", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                    {formatAdminDate(unit.createdAt)}
                   </TableCell>
                   <TableCell onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-center gap-1">

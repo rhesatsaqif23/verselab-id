@@ -40,3 +40,15 @@ export function getWeekDates(today: Date): Date[] {
     return d;
   });
 }
+
+export function formatAdminDate(value: string | Date): string {
+  const d = typeof value === "string" ? new Date(value) : value;
+  return d.toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}

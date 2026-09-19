@@ -19,11 +19,17 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Kata sandi wajib diisi"),
 });
 
-export const registerSchema = z.object({
-  name: z.string().trim().min(1, "Nama wajib diisi").max(50, "Nama maksimal 50 karakter"),
-  email: emailSchema,
-  password: passwordSchema,
-});
+export const registerSchema = z
+  .object({
+    name: z.string().trim().min(1, "Nama wajib diisi").max(50, "Nama maksimal 50 karakter"),
+    email: emailSchema,
+    password: passwordSchema,
+    confirmPassword: z.string(),
+  })
+  .refine((v) => v.password === v.confirmPassword, {
+    message: "Konfirmasi kata sandi tidak cocok",
+    path: ["confirmPassword"],
+  });
 
 export const forgotPasswordSchema = z.object({
   email: emailSchema,

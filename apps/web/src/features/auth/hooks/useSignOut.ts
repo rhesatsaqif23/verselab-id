@@ -2,6 +2,8 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { authClient } from "#/libs/auth-client.ts";
+import { useProgressStore } from "#/engine/progress/progressStore.ts";
+import { resetSync } from "#/engine/progress/sync.ts";
 
 export function useSignOut() {
   const navigate = useNavigate();
@@ -14,6 +16,8 @@ export function useSignOut() {
     } finally {
       setPending(false);
     }
+    resetSync();
+    useProgressStore.getState().reset();
     await navigate({ to: "/" });
   }
 
