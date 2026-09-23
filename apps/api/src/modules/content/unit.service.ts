@@ -2,6 +2,7 @@ import type { CreateUnitInput, UpdateUnitInput } from "@verselab/shared/schemas/
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
 import { contentUnits, contentLessons, contentScreens } from "../../database/schema.ts";
+import { assertImage, extFor, getStorage } from "../../libs/storage.ts";
 import { resolveUniqueSlug } from "./slug.ts";
 
 export type UnitData = typeof contentUnits.$inferSelect;
@@ -189,15 +190,10 @@ export const contentUnitService: ContentUnitService = {
   },
 
   async uploadImage(id, file) {
-    const ext = file.type === "image/png" ? "png" : file.type === "image/webp" ? "webp" : "jpg";
+    assertImage(file);
+    const key = `content/${id}.${extFor(file.type)}`;
     const buffer = Buffer.from(await file.arrayBuffer());
-    const path = `${process.cwd()}/uploads/content/${id}.${ext}`;
-
-    const fs = await import("node:fs/promises");
-    await fs.mkdir(`${process.cwd()}/uploads/content`, { recursive: true });
-    await fs.writeFile(path, buffer);
-
-    const imageUrl = `/uploads/content/${id}.${ext}`;
+    const imageUrl = await getStorage().put(key, buffer, file.type);
     const db = getDb();
     await db
       .update(contentUnits)

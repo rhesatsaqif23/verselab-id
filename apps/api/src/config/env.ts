@@ -12,6 +12,13 @@ const envSchema = z
     PORT: z.coerce.number().default(3001),
     NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
     EMAIL_TRANSPORT: z.enum(["console"]).optional(),
+    STORAGE_DRIVER: z.enum(["s3", "local"]).optional(),
+    S3_ENDPOINT: z.string().url().optional(),
+    S3_REGION: z.string().optional(),
+    S3_BUCKET: z.string().optional(),
+    S3_ACCESS_KEY_ID: z.string().optional(),
+    S3_SECRET_ACCESS_KEY: z.string().optional(),
+    S3_PUBLIC_BASE_URL: z.string().url().optional(),
   })
   .superRefine((data, ctx) => {
     if (data.NODE_ENV === "test") return;
@@ -22,6 +29,17 @@ const envSchema = z
           path: [key],
           message: `Required when NODE_ENV is not "test"`,
         });
+      }
+    }
+    if (data.STORAGE_DRIVER === "s3") {
+      for (const key of ["S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"] as const) {
+        if (!data[key]) {
+          ctx.addIssue({
+            code: "custom",
+            path: [key],
+            message: `Required when STORAGE_DRIVER is "s3"`,
+          });
+        }
       }
     }
   });

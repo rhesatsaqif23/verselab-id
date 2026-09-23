@@ -12,7 +12,8 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "seed:admin": "bun src/scripts/seed-admin.ts",
-    "seed:content": "bun src/scripts/seed-content.ts"
+    "seed:content": "bun src/scripts/seed-content.ts",
+    "backfill:images": "bun src/scripts/backfill-images-to-s3.ts"
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "^1.7.3",
