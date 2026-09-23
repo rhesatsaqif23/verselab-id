@@ -10,11 +10,15 @@ import type { OnboardingState } from "../types.ts";
 
 export function OnboardingWelcome({ state }: { state: OnboardingState }) {
   const [unitTitle, setUnitTitle] = useState<string | null>(null);
+  const [unitSlug, setUnitSlug] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
     getUnit({ data: state.startUnitId }).then((unit) => {
-      if (active) setUnitTitle(unit?.title ?? null);
+      if (active) {
+        setUnitTitle(unit?.title ?? null);
+        setUnitSlug(unit?.slug ?? null);
+      }
     });
     return () => {
       active = false;
@@ -40,7 +44,7 @@ export function OnboardingWelcome({ state }: { state: OnboardingState }) {
         </div>
         <div className="flex w-full flex-col gap-3 pt-2">
           <Button asChild size="lg" className="w-full font-bold">
-            <Link to="/units/$unitId" params={{ unitId: state.startUnitId }}>
+            <Link to="/units/$unitSlug" params={{ unitSlug: unitSlug ?? state.startUnitId }}>
               <Sparkles className="size-4" />
               Mulai Belajar
             </Link>

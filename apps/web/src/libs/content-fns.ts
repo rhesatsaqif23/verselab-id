@@ -97,7 +97,17 @@ export const getUnitWithContent = createServerFn({ method: "GET" })
     return mapUnit(raw);
   });
 
-export type LessonWithUnit = Lesson & { unitId: string; unitTitle: string };
+export const getUnitWithContentBySlug = createServerFn({ method: "GET" })
+  .validator((slug: string) => slug)
+  .handler(async ({ data: slug }): Promise<Unit | null> => {
+    const raw = await apiFetch<RawUnitWithContent>(
+      `/v1/content/units-by-slug/${encodeURIComponent(slug)}/with-content`,
+    );
+    if (!raw) return null;
+    return mapUnit(raw);
+  });
+
+export type LessonWithUnit = Lesson & { unitId: string; unitTitle: string; unitSlug: string };
 
 export const getLesson = createServerFn({ method: "GET" })
   .validator((id: string) => id)
@@ -105,7 +115,7 @@ export const getLesson = createServerFn({ method: "GET" })
     const raw = await apiFetch<RawLessonFull>(`/v1/content/lessons/${id}/full`);
     if (!raw) return null;
     const lesson = mapLesson(raw);
-    return { ...lesson, unitId: raw.unitId, unitTitle: raw.unitTitle };
+    return { ...lesson, unitId: raw.unitId, unitTitle: raw.unitTitle, unitSlug: raw.unitSlug };
   });
 
 export const getAllUnits = createServerFn({ method: "GET" }).handler(async () => {

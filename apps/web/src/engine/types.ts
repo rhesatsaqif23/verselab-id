@@ -41,6 +41,7 @@ export type Lesson = {
 
 export type Unit = {
   id: string;
+  slug: string;
   title: string;
   description?: string;
   lessons: readonly Lesson[];

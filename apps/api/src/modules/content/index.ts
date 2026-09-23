@@ -52,6 +52,14 @@ export function createContentController(
         },
       )
       .get(
+        "/units-by-slug/:slug/with-content",
+        async ({ params }) => ok(await unitSvc.getUnitWithContentBySlug(params.slug)),
+        {
+          tags: ["content"],
+          detail: { summary: "Get unit by slug with lessons and screens" },
+        },
+      )
+      .get(
         "/lessons-by-slug/:slug",
         async ({ params }) => ok(await lessonSvc.getLessonBySlug(params.slug)),
         {

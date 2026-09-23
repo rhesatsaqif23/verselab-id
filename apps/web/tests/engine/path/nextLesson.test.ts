@@ -5,12 +5,14 @@ import type { Unit } from "#/engine/types.ts";
 
 const unitA: Unit = {
   id: "unit-a",
+  slug: "unit-a",
   title: "Unit A",
   lessons: [{ id: "lesson-a1", title: "Lesson A1", screens: [] }],
 };
 
 const unitB: Unit = {
   id: "unit-b",
+  slug: "unit-b",
   title: "Unit B",
   lessons: [{ id: "lesson-b1", title: "Lesson B1", screens: [] }],
 };

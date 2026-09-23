@@ -23,6 +23,7 @@ export type ContentUnitService = {
   listUnitsWithContent: () => Promise<UnitWithContent[]>;
   getUnit: (id: string) => Promise<UnitData | null>;
   getUnitWithContent: (id: string) => Promise<UnitWithContentSingle | null>;
+  getUnitWithContentBySlug: (slug: string) => Promise<UnitWithContentSingle | null>;
   getUnitBySlug: (slug: string) => Promise<UnitData | null>;
   createUnit: (input: CreateUnitInput) => Promise<UnitData>;
   updateUnit: (id: string, input: UpdateUnitInput) => Promise<UnitData>;
@@ -116,6 +117,13 @@ export const contentUnitService: ContentUnitService = {
     const db = getDb();
     const [row] = await db.select().from(contentUnits).where(eq(contentUnits.slug, slug)).limit(1);
     return row ?? null;
+  },
+
+  async getUnitWithContentBySlug(slug) {
+    const db = getDb();
+    const [unit] = await db.select().from(contentUnits).where(eq(contentUnits.slug, slug)).limit(1);
+    if (!unit) return null;
+    return contentUnitService.getUnitWithContent(unit.id);
   },
 
   async createUnit(input) {

@@ -122,6 +122,7 @@ describe("LessonPage award flow", () => {
     id: "test-lesson",
     title: "Test Lesson",
     unitId: "unit-test",
+    unitSlug: "unit-test",
     unitTitle: "Unit Test",
     screens: fixtureScreens,
   };

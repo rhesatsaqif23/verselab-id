@@ -30,8 +30,8 @@ export default function Footer() {
             <ul className="flex flex-col gap-2.5 list-none p-0 m-0">
               <li>
                 <Link
-                  to="/units/$unitId"
-                  params={{ unitId: "keuangan" }}
+                  to="/units/$unitSlug"
+                  params={{ unitSlug: "keuangan" }}
                   className="text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
                 >
                   Keuangan
@@ -39,8 +39,8 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  to="/units/$unitId"
-                  params={{ unitId: "akuntansi" }}
+                  to="/units/$unitSlug"
+                  params={{ unitSlug: "akuntansi" }}
                   className="text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
                 >
                   Akuntansi
@@ -48,8 +48,8 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  to="/units/$unitId"
-                  params={{ unitId: "manajemen-produk" }}
+                  to="/units/$unitSlug"
+                  params={{ unitSlug: "manajemen-produk" }}
                   className="text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
                 >
                   Manajemen Produk
@@ -57,8 +57,8 @@ export default function Footer() {
               </li>
               <li>
                 <Link
-                  to="/units/$unitId"
-                  params={{ unitId: "kewirausahaan" }}
+                  to="/units/$unitSlug"
+                  params={{ unitSlug: "kewirausahaan" }}
                   className="text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
                 >
                   Kewirausahaan

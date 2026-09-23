@@ -16,6 +16,7 @@ import { todayString } from "#/libs/date.ts";
 const units = [
   {
     id: "keuangan",
+    slug: "keuangan",
     title: "Keuangan",
     description: "Menabung, anggaran, cicilan, dan nilai waktu uang.",
     imageUrl: "/unit/keuangan.webp",
@@ -23,6 +24,7 @@ const units = [
   },
   {
     id: "akuntansi",
+    slug: "akuntansi",
     title: "Akuntansi",
     description: "Persamaan dasar, pencatatan transaksi, laba rugi, dan arus kas.",
     imageUrl: "/unit/akuntansi.webp",
@@ -30,6 +32,7 @@ const units = [
   },
   {
     id: "manajemen-produk",
+    slug: "manajemen-produk",
     title: "Manajemen Produk",
     description: "Temukan masalah, prioritaskan fitur, ukur metrik, validasi MVP.",
     imageUrl: "/unit/manajemen-produk.webp",
@@ -37,6 +40,7 @@ const units = [
   },
   {
     id: "kewirausahaan",
+    slug: "kewirausahaan",
     title: "Kewirausahaan",
     description: "Unit ekonomi, titik impas, harga, dan validasi ide.",
     imageUrl: "/unit/kewirausahaan.webp",

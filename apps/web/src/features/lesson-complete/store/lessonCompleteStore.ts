@@ -8,6 +8,7 @@ export type WrongScreen = {
 
 export type LessonCompleteSummary = {
   unitId: string;
+  unitSlug: string;
   unitName: string;
   totalScreens: number;
   correctCount: number;

@@ -212,8 +212,12 @@ export default function ShuffleCard() {
       // If user clicked without dragging beyond threshold, navigate to the unit detail
       if (!isDragThresholdPassed.current) {
         const frontUnitId = order[0];
+        const frontUnit = units.find((u) => u.id === frontUnitId);
         if (frontUnitId) {
-          navigate({ to: "/units/$unitId", params: { unitId: frontUnitId } });
+          navigate({
+            to: "/units/$unitSlug",
+            params: { unitSlug: frontUnit?.slug ?? frontUnitId },
+          });
         }
         return;
       }
@@ -236,7 +240,7 @@ export default function ShuffleCard() {
         animateTo(dragX, 0, 300);
       }
     },
-    [dragging, turning, animating, dragX, order, navigate, commitNext, commitPrev],
+    [dragging, turning, animating, dragX, order, units, navigate, commitNext, commitPrev],
   );
 
   const progress = Math.min(1, Math.abs(dragX) / DRAG_DIVISOR);

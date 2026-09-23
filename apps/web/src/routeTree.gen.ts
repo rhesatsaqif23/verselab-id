@@ -29,7 +29,7 @@ import { Route as AdminPenggunaRouteImport } from './routes/admin.pengguna'
 import { Route as LessonLessonIdRouteImport } from './routes/lesson.$lessonId'
 import { Route as OnboardingIndexRouteImport } from './routes/onboarding.index'
 import { Route as OnboardingWelcomeRouteImport } from './routes/onboarding.welcome'
-import { Route as HomeUnitsUnitIdRouteImport } from './routes/_home/units.$unitId'
+import { Route as HomeUnitsUnitSlugRouteImport } from './routes/_home/units.$unitSlug'
 import { Route as AdminUnitSlugIndexRouteImport } from './routes/admin.$unitSlug.index'
 import { Route as AdminUnitSlugLessonSlugRouteImport } from './routes/admin.$unitSlug.$lessonSlug'
 
@@ -132,9 +132,9 @@ const OnboardingWelcomeRoute = OnboardingWelcomeRouteImport.update({
   path: '/welcome',
   getParentRoute: () => OnboardingRoute,
 } as any)
-const HomeUnitsUnitIdRoute = HomeUnitsUnitIdRouteImport.update({
-  id: '/units/$unitId',
-  path: '/units/$unitId',
+const HomeUnitsUnitSlugRoute = HomeUnitsUnitSlugRouteImport.update({
+  id: '/units/$unitSlug',
+  path: '/units/$unitSlug',
   getParentRoute: () => HomeRoute,
 } as any)
 const AdminUnitSlugIndexRoute = AdminUnitSlugIndexRouteImport.update({
@@ -168,7 +168,7 @@ export interface FileRoutesByFullPath {
   '/onboarding/welcome': typeof OnboardingWelcomeRoute
   '/admin/': typeof AdminIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
-  '/units/$unitId': typeof HomeUnitsUnitIdRoute
+  '/units/$unitSlug': typeof HomeUnitsUnitSlugRoute
   '/admin/$unitSlug/$lessonSlug': typeof AdminUnitSlugLessonSlugRoute
   '/admin/$unitSlug/': typeof AdminUnitSlugIndexRoute
 }
@@ -189,7 +189,7 @@ export interface FileRoutesByTo {
   '/onboarding/welcome': typeof OnboardingWelcomeRoute
   '/admin': typeof AdminIndexRoute
   '/onboarding': typeof OnboardingIndexRoute
-  '/units/$unitId': typeof HomeUnitsUnitIdRoute
+  '/units/$unitSlug': typeof HomeUnitsUnitSlugRoute
   '/admin/$unitSlug/$lessonSlug': typeof AdminUnitSlugLessonSlugRoute
   '/admin/$unitSlug': typeof AdminUnitSlugIndexRoute
 }
@@ -215,7 +215,7 @@ export interface FileRoutesById {
   '/onboarding/welcome': typeof OnboardingWelcomeRoute
   '/admin/': typeof AdminIndexRoute
   '/onboarding/': typeof OnboardingIndexRoute
-  '/_home/units/$unitId': typeof HomeUnitsUnitIdRoute
+  '/_home/units/$unitSlug': typeof HomeUnitsUnitSlugRoute
   '/admin/$unitSlug/$lessonSlug': typeof AdminUnitSlugLessonSlugRoute
   '/admin/$unitSlug/': typeof AdminUnitSlugIndexRoute
 }
@@ -241,7 +241,7 @@ export interface FileRouteTypes {
     | '/onboarding/welcome'
     | '/admin/'
     | '/onboarding/'
-    | '/units/$unitId'
+    | '/units/$unitSlug'
     | '/admin/$unitSlug/$lessonSlug'
     | '/admin/$unitSlug/'
   fileRoutesByTo: FileRoutesByTo
@@ -262,7 +262,7 @@ export interface FileRouteTypes {
     | '/onboarding/welcome'
     | '/admin'
     | '/onboarding'
-    | '/units/$unitId'
+    | '/units/$unitSlug'
     | '/admin/$unitSlug/$lessonSlug'
     | '/admin/$unitSlug'
   id:
@@ -287,7 +287,7 @@ export interface FileRouteTypes {
     | '/onboarding/welcome'
     | '/admin/'
     | '/onboarding/'
-    | '/_home/units/$unitId'
+    | '/_home/units/$unitSlug'
     | '/admin/$unitSlug/$lessonSlug'
     | '/admin/$unitSlug/'
   fileRoutesById: FileRoutesById
@@ -447,11 +447,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OnboardingWelcomeRouteImport
       parentRoute: typeof OnboardingRoute
     }
-    '/_home/units/$unitId': {
-      id: '/_home/units/$unitId'
-      path: '/units/$unitId'
-      fullPath: '/units/$unitId'
-      preLoaderRoute: typeof HomeUnitsUnitIdRouteImport
+    '/_home/units/$unitSlug': {
+      id: '/_home/units/$unitSlug'
+      path: '/units/$unitSlug'
+      fullPath: '/units/$unitSlug'
+      preLoaderRoute: typeof HomeUnitsUnitSlugRouteImport
       parentRoute: typeof HomeRoute
     }
     '/admin/$unitSlug/': {
@@ -475,14 +475,14 @@ interface HomeRouteChildren {
   HomeHomeRoute: typeof HomeHomeRoute
   HomeMaterialRoute: typeof HomeMaterialRoute
   HomeProfileRoute: typeof HomeProfileRoute
-  HomeUnitsUnitIdRoute: typeof HomeUnitsUnitIdRoute
+  HomeUnitsUnitSlugRoute: typeof HomeUnitsUnitSlugRoute
 }
 
 const HomeRouteChildren: HomeRouteChildren = {
   HomeHomeRoute: HomeHomeRoute,
   HomeMaterialRoute: HomeMaterialRoute,
   HomeProfileRoute: HomeProfileRoute,
-  HomeUnitsUnitIdRoute: HomeUnitsUnitIdRoute,
+  HomeUnitsUnitSlugRoute: HomeUnitsUnitSlugRoute,
 }
 
 const HomeRouteWithChildren = HomeRoute._addFileChildren(HomeRouteChildren)

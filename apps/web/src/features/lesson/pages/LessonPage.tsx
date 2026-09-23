@@ -40,6 +40,7 @@ export default function LessonPage({ lessonId, lesson: lessonProp }: LessonPageP
 
   const lesson = found;
   const unitId = found.unitId;
+  const unitSlug = found.unitSlug;
   const unitTitle = found.unitTitle;
   const results = useLessonStore((s) => s.results);
   const xpEarned = Object.values(results)
@@ -74,6 +75,7 @@ export default function LessonPage({ lessonId, lesson: lessonProp }: LessonPageP
 
     useLessonCompleteStore.getState().setSummary({
       unitId,
+      unitSlug,
       unitName: unitTitle,
       totalScreens: answerResults.length,
       correctCount,

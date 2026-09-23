@@ -88,6 +88,7 @@ export function mapLesson(db: DbLesson & { screens?: DbScreen[] }): Lesson {
 export function mapUnit(db: DbUnit & { lessons?: (DbLesson & { screens?: DbScreen[] })[] }): Unit {
   return {
     id: db.id,
+    slug: db.slug ?? db.id,
     title: db.title,
     description: db.description ?? undefined,
     imageUrl: db.imageUrl ?? undefined,

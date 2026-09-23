@@ -9,7 +9,7 @@ import type { OnboardingState } from "#/features/onboarding/types.ts";
 const { navigateMock } = vi.hoisted(() => ({ navigateMock: vi.fn() }));
 
 vi.mock("#/libs/content-fns.ts", () => ({
-  getUnit: vi.fn().mockResolvedValue({ id: "kewirausahaan", title: "Kewirausahaan" }),
+  getUnit: vi.fn().mockResolvedValue({ id: "u-1", slug: "kewirausahaan", title: "Kewirausahaan" }),
 }));
 
 vi.mock("@tanstack/react-router", () => ({
@@ -24,7 +24,7 @@ vi.mock("@tanstack/react-router", () => ({
     children: React.ReactNode;
   }) => (
     <a
-      href={params?.unitId ? `/units/${params.unitId}` : to}
+      href={params?.unitSlug ? `/units/${params.unitSlug}` : to}
       onClick={(e) => {
         e.preventDefault();
         if (params) navigateMock({ to, params });

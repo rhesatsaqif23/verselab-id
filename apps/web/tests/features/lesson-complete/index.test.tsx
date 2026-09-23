@@ -30,6 +30,7 @@ vi.mock("@tanstack/react-router", () => ({
 
 const summary: LessonCompleteSummary = {
   unitId: "saving-basics",
+  unitSlug: "saving-basics",
   unitName: "Dasar Menabung",
   totalScreens: 4,
   correctCount: 3,
