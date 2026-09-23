@@ -3,6 +3,7 @@
 // a mocked admin session. No S3 or Postgres is touched.
 import { afterEach, describe, expect, it, mock } from "bun:test";
 import { Elysia } from "elysia";
+import { env } from "../../src/config/env.ts";
 
 const fakeAdmin = { id: "admin-1", name: "Admin", email: "admin@test.dev" };
 const updateCapture: { values?: unknown } = {};
@@ -117,11 +118,28 @@ describe("contentUnitService.uploadImage", () => {
   });
 
   it("fails with 500 when storage is not configured", async () => {
-    const err = await contentUnitService.uploadImage("u-1", png()).catch((e) => e);
+    // Hermetic against ambient dev .env: Bun auto-loads apps/api/.env, which
+    // may set STORAGE_DRIVER or S3 keys. Neutralize all driver inputs here.
+    const prev = {
+      driver: env.STORAGE_DRIVER,
+      id: env.S3_ACCESS_KEY_ID,
+      secret: env.S3_SECRET_ACCESS_KEY,
+    };
+    env.STORAGE_DRIVER = undefined;
+    env.S3_ACCESS_KEY_ID = undefined;
+    env.S3_SECRET_ACCESS_KEY = undefined;
+    setStorageFake(null);
+    try {
+      const err = await contentUnitService.uploadImage("u-1", png()).catch((e) => e);
 
-    expect(err).toBeInstanceOf(AppError);
-    expect(err.code).toBe("INTERNAL");
-    expect(err.status).toBe(500);
+      expect(err).toBeInstanceOf(AppError);
+      expect(err.code).toBe("INTERNAL");
+      expect(err.status).toBe(500);
+    } finally {
+      env.STORAGE_DRIVER = prev.driver;
+      env.S3_ACCESS_KEY_ID = prev.id;
+      env.S3_SECRET_ACCESS_KEY = prev.secret;
+    }
   });
 });
 

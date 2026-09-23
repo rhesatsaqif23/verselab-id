@@ -11,27 +11,16 @@ import { join } from "node:path";
 import { eq, like } from "drizzle-orm";
 import { getDb } from "../database/index.ts";
 import { contentUnits, userProfiles } from "../database/schema.ts";
-import { getStorage } from "../libs/storage.ts";
+import { getStorage, mimeForKey } from "../libs/storage.ts";
+
+export { mimeForKey };
 
 const UPLOADS_PREFIX = "/uploads/";
-
-const MIME_BY_EXT: Record<string, string> = {
-  png: "image/png",
-  jpg: "image/jpeg",
-  jpeg: "image/jpeg",
-  webp: "image/webp",
-};
 
 /** Map a stored URL to its S3 key, or null when the row needs no migration. */
 export function relativeUrlToKey(url: string | null): string | null {
   if (!url || !url.startsWith(UPLOADS_PREFIX)) return null;
   return url.slice(UPLOADS_PREFIX.length);
-}
-
-/** MIME type for a key's extension, or null when the file type is unsupported. */
-export function mimeForKey(key: string): string | null {
-  const ext = key.split(".").pop()?.toLowerCase() ?? "";
-  return MIME_BY_EXT[ext] ?? null;
 }
 
 type BackfillRow = { id: string; url: string; kind: "unit" | "avatar" };

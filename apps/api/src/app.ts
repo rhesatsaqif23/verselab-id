@@ -1,7 +1,6 @@
 import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { swagger } from "@elysiajs/swagger";
-import { staticPlugin } from "@elysiajs/static";
 import { auth } from "./auth/index.ts";
 import { authContext } from "./middleware/auth.ts";
 import { logger } from "./plugins/logger.ts";
@@ -12,6 +11,7 @@ import { createOnboardingController } from "./modules/onboarding/index.ts";
 import { createProgressController } from "./modules/progress/index.ts";
 import { createContentController } from "./modules/content/index.ts";
 import { buildCorsOptions } from "./config/http.ts";
+import { uploadsPlugin } from "./plugins/uploads.ts";
 import { env } from "./config/env.ts";
 
 // App construction is separate from `.listen()` so tests can drive the HTTP
@@ -46,15 +46,7 @@ export function createApp() {
         void request.headers.get("cookie"); // Elysia .mount() cookie fix
       })
       .mount(auth.handler) // Better Auth at /api/auth/*
-      .use(
-        staticPlugin({
-          prefix: "/uploads",
-          assets: "uploads/content",
-          headers: {
-            "Cache-Control": "public, max-age=31536000, immutable",
-          },
-        }),
-      )
+      .use(uploadsPlugin)
       .use(authContext)
       .group("/v1", (v1) =>
         v1
