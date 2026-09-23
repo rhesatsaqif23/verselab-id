@@ -91,7 +91,12 @@ export default function MateriPage() {
       {selectedLesson && (
         <div className="fixed bottom-6 inset-x-0 z-30 flex justify-center px-4 sm:px-8 pointer-events-none">
           <div className="w-full max-w-2xl pointer-events-auto">
-            <LessonCta lesson={selectedLesson} status={selectedStatus} isVisible={isCtaVisible} allLessons={allLessons} />
+            <LessonCta
+              lesson={selectedLesson}
+              status={selectedStatus}
+              isVisible={isCtaVisible}
+              allLessons={allLessons}
+            />
           </div>
         </div>
       )}

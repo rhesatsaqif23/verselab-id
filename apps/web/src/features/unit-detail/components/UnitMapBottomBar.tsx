@@ -107,9 +107,7 @@ export default function UnitMapBottomBar({
                 className="rounded-2xl px-6 sm:px-8 font-bold text-base"
               >
                 {hasNoScreens ? (
-                  <span>
-                    Belum ada soal
-                  </span>
+                  <span>Belum ada soal</span>
                 ) : (
                   <Link
                     to="/lesson/$lessonId"

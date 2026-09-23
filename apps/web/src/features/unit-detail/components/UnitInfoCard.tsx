@@ -14,14 +14,18 @@ export default function UnitInfoCard({ unit }: UnitInfoCardProps) {
     <Card className="overflow-hidden border-2 border-border">
       <CardContent className="flex flex-col gap-5 px-6">
         {/* Unit image */}
-        {unit.imageUrl && (
-          <img
-            src={unit.imageUrl}
-            alt={`Ilustrasi ${unit.title}`}
-            draggable={false}
-            className="h-20 w-20 object-contain select-none pointer-events-none"
-          />
-        )}
+        <img
+          src={unit.imageUrl || "/course-illustration.png"}
+          alt={`Ilustrasi ${unit.title}`}
+          draggable={false}
+          onError={(e) => {
+            const target = e.currentTarget;
+            if (!target.src.endsWith("/course-illustration.png")) {
+              target.src = "/course-illustration.png";
+            }
+          }}
+          className="h-20 w-20 object-contain select-none pointer-events-none"
+        />
 
         {/* Title */}
         <h1 className="text-3xl font-black leading-tight text-foreground">{unit.title}</h1>

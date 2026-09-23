@@ -61,7 +61,8 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "nabung-awal",
         title: "Kenapa Nabung Lebih Awal Jauh Lebih Untung",
-        description: "Pahami kekuatan bunga bertabla dan mengapa waktu adalah aset terbesar dalam menabung.",
+        description:
+          "Pahami kekuatan bunga bertabla dan mengapa waktu adalah aset terbesar dalam menabung.",
         icon: "PiggyBank",
         screens: [
           {
@@ -425,7 +426,8 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "transaksi",
         title: "Mencatat Transaksi: Debit dan Kredit",
-        description: "Cara mencatat setiap transaksi bisnis dengan benar menggunakan debit dan kredit.",
+        description:
+          "Cara mencatat setiap transaksi bisnis dengan benar menggunakan debit dan kredit.",
         icon: "ArrowLeftRight",
         prerequisiteIds: ["persamaan"],
         screens: [
@@ -722,7 +724,8 @@ export const seedUnits: SeedUnit[] = [
       {
         id: "prioritas-fitur",
         title: "Memilih Fitur yang Paling Penting Dulu",
-        description: "Rencanakan fitur mana yang harus dibangun terlebih dahulu berdasarkan dampak.",
+        description:
+          "Rencanakan fitur mana yang harus dibangun terlebih dahulu berdasarkan dampak.",
         icon: "ListFilter",
         prerequisiteIds: ["menemukan-masalah"],
         screens: [

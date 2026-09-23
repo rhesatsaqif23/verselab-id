@@ -76,6 +76,12 @@ export default function UnitSidebar({
                 <img
                   src={unit.imageUrl}
                   alt={unit.title}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.src.endsWith("/course-illustration.png")) {
+                      target.src = "/course-illustration.png";
+                    }
+                  }}
                   className="size-14 shrink-0 object-contain"
                 />
               ) : (

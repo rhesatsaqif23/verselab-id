@@ -1,6 +1,7 @@
 // Typed domain errors. Services throw AppError; the global error plugin maps
 // it to a fail() envelope with the HTTP status resolved from appErrorMeta.
 export const appErrorMeta = {
+  BAD_REQUEST: { status: 400, message: "Bad request" },
   PROFILE_ALREADY_EXISTS: { status: 409, message: "Profile already exists" },
   NOT_FOUND: { status: 404, message: "Not found" },
   FORBIDDEN: { status: 403, message: "Forbidden" },

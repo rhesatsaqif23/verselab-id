@@ -38,9 +38,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
     queryFn: () => adminGetAllLessons(),
   });
 
-  const otherLessons = (allLessons ?? []).filter(
-    (l) => l.unitId === unitId && l.id !== lesson?.id,
-  );
+  const otherLessons = (allLessons ?? []).filter((l) => l.unitId === unitId && l.id !== lesson?.id);
 
   const createMutation = useMutation({
     mutationFn: (data: {

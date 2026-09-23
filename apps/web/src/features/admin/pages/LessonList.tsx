@@ -109,12 +109,7 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
               <TableHead className="w-12 text-center font-bold">#</TableHead>
               <SortableHead label="Pelajaran" sortKey="title" sort={sort} onToggle={toggleSort} />
               <SortableHead label="Ikon" sortKey="icon" sort={sort} onToggle={toggleSort} />
-              <SortableHead
-                label="Dibuat"
-                sortKey="createdAt"
-                sort={sort}
-                onToggle={toggleSort}
-              />
+              <SortableHead label="Dibuat" sortKey="createdAt" sort={sort} onToggle={toggleSort} />
               <TableHead className="w-24 text-center font-bold">Aksi</TableHead>
             </TableRow>
           </TableHeader>

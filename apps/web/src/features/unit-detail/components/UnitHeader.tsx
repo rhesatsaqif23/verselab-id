@@ -14,6 +14,12 @@ export default function UnitHeader({ unit }: UnitHeaderProps) {
             src={unit.imageUrl}
             alt={unit.title}
             draggable={false}
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (!target.src.endsWith("/course-illustration.png")) {
+                target.src = "/course-illustration.png";
+              }
+            }}
             className="h-32 sm:h-full max-h-40 w-auto select-none object-contain pointer-events-none"
           />
         ) : (

@@ -1,8 +1,11 @@
 // Tests for the profile page stats and unit progress cards.
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { ProfilePage } from "#/features/profile";
+import UnitProgressCard, {
+  FALLBACK_UNIT_IMAGE,
+} from "#/features/profile/components/UnitProgressCard.tsx";
 import { resetProgress } from "../home/test-utils.tsx";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 
@@ -17,30 +20,54 @@ vi.mock("#/libs/session.ts", () => ({
 vi.mock("@tanstack/react-router", () => ({
   useLoaderData: () => ({
     units: [
-      { id: "keuangan", title: "Keuangan", description: "Menabung, anggaran, cicilan, dan nilai waktu uang.", imageUrl: "/unit/keuangan.webp", lessons: [
-        { id: "nabung-awal", title: "Nabung Awal", screens: [] },
-        { id: "nilai-waktu-uang", title: "Nilai Waktu Uang", screens: [] },
-        { id: "anggaran-bulanan", title: "Anggaran Bulanan", screens: [] },
-        { id: "hutang-cicilan", title: "Hutang & Cicilan", screens: [] },
-      ] },
-      { id: "akuntansi", title: "Akuntansi", description: "Persamaan dasar, pencatatan transaksi, laba rugi, dan arus kas.", imageUrl: "/unit/akuntansi.webp", lessons: [
-        { id: "persamaan", title: "Persamaan", screens: [] },
-        { id: "transaksi", title: "Transaksi", screens: [] },
-        { id: "laba-rugi", title: "Laba Rugi", screens: [] },
-        { id: "arus-kas", title: "Arus Kas", screens: [] },
-      ] },
-      { id: "manajemen-produk", title: "Manajemen Produk", description: "Temukan masalah, prioritaskan fitur, ukur metrik, validasi MVP.", imageUrl: "/unit/manajemen-produk.webp", lessons: [
-        { id: "menemukan-masalah", title: "Menemukan Masalah", screens: [] },
-        { id: "prioritas-fitur", title: "Prioritas Fitur", screens: [] },
-        { id: "metrik-produk", title: "Metrik Produk", screens: [] },
-        { id: "mvp-validasi", title: "MVP Validasi", screens: [] },
-      ] },
-      { id: "kewirausahaan", title: "Kewirausahaan", description: "Unit ekonomi, titik impas, harga, dan validasi ide.", imageUrl: "/unit/kewirausahaan.webp", lessons: [
-        { id: "unit-ekonomi", title: "Unit Ekonomi", screens: [] },
-        { id: "titik-impas", title: "Titik Impas", screens: [] },
-        { id: "menentukan-harga", title: "Menentukan Harga", screens: [] },
-        { id: "validasi-ide", title: "Validasi Ide", screens: [] },
-      ] },
+      {
+        id: "keuangan",
+        title: "Keuangan",
+        description: "Menabung, anggaran, cicilan, dan nilai waktu uang.",
+        imageUrl: "/unit/keuangan.webp",
+        lessons: [
+          { id: "nabung-awal", title: "Nabung Awal", screens: [] },
+          { id: "nilai-waktu-uang", title: "Nilai Waktu Uang", screens: [] },
+          { id: "anggaran-bulanan", title: "Anggaran Bulanan", screens: [] },
+          { id: "hutang-cicilan", title: "Hutang & Cicilan", screens: [] },
+        ],
+      },
+      {
+        id: "akuntansi",
+        title: "Akuntansi",
+        description: "Persamaan dasar, pencatatan transaksi, laba rugi, dan arus kas.",
+        imageUrl: "/unit/akuntansi.webp",
+        lessons: [
+          { id: "persamaan", title: "Persamaan", screens: [] },
+          { id: "transaksi", title: "Transaksi", screens: [] },
+          { id: "laba-rugi", title: "Laba Rugi", screens: [] },
+          { id: "arus-kas", title: "Arus Kas", screens: [] },
+        ],
+      },
+      {
+        id: "manajemen-produk",
+        title: "Manajemen Produk",
+        description: "Temukan masalah, prioritaskan fitur, ukur metrik, validasi MVP.",
+        imageUrl: "/unit/manajemen-produk.webp",
+        lessons: [
+          { id: "menemukan-masalah", title: "Menemukan Masalah", screens: [] },
+          { id: "prioritas-fitur", title: "Prioritas Fitur", screens: [] },
+          { id: "metrik-produk", title: "Metrik Produk", screens: [] },
+          { id: "mvp-validasi", title: "MVP Validasi", screens: [] },
+        ],
+      },
+      {
+        id: "kewirausahaan",
+        title: "Kewirausahaan",
+        description: "Unit ekonomi, titik impas, harga, dan validasi ide.",
+        imageUrl: "/unit/kewirausahaan.webp",
+        lessons: [
+          { id: "unit-ekonomi", title: "Unit Ekonomi", screens: [] },
+          { id: "titik-impas", title: "Titik Impas", screens: [] },
+          { id: "menentukan-harga", title: "Menentukan Harga", screens: [] },
+          { id: "validasi-ide", title: "Validasi Ide", screens: [] },
+        ],
+      },
     ],
   }),
   useNavigate: () => vi.fn(),
@@ -109,5 +136,25 @@ describe("ProfilePage", () => {
     useProgressStore.setState({ completedLessons: ["nabung-awal", "nilai-waktu-uang"] });
     await renderPage();
     expect(screen.getByText("2/4")).toBeInTheDocument();
+  });
+
+  it("renders fallback image when imageUrl is not provided", () => {
+    render(<UnitProgressCard title="Project Management" lessons={[]} />);
+    const img = screen.getByRole("img", { name: "Project Management" });
+    expect(img).toHaveAttribute("src", FALLBACK_UNIT_IMAGE);
+  });
+
+  it("falls back to default image when image fails to load", () => {
+    render(
+      <UnitProgressCard
+        title="Project Management"
+        imageUrl="/invalid/image/path.png"
+        lessons={[]}
+      />,
+    );
+    const img = screen.getByRole("img", { name: "Project Management" });
+    expect(img).toHaveAttribute("src", "/invalid/image/path.png");
+    fireEvent.error(img);
+    expect(img).toHaveAttribute("src", FALLBACK_UNIT_IMAGE);
   });
 });

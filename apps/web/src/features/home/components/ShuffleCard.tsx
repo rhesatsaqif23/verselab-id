@@ -25,9 +25,7 @@ const CSS_TRANSITION = `all ${COMMIT_MS}ms cubic-bezier(0.25, 0.1, 0.25, 1)`;
 
 export default function ShuffleCard() {
   const navigate = useNavigate();
-  const routeData = useLoaderData({ strict: false }) as
-    | { units: Unit[] }
-    | undefined;
+  const routeData = useLoaderData({ strict: false }) as { units: Unit[] } | undefined;
   const units = routeData?.units ?? [];
   const selectedUnitId = useHomeStore((s) => s.selectedUnitId);
   const setSelectedUnit = useHomeStore((s) => s.setSelectedUnit);
@@ -75,7 +73,8 @@ export default function ShuffleCard() {
     0,
     units.findIndex((u) => u.id === selectedUnitId),
   );
-  const prevUnit = units.length > 0 ? units[(activeIndex - 1 + units.length) % units.length] : undefined;
+  const prevUnit =
+    units.length > 0 ? units[(activeIndex - 1 + units.length) % units.length] : undefined;
   const nextUnit = units.length > 0 ? units[(activeIndex + 1) % units.length] : undefined;
 
   const committed = Math.abs(dragX) >= COMMIT_THRESHOLD || turning;

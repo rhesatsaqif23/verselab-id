@@ -61,9 +61,7 @@ export default function ProfileChip({ className }: { className?: string }) {
         </span>
         <span className="flex min-w-0 flex-1 flex-col leading-tight">
           <span className="truncate text-sm font-bold text-foreground">{session.user.name}</span>
-          {unitTitle && (
-            <span className="text-xs font-medium text-muted">{unitTitle}</span>
-          )}
+          {unitTitle && <span className="text-xs font-medium text-muted">{unitTitle}</span>}
         </span>
         <Button
           type="button"

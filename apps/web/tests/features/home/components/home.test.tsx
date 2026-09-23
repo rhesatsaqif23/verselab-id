@@ -1,23 +1,47 @@
 // Tests for the home dashboard cards.
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
-import { act, render, screen } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import StreakTracker from "#/features/home/components/StreakTracker.tsx";
 import DailyGoalCard from "#/features/home/components/DailyGoalCard.tsx";
 import UnitCard from "#/features/home/components/UnitCard.tsx";
 import ShuffleCard from "#/features/home/components/ShuffleCard.tsx";
-import UnitGrid from "#/features/home/components/UnitGrid.tsx";
+import UnitGrid, { FALLBACK_UNIT_IMAGE } from "#/features/home/components/UnitGrid.tsx";
 import { useHomeStore } from "#/features/home/store/homeStore.ts";
 import { resetProgress, setMastery } from "../test-utils";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import { todayString } from "#/libs/date.ts";
 
 const units = [
-  { id: "keuangan", title: "Keuangan", description: "Menabung, anggaran, cicilan, dan nilai waktu uang.", imageUrl: "/unit/keuangan.webp", lessons: [{ id: "nabung-awal", title: "Nabung Awal", screens: [] }] },
-  { id: "akuntansi", title: "Akuntansi", description: "Persamaan dasar, pencatatan transaksi, laba rugi, dan arus kas.", imageUrl: "/unit/akuntansi.webp", lessons: [{ id: "persamaan", title: "Persamaan", screens: [] }] },
-  { id: "manajemen-produk", title: "Manajemen Produk", description: "Temukan masalah, prioritaskan fitur, ukur metrik, validasi MVP.", imageUrl: "/unit/manajemen-produk.webp", lessons: [{ id: "menemukan-masalah", title: "Menemukan Masalah", screens: [] }] },
-  { id: "kewirausahaan", title: "Kewirausahaan", description: "Unit ekonomi, titik impas, harga, dan validasi ide.", imageUrl: "/unit/kewirausahaan.webp", lessons: [{ id: "unit-ekonomi", title: "Unit Ekonomi", screens: [] }] },
+  {
+    id: "keuangan",
+    title: "Keuangan",
+    description: "Menabung, anggaran, cicilan, dan nilai waktu uang.",
+    imageUrl: "/unit/keuangan.webp",
+    lessons: [{ id: "nabung-awal", title: "Nabung Awal", screens: [] }],
+  },
+  {
+    id: "akuntansi",
+    title: "Akuntansi",
+    description: "Persamaan dasar, pencatatan transaksi, laba rugi, dan arus kas.",
+    imageUrl: "/unit/akuntansi.webp",
+    lessons: [{ id: "persamaan", title: "Persamaan", screens: [] }],
+  },
+  {
+    id: "manajemen-produk",
+    title: "Manajemen Produk",
+    description: "Temukan masalah, prioritaskan fitur, ukur metrik, validasi MVP.",
+    imageUrl: "/unit/manajemen-produk.webp",
+    lessons: [{ id: "menemukan-masalah", title: "Menemukan Masalah", screens: [] }],
+  },
+  {
+    id: "kewirausahaan",
+    title: "Kewirausahaan",
+    description: "Unit ekonomi, titik impas, harga, dan validasi ide.",
+    imageUrl: "/unit/kewirausahaan.webp",
+    lessons: [{ id: "unit-ekonomi", title: "Unit Ekonomi", screens: [] }],
+  },
 ];
 
 const { navigateMock } = vi.hoisted(() => ({ navigateMock: vi.fn() }));
@@ -170,5 +194,13 @@ describe("UnitGrid", () => {
     const frontCard = screen.getAllByText("Akuntansi")[0].closest("[style]");
     expect(frontCard?.getAttribute("style")).toContain("opacity: 1");
     expect(frontCard?.getAttribute("style")).toContain("z-index: 30");
+  });
+
+  it("renders fallback image when unit imageUrl fails to load", () => {
+    render(<UnitGrid />);
+    const img = screen.getByRole("img", { name: "Keuangan" });
+    expect(img).toHaveAttribute("src", "/unit/keuangan.webp");
+    fireEvent.error(img);
+    expect(img).toHaveAttribute("src", FALLBACK_UNIT_IMAGE);
   });
 });

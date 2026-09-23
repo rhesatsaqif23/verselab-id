@@ -228,7 +228,10 @@ export function AllScreensTable() {
                     {formatAdminDate(screen.createdAt)}
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center justify-end gap-1" onClick={(e) => e.stopPropagation()}>
+                    <div
+                      className="flex items-center justify-end gap-1"
+                      onClick={(e) => e.stopPropagation()}
+                    >
                       <Button
                         variant="shadowless"
                         size="icon"

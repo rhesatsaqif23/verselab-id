@@ -59,7 +59,7 @@ export default function ProfilePage() {
                 key={unit.id}
                 title={unit.title}
                 description={unit.description ?? undefined}
-                imageUrl={unit.imageUrl ?? "/unit/placeholder.webp"}
+                imageUrl={unit.imageUrl}
                 lessons={unit.lessons}
               />
             ))}

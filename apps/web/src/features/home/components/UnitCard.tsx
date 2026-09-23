@@ -21,9 +21,7 @@ type UnitCardProps = {
 
 export default function UnitCard({ unit }: UnitCardProps) {
   const queryClient = useQueryClient();
-  const routeData = useLoaderData({ strict: false }) as
-    | { units: Unit[] }
-    | undefined;
+  const routeData = useLoaderData({ strict: false }) as { units: Unit[] } | undefined;
   const units = routeData?.units ?? [];
   const completedLessons = useProgressStore((s) => s.completedLessons);
   const mastery = useProgressStore((s) => s.mastery);
@@ -106,6 +104,12 @@ export default function UnitCard({ unit }: UnitCardProps) {
             src={unit.imageUrl || "/course-illustration.png"}
             alt={`Ilustrasi ${unit.title}`}
             draggable={false}
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (!target.src.endsWith("/course-illustration.png")) {
+                target.src = "/course-illustration.png";
+              }
+            }}
             className="pointer-events-none relative h-36 w-auto select-none object-contain sm:h-40"
           />
 

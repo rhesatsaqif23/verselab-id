@@ -98,10 +98,7 @@ export default function LessonCta({ lesson, status, isVisible, allLessons = [] }
                   className="w-full sm:w-auto text-base! font-bold! shadow-md"
                 >
                   {hasNoScreens ? (
-                    <span>
-                      <PlayCircle className="mr-2 size-5" />
-                      Belum ada soal
-                    </span>
+                    <span>Belum ada soal</span>
                   ) : (
                     <Link
                       to="/lesson/$lessonId"
