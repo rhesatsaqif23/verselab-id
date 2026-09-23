@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { BookOpen } from "lucide-react";
 import { Card, CardContent } from "#/components/ui/card";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
+import { resolveImageUrl } from "#/libs/image.ts";
 import type { Lesson } from "#/engine/types.ts";
 
 export const FALLBACK_UNIT_IMAGE = "/course-illustration.png";
@@ -15,12 +16,12 @@ type Props = {
 };
 
 export default function UnitProgressCard({ title, description, imageUrl, lessons }: Props) {
-  const initialSrc = imageUrl && imageUrl.trim() !== "" ? imageUrl : FALLBACK_UNIT_IMAGE;
+  const initialSrc = resolveImageUrl(imageUrl) ?? FALLBACK_UNIT_IMAGE;
   const [imgSrc, setImgSrc] = useState<string>(initialSrc);
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
-    const src = imageUrl && imageUrl.trim() !== "" ? imageUrl : FALLBACK_UNIT_IMAGE;
+    const src = resolveImageUrl(imageUrl) ?? FALLBACK_UNIT_IMAGE;
     setImgSrc(src);
     setHasError(false);
   }, [imageUrl]);

@@ -3,6 +3,7 @@
 import { Search, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 import type { Unit } from "#/engine/types.ts";
 import { Button } from "#/components/ui/button";
+import { resolveImageUrl } from "#/libs/image.ts";
 import { useUnitSidebar } from "../hooks/useUnitSidebar.ts";
 import { getLessonIcon } from "./iconHelper.ts";
 
@@ -74,7 +75,7 @@ export default function UnitSidebar({
             <div className="flex items-center gap-3">
               {unit.imageUrl ? (
                 <img
-                  src={unit.imageUrl}
+                  src={resolveImageUrl(unit.imageUrl)}
                   alt={unit.title}
                   onError={(e) => {
                     const target = e.currentTarget;

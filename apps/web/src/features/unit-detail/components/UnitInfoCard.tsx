@@ -1,5 +1,6 @@
 import { BookOpen, Layers } from "lucide-react";
 import { Card, CardContent } from "#/components/ui/card";
+import { resolveImageUrl } from "#/libs/image.ts";
 import type { Unit } from "#/engine/types.ts";
 
 type UnitInfoCardProps = {
@@ -15,7 +16,7 @@ export default function UnitInfoCard({ unit }: UnitInfoCardProps) {
       <CardContent className="flex flex-col gap-5 px-6">
         {/* Unit image */}
         <img
-          src={unit.imageUrl || "/course-illustration.png"}
+          src={resolveImageUrl(unit.imageUrl) ?? "/course-illustration.png"}
           alt={`Ilustrasi ${unit.title}`}
           draggable={false}
           onError={(e) => {

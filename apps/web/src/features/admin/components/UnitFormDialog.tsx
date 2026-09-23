@@ -15,6 +15,7 @@ import { Input } from "#/components/ui/input.tsx";
 import { Label } from "#/components/ui/label.tsx";
 import { Textarea } from "#/components/ui/textarea.tsx";
 import { cn } from "#/libs/utils.ts";
+import { resolveImageUrl } from "#/libs/image.ts";
 import {
   adminCreateUnit,
   adminUpdateUnit,
@@ -83,7 +84,7 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
     if (next) {
       setTitle(unit?.title ?? EMPTY_TITLE);
       setDescription(unit?.description ?? EMPTY_DESCRIPTION);
-      setPreviewUrl(unit?.imageUrl ?? "");
+      setPreviewUrl(resolveImageUrl(unit?.imageUrl) ?? "");
       setSelectedFile(null);
     } else {
       reset();

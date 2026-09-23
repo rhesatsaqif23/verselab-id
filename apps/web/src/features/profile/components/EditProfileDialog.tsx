@@ -15,6 +15,7 @@ import { Input } from "#/components/ui/input";
 import { Label } from "#/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "#/components/ui/avatar";
 import { type ResolvedSession } from "#/libs/session.ts";
+import { resolveImageUrl } from "#/libs/image.ts";
 import { updateProfile, uploadAvatar } from "#/libs/profile-fns.ts";
 
 type Props = {
@@ -86,7 +87,7 @@ export default function EditProfileDialog({ open, onOpenChange, session, onUpdat
               className="group relative"
             >
               <Avatar className="size-20 border-2 border-border">
-                <AvatarImage src={avatarPreview ?? undefined} />
+                <AvatarImage src={resolveImageUrl(avatarPreview)} />
                 <AvatarFallback className="bg-linear-to-br from-primary to-accent text-2xl font-black text-white">
                   {(name ?? "?").charAt(0).toUpperCase()}
                 </AvatarFallback>

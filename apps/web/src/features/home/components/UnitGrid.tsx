@@ -5,6 +5,7 @@ import { BookOpen } from "lucide-react";
 import { Card } from "#/components/ui/card";
 import { useHomeStore } from "../store/homeStore.ts";
 import { UNIT_ICONS } from "../constants.ts";
+import { resolveImageUrl } from "#/libs/image.ts";
 import type { Unit } from "#/engine/types.ts";
 
 export const FALLBACK_UNIT_IMAGE = "/course-illustration.png";
@@ -16,14 +17,13 @@ type UnitGridItemProps = {
 };
 
 function UnitGridItem({ unit, isSelected, onSelect }: UnitGridItemProps) {
-  const initialSrc =
-    unit.imageUrl && unit.imageUrl.trim() !== "" ? unit.imageUrl : FALLBACK_UNIT_IMAGE;
+  const initialSrc = resolveImageUrl(unit.imageUrl) ?? FALLBACK_UNIT_IMAGE;
   const [imgSrc, setImgSrc] = useState<string>(initialSrc);
   const [hasError, setHasError] = useState(false);
   const Icon = UNIT_ICONS[unit.id] ?? BookOpen;
 
   useEffect(() => {
-    const src = unit.imageUrl && unit.imageUrl.trim() !== "" ? unit.imageUrl : FALLBACK_UNIT_IMAGE;
+    const src = resolveImageUrl(unit.imageUrl) ?? FALLBACK_UNIT_IMAGE;
     setImgSrc(src);
     setHasError(false);
   }, [unit.imageUrl]);

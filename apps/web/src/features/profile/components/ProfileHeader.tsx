@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "#/components/ui/avatar";
 import { Button } from "#/components/ui/button";
 import { resolveSession, type ResolvedSession } from "#/libs/session.ts";
+import { resolveImageUrl } from "#/libs/image.ts";
 import { useSignOut } from "#/features/auth/hooks/useSignOut.ts";
 import EditProfileDialog from "./EditProfileDialog";
 
@@ -42,7 +43,7 @@ export default function ProfileHeader() {
     <>
       <div className="flex items-center gap-4">
         <Avatar className="size-16 border-2 border-border">
-          <AvatarImage src={profile?.avatarUrl ?? undefined} alt={user.name} />
+          <AvatarImage src={resolveImageUrl(profile?.avatarUrl)} alt={user.name} />
           <AvatarFallback className="bg-linear-to-br from-primary to-accent text-xl font-black text-white">
             {initial}
           </AvatarFallback>

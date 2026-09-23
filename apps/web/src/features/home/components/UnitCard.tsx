@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "#/components/ui/button";
 import { Card, CardContent } from "#/components/ui/card";
 import { Badge } from "#/components/ui/badge";
+import { resolveImageUrl } from "#/libs/image.ts";
 import type { Unit } from "#/engine/types.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import { todayString } from "#/libs/date.ts";
@@ -101,7 +102,7 @@ export default function UnitCard({ unit }: UnitCardProps) {
 
           {/* Illustration */}
           <img
-            src={unit.imageUrl || "/course-illustration.png"}
+            src={resolveImageUrl(unit.imageUrl) ?? "/course-illustration.png"}
             alt={`Ilustrasi ${unit.title}`}
             draggable={false}
             onError={(e) => {

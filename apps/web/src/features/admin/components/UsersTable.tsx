@@ -3,6 +3,7 @@ import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { Shield } from "lucide-react";
 import { formatAdminDate } from "#/libs/date.ts";
+import { resolveImageUrl } from "#/libs/image.ts";
 import { Badge } from "#/components/ui/badge.tsx";
 import { Skeleton } from "#/components/ui/skeleton.tsx";
 import {
@@ -120,7 +121,7 @@ export function UsersTable() {
                       <div className="flex items-center gap-2">
                         {u.avatarUrl || u.image ? (
                           <img
-                            src={u.avatarUrl ?? u.image ?? ""}
+                            src={resolveImageUrl(u.avatarUrl ?? u.image) ?? ""}
                             alt={userName}
                             className="size-9 shrink-0 rounded-full object-cover"
                           />

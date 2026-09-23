@@ -1,4 +1,5 @@
 import type { Unit } from "#/engine/types.ts";
+import { resolveImageUrl } from "#/libs/image.ts";
 
 type UnitHeaderProps = {
   unit: Unit;
@@ -11,7 +12,7 @@ export default function UnitHeader({ unit }: UnitHeaderProps) {
       <div className="flex shrink-0 items-center justify-center sm:w-36 md:w-44 lg:w-48">
         {unit.imageUrl ? (
           <img
-            src={unit.imageUrl}
+            src={resolveImageUrl(unit.imageUrl)}
             alt={unit.title}
             draggable={false}
             onError={(e) => {

@@ -4,6 +4,7 @@ import { Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatAdminDate } from "#/libs/date.ts";
+import { resolveImageUrl } from "#/libs/image.ts";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -198,7 +199,7 @@ export function UnitList() {
                   <TableCell className="text-center">
                     {unit.imageUrl ? (
                       <img
-                        src={unit.imageUrl}
+                        src={resolveImageUrl(unit.imageUrl)}
                         alt={unit.title}
                         className="mx-auto size-12 rounded object-cover"
                       />
