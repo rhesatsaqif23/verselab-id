@@ -28,6 +28,7 @@ import {
 } from "#/components/ui/table.tsx";
 import { adminGetLessons, adminDeleteLesson } from "#/libs/admin-content-fns.ts";
 import type { AdminLesson } from "#/libs/admin-content-fns.ts";
+import { resolveImageUrl } from "#/libs/image.ts";
 import { LessonFormDialog } from "../components/LessonFormDialog.tsx";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
@@ -109,6 +110,7 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
               <TableHead className="w-12 text-center font-bold">#</TableHead>
               <SortableHead label="Pelajaran" sortKey="title" sort={sort} onToggle={toggleSort} />
               <SortableHead label="Ikon" sortKey="icon" sort={sort} onToggle={toggleSort} />
+              <TableHead className="text-center font-bold">Gambar</TableHead>
               <SortableHead label="Dibuat" sortKey="createdAt" sort={sort} onToggle={toggleSort} />
               <TableHead className="w-24 text-center font-bold">Aksi</TableHead>
             </TableRow>
@@ -127,6 +129,9 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
                   <TableCell>
                     <Skeleton className="h-4 w-8" />
                   </TableCell>
+                  <TableCell className="text-center">
+                    <Skeleton className="mx-auto size-12 rounded" />
+                  </TableCell>
                   <TableCell>
                     <Skeleton className="h-4 w-16" />
                   </TableCell>
@@ -140,7 +145,7 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
               ))}
             {!isLoading && processed.length === 0 && (
               <TableRow>
-                <TableCell colSpan={5} className="p-6 text-center text-base text-muted-foreground">
+                <TableCell colSpan={6} className="p-6 text-center text-base text-muted-foreground">
                   {filter
                     ? `Tidak ada lesson yang cocok dengan "${filter}".`
                     : "Belum ada lesson. Tambahkan lesson baru di atas."}
@@ -168,6 +173,17 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {lesson.icon || "-"}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {resolveImageUrl(lesson.imageUrl) ? (
+                      <img
+                        src={resolveImageUrl(lesson.imageUrl)}
+                        alt={lesson.title}
+                        className="mx-auto size-12 rounded object-cover"
+                      />
+                    ) : (
+                      <span className="text-xs text-muted-foreground">-</span>
+                    )}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {formatAdminDate(lesson.createdAt)}

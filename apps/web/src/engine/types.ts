@@ -34,6 +34,7 @@ export type Lesson = {
   title: string;
   description?: string;
   icon?: string;
+  imageUrl?: string;
   prerequisiteIds?: string[];
   screens: readonly Screen[];
 };

@@ -4,6 +4,7 @@ import { Pencil, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { formatAdminDate } from "#/libs/date.ts";
+import { resolveImageUrl } from "#/libs/image.ts";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -114,6 +115,7 @@ export function AllLessonsTable() {
               <SortableHead label="Pelajaran" sortKey="title" sort={sort} onToggle={toggleSort} />
               <SortableHead label="Unit" sortKey="unitTitle" sort={sort} onToggle={toggleSort} />
               <TableHead className="font-bold">Ikon</TableHead>
+              <TableHead className="text-center font-bold">Gambar</TableHead>
               <SortableHead label="Dibuat" sortKey="createdAt" sort={sort} onToggle={toggleSort} />
               <TableHead className="w-24 text-center font-bold">Aksi</TableHead>
             </TableRow>
@@ -135,6 +137,9 @@ export function AllLessonsTable() {
                   <TableCell>
                     <Skeleton className="h-4 w-8" />
                   </TableCell>
+                  <TableCell className="text-center">
+                    <Skeleton className="mx-auto size-12 rounded" />
+                  </TableCell>
                   <TableCell>
                     <Skeleton className="h-4 w-20" />
                   </TableCell>
@@ -148,7 +153,7 @@ export function AllLessonsTable() {
               ))}
             {!isLoading && paged.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="p-6 text-center text-base text-muted-foreground">
+                <TableCell colSpan={7} className="p-6 text-center text-base text-muted-foreground">
                   {filter
                     ? `Tidak ada pelajaran yang cocok dengan "${filter}".`
                     : "Belum ada pelajaran."}
@@ -179,6 +184,17 @@ export function AllLessonsTable() {
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">
                     {lesson.icon || "-"}
+                  </TableCell>
+                  <TableCell className="text-center">
+                    {resolveImageUrl(lesson.imageUrl) ? (
+                      <img
+                        src={resolveImageUrl(lesson.imageUrl)}
+                        alt={lesson.title}
+                        className="mx-auto size-12 rounded object-cover"
+                      />
+                    ) : (
+                      <span className="text-xs text-muted-foreground">-</span>
+                    )}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground tabular-nums">
                     {formatAdminDate(lesson.createdAt)}

@@ -2,7 +2,7 @@
 import { Check } from "lucide-react";
 import type { Lesson } from "#/engine/types.ts";
 import type { LessonStatus } from "../types.ts";
-import { getLessonIcon } from "./iconHelper.ts";
+import { LessonVisual } from "./LessonVisual.tsx";
 
 type LessonMapCardProps = {
   lesson: Lesson;
@@ -19,8 +19,6 @@ export default function LessonMapCard({
   isSelected,
   onSelect,
 }: LessonMapCardProps) {
-  const IconComponent = getLessonIcon(lesson.icon);
-
   // Status-dependent progress percentage and bar color
   const progressPercent = status === "previous" ? 100 : status === "current" ? 35 : 0;
 
@@ -52,7 +50,7 @@ export default function LessonMapCard({
       <div className="flex items-start gap-3.5">
         {/* Rounded icon box */}
         <div
-          className={`flex size-14 shrink-0 items-center justify-center rounded-2xl border ${
+          className={`flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border ${
             status === "current"
               ? "border-primary/30 bg-primary/10 text-primary"
               : status === "previous"
@@ -60,7 +58,11 @@ export default function LessonMapCard({
                 : "border-border/60 bg-muted/60 text-muted-foreground"
           }`}
         >
-          <IconComponent className="size-7 stroke-[2.2]" />
+          <LessonVisual
+            lesson={lesson}
+            iconClassName="size-7 stroke-[2.2]"
+            imageClassName="size-full object-cover"
+          />
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col">

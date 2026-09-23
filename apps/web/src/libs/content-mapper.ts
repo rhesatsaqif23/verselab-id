@@ -24,6 +24,7 @@ type DbLesson = {
   slug?: string;
   description: string | null;
   icon: string | null;
+  imageUrl: string | null;
   prerequisiteIds: string[] | null;
   sortOrder: number;
   screens?: DbScreen[];
@@ -78,6 +79,7 @@ export function mapLesson(db: DbLesson & { screens?: DbScreen[] }): Lesson {
     title: db.title,
     description: db.description ?? undefined,
     icon: db.icon ?? undefined,
+    imageUrl: db.imageUrl ?? undefined,
     prerequisiteIds: db.prerequisiteIds ?? undefined,
     screens: (db.screens ?? []).map(mapScreen),
   };

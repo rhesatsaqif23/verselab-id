@@ -44,6 +44,7 @@ export type AdminLesson = {
   slug: string;
   description: string | null;
   icon: string | null;
+  imageUrl: string | null;
   prerequisiteIds: string[] | null;
   sortOrder: number;
   createdAt: string;
@@ -175,6 +176,22 @@ export const adminDeleteLesson = createServerFn({ method: "POST" })
   .validator((data: { id: string }) => data)
   .handler(async ({ data }) => {
     return apiMutate<null>(`/v1/content/lessons/${data.id}`, { method: "DELETE" });
+  });
+
+export const adminUploadLessonImage = createServerFn({ method: "POST" })
+  .validator((data: { id: string; file: string; filename: string }) => data)
+  .handler(async ({ data }) => {
+    const binary = atob(data.file);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    const blob = new Blob([bytes], { type: "image/webp" });
+    const file = new File([blob], data.filename, { type: "image/webp" });
+    const form = new FormData();
+    form.append("file", file);
+    return apiMutate<{ imageUrl: string }>(`/v1/content/lessons/${data.id}/image`, {
+      method: "POST",
+      body: form,
+    });
   });
 
 export const adminReorderLessons = createServerFn({ method: "POST" })

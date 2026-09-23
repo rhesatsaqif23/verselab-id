@@ -190,6 +190,18 @@ export function createContentController(
           detail: { summary: "Reorder lessons (admin)" },
         },
       )
+      .post(
+        "/lessons/:id/image",
+        async ({ params, body }) => {
+          const file = (body as { file: File }).file;
+          return ok(await lessonSvc.uploadImage(params.id, file));
+        },
+        {
+          admin: true,
+          tags: ["content"],
+          detail: { summary: "Upload lesson image (admin)" },
+        },
+      )
 
       // --- Screen CRUD ---
       .get(

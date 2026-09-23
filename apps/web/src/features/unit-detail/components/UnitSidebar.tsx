@@ -5,7 +5,7 @@ import type { Unit } from "#/engine/types.ts";
 import { Button } from "#/components/ui/button";
 import { resolveImageUrl } from "#/libs/image.ts";
 import { useUnitSidebar } from "../hooks/useUnitSidebar.ts";
-import { getLessonIcon } from "./iconHelper.ts";
+import { LessonVisual } from "./LessonVisual.tsx";
 
 type UnitSidebarProps = {
   unit: Unit;
@@ -132,7 +132,6 @@ export default function UnitSidebar({
                 // Mirror the icon-box status colors used in LessonMapCard
                 const currentLesson = unit.lessons.find((l) => !completedLessons.includes(l.id));
                 const isCurrent = currentLesson?.id === lesson.id;
-                const IconComponent = getLessonIcon(lesson.icon);
 
                 const iconBoxClass = isCompleted
                   ? "border-success/30 bg-success/10 text-success"
@@ -153,9 +152,13 @@ export default function UnitSidebar({
                   >
                     {/* Icon box matching LessonMapCard style */}
                     <div
-                      className={`flex size-9 shrink-0 items-center justify-center rounded-lg border ${iconBoxClass}`}
+                      className={`flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg border ${iconBoxClass}`}
                     >
-                      <IconComponent className="size-4 stroke-2" />
+                      <LessonVisual
+                        lesson={lesson}
+                        iconClassName="size-4 stroke-2"
+                        imageClassName="size-full object-cover"
+                      />
                     </div>
 
                     {/* Title + screen count */}

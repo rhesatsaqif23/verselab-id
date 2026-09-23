@@ -1,7 +1,7 @@
 import { Check } from "lucide-react";
 import type { Lesson } from "#/engine/types.ts";
 import type { LessonStatus } from "../types.ts";
-import { getLessonIcon } from "./iconHelper.ts";
+import { LessonVisual } from "./LessonVisual.tsx";
 
 export type { LessonStatus };
 
@@ -22,7 +22,13 @@ export default function LessonRow({
   onSelect,
   zigzagOffsetClass = "",
 }: LessonRowProps) {
-  const IconComponent = getLessonIcon(lesson.icon);
+  const iconClassName = `size-11 sm:size-12 transition-transform group-hover:scale-105 ${
+    status === "current"
+      ? "text-primary"
+      : status === "previous"
+        ? "text-success"
+        : "text-muted-foreground/70"
+  }`;
 
   // Solid, non-transparent base styles with consistent size (size-28 sm:size-32)
   const discBase =
@@ -77,16 +83,12 @@ export default function LessonRow({
           </div>
         )}
 
-        {/* Center Lucide Icon */}
+        {/* Center visual: uploaded image, or Lucide icon fallback */}
         <div className="flex flex-col items-center justify-center">
-          <IconComponent
-            className={`size-11 sm:size-12 transition-transform group-hover:scale-105 ${
-              status === "current"
-                ? "text-primary"
-                : status === "previous"
-                  ? "text-success"
-                  : "text-muted-foreground/70"
-            }`}
+          <LessonVisual
+            lesson={lesson}
+            iconClassName={iconClassName}
+            imageClassName="size-16 sm:size-20 rounded-2xl object-cover transition-transform group-hover:scale-105"
           />
         </div>
       </div>

@@ -2,6 +2,7 @@ import type { CreateLessonInput, UpdateLessonInput } from "@verselab/shared/sche
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
 import { contentLessons, contentScreens, contentUnits } from "../../database/schema.ts";
+import { assertImage, extFor, getStorage } from "../../libs/storage.ts";
 import { resolveUniqueSlug } from "./slug.ts";
 
 export type LessonData = typeof contentLessons.$inferSelect;
@@ -27,6 +28,7 @@ export type ContentLessonService = {
   updateLesson: (id: string, input: UpdateLessonInput) => Promise<LessonData>;
   deleteLesson: (id: string) => Promise<void>;
   reorderLessons: (ids: string[]) => Promise<void>;
+  uploadImage: (id: string, file: File) => Promise<{ imageUrl: string }>;
 };
 
 async function getMaxSortOrder(unitId: string): Promise<number> {
@@ -60,6 +62,7 @@ export const contentLessonService: ContentLessonService = {
         slug: contentLessons.slug,
         description: contentLessons.description,
         icon: contentLessons.icon,
+        imageUrl: contentLessons.imageUrl,
         prerequisiteIds: contentLessons.prerequisiteIds,
         sortOrder: contentLessons.sortOrder,
         createdAt: contentLessons.createdAt,
@@ -130,6 +133,7 @@ export const contentLessonService: ContentLessonService = {
       slug: lesson.content_lessons.slug,
       description: lesson.content_lessons.description,
       icon: lesson.content_lessons.icon,
+      imageUrl: lesson.content_lessons.imageUrl,
       prerequisiteIds: lesson.content_lessons.prerequisiteIds,
       sortOrder: lesson.content_lessons.sortOrder,
       createdAt: lesson.content_lessons.createdAt,
@@ -164,6 +168,7 @@ export const contentLessonService: ContentLessonService = {
         slug,
         description: input.description,
         icon: input.icon,
+        imageUrl: input.imageUrl,
         prerequisiteIds: input.prerequisiteIds,
         sortOrder,
       })
@@ -211,5 +216,19 @@ export const contentLessonService: ContentLessonService = {
           .where(eq(contentLessons.id, ids[i]));
       }
     });
+  },
+
+  async uploadImage(id, file) {
+    assertImage(file);
+    const key = `lessons/${id}.${extFor(file.type)}`;
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const imageUrl = await getStorage().put(key, buffer, file.type);
+    const db = getDb();
+    await db
+      .update(contentLessons)
+      .set({ imageUrl, updatedAt: new Date() })
+      .where(eq(contentLessons.id, id));
+
+    return { imageUrl };
   },
 };
