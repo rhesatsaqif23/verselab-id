@@ -19,8 +19,9 @@ describe("UnitDetailPage", () => {
   it("shows an empty state when the unit has no lessons", () => {
     render(<UnitDetailPage unit={makeUnit([])} />);
 
-    expect(screen.getByText("Belum ada topik")).toBeInTheDocument();
-    expect(screen.getByText(/sedang disiapkan/)).toBeInTheDocument();
+    // Canvas empty state + sidebar Daftar Topik empty state.
+    expect(screen.getAllByText("Belum ada topik")).toHaveLength(2);
+    expect(screen.getAllByText(/sedang disiapkan/).length).toBeGreaterThan(0);
     expect(screen.getByRole("link", { name: /materi lain/i })).toHaveAttribute("href", "/material");
   });
 

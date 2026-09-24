@@ -72,6 +72,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   const [icon, setIcon] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
   const [prerequisiteIds, setPrerequisiteIds] = useState<string[]>([]);
 
   const { data: allLessons = [] } = useQuery({
@@ -108,6 +109,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
       title?: string;
       description?: string | null;
       icon?: string;
+      imageUrl?: string | null;
       prerequisiteIds?: string[] | null;
     }) => adminUpdateLesson({ data }),
     onSuccess: () => {
@@ -128,6 +130,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
     setIcon("");
     setPreviewUrl("");
     setSelectedFile(null);
+    setRemoveImage(false);
     setPrerequisiteIds([]);
     if (fileRef.current) fileRef.current.value = "";
   }
@@ -140,6 +143,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
       setIcon(lesson?.icon ?? "");
       setPreviewUrl(resolveImageUrl(lesson?.imageUrl) ?? "");
       setSelectedFile(null);
+      setRemoveImage(false);
       setPrerequisiteIds(lesson?.prerequisiteIds ?? []);
     } else {
       reset();
@@ -167,6 +171,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
           title: title.trim(),
           description: description.trim() || null,
           icon: icon.trim() || undefined,
+          imageUrl: removeImage ? null : undefined,
           prerequisiteIds: prerequisiteIds.length > 0 ? prerequisiteIds : null,
         });
         targetId = lesson.id;
@@ -207,11 +212,14 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   function handleImageSelect(file: File) {
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
+    setRemoveImage(false);
   }
 
   function handleImageClear() {
     setSelectedFile(null);
     setPreviewUrl("");
+    // Only meaningful when an image is already stored server-side.
+    if (lesson?.imageUrl) setRemoveImage(true);
   }
 
   const isEdit = !!lesson;

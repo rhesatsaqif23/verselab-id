@@ -1,6 +1,6 @@
 // UnitSidebar: presentation component for the left unit-detail sidebar.
 // Search/filter/progress logic lives in useUnitSidebar.
-import { Search, ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, CheckCircle2, BookOpenText } from "lucide-react";
 import type { Unit } from "#/engine/types.ts";
 import { Button } from "#/components/ui/button";
 import { resolveImageUrl } from "#/libs/image.ts";
@@ -125,6 +125,19 @@ export default function UnitSidebar({
               Daftar Topik ({filteredLessons.length})
             </span>
             <div className="mt-2.5 flex flex-col gap-2">
+              {filteredLessons.length === 0 && (
+                <div className="flex flex-col items-center gap-1.5 rounded-xl border border-dashed border-border bg-muted/20 px-4 py-8 text-center">
+                  <BookOpenText className="size-8 text-muted-foreground/60" />
+                  <p className="text-sm font-semibold text-foreground">
+                    {unit.lessons.length === 0 ? "Belum ada topik" : "Tidak ada hasil"}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {unit.lessons.length === 0
+                      ? "Materi unit ini sedang disiapkan."
+                      : `Tidak ada topik yang cocok dengan "${searchQuery}".`}
+                  </p>
+                </div>
+              )}
               {filteredLessons.map((lesson) => {
                 const isCompleted = completedLessons.includes(lesson.id);
                 const isSelected = selectedLessonId === lesson.id;

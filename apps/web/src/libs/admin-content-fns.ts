@@ -91,7 +91,7 @@ export const adminCreateUnit = createServerFn({ method: "POST" })
 
 export const adminUpdateUnit = createServerFn({ method: "POST" })
   .validator(
-    (data: { id: string; title?: string; description?: string; imageUrl?: string }) => data,
+    (data: { id: string; title?: string; description?: string; imageUrl?: string | null }) => data,
   )
   .handler(async ({ data }) => {
     const { id, ...patch } = data;
@@ -174,6 +174,7 @@ export const adminUpdateLesson = createServerFn({ method: "POST" })
       title?: string;
       description?: string | null;
       icon?: string;
+      imageUrl?: string | null;
       prerequisiteIds?: string[] | null;
     }) => data,
   )

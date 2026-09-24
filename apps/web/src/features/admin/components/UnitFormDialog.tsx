@@ -52,6 +52,7 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
   const [description, setDescription] = useState(EMPTY_DESCRIPTION);
   const [previewUrl, setPreviewUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [removeImage, setRemoveImage] = useState(false);
 
   const createMutation = useMutation({
     mutationFn: (data: { id?: string; title: string; description?: string }) =>
@@ -60,8 +61,12 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: { id: string; title?: string; description?: string }) =>
-      adminUpdateUnit({ data }),
+    mutationFn: (data: {
+      id: string;
+      title?: string;
+      description?: string;
+      imageUrl?: string | null;
+    }) => adminUpdateUnit({ data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-units"] }),
   });
 
@@ -76,6 +81,7 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
     setDescription(EMPTY_DESCRIPTION);
     setPreviewUrl("");
     setSelectedFile(null);
+    setRemoveImage(false);
     if (fileRef.current) fileRef.current.value = "";
   }
 
@@ -86,6 +92,7 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
       setDescription(unit?.description ?? EMPTY_DESCRIPTION);
       setPreviewUrl(resolveImageUrl(unit?.imageUrl) ?? "");
       setSelectedFile(null);
+      setRemoveImage(false);
     } else {
       reset();
     }
@@ -107,6 +114,7 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
           id: unit.id,
           title: title.trim(),
           description: description.trim() || undefined,
+          imageUrl: removeImage ? null : undefined,
         });
         targetId = unit.id;
         toast.success("Unit berhasil diperbarui");
@@ -141,11 +149,14 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
   function handleImageSelect(file: File) {
     setSelectedFile(file);
     setPreviewUrl(URL.createObjectURL(file));
+    setRemoveImage(false);
   }
 
   function handleImageClear() {
     setSelectedFile(null);
     setPreviewUrl("");
+    // Only meaningful when an image is already stored server-side.
+    if (unit?.imageUrl) setRemoveImage(true);
   }
 
   const isEdit = !!unit;
