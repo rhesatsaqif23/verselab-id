@@ -28,4 +28,19 @@ describe("translateAdminError", () => {
     expect(translateAdminError(new Error("Judul sudah dipakai"), "x")).toBe("Judul sudah dipakai");
     expect(translateAdminError(new Error("HTTP 418"), "Cadangan")).toBe("Cadangan");
   });
+
+  it("unwraps fail envelopes, showing the message for unknown codes", () => {
+    expect(translateAdminError(new Error("NOT_FOUND: Lesson tidak ditemukan."), "x")).toContain(
+      "tidak ditemukan",
+    );
+    expect(
+      translateAdminError(
+        new Error("CONFLICT: Prasyarat tidak boleh berputar. Periksa kembali."),
+        "x",
+      ),
+    ).toBe("Prasyarat tidak boleh berputar. Periksa kembali.");
+    expect(translateAdminError(new Error("CONFLICT: Judul lesson sudah dipakai."), "x")).toBe(
+      "Judul lesson sudah dipakai.",
+    );
+  });
 });

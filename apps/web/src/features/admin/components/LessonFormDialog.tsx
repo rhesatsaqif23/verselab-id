@@ -41,6 +41,28 @@ function fileToBase64(file: File): Promise<string> {
   });
 }
 
+/**
+ * True when `fromId` already (transitively) depends on `targetId` — selecting
+ * `fromId` as a prerequisite of `targetId` would create a cycle.
+ */
+export function reachesPrerequisite(
+  all: { id: string; prerequisiteIds: string[] | null }[],
+  fromId: string,
+  targetId: string,
+): boolean {
+  const edges = new Map(all.map((l) => [l.id, l.prerequisiteIds ?? []]));
+  const stack = [fromId];
+  const seen = new Set<string>();
+  while (stack.length > 0) {
+    const current = stack.pop() as string;
+    if (current === targetId) return true;
+    if (seen.has(current)) continue;
+    seen.add(current);
+    for (const next of edges.get(current) ?? []) stack.push(next);
+  }
+  return false;
+}
+
 export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogProps) {
   const queryClient = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -58,6 +80,12 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   });
 
   const otherLessons = (allLessons ?? []).filter((l) => l.unitId === unitId && l.id !== lesson?.id);
+  // Hide lessons that would create a prerequisite cycle (they already depend
+  // on the lesson being edited). The server enforces this too.
+  const selectableLessons = lesson?.id
+    ? otherLessons.filter((l) => !reachesPrerequisite(allLessons ?? [], l.id, lesson.id))
+    : otherLessons;
+  const hiddenCount = otherLessons.length - selectableLessons.length;
 
   const createMutation = useMutation({
     mutationFn: (data: {
@@ -68,7 +96,10 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
       icon?: string;
       prerequisiteIds?: string[];
     }) => adminCreateLesson({ data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-all-lessons"] });
+    },
   });
 
   const updateMutation = useMutation({
@@ -79,7 +110,10 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
       icon?: string;
       prerequisiteIds?: string[] | null;
     }) => adminUpdateLesson({ data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-all-lessons"] });
+    },
   });
 
   const imageMutation = useMutation({
@@ -126,6 +160,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
     }
 
     try {
+      let targetId: string | undefined;
       if (lesson) {
         await updateMutation.mutateAsync({
           id: lesson.id,
@@ -134,14 +169,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
           icon: icon.trim() || undefined,
           prerequisiteIds: prerequisiteIds.length > 0 ? prerequisiteIds : null,
         });
-        if (selectedFile) {
-          const base64 = await fileToBase64(selectedFile);
-          await imageMutation.mutateAsync({
-            id: lesson.id,
-            file: base64,
-            filename: selectedFile.name,
-          });
-        }
+        targetId = lesson.id;
         toast.success("Lesson berhasil diperbarui");
       } else {
         const result = await createMutation.mutateAsync({
@@ -151,19 +179,26 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
           icon: icon.trim() || undefined,
           prerequisiteIds: prerequisiteIds.length > 0 ? prerequisiteIds : undefined,
         });
-        const newId = result?.id;
-        if (selectedFile && newId) {
-          const base64 = await fileToBase64(selectedFile);
-          await imageMutation.mutateAsync({
-            id: newId,
-            file: base64,
-            filename: selectedFile.name,
-          });
-        }
+        targetId = result?.id;
         toast.success("Lesson berhasil ditambahkan");
       }
+      // Close immediately so Tambah/Simpan always dismisses; the image
+      // uploads in the background with its own feedback.
+      const file = selectedFile;
+      const filename = file?.name;
       setOpen(false);
       reset();
+      if (file && targetId) {
+        try {
+          const base64 = await fileToBase64(file);
+          await imageMutation.mutateAsync({ id: targetId, file: base64, filename: filename ?? "" });
+          toast.success("Gambar berhasil diunggah");
+        } catch (imgErr) {
+          toast.error(
+            translateAdminError(imgErr, "Lesson tersimpan, tetapi gambar gagal diunggah"),
+          );
+        }
+      }
     } catch (err) {
       toast.error(translateAdminError(err, "Gagal menyimpan lesson"));
     }
@@ -237,14 +272,16 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
             onClear={handleImageClear}
             inputRef={fileRef}
           />
-          {otherLessons.length > 0 && (
+          {selectableLessons.length > 0 && (
             <div className="flex flex-col gap-1.5">
               <Label>Prasyarat (opsional)</Label>
               <p className="text-xs text-muted-foreground">
                 Pilih lesson yang harus diselesaikan terlebih dahulu.
+                {hiddenCount > 0 &&
+                  " Beberapa lesson disembunyikan karena akan menimbulkan siklus."}
               </p>
               <div className="flex flex-wrap gap-2">
-                {otherLessons.map((l) => {
+                {selectableLessons.map((l) => {
                   const isSelected = prerequisiteIds.includes(l.id);
                   return (
                     <button

@@ -63,6 +63,7 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
     mutationFn: (id: string) => adminDeleteLesson({ data: { id } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-all-lessons"] });
       toast.success("Lesson berhasil dihapus");
     },
     onError: (err: Error) => {

@@ -18,9 +18,20 @@ async function apiCall<T>(path: string, init?: RequestInit): Promise<T | null> {
 
 async function apiMutate<T>(path: string, init: RequestInit): Promise<T> {
   const res = await relayRequest(path, init);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if (!res.ok) {
+    // Surface fail envelopes ("CODE: message") so callers can translate them.
+    // Unreadable bodies fall back to the HTTP status.
+    let body: ApiResponse<T> | null = null;
+    try {
+      body = (await res.json()) as ApiResponse<T>;
+    } catch {
+      body = null;
+    }
+    if (body && !body.ok) throw new Error(`${body.error.code}: ${body.error.message}`);
+    throw new Error(`HTTP ${res.status}`);
+  }
   const body = (await res.json()) as ApiResponse<T>;
-  if (!body.ok) throw new Error(body.error.message);
+  if (!body.ok) throw new Error(`${body.error.code}: ${body.error.message}`);
   return body.data;
 }
 
@@ -336,14 +347,18 @@ export const adminReorderScreens = createServerFn({ method: "POST" })
 // failures) into clear Indonesian messages for admin toasts.
 
 export function translateAdminError(err: unknown, fallback: string): string {
-  const msg = err instanceof Error ? err.message : String(err ?? "");
+  const raw = err instanceof Error ? err.message : String(err ?? "");
 
-  if (/failed to fetch|fetch failed|network|timeout|aborted|load failed/i.test(msg)) {
+  // Unwrap fail envelopes ("CODE: message") from apiMutate.
+  const envelope = raw.match(/^([A-Z_]+):\s*([\s\S]*)$/);
+  const code = envelope?.[1] ?? "";
+  const msg = envelope ? envelope[2].trim() : raw;
+
+  if (/failed to fetch|fetch failed|network|timeout|aborted|load failed/i.test(raw)) {
     return "Tidak dapat terhubung ke server. Periksa koneksi lalu coba lagi.";
   }
 
-  const http = msg.match(/HTTP (\d{3})/)?.[1];
-  const key = http ?? msg;
+  const key = `${code} ${msg}`;
   if (/401|UNAUTHENTICATED|unauthorized/i.test(key)) {
     return "Sesi berakhir. Silakan masuk ulang.";
   }
@@ -353,7 +368,7 @@ export function translateAdminError(err: unknown, fallback: string): string {
   if (/404|NOT_FOUND|not found/i.test(key)) {
     return "Data tidak ditemukan. Mungkin sudah dihapus, muat ulang halaman.";
   }
-  if (/409|already exists/i.test(key)) {
+  if (/409|already exists/i.test(key) && !/siklus|berputar/i.test(msg)) {
     return "Data sudah ada. Gunakan nama yang berbeda.";
   }
   if (/422|validation|VALIDATION/i.test(key)) {
@@ -365,6 +380,8 @@ export function translateAdminError(err: unknown, fallback: string): string {
   if (/500|INTERNAL|internal/i.test(key)) {
     return "Terjadi kesalahan server. Coba lagi nanti.";
   }
-  if (msg.trim() !== "" && !msg.startsWith("HTTP")) return msg;
+  // Unknown envelope codes: show the message without the technical prefix.
+  if (envelope) return msg !== "" ? msg : fallback;
+  if (raw.trim() !== "" && !raw.startsWith("HTTP")) return raw;
   return fallback;
 }

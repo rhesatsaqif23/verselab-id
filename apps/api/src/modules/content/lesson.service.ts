@@ -2,6 +2,7 @@ import type { CreateLessonInput, UpdateLessonInput } from "@verselab/shared/sche
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
 import { contentLessons, contentScreens, contentUnits } from "../../database/schema.ts";
+import { AppError } from "../../libs/errors.ts";
 import { assertImage, extFor, getStorage } from "../../libs/storage.ts";
 import { resolveUniqueSlug } from "./slug.ts";
 
@@ -40,6 +41,50 @@ async function getMaxSortOrder(unitId: string): Promise<number> {
     .orderBy(desc(contentLessons.sortOrder))
     .limit(1);
   return rows[0]?.sortOrder ?? -1;
+}
+
+/** Reject duplicate lesson titles within a unit (case-insensitive). */
+async function assertUniqueTitle(unitId: string, title: string, excludeId?: string): Promise<void> {
+  const db = getDb();
+  const siblings = await db
+    .select({ id: contentLessons.id, title: contentLessons.title })
+    .from(contentLessons)
+    .where(eq(contentLessons.unitId, unitId));
+  const wanted = title.trim().toLowerCase();
+  if (siblings.some((s) => s.id !== excludeId && s.title.trim().toLowerCase() === wanted)) {
+    throw new AppError({ code: "CONFLICT", message: "Judul lesson sudah dipakai di unit ini." });
+  }
+}
+
+/**
+ * Reject prerequisite selections that would create a cycle: the lesson itself
+ * or any lesson that already (transitively) depends on it.
+ */
+async function assertNoPrerequisiteCycle(
+  lessonId: string,
+  prerequisiteIds: string[],
+): Promise<void> {
+  if (prerequisiteIds.length === 0) return;
+  const db = getDb();
+  const all = await db
+    .select({ id: contentLessons.id, prerequisiteIds: contentLessons.prerequisiteIds })
+    .from(contentLessons);
+  const edges = new Map(all.map((r) => [r.id, r.prerequisiteIds ?? []]));
+  const stack = [...prerequisiteIds];
+  const seen = new Set<string>();
+  while (stack.length > 0) {
+    const current = stack.pop() as string;
+    if (current === lessonId) {
+      throw new AppError({
+        code: "CONFLICT",
+        message:
+          "Prasyarat tidak boleh berputar. Pilihan tersebut sudah bergantung pada lesson ini.",
+      });
+    }
+    if (seen.has(current)) continue;
+    seen.add(current);
+    for (const next of edges.get(current) ?? []) stack.push(next);
+  }
 }
 
 export const contentLessonService: ContentLessonService = {
@@ -148,6 +193,7 @@ export const contentLessonService: ContentLessonService = {
     const db = getDb();
     const sortOrder = input.sortOrder ?? (await getMaxSortOrder(input.unitId)) + 1;
     const id = input.id || crypto.randomUUID();
+    await assertUniqueTitle(input.unitId, input.title);
     const slug = await resolveUniqueSlug(
       { requestedSlug: input.slug, title: input.title },
       async (candidate) => {
@@ -178,6 +224,18 @@ export const contentLessonService: ContentLessonService = {
 
   async updateLesson(id, input) {
     const db = getDb();
+    const [existing] = await db
+      .select({ id: contentLessons.id, unitId: contentLessons.unitId })
+      .from(contentLessons)
+      .where(eq(contentLessons.id, id))
+      .limit(1);
+    if (!existing) throw new AppError({ code: "NOT_FOUND", message: "Lesson tidak ditemukan." });
+    if (input.title) {
+      await assertUniqueTitle(existing.unitId, input.title, id);
+    }
+    if (input.prerequisiteIds) {
+      await assertNoPrerequisiteCycle(id, input.prerequisiteIds);
+    }
     let slug: string | undefined;
     if (input.title) {
       slug = await resolveUniqueSlug(
@@ -197,7 +255,7 @@ export const contentLessonService: ContentLessonService = {
       .set({ ...input, ...(slug ? { slug } : {}), updatedAt: new Date() })
       .where(eq(contentLessons.id, id))
       .returning();
-    if (!row) throw new Error("Lesson not found");
+    if (!row) throw new AppError({ code: "NOT_FOUND", message: "Lesson tidak ditemukan." });
     return row;
   },
 

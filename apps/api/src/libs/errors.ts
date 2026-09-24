@@ -3,6 +3,7 @@
 export const appErrorMeta = {
   BAD_REQUEST: { status: 400, message: "Bad request" },
   PROFILE_ALREADY_EXISTS: { status: 409, message: "Profile already exists" },
+  CONFLICT: { status: 409, message: "Conflict" },
   NOT_FOUND: { status: 404, message: "Not found" },
   FORBIDDEN: { status: 403, message: "Forbidden" },
   INTERNAL: { status: 500, message: "Internal server error" },

@@ -101,39 +101,38 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
     const isEdit = !!unit;
 
     try {
+      let targetId: string | undefined;
       if (isEdit) {
         await updateMutation.mutateAsync({
           id: unit.id,
           title: title.trim(),
           description: description.trim() || undefined,
         });
-        if (selectedFile) {
-          const base64 = await fileToBase64(selectedFile);
-          await imageMutation.mutateAsync({
-            id: unit.id,
-            file: base64,
-            filename: selectedFile.name,
-          });
-        }
+        targetId = unit.id;
         toast.success("Unit berhasil diperbarui");
       } else {
         const result = await createMutation.mutateAsync({
           title: title.trim(),
           description: description.trim() || undefined,
         });
-        const newId = result?.id;
-        if (selectedFile && newId) {
-          const base64 = await fileToBase64(selectedFile);
-          await imageMutation.mutateAsync({
-            id: newId,
-            file: base64,
-            filename: selectedFile.name,
-          });
-        }
+        targetId = result?.id;
         toast.success("Unit berhasil ditambahkan");
       }
+      // Close immediately so Tambah/Simpan always dismisses; the image
+      // uploads in the background with its own feedback.
+      const file = selectedFile;
+      const filename = file?.name;
       setOpen(false);
       reset();
+      if (file && targetId) {
+        try {
+          const base64 = await fileToBase64(file);
+          await imageMutation.mutateAsync({ id: targetId, file: base64, filename: filename ?? "" });
+          toast.success("Gambar berhasil diunggah");
+        } catch (imgErr) {
+          toast.error(translateAdminError(imgErr, "Unit tersimpan, tetapi gambar gagal diunggah"));
+        }
+      }
     } catch (err) {
       toast.error(translateAdminError(err, "Gagal menyimpan unit"));
     }
