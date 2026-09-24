@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { toast } from "sonner";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { formatAdminDate } from "#/libs/date.ts";
@@ -25,6 +24,7 @@ import {
 } from "#/components/ui/pagination.tsx";
 import { adminGetUsers } from "#/libs/admin-content-fns.ts";
 import type { AdminUser } from "#/libs/admin-content-fns.ts";
+import { AdminQueryError } from "../components/QueryError.tsx";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
 
@@ -43,15 +43,12 @@ export function UsersTable() {
   const {
     data: users,
     isLoading,
-    error,
+    isError,
+    refetch,
   } = useQuery({
     queryKey: ["admin-users"],
     queryFn: () => adminGetUsers(),
   });
-
-  if (error) {
-    toast.error("Gagal memuat data pengguna");
-  }
 
   const all: AdminUser[] = users ?? [];
 
@@ -81,6 +78,19 @@ export function UsersTable() {
 
   const totalPages = Math.max(1, Math.ceil(processed.length / PAGE_SIZE));
   const paged = processed.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
+  if (isError && !isLoading) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-black text-foreground">Pengguna</h1>
+        <AdminQueryError onRetry={() => refetch()} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

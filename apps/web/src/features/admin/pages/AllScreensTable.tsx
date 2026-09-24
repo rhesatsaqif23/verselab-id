@@ -34,9 +34,14 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "#/components/ui/pagination.tsx";
-import { adminGetAllScreens, adminDeleteScreen } from "#/libs/admin-content-fns.ts";
+import {
+  adminGetAllScreens,
+  adminDeleteScreen,
+  translateAdminError,
+} from "#/libs/admin-content-fns.ts";
 import type { AdminScreenWithLesson } from "#/libs/admin-content-fns.ts";
 import { cn } from "#/libs/utils.ts";
+import { AdminQueryError } from "../components/QueryError.tsx";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
 
@@ -63,7 +68,12 @@ export function AllScreensTable() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
 
-  const { data: screens, isLoading } = useQuery({
+  const {
+    data: screens,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["admin-all-screens"],
     queryFn: () => adminGetAllScreens(),
   });
@@ -75,7 +85,7 @@ export function AllScreensTable() {
       toast.success("Layar berhasil dihapus");
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Gagal menghapus layar");
+      toast.error(translateAdminError(err, "Gagal menghapus layar"));
     },
   });
 
@@ -105,6 +115,19 @@ export function AllScreensTable() {
 
   const totalPages = Math.max(1, Math.ceil(processed.length / PAGE_SIZE));
   const paged = processed.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
+  if (isError && !isLoading) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-black text-foreground">Layar</h1>
+        <AdminQueryError onRetry={() => refetch()} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

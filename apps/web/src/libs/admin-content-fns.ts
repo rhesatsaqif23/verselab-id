@@ -297,13 +297,13 @@ export const adminUpdateScreen = createServerFn({ method: "POST" })
       id: string;
       prompt?: string;
       explain?: string;
-      options?: { id: string; label: string }[];
-      correctId?: string;
-      numericUnit?: string;
-      acceptRangeMin?: number;
-      acceptRangeMax?: number;
-      categories?: string[];
-      rule?: { type: string; categoryId: string; min?: number; max?: number };
+      options?: { id: string; label: string }[] | null;
+      correctId?: string | null;
+      numericUnit?: string | null;
+      acceptRangeMin?: number | null;
+      acceptRangeMax?: number | null;
+      categories?: string[] | null;
+      rule?: { type: string; categoryId: string; min?: number; max?: number } | null;
     }) => data,
   )
   .handler(async ({ data }) => {
@@ -330,3 +330,41 @@ export const adminReorderScreens = createServerFn({ method: "POST" })
       body: JSON.stringify(data),
     });
   });
+
+// ── Error translation ────────────────────────────────────────────────────────
+// Converts technical API errors (HTTP codes, English envelopes, network
+// failures) into clear Indonesian messages for admin toasts.
+
+export function translateAdminError(err: unknown, fallback: string): string {
+  const msg = err instanceof Error ? err.message : String(err ?? "");
+
+  if (/failed to fetch|fetch failed|network|timeout|aborted|load failed/i.test(msg)) {
+    return "Tidak dapat terhubung ke server. Periksa koneksi lalu coba lagi.";
+  }
+
+  const http = msg.match(/HTTP (\d{3})/)?.[1];
+  const key = http ?? msg;
+  if (/401|UNAUTHENTICATED|unauthorized/i.test(key)) {
+    return "Sesi berakhir. Silakan masuk ulang.";
+  }
+  if (/403|FORBIDDEN|forbidden/i.test(key)) {
+    return "Akses ditolak. Hanya admin yang dapat melakukan ini.";
+  }
+  if (/404|NOT_FOUND|not found/i.test(key)) {
+    return "Data tidak ditemukan. Mungkin sudah dihapus, muat ulang halaman.";
+  }
+  if (/409|already exists/i.test(key)) {
+    return "Data sudah ada. Gunakan nama yang berbeda.";
+  }
+  if (/422|validation|VALIDATION/i.test(key)) {
+    return "Data tidak valid. Periksa kembali isian form.";
+  }
+  if (/400|BAD_REQUEST|bad request/i.test(key)) {
+    return "Data tidak valid. Periksa kembali isian.";
+  }
+  if (/500|INTERNAL|internal/i.test(key)) {
+    return "Terjadi kesalahan server. Coba lagi nanti.";
+  }
+  if (msg.trim() !== "" && !msg.startsWith("HTTP")) return msg;
+  return fallback;
+}

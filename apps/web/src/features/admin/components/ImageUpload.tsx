@@ -2,10 +2,13 @@
 // Used by UnitFormDialog and LessonFormDialog. The parent owns previewUrl
 // state (stored URL or object URL) and handles the actual upload on submit.
 import { useRef } from "react";
+import { toast } from "sonner";
 import { Trash2, Upload, UploadCloud } from "lucide-react";
 import { Button } from "#/components/ui/button.tsx";
 import { Label } from "#/components/ui/label.tsx";
 import { cn } from "#/libs/utils.ts";
+
+const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 
 type ImageUploadProps = {
   id: string;
@@ -27,6 +30,18 @@ export function ImageUpload({
   const fallbackRef = useRef<HTMLInputElement>(null);
   const fileRef = inputRef ?? fallbackRef;
 
+  function handleFile(file: File) {
+    if (!file.type.startsWith("image/")) {
+      toast.error("File harus berupa gambar (JPG, PNG, atau WEBP).");
+      return;
+    }
+    if (file.size > MAX_IMAGE_BYTES) {
+      toast.error("Ukuran gambar maksimal 2MB.");
+      return;
+    }
+    onFileSelect(file);
+  }
+
   function handleClear(e: React.MouseEvent) {
     e.stopPropagation();
     onClear();
@@ -44,7 +59,7 @@ export function ImageUpload({
         onChange={(e) => {
           const file = e.target.files?.[0];
           if (!file) return;
-          onFileSelect(file);
+          handleFile(file);
         }}
         className="hidden"
       />
@@ -54,9 +69,7 @@ export function ImageUpload({
         onDrop={(e) => {
           e.preventDefault();
           const file = e.dataTransfer.files?.[0];
-          if (file && file.type.startsWith("image/")) {
-            onFileSelect(file);
-          }
+          if (file) handleFile(file);
         }}
         className={cn(
           "group relative flex h-36 w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-xl border-2 border-dashed transition-all duration-200",

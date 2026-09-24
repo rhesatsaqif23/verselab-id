@@ -6,9 +6,11 @@ import {
   adminCreateScreen,
   adminDeleteScreen,
   adminReorderScreens,
+  translateAdminError,
   type AdminScreen,
 } from "#/libs/admin-content-fns.ts";
 import { AddScreenDialog } from "../components/AddScreenDialog.tsx";
+import { AdminQueryError } from "../components/QueryError.tsx";
 import { ScreenListPanel } from "../components/ScreenListPanel.tsx";
 import { ScreenEditPanel } from "../components/ScreenEditPanel.tsx";
 
@@ -20,7 +22,12 @@ interface ScreenEditorProps {
 export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   const queryClient = useQueryClient();
 
-  const { data: screens, isLoading } = useQuery({
+  const {
+    data: screens,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["admin-screens", lessonId],
     queryFn: () => adminGetScreens({ data: { lessonId } }),
   });
@@ -33,7 +40,7 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
       toast.success("Screen berhasil ditambahkan");
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Gagal menambahkan screen");
+      toast.error(translateAdminError(err, "Gagal menambahkan screen"));
     },
   });
 
@@ -44,13 +51,17 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
       toast.success("Screen berhasil dihapus");
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Gagal menghapus screen");
+      toast.error(translateAdminError(err, "Gagal menghapus screen"));
     },
   });
 
   const reorderMutation = useMutation({
     mutationFn: (ids: string[]) => adminReorderScreens({ data: { ids } }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] }),
+    onError: (err: Error) => {
+      queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
+      toast.error(translateAdminError(err, "Gagal menyusun ulang screen"));
+    },
   });
 
   const allScreens: AdminScreen[] = screens ?? [];
@@ -135,6 +146,15 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
 
   if (isLoading) {
     return <p className="p-4 text-muted-foreground">Memuat screen...</p>;
+  }
+
+  if (isError) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-black text-foreground">Editor Screen</h1>
+        <AdminQueryError onRetry={() => refetch()} />
+      </div>
+    );
   }
 
   return (

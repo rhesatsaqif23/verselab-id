@@ -19,6 +19,7 @@ import {
   adminCreateUnit,
   adminUpdateUnit,
   adminUploadUnitImage,
+  translateAdminError,
   type AdminUnit,
 } from "#/libs/admin-content-fns.ts";
 
@@ -134,7 +135,7 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
       setOpen(false);
       reset();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Gagal menyimpan unit");
+      toast.error(translateAdminError(err, "Gagal menyimpan unit"));
     }
   }
 

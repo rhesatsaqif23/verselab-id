@@ -14,7 +14,11 @@ import {
 import { Badge } from "#/components/ui/badge.tsx";
 import { Button } from "#/components/ui/button.tsx";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { adminDeleteScreen, type AdminScreen } from "#/libs/admin-content-fns.ts";
+import {
+  adminDeleteScreen,
+  translateAdminError,
+  type AdminScreen,
+} from "#/libs/admin-content-fns.ts";
 import { ScreenForm } from "./ScreenForm.tsx";
 import { ScreenPreviewCard } from "./ScreenPreviewCard.tsx";
 
@@ -38,7 +42,7 @@ export function ScreenEditPanel({
       toast.success("Screen berhasil dihapus");
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Gagal menghapus screen");
+      toast.error(translateAdminError(err, "Gagal menghapus screen"));
     },
   });
 

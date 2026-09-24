@@ -35,9 +35,10 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "#/components/ui/pagination.tsx";
-import { adminGetUnits, adminDeleteUnit } from "#/libs/admin-content-fns.ts";
+import { adminGetUnits, adminDeleteUnit, translateAdminError } from "#/libs/admin-content-fns.ts";
 import type { AdminUnit } from "#/libs/admin-content-fns.ts";
 import { UnitFormDialog } from "../components/UnitFormDialog.tsx";
+import { AdminQueryError } from "../components/QueryError.tsx";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
 
@@ -50,7 +51,12 @@ export function UnitList() {
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
 
-  const { data: units, isLoading } = useQuery({
+  const {
+    data: units,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["admin-units"],
     queryFn: () => adminGetUnits(),
   });
@@ -62,7 +68,7 @@ export function UnitList() {
       toast.success("Unit berhasil dihapus");
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Gagal menghapus unit");
+      toast.error(translateAdminError(err, "Gagal menghapus unit"));
     },
   });
 
@@ -89,6 +95,19 @@ export function UnitList() {
 
   const totalPages = Math.max(1, Math.ceil(processed.length / PAGE_SIZE));
   const paged = processed.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
+  if (isError && !isLoading) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-black text-foreground">Konten</h1>
+        <AdminQueryError onRetry={() => refetch()} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

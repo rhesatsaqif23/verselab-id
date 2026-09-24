@@ -21,18 +21,11 @@ describe("UnitDetailPage", () => {
 
     expect(screen.getByText("Belum ada topik")).toBeInTheDocument();
     expect(screen.getByText(/sedang disiapkan/)).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /materi lain/i })).toHaveAttribute(
-      "href",
-      "/material",
-    );
+    expect(screen.getByRole("link", { name: /materi lain/i })).toHaveAttribute("href", "/material");
   });
 
   it("renders lesson cards when lessons exist", () => {
-    render(
-      <UnitDetailPage
-        unit={makeUnit([{ id: "l-1", title: "Lesson 1", screens: [] }])}
-      />,
-    );
+    render(<UnitDetailPage unit={makeUnit([{ id: "l-1", title: "Lesson 1", screens: [] }])} />);
 
     expect(screen.queryByText("Belum ada topik")).toBeNull();
     expect(screen.getAllByText("Lesson 1").length).toBeGreaterThan(0);

@@ -19,6 +19,7 @@ import {
   adminUpdateLesson,
   adminUploadLessonImage,
   adminGetAllLessons,
+  translateAdminError,
   type AdminLesson,
 } from "#/libs/admin-content-fns.ts";
 
@@ -164,7 +165,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
       setOpen(false);
       reset();
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Gagal menyimpan lesson");
+      toast.error(translateAdminError(err, "Gagal menyimpan lesson"));
     }
   }
 

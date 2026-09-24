@@ -26,9 +26,14 @@ import {
   TableHeader,
   TableRow,
 } from "#/components/ui/table.tsx";
-import { adminGetLessons, adminDeleteLesson } from "#/libs/admin-content-fns.ts";
+import {
+  adminGetLessons,
+  adminDeleteLesson,
+  translateAdminError,
+} from "#/libs/admin-content-fns.ts";
 import type { AdminLesson } from "#/libs/admin-content-fns.ts";
 import { resolveImageUrl } from "#/libs/image.ts";
+import { AdminQueryError } from "../components/QueryError.tsx";
 import { LessonFormDialog } from "../components/LessonFormDialog.tsx";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
@@ -44,7 +49,12 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
 
-  const { data: lessons, isLoading } = useQuery({
+  const {
+    data: lessons,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["admin-lessons", unitId],
     queryFn: () => adminGetLessons({ data: { unitId } }),
   });
@@ -56,7 +66,7 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
       toast.success("Lesson berhasil dihapus");
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Gagal menghapus lesson");
+      toast.error(translateAdminError(err, "Gagal menghapus lesson"));
     },
   });
 
@@ -77,6 +87,15 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
     AdminLesson,
     LessonSortKey
   >(allLessons, "createdAt", filterFn, getValue);
+
+  if (isError && !isLoading) {
+    return (
+      <div className="space-y-4">
+        <h1 className="text-2xl font-black text-foreground">Daftar Lesson</h1>
+        <AdminQueryError onRetry={() => refetch()} />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

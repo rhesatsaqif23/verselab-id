@@ -4,7 +4,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Button } from "#/components/ui/button.tsx";
 import { Label } from "#/components/ui/label.tsx";
 import { Textarea } from "#/components/ui/textarea.tsx";
-import { adminUpdateScreen, type AdminScreen } from "#/libs/admin-content-fns.ts";
+import {
+  adminUpdateScreen,
+  translateAdminError,
+  type AdminScreen,
+} from "#/libs/admin-content-fns.ts";
 import { ChoiceFields } from "./ChoiceFields.tsx";
 import { NumericFields } from "./NumericFields.tsx";
 import { AllocationFields } from "./AllocationFields.tsx";
@@ -45,7 +49,7 @@ export function ScreenForm({ screen, lessonId, onRegisterValidator }: ScreenForm
       toast.success("Screen berhasil disimpan");
     },
     onError: (err: Error) => {
-      toast.error(err.message || "Gagal menyimpan screen");
+      toast.error(translateAdminError(err, "Gagal menyimpan screen"));
     },
   });
 
@@ -73,6 +77,13 @@ export function ScreenForm({ screen, lessonId, onRegisterValidator }: ScreenForm
     if (formData.type === "numeric") {
       if (formData.acceptRangeMin == null) errors.push("Rentang diterima (Min) wajib diisi");
       if (formData.acceptRangeMax == null) errors.push("Rentang diterima (Max) wajib diisi");
+      if (
+        formData.acceptRangeMin != null &&
+        formData.acceptRangeMax != null &&
+        formData.acceptRangeMin > formData.acceptRangeMax
+      ) {
+        errors.push("Rentang Min tidak boleh lebih besar dari Max");
+      }
     }
 
     if (formData.type === "allocation") {
@@ -81,6 +92,13 @@ export function ScreenForm({ screen, lessonId, onRegisterValidator }: ScreenForm
       if (categories.some((c) => !c.trim())) errors.push("Semua kategori alokasi wajib diisi");
       if (!formData.rule?.categoryId) errors.push("Kategori aturan wajib dipilih");
       if (formData.rule?.min == null) errors.push("Min (%) aturan wajib diisi");
+      if (
+        formData.rule?.min != null &&
+        formData.rule?.max != null &&
+        formData.rule.min > formData.rule.max
+      ) {
+        errors.push("Min (%) aturan tidak boleh lebih besar dari Max (%)");
+      }
     }
 
     return errors;
