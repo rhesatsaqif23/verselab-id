@@ -99,6 +99,7 @@ export const contentUnits = pgTable(
   (t) => ({
     sortIdx: index("content_units_sort_idx").on(t.sortOrder),
     slugIdx: uniqueIndex("content_units_slug_idx").on(t.slug),
+    titleIdx: uniqueIndex("content_units_title_idx").on(sql`lower(trim(${t.title}))`),
   }),
 );
 
@@ -159,5 +160,10 @@ export const contentScreens = pgTable(
     lessonIdx: index("content_screens_lesson_idx").on(t.lessonId),
     sortIdx: index("content_screens_sort_idx").on(t.lessonId, t.sortOrder),
     slugIdx: uniqueIndex("content_screens_slug_idx").on(t.slug),
+    // Empty prompts are allowed to repeat (new screens start blank);
+    // non-empty prompts must be unique within a lesson.
+    lessonPromptIdx: uniqueIndex("content_screens_lesson_prompt_idx")
+      .on(t.lessonId, sql`lower(trim(${t.prompt}))`)
+      .where(sql`trim(${t.prompt}) <> ''`),
   }),
 );

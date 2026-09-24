@@ -2,6 +2,7 @@ import type { CreateScreenInput, UpdateScreenInput } from "@verselab/shared/sche
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
 import { contentScreens, contentLessons, contentUnits } from "../../database/schema.ts";
+import { AppError, mapUniqueViolation } from "../../libs/errors.ts";
 import { resolveUniqueSlug } from "./slug.ts";
 
 export type ScreenData = typeof contentScreens.$inferSelect;
@@ -23,6 +24,8 @@ export type ContentScreenService = {
   reorderScreens: (ids: string[]) => Promise<void>;
 };
 
+const DUP_PROMPT_MESSAGE = "Pertanyaan ini sudah dipakai di lesson ini.";
+
 async function getMaxSortOrder(lessonId: string): Promise<number> {
   const db = getDb();
   const rows = await db
@@ -32,6 +35,27 @@ async function getMaxSortOrder(lessonId: string): Promise<number> {
     .orderBy(desc(contentScreens.sortOrder))
     .limit(1);
   return rows[0]?.sortOrder ?? -1;
+}
+
+/**
+ * Reject duplicate non-empty prompts within a lesson (case-insensitive).
+ * Empty prompts are allowed to repeat — new screens start blank.
+ */
+async function assertUniquePrompt(
+  lessonId: string,
+  prompt: string,
+  excludeId?: string,
+): Promise<void> {
+  const wanted = prompt.trim().toLowerCase();
+  if (wanted === "") return;
+  const db = getDb();
+  const siblings = await db
+    .select({ id: contentScreens.id, prompt: contentScreens.prompt })
+    .from(contentScreens)
+    .where(eq(contentScreens.lessonId, lessonId));
+  if (siblings.some((s) => s.id !== excludeId && s.prompt.trim().toLowerCase() === wanted)) {
+    throw new AppError({ code: "CONFLICT", message: DUP_PROMPT_MESSAGE });
+  }
 }
 
 export const contentScreenService: ContentScreenService = {
@@ -86,6 +110,7 @@ export const contentScreenService: ContentScreenService = {
     const db = getDb();
     const sortOrder = input.sortOrder ?? (await getMaxSortOrder(input.lessonId)) + 1;
     const id = input.id || crypto.randomUUID();
+    await assertUniquePrompt(input.lessonId, input.prompt);
     const slug = await resolveUniqueSlug(
       { requestedSlug: input.slug, title: input.prompt },
       async (candidate) => {
@@ -97,30 +122,44 @@ export const contentScreenService: ContentScreenService = {
         return rows.length > 0;
       },
     );
-    const [row] = await db
-      .insert(contentScreens)
-      .values({
-        id,
-        lessonId: input.lessonId,
-        type: input.type,
-        slug,
-        prompt: input.prompt,
-        explain: input.explain,
-        options: input.options,
-        correctId: input.correctId,
-        numericUnit: input.numericUnit,
-        acceptRangeMin: input.acceptRangeMin,
-        acceptRangeMax: input.acceptRangeMax,
-        categories: input.categories,
-        rule: input.rule,
-        sortOrder,
-      })
-      .returning();
+    let row;
+    try {
+      [row] = await db
+        .insert(contentScreens)
+        .values({
+          id,
+          lessonId: input.lessonId,
+          type: input.type,
+          slug,
+          prompt: input.prompt,
+          explain: input.explain,
+          options: input.options,
+          correctId: input.correctId,
+          numericUnit: input.numericUnit,
+          acceptRangeMin: input.acceptRangeMin,
+          acceptRangeMax: input.acceptRangeMax,
+          categories: input.categories,
+          rule: input.rule,
+          sortOrder,
+        })
+        .returning();
+    } catch (err) {
+      mapUniqueViolation(err, DUP_PROMPT_MESSAGE);
+    }
     return row;
   },
 
   async updateScreen(id, input) {
     const db = getDb();
+    const [existing] = await db
+      .select({ id: contentScreens.id, lessonId: contentScreens.lessonId })
+      .from(contentScreens)
+      .where(eq(contentScreens.id, id))
+      .limit(1);
+    if (!existing) throw new AppError({ code: "NOT_FOUND", message: "Screen tidak ditemukan." });
+    if (input.prompt != null) {
+      await assertUniquePrompt(existing.lessonId, input.prompt, id);
+    }
     let slug: string | undefined;
     if (input.prompt) {
       slug = await resolveUniqueSlug(
@@ -135,12 +174,17 @@ export const contentScreenService: ContentScreenService = {
         },
       );
     }
-    const [row] = await db
-      .update(contentScreens)
-      .set({ ...input, ...(slug ? { slug } : {}), updatedAt: new Date() })
-      .where(eq(contentScreens.id, id))
-      .returning();
-    if (!row) throw new Error("Screen not found");
+    let row;
+    try {
+      [row] = await db
+        .update(contentScreens)
+        .set({ ...input, ...(slug ? { slug } : {}), updatedAt: new Date() })
+        .where(eq(contentScreens.id, id))
+        .returning();
+    } catch (err) {
+      mapUniqueViolation(err, DUP_PROMPT_MESSAGE);
+    }
+    if (!row) throw new AppError({ code: "NOT_FOUND", message: "Screen tidak ditemukan." });
     return row;
   },
 

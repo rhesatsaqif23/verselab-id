@@ -2,6 +2,7 @@ import type { CreateUnitInput, UpdateUnitInput } from "@verselab/shared/schemas/
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
 import { contentUnits, contentLessons, contentScreens } from "../../database/schema.ts";
+import { AppError, mapUniqueViolation } from "../../libs/errors.ts";
 import { assertImage, extFor, getStorage } from "../../libs/storage.ts";
 import { resolveUniqueSlug } from "./slug.ts";
 
@@ -31,6 +32,20 @@ export type ContentUnitService = {
   reorderUnits: (ids: string[]) => Promise<void>;
   uploadImage: (id: string, file: File) => Promise<{ imageUrl: string }>;
 };
+
+const DUP_TITLE_MESSAGE = "Judul unit sudah dipakai.";
+
+/** Reject duplicate unit titles (case-insensitive, global scope). */
+async function assertUniqueTitle(title: string, excludeId?: string): Promise<void> {
+  const db = getDb();
+  const rows = await db
+    .select({ id: contentUnits.id, title: contentUnits.title })
+    .from(contentUnits);
+  const wanted = title.trim().toLowerCase();
+  if (rows.some((r) => r.id !== excludeId && r.title.trim().toLowerCase() === wanted)) {
+    throw new AppError({ code: "CONFLICT", message: DUP_TITLE_MESSAGE });
+  }
+}
 
 async function getMaxSortOrder(): Promise<number> {
   const db = getDb();
@@ -130,6 +145,7 @@ export const contentUnitService: ContentUnitService = {
     const db = getDb();
     const sortOrder = input.sortOrder ?? (await getMaxSortOrder()) + 1;
     const id = input.id || crypto.randomUUID();
+    await assertUniqueTitle(input.title);
     const slug = await resolveUniqueSlug(
       { requestedSlug: input.slug, title: input.title },
       async (candidate) => {
@@ -141,22 +157,36 @@ export const contentUnitService: ContentUnitService = {
         return rows.length > 0;
       },
     );
-    const [row] = await db
-      .insert(contentUnits)
-      .values({
-        id,
-        title: input.title,
-        slug,
-        description: input.description,
-        imageUrl: input.imageUrl,
-        sortOrder,
-      })
-      .returning();
+    let row;
+    try {
+      [row] = await db
+        .insert(contentUnits)
+        .values({
+          id,
+          title: input.title,
+          slug,
+          description: input.description,
+          imageUrl: input.imageUrl,
+          sortOrder,
+        })
+        .returning();
+    } catch (err) {
+      mapUniqueViolation(err, DUP_TITLE_MESSAGE);
+    }
     return row;
   },
 
   async updateUnit(id, input) {
     const db = getDb();
+    const [existing] = await db
+      .select({ id: contentUnits.id })
+      .from(contentUnits)
+      .where(eq(contentUnits.id, id))
+      .limit(1);
+    if (!existing) throw new AppError({ code: "NOT_FOUND", message: "Unit tidak ditemukan." });
+    if (input.title) {
+      await assertUniqueTitle(input.title, id);
+    }
     let slug: string | undefined;
     if (input.title) {
       slug = await resolveUniqueSlug(
@@ -171,12 +201,17 @@ export const contentUnitService: ContentUnitService = {
         },
       );
     }
-    const [row] = await db
-      .update(contentUnits)
-      .set({ ...input, ...(slug ? { slug } : {}), updatedAt: new Date() })
-      .where(eq(contentUnits.id, id))
-      .returning();
-    if (!row) throw new Error("Unit not found");
+    let row;
+    try {
+      [row] = await db
+        .update(contentUnits)
+        .set({ ...input, ...(slug ? { slug } : {}), updatedAt: new Date() })
+        .where(eq(contentUnits.id, id))
+        .returning();
+    } catch (err) {
+      mapUniqueViolation(err, DUP_TITLE_MESSAGE);
+    }
+    if (!row) throw new AppError({ code: "NOT_FOUND", message: "Unit tidak ditemukan." });
     return row;
   },
 

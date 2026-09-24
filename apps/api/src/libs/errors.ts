@@ -34,3 +34,12 @@ export class AppError extends Error {
 export function appError(options: AppErrorOptions): AppError {
   return new AppError(options);
 }
+
+/** Map Postgres unique violations to a clear conflict error (covers races
+ * past application-level duplicate checks). Rethrows anything else. */
+export function mapUniqueViolation(err: unknown, message: string): never {
+  if (err && typeof err === "object" && (err as { code?: string }).code === "23505") {
+    throw new AppError({ code: "CONFLICT", message });
+  }
+  throw err;
+}

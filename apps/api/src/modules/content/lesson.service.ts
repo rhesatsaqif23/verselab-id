@@ -2,7 +2,7 @@ import type { CreateLessonInput, UpdateLessonInput } from "@verselab/shared/sche
 import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
 import { contentLessons, contentScreens, contentUnits } from "../../database/schema.ts";
-import { AppError } from "../../libs/errors.ts";
+import { AppError, mapUniqueViolation } from "../../libs/errors.ts";
 import { assertImage, extFor, getStorage } from "../../libs/storage.ts";
 import { resolveUniqueSlug } from "./slug.ts";
 
@@ -58,12 +58,7 @@ async function assertUniqueTitle(unitId: string, title: string, excludeId?: stri
 
 /** Map Postgres unique violations to a clear conflict error (covers races
  * past the application-level duplicate check). */
-function mapUniqueViolation(err: unknown): never {
-  if (err && typeof err === "object" && (err as { code?: string }).code === "23505") {
-    throw new AppError({ code: "CONFLICT", message: "Judul lesson sudah dipakai di unit ini." });
-  }
-  throw err;
-}
+const DUP_TITLE_MESSAGE = "Judul lesson sudah dipakai di unit ini.";
 
 /**
  * Reject prerequisite selections that would create a cycle: the lesson itself
@@ -231,7 +226,7 @@ export const contentLessonService: ContentLessonService = {
         })
         .returning();
     } catch (err) {
-      mapUniqueViolation(err);
+      mapUniqueViolation(err, DUP_TITLE_MESSAGE);
     }
     return row;
   },
@@ -272,7 +267,7 @@ export const contentLessonService: ContentLessonService = {
         .where(eq(contentLessons.id, id))
         .returning();
     } catch (err) {
-      mapUniqueViolation(err);
+      mapUniqueViolation(err, DUP_TITLE_MESSAGE);
     }
     if (!row) throw new AppError({ code: "NOT_FOUND", message: "Lesson tidak ditemukan." });
     return row;
