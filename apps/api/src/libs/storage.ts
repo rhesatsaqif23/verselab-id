@@ -34,7 +34,8 @@ const MIME_BY_EXT: Record<string, string> = {
 
 /** MIME type for a key's extension, or null when the file type is unsupported. */
 export function mimeForKey(key: string): string | null {
-  const ext = key.split(".").pop()?.toLowerCase() ?? "";
+  const clean = key.split(/[?#]/)[0];
+  const ext = clean.split(".").pop()?.toLowerCase() ?? "";
   return MIME_BY_EXT[ext] ?? null;
 }
 
@@ -53,7 +54,9 @@ function localDriver(): StorageDriver {
       const path = join(process.cwd(), "uploads", rel);
       await mkdir(dirname(path), { recursive: true });
       await writeFile(path, data);
-      return `/uploads/${rel}`;
+      // Version the URL so re-uploads bypass the browser cache (same key,
+      // immutable cache headers). Query strings are ignored when serving.
+      return `/uploads/${rel}?t=${Date.now()}`;
     },
   };
 }
@@ -80,7 +83,7 @@ export function getStorage(): StorageDriver {
     put: async (key, data, contentType) => {
       await client.write(key, data, { type: contentType });
       const base = (env.S3_PUBLIC_BASE_URL ?? S3_ENDPOINT ?? "").replace(/\/$/, "");
-      return `${base}/${key}`;
+      return `${base}/${key}?t=${Date.now()}`;
     },
   };
   return cached;

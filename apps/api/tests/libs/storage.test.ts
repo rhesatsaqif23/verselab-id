@@ -41,7 +41,7 @@ describe("local driver", () => {
     const path = join(process.cwd(), "uploads", "content", "__test-storage.png");
     try {
       const url = await getStorage().put("content/__test-storage.png", data, "image/png");
-      expect(url).toBe("/uploads/content/__test-storage.png");
+      expect(url).toMatch(/^\/uploads\/content\/__test-storage\.png\?t=\d+$/);
       const bytes = new Uint8Array(await Bun.file(path).arrayBuffer());
       expect(bytes).toEqual(new Uint8Array([1, 2, 3]));
     } finally {

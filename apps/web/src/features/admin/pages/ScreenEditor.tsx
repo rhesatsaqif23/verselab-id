@@ -202,7 +202,7 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-black text-foreground">Editor Screen</h1>
-        <AddScreenDialog onAdd={handleCreateScreen} />
+        <AddScreenDialog onAdd={handleCreateScreen} pending={createMutation.isPending} />
       </div>
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-12">

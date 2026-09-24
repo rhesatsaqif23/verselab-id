@@ -17,10 +17,11 @@ export { mimeForKey };
 
 const UPLOADS_PREFIX = "/uploads/";
 
-/** Map a stored URL to its S3 key, or null when the row needs no migration. */
+/** Map a stored URL to its S3 key, or null when the row needs no migration.
+ * Strips query strings (upload URLs carry ?t= cache-busting versions). */
 export function relativeUrlToKey(url: string | null): string | null {
   if (!url || !url.startsWith(UPLOADS_PREFIX)) return null;
-  return url.slice(UPLOADS_PREFIX.length);
+  return url.slice(UPLOADS_PREFIX.length).split(/[?#]/)[0];
 }
 
 type BackfillRow = { id: string; url: string; kind: "unit" | "lesson" | "avatar" };

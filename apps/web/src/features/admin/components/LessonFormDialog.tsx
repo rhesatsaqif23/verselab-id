@@ -119,7 +119,7 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   });
 
   const imageMutation = useMutation({
-    mutationFn: (data: { id: string; file: string; filename: string }) =>
+    mutationFn: (data: { id: string; file: string; filename: string; fileType: string }) =>
       adminUploadLessonImage({ data }),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] }),
   });
@@ -191,12 +191,18 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
       // uploads in the background with its own feedback.
       const file = selectedFile;
       const filename = file?.name;
+      const fileType = file?.type;
       setOpen(false);
       reset();
       if (file && targetId) {
         try {
           const base64 = await fileToBase64(file);
-          await imageMutation.mutateAsync({ id: targetId, file: base64, filename: filename ?? "" });
+          await imageMutation.mutateAsync({
+            id: targetId,
+            file: base64,
+            filename: filename ?? "",
+            fileType: fileType ?? "image/png",
+          });
           toast.success("Gambar berhasil diunggah");
         } catch (imgErr) {
           toast.error(

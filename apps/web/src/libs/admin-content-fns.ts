@@ -119,13 +119,13 @@ export const adminReorderUnits = createServerFn({ method: "POST" })
   });
 
 export const adminUploadUnitImage = createServerFn({ method: "POST" })
-  .validator((data: { id: string; file: string; filename: string }) => data)
+  .validator((data: { id: string; file: string; filename: string; fileType: string }) => data)
   .handler(async ({ data }) => {
     const binary = atob(data.file);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    const blob = new Blob([bytes], { type: "image/webp" });
-    const file = new File([blob], data.filename, { type: "image/webp" });
+    const blob = new Blob([bytes], { type: data.fileType });
+    const file = new File([blob], data.filename, { type: data.fileType });
     const form = new FormData();
     form.append("file", file);
     return apiMutate<{ imageUrl: string }>(`/v1/content/units/${data.id}/image`, {
@@ -194,13 +194,13 @@ export const adminDeleteLesson = createServerFn({ method: "POST" })
   });
 
 export const adminUploadLessonImage = createServerFn({ method: "POST" })
-  .validator((data: { id: string; file: string; filename: string }) => data)
+  .validator((data: { id: string; file: string; filename: string; fileType: string }) => data)
   .handler(async ({ data }) => {
     const binary = atob(data.file);
     const bytes = new Uint8Array(binary.length);
     for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
-    const blob = new Blob([bytes], { type: "image/webp" });
-    const file = new File([blob], data.filename, { type: "image/webp" });
+    const blob = new Blob([bytes], { type: data.fileType });
+    const file = new File([blob], data.filename, { type: data.fileType });
     const form = new FormData();
     form.append("file", file);
     return apiMutate<{ imageUrl: string }>(`/v1/content/lessons/${data.id}/image`, {

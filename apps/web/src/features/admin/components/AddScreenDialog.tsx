@@ -25,6 +25,7 @@ type ScreenType = AdminScreen["type"];
 
 interface AddScreenDialogProps {
   onAdd: (type: ScreenType) => void;
+  pending?: boolean;
 }
 
 const previewScreens: Record<ScreenType, Screen> = {
@@ -65,7 +66,7 @@ function ScreenPreview({ type }: { type: ScreenType }) {
   return <>{renderScreen(previewScreens[type], () => {}, null)}</>;
 }
 
-export function AddScreenDialog({ onAdd }: AddScreenDialogProps) {
+export function AddScreenDialog({ onAdd, pending = false }: AddScreenDialogProps) {
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<ScreenType>("concept");
 
@@ -116,7 +117,9 @@ export function AddScreenDialog({ onAdd }: AddScreenDialogProps) {
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={handleAdd}>Buat Screen</Button>
+          <Button onClick={handleAdd} disabled={pending}>
+            {pending ? "Menambahkan..." : "Buat Screen"}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

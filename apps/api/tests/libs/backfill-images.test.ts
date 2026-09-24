@@ -18,6 +18,10 @@ describe("relativeUrlToKey", () => {
     expect(relativeUrlToKey("https://nos.wjv-1.neo.id/verselab/content/u-1.png")).toBeNull();
   });
 
+  it("strips ?t= cache-busting versions", () => {
+    expect(relativeUrlToKey("/uploads/content/u-1.png?t=1727000000000")).toBe("content/u-1.png");
+  });
+
   it("returns null for null and empty", () => {
     expect(relativeUrlToKey(null)).toBeNull();
     expect(relativeUrlToKey("")).toBeNull();
@@ -35,5 +39,9 @@ describe("mimeForKey", () => {
   it("returns null for unsupported types", () => {
     expect(mimeForKey("content/u-1.gif")).toBeNull();
     expect(mimeForKey("content/u-1")).toBeNull();
+  });
+
+  it("ignores query strings when detecting mime", () => {
+    expect(mimeForKey("content/u-1.png?t=1727000000000")).toBe("image/png");
   });
 });
