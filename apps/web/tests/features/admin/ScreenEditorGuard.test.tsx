@@ -6,7 +6,7 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ScreenEditor } from "#/features/admin/pages/ScreenEditor.tsx";
 
-const { navigateMock, updateMock, mockScreens } = vi.hoisted(() => {
+const { navigateMock, updateMock, mockScreens, blockerStore, capturedBlocker } = vi.hoisted(() => {
   const mk = (id: string, prompt: string) => ({
     id,
     lessonId: "l-1",
@@ -29,6 +29,8 @@ const { navigateMock, updateMock, mockScreens } = vi.hoisted(() => {
     navigateMock: vi.fn(),
     updateMock: vi.fn(),
     mockScreens: [mk("s-1", "Prompt satu"), mk("s-2", "Prompt dua")],
+    blockerStore: { status: "idle" as string, proceed: vi.fn(), reset: vi.fn() },
+    capturedBlocker: {} as { shouldBlockFn?: () => boolean },
   };
 });
 
@@ -43,6 +45,14 @@ vi.mock("#/libs/admin-content-fns.ts", () => ({
 
 vi.mock("@tanstack/react-router", () => ({
   useNavigate: () => navigateMock,
+  useBlocker: (opts: { shouldBlockFn: () => boolean }) => {
+    capturedBlocker.shouldBlockFn = opts.shouldBlockFn;
+    return {
+      status: blockerStore.status,
+      proceed: blockerStore.proceed,
+      reset: blockerStore.reset,
+    };
+  },
 }));
 
 updateMock.mockImplementation(async ({ data }: { data: { id: string } }) => ({
@@ -51,15 +61,20 @@ updateMock.mockImplementation(async ({ data }: { data: { id: string } }) => ({
 
 function renderEditor() {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-  return render(
+  const element = () => (
     <QueryClientProvider client={client}>
       <ScreenEditor lessonId="l-1" />
-    </QueryClientProvider>,
+    </QueryClientProvider>
   );
+  const view = render(element());
+  return { ...view, rerenderEditor: () => view.rerender(element()) };
 }
 
 beforeEach(() => {
   updateMock.mockClear();
+  blockerStore.proceed.mockClear();
+  blockerStore.reset.mockClear();
+  blockerStore.status = "idle";
 });
 
 describe("ScreenEditor unsaved guard", () => {
@@ -102,5 +117,66 @@ describe("ScreenEditor unsaved guard", () => {
 
     expect(updateMock).not.toHaveBeenCalled();
     await screen.findByDisplayValue("Prompt dua");
+  });
+
+  it("reports dirty state to the route blocker", async () => {
+    renderEditor();
+    expect(capturedBlocker.shouldBlockFn?.()).toBe(false);
+
+    fireEvent.change(await screen.findByDisplayValue("Prompt satu"), {
+      target: { value: "Prompt satu edited" },
+    });
+
+    expect(capturedBlocker.shouldBlockFn?.()).toBe(true);
+  });
+
+  it("shows the guard on blocked route navigation and proceeds after save", async () => {
+    const { rerenderEditor } = renderEditor();
+    fireEvent.change(await screen.findByDisplayValue("Prompt satu"), {
+      target: { value: "Prompt satu edited" },
+    });
+
+    blockerStore.status = "blocked";
+    rerenderEditor();
+
+    await screen.findByText("Simpan perubahan?");
+    fireEvent.click(screen.getByRole("button", { name: /simpan & pindah/i }));
+
+    await waitFor(() => expect(updateMock).toHaveBeenCalledTimes(1));
+    expect(blockerStore.proceed).toHaveBeenCalledTimes(1);
+  });
+
+  it("proceeds without saving on Buang for blocked routes, resets on Batal", async () => {
+    const { rerenderEditor } = renderEditor();
+    fireEvent.change(await screen.findByDisplayValue("Prompt satu"), {
+      target: { value: "Prompt satu edited" },
+    });
+
+    blockerStore.status = "blocked";
+    rerenderEditor();
+    await screen.findByText("Simpan perubahan?");
+
+    fireEvent.click(screen.getByRole("button", { name: /^buang$/i }));
+
+    expect(updateMock).not.toHaveBeenCalled();
+    expect(blockerStore.proceed).toHaveBeenCalledTimes(1);
+  });
+
+  it("cancels the blocked navigation on Batal and keeps editing", async () => {
+    const { rerenderEditor } = renderEditor();
+    fireEvent.change(await screen.findByDisplayValue("Prompt satu"), {
+      target: { value: "Prompt satu edited" },
+    });
+
+    blockerStore.status = "blocked";
+    rerenderEditor();
+    await screen.findByText("Simpan perubahan?");
+
+    fireEvent.click(screen.getByRole("button", { name: /^batal$/i }));
+
+    expect(blockerStore.reset).toHaveBeenCalledTimes(1);
+    expect(blockerStore.proceed).not.toHaveBeenCalled();
+    expect(updateMock).not.toHaveBeenCalled();
+    expect(screen.getByDisplayValue("Prompt satu edited")).toBeInTheDocument();
   });
 });

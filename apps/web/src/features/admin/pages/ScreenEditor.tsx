@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useBlocker } from "@tanstack/react-router";
 import {
   adminGetScreens,
   adminCreateScreen,
@@ -83,6 +84,17 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   const [switching, setSwitching] = useState(false);
   const editorApiRef = useRef<ScreenEditorApi | null>(null);
 
+  // Block route-level navigation (sidebar, breadcrumb, back button) and page
+  // unload while the form has unsaved changes. Screen-to-screen switching is
+  // guarded separately via pendingScreenId below.
+  const blocker = useBlocker({
+    shouldBlockFn: () => editorApiRef.current?.hasUnsaved() ?? false,
+    enableBeforeUnload: () => editorApiRef.current?.hasUnsaved() ?? false,
+    withResolver: true,
+  });
+  const routeBlocked = blocker.status === "blocked";
+  const guardOpen = pendingScreenId !== null || routeBlocked;
+
   function handleSelectScreen(id: string) {
     if (id === selectedScreenId || id === pendingScreenId) return;
     if (editorApiRef.current?.hasUnsaved()) {
@@ -92,17 +104,25 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
     setSelectedScreenId(id);
   }
 
-  async function handleSaveAndSwitch() {
-    const target = pendingScreenId;
-    if (!target) return;
+  async function handleSaveAndProceed() {
     setSwitching(true);
     try {
       const saved = await editorApiRef.current?.save();
-      if (saved) {
-        setSelectedScreenId(target);
+      if (!saved) {
+        // Validation errors already toasted by the form; release the route
+        // block (if any) but stay put.
         setPendingScreenId(null);
-      } else {
-        // Validation errors already toasted by the form; stay put.
+        if (blocker.status === "blocked") blocker.reset();
+        return;
+      }
+      if (blocker.status === "blocked") {
+        setPendingScreenId(null);
+        blocker.proceed();
+        return;
+      }
+      const target = pendingScreenId;
+      if (target) {
+        setSelectedScreenId(target);
         setPendingScreenId(null);
       }
     } finally {
@@ -110,9 +130,19 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
     }
   }
 
-  function handleDiscardAndSwitch() {
+  function handleDiscardAndProceed() {
+    if (blocker.status === "blocked") {
+      setPendingScreenId(null);
+      blocker.proceed();
+      return;
+    }
     if (pendingScreenId) setSelectedScreenId(pendingScreenId);
     setPendingScreenId(null);
+  }
+
+  function handleCancelGuard() {
+    setPendingScreenId(null);
+    if (blocker.status === "blocked") blocker.reset();
   }
 
   useEffect(() => {
@@ -228,9 +258,9 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
       </div>
 
       <AlertDialog
-        open={pendingScreenId !== null}
+        open={guardOpen}
         onOpenChange={(open) => {
-          if (!open) setPendingScreenId(null);
+          if (!open) handleCancelGuard();
         }}
       >
         <AlertDialogContent size="sm">
@@ -247,11 +277,11 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
               type="button"
               variant="outline"
               disabled={switching}
-              onClick={handleDiscardAndSwitch}
+              onClick={handleDiscardAndProceed}
             >
               Buang
             </Button>
-            <AlertDialogAction disabled={switching} onClick={handleSaveAndSwitch}>
+            <AlertDialogAction disabled={switching} onClick={handleSaveAndProceed}>
               {switching ? "Menyimpan..." : "Simpan & pindah"}
             </AlertDialogAction>
           </AlertDialogFooter>
