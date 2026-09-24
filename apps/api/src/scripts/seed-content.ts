@@ -81,7 +81,7 @@ async function seedContent() {
         title: lesson.title,
         slug: lessonSlug,
         description: lesson.description ?? null,
-        icon: lesson.icon,
+        icon: null,
         prerequisiteIds: lesson.prerequisiteIds ?? null,
         sortOrder: lessonIdx,
       });

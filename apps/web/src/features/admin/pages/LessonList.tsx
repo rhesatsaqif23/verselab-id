@@ -38,7 +38,7 @@ import { LessonFormDialog } from "../components/LessonFormDialog.tsx";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
 
-type LessonSortKey = "title" | "icon" | "createdAt";
+type LessonSortKey = "title" | "createdAt";
 
 interface LessonListProps {
   unitId: string;
@@ -73,13 +73,9 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
 
   const allLessons: AdminLesson[] = lessons ?? [];
 
-  const filterFn = useCallback(
-    (row: AdminLesson) => `${row.title} ${row.slug} ${row.icon ?? ""}`,
-    [],
-  );
+  const filterFn = useCallback((row: AdminLesson) => `${row.title} ${row.slug}`, []);
   const getValue = useCallback((row: AdminLesson, key: LessonSortKey) => {
     if (key === "title") return row.title;
-    if (key === "icon") return row.icon ?? "";
     if (key === "createdAt") return new Date(row.createdAt);
     return "";
   }, []);
@@ -129,7 +125,6 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
             <TableRow>
               <TableHead className="w-12 text-center font-bold">#</TableHead>
               <SortableHead label="Pelajaran" sortKey="title" sort={sort} onToggle={toggleSort} />
-              <SortableHead label="Ikon" sortKey="icon" sort={sort} onToggle={toggleSort} />
               <TableHead className="text-center font-bold">Gambar</TableHead>
               <SortableHead label="Dibuat" sortKey="createdAt" sort={sort} onToggle={toggleSort} />
               <TableHead className="w-24 text-center font-bold">Aksi</TableHead>
@@ -145,9 +140,6 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
                   <TableCell>
                     <Skeleton className="mb-1 h-5 w-44" />
                     <Skeleton className="h-3 w-24" />
-                  </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-8" />
                   </TableCell>
                   <TableCell className="text-center">
                     <Skeleton className="mx-auto size-12 rounded" />
@@ -165,7 +157,7 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
               ))}
             {!isLoading && processed.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="p-6 text-center text-base text-muted-foreground">
+                <TableCell colSpan={5} className="p-6 text-center text-base text-muted-foreground">
                   {filter
                     ? `Tidak ada lesson yang cocok dengan "${filter}".`
                     : "Belum ada lesson. Tambahkan lesson baru di atas."}
@@ -190,9 +182,6 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
                   <TableCell>
                     <div className="text-base font-semibold text-foreground">{lesson.title}</div>
                     <div className="text-xs text-muted-foreground">{lesson.slug}</div>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {lesson.icon || "-"}
                   </TableCell>
                   <TableCell className="text-center">
                     {resolveImageUrl(lesson.imageUrl) ? (

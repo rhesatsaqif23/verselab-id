@@ -78,7 +78,7 @@ export function AllLessonsTable() {
 
   const all: AdminLessonWithUnit[] = lessons ?? [];
   const filterFn = useCallback(
-    (row: AdminLessonWithUnit) => `${row.title} ${row.unitTitle} ${row.icon ?? ""}`,
+    (row: AdminLessonWithUnit) => `${row.title} ${row.unitTitle}`,
     [],
   );
   const getValue = useCallback((row: AdminLessonWithUnit, key: LessonSortKey) => {
@@ -137,7 +137,6 @@ export function AllLessonsTable() {
               <TableHead className="w-12 text-center font-bold">#</TableHead>
               <SortableHead label="Pelajaran" sortKey="title" sort={sort} onToggle={toggleSort} />
               <SortableHead label="Unit" sortKey="unitTitle" sort={sort} onToggle={toggleSort} />
-              <TableHead className="font-bold">Ikon</TableHead>
               <TableHead className="text-center font-bold">Gambar</TableHead>
               <SortableHead label="Dibuat" sortKey="createdAt" sort={sort} onToggle={toggleSort} />
               <TableHead className="w-24 text-center font-bold">Aksi</TableHead>
@@ -157,9 +156,6 @@ export function AllLessonsTable() {
                   <TableCell>
                     <Skeleton className="h-4 w-28" />
                   </TableCell>
-                  <TableCell>
-                    <Skeleton className="h-4 w-8" />
-                  </TableCell>
                   <TableCell className="text-center">
                     <Skeleton className="mx-auto size-12 rounded" />
                   </TableCell>
@@ -176,7 +172,7 @@ export function AllLessonsTable() {
               ))}
             {!isLoading && paged.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="p-6 text-center text-base text-muted-foreground">
+                <TableCell colSpan={6} className="p-6 text-center text-base text-muted-foreground">
                   {filter
                     ? `Tidak ada pelajaran yang cocok dengan "${filter}".`
                     : "Belum ada pelajaran."}
@@ -204,9 +200,6 @@ export function AllLessonsTable() {
                   </TableCell>
                   <TableCell>
                     <span className="text-sm text-muted-foreground">{lesson.unitTitle}</span>
-                  </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {lesson.icon || "-"}
                   </TableCell>
                   <TableCell className="text-center">
                     {resolveImageUrl(lesson.imageUrl) ? (

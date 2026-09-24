@@ -69,7 +69,6 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [icon, setIcon] = useState("");
   const [previewUrl, setPreviewUrl] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [removeImage, setRemoveImage] = useState(false);
@@ -94,7 +93,6 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
       unitId: string;
       title: string;
       description?: string;
-      icon?: string;
       prerequisiteIds?: string[];
     }) => adminCreateLesson({ data }),
     onSuccess: () => {
@@ -108,7 +106,6 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
       id: string;
       title?: string;
       description?: string | null;
-      icon?: string;
       imageUrl?: string | null;
       prerequisiteIds?: string[] | null;
     }) => adminUpdateLesson({ data }),
@@ -127,7 +124,6 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   function reset() {
     setTitle("");
     setDescription("");
-    setIcon("");
     setPreviewUrl("");
     setSelectedFile(null);
     setRemoveImage(false);
@@ -140,7 +136,6 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
     if (next) {
       setTitle(lesson?.title ?? "");
       setDescription(lesson?.description ?? "");
-      setIcon(lesson?.icon ?? "");
       setPreviewUrl(resolveImageUrl(lesson?.imageUrl) ?? "");
       setSelectedFile(null);
       setRemoveImage(false);
@@ -170,7 +165,6 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
           id: lesson.id,
           title: title.trim(),
           description: description.trim() || null,
-          icon: icon.trim() || undefined,
           imageUrl: removeImage ? null : undefined,
           prerequisiteIds: prerequisiteIds.length > 0 ? prerequisiteIds : null,
         });
@@ -181,7 +175,6 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
           unitId,
           title: title.trim(),
           description: description.trim() || undefined,
-          icon: icon.trim() || undefined,
           prerequisiteIds: prerequisiteIds.length > 0 ? prerequisiteIds : undefined,
         });
         targetId = result?.id;
@@ -268,15 +261,6 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Pahami konsep dan latihan interaktif untuk menguasai topik ini."
-            />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="lesson-icon">Icon (opsional, fallback jika tanpa gambar)</Label>
-            <Input
-              id="lesson-icon"
-              value={icon}
-              onChange={(e) => setIcon(e.target.value)}
-              placeholder="&#128176;"
             />
           </div>
           <ImageUpload
