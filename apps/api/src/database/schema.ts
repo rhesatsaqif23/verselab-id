@@ -11,6 +11,7 @@ import {
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 import { user } from "./auth-schema.ts";
 
 export const dailyGoalEnum = pgEnum("daily_goal", ["casual", "regular", "serious"]);
@@ -122,6 +123,10 @@ export const contentLessons = pgTable(
     unitIdx: index("content_lessons_unit_idx").on(t.unitId),
     sortIdx: index("content_lessons_sort_idx").on(t.unitId, t.sortOrder),
     slugIdx: uniqueIndex("content_lessons_slug_idx").on(t.slug),
+    unitTitleIdx: uniqueIndex("content_lessons_unit_title_idx").on(
+      t.unitId,
+      sql`lower(trim(${t.title}))`,
+    ),
   }),
 );
 

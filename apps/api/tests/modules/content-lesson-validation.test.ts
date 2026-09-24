@@ -21,12 +21,21 @@ function makeDb(rows: any[]) {
     update: (_table?: unknown) => ({
       set: (values: unknown) => ({
         where: (_cond?: unknown) => ({
-          returning: async () => [{ id: "l-1", ...(values as object) }],
+          returning: async () => {
+            if (throwCode) {
+              const err: any = new Error("duplicate key");
+              err.code = throwCode;
+              throw err;
+            }
+            return [{ id: "l-1", ...(values as object) }];
+          },
         }),
       }),
     }),
   };
 }
+
+let throwCode: string | null = null;
 
 let dbRows: any[] = [];
 
@@ -70,6 +79,20 @@ describe("lesson title uniqueness", () => {
     const row = await contentLessonService.updateLesson("l-1", { title: "lama" });
 
     expect(row.id).toBe("l-1");
+  });
+
+  it("maps a DB race on unique title to 409", async () => {
+    dbRows = [{ id: "l-1", unitId: "u-1", title: "Lama", prerequisiteIds: [] }];
+    throwCode = "23505";
+    try {
+      const err = await contentLessonService.updateLesson("l-1", { title: "Baru" }).catch((e) => e);
+
+      expect(err).toBeInstanceOf(AppError);
+      expect(err.code).toBe("CONFLICT");
+      expect(err.message).toContain("sudah dipakai");
+    } finally {
+      throwCode = null;
+    }
   });
 
   it("returns 404 when updating a missing lesson", async () => {

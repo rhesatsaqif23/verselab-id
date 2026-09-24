@@ -24,6 +24,10 @@ describe("translateAdminError", () => {
     expect(translateAdminError(new TypeError("Failed to fetch"), "x")).toContain("koneksi");
   });
 
+  it("distinguishes unknown routes from deleted rows", () => {
+    expect(translateAdminError(new Error("ROUTE_NOT_FOUND"), "x")).toContain("versi terbaru");
+  });
+
   it("passes through user-friendly messages and falls back otherwise", () => {
     expect(translateAdminError(new Error("Judul sudah dipakai"), "x")).toBe("Judul sudah dipakai");
     expect(translateAdminError(new Error("HTTP 418"), "Cadangan")).toBe("Cadangan");

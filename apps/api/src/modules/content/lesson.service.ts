@@ -56,6 +56,15 @@ async function assertUniqueTitle(unitId: string, title: string, excludeId?: stri
   }
 }
 
+/** Map Postgres unique violations to a clear conflict error (covers races
+ * past the application-level duplicate check). */
+function mapUniqueViolation(err: unknown): never {
+  if (err && typeof err === "object" && (err as { code?: string }).code === "23505") {
+    throw new AppError({ code: "CONFLICT", message: "Judul lesson sudah dipakai di unit ini." });
+  }
+  throw err;
+}
+
 /**
  * Reject prerequisite selections that would create a cycle: the lesson itself
  * or any lesson that already (transitively) depends on it.
@@ -205,20 +214,25 @@ export const contentLessonService: ContentLessonService = {
         return rows.length > 0;
       },
     );
-    const [row] = await db
-      .insert(contentLessons)
-      .values({
-        id,
-        unitId: input.unitId,
-        title: input.title,
-        slug,
-        description: input.description,
-        icon: input.icon,
-        imageUrl: input.imageUrl,
-        prerequisiteIds: input.prerequisiteIds,
-        sortOrder,
-      })
-      .returning();
+    let row;
+    try {
+      [row] = await db
+        .insert(contentLessons)
+        .values({
+          id,
+          unitId: input.unitId,
+          title: input.title,
+          slug,
+          description: input.description,
+          icon: input.icon,
+          imageUrl: input.imageUrl,
+          prerequisiteIds: input.prerequisiteIds,
+          sortOrder,
+        })
+        .returning();
+    } catch (err) {
+      mapUniqueViolation(err);
+    }
     return row;
   },
 
@@ -250,11 +264,16 @@ export const contentLessonService: ContentLessonService = {
         },
       );
     }
-    const [row] = await db
-      .update(contentLessons)
-      .set({ ...input, ...(slug ? { slug } : {}), updatedAt: new Date() })
-      .where(eq(contentLessons.id, id))
-      .returning();
+    let row;
+    try {
+      [row] = await db
+        .update(contentLessons)
+        .set({ ...input, ...(slug ? { slug } : {}), updatedAt: new Date() })
+        .where(eq(contentLessons.id, id))
+        .returning();
+    } catch (err) {
+      mapUniqueViolation(err);
+    }
     if (!row) throw new AppError({ code: "NOT_FOUND", message: "Lesson tidak ditemukan." });
     return row;
   },

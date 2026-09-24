@@ -19,13 +19,13 @@ import {
   translateAdminError,
   type AdminScreen,
 } from "#/libs/admin-content-fns.ts";
-import { ScreenForm } from "./ScreenForm.tsx";
+import { ScreenForm, type ScreenEditorApi } from "./ScreenForm.tsx";
 import { ScreenPreviewCard } from "./ScreenPreviewCard.tsx";
 
 interface ScreenEditPanelProps {
   activeScreen: AdminScreen | null;
   lessonId: string;
-  onRegisterValidator?: (fn: () => boolean) => void;
+  onRegisterValidator?: (api: ScreenEditorApi) => void;
 }
 
 export function ScreenEditPanel({

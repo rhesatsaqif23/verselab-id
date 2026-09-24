@@ -28,6 +28,9 @@ async function apiMutate<T>(path: string, init: RequestInit): Promise<T> {
       body = null;
     }
     if (body && !body.ok) throw new Error(`${body.error.code}: ${body.error.message}`);
+    // Elysia answers unknown routes with an empty-body 404 (no fail envelope).
+    // That means the running API predates the endpoint — not a deleted row.
+    if (res.status === 404) throw new Error("ROUTE_NOT_FOUND");
     throw new Error(`HTTP ${res.status}`);
   }
   const body = (await res.json()) as ApiResponse<T>;
@@ -359,6 +362,9 @@ export function translateAdminError(err: unknown, fallback: string): string {
   }
 
   const key = `${code} ${msg}`;
+  if (/ROUTE_NOT_FOUND/.test(key)) {
+    return "Server tidak mengenali aksi ini. Pastikan API versi terbaru (restart dev server) lalu coba lagi.";
+  }
   if (/401|UNAUTHENTICATED|unauthorized/i.test(key)) {
     return "Sesi berakhir. Silakan masuk ulang.";
   }

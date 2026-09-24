@@ -11,8 +11,20 @@ import {
 } from "#/libs/admin-content-fns.ts";
 import { AddScreenDialog } from "../components/AddScreenDialog.tsx";
 import { AdminQueryError } from "../components/QueryError.tsx";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "#/components/ui/alert-dialog.tsx";
+import { Button } from "#/components/ui/button.tsx";
 import { ScreenListPanel } from "../components/ScreenListPanel.tsx";
 import { ScreenEditPanel } from "../components/ScreenEditPanel.tsx";
+import type { ScreenEditorApi } from "../components/ScreenForm.tsx";
 
 interface ScreenEditorProps {
   lessonId: string;
@@ -67,11 +79,40 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   const allScreens: AdminScreen[] = screens ?? [];
 
   const [selectedScreenId, setSelectedScreenId] = useState<string | null>(null);
-  const canSwitchRef = useRef<(() => boolean) | null>(null);
+  const [pendingScreenId, setPendingScreenId] = useState<string | null>(null);
+  const [switching, setSwitching] = useState(false);
+  const editorApiRef = useRef<ScreenEditorApi | null>(null);
 
   function handleSelectScreen(id: string) {
-    if (canSwitchRef.current && !canSwitchRef.current()) return;
+    if (id === selectedScreenId || id === pendingScreenId) return;
+    if (editorApiRef.current?.hasUnsaved()) {
+      setPendingScreenId(id);
+      return;
+    }
     setSelectedScreenId(id);
+  }
+
+  async function handleSaveAndSwitch() {
+    const target = pendingScreenId;
+    if (!target) return;
+    setSwitching(true);
+    try {
+      const saved = await editorApiRef.current?.save();
+      if (saved) {
+        setSelectedScreenId(target);
+        setPendingScreenId(null);
+      } else {
+        // Validation errors already toasted by the form; stay put.
+        setPendingScreenId(null);
+      }
+    } finally {
+      setSwitching(false);
+    }
+  }
+
+  function handleDiscardAndSwitch() {
+    if (pendingScreenId) setSelectedScreenId(pendingScreenId);
+    setPendingScreenId(null);
   }
 
   useEffect(() => {
@@ -179,12 +220,43 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
           <ScreenEditPanel
             activeScreen={activeScreen}
             lessonId={lessonId}
-            onRegisterValidator={(fn) => {
-              canSwitchRef.current = fn;
+            onRegisterValidator={(api) => {
+              editorApiRef.current = api;
             }}
           />
         </div>
       </div>
+
+      <AlertDialog
+        open={pendingScreenId !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingScreenId(null);
+        }}
+      >
+        <AlertDialogContent size="sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Simpan perubahan?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Screen ini masih memiliki perubahan yang belum disimpan. Simpan dulu agar tidak
+              hilang.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={switching}>Batal</AlertDialogCancel>
+            <Button
+              type="button"
+              variant="outline"
+              disabled={switching}
+              onClick={handleDiscardAndSwitch}
+            >
+              Buang
+            </Button>
+            <AlertDialogAction disabled={switching} onClick={handleSaveAndSwitch}>
+              {switching ? "Menyimpan..." : "Simpan & pindah"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

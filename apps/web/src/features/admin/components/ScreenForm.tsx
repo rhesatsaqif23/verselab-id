@@ -13,38 +13,48 @@ import { ChoiceFields } from "./ChoiceFields.tsx";
 import { NumericFields } from "./NumericFields.tsx";
 import { AllocationFields } from "./AllocationFields.tsx";
 
+/** Editor API exposed to the parent (screen switching guard). */
+export type ScreenEditorApi = {
+  hasUnsaved: () => boolean;
+  /** Validates and saves. Returns true when the form is cleanly saved. */
+  save: () => Promise<boolean>;
+};
+
+/** Normalized snapshot for dirty-checking (trims text, nulls blanks). */
+export function snapshotScreenForm(s: AdminScreen): string {
+  return JSON.stringify({
+    prompt: s.prompt.trim(),
+    explain: s.explain.trim(),
+    options: s.options ?? null,
+    correctId: s.correctId ?? null,
+    numericUnit: s.numericUnit?.trim() || null,
+    acceptRangeMin: s.acceptRangeMin ?? null,
+    acceptRangeMax: s.acceptRangeMax ?? null,
+    categories: s.categories ?? null,
+    rule: s.rule ?? null,
+  });
+}
+
 interface ScreenFormProps {
   screen: AdminScreen;
   lessonId: string;
-  onRegisterValidator?: (fn: () => boolean) => void;
+  onRegisterValidator?: (api: ScreenEditorApi) => void;
 }
 
 export function ScreenForm({ screen, lessonId, onRegisterValidator }: ScreenFormProps) {
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState<AdminScreen>(() => screen);
-  const validateRef = useRef<() => boolean>(() => true);
+  const baselineRef = useRef<string>(snapshotScreenForm(screen));
 
   useEffect(() => {
-    validateRef.current = () => {
-      const errors = validateForm();
-      if (errors.length > 0) {
-        errors.forEach((msg) => toast.error(msg));
-        return false;
-      }
-      return true;
-    };
-  });
-
-  useEffect(() => {
-    if (onRegisterValidator) {
-      onRegisterValidator(() => validateRef.current());
-    }
-  }, [onRegisterValidator]);
+    baselineRef.current = snapshotScreenForm(screen);
+  }, [screen]);
 
   const saveMutation = useMutation({
     mutationFn: (patch: Parameters<typeof adminUpdateScreen>[0]["data"]) =>
       adminUpdateScreen({ data: patch }),
     onSuccess: () => {
+      baselineRef.current = snapshotScreenForm(formData);
       queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
       toast.success("Screen berhasil disimpan");
     },
@@ -111,6 +121,12 @@ export function ScreenForm({ screen, lessonId, onRegisterValidator }: ScreenForm
       return;
     }
 
+    saveMutation.mutate({ id: screen.id, ...buildPatch() } as Parameters<
+      typeof adminUpdateScreen
+    >[0]["data"]);
+  }
+
+  function buildPatch(): Partial<AdminScreen> {
     const patch: Partial<AdminScreen> = {
       prompt: formData.prompt.trim(),
       explain: formData.explain.trim(),
@@ -150,10 +166,32 @@ export function ScreenForm({ screen, lessonId, onRegisterValidator }: ScreenForm
       patch.rule = null;
     }
 
-    saveMutation.mutate({ id: screen.id, ...patch } as Parameters<
-      typeof adminUpdateScreen
-    >[0]["data"]);
+    return patch;
   }
+
+  useEffect(() => {
+    if (onRegisterValidator) {
+      onRegisterValidator({
+        hasUnsaved: () => snapshotScreenForm(formData) !== baselineRef.current,
+        save: async () => {
+          const errors = validateForm();
+          if (errors.length > 0) {
+            errors.forEach((msg) => toast.error(msg));
+            return false;
+          }
+          try {
+            await saveMutation.mutateAsync({ id: screen.id, ...buildPatch() } as Parameters<
+              typeof adminUpdateScreen
+            >[0]["data"]);
+            baselineRef.current = snapshotScreenForm(formData);
+            return true;
+          } catch {
+            return false;
+          }
+        },
+      });
+    }
+  });
 
   const isPending = saveMutation.isPending;
 
