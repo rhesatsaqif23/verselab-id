@@ -38,6 +38,8 @@ type SeedLesson = {
   title: string;
   description?: string;
   prerequisiteIds?: string[];
+  /** Path to an illustration under assets/ (repo root), uploaded at seed time. */
+  imageAsset?: string;
   screens: SeedScreen[];
 };
 
@@ -45,7 +47,9 @@ type SeedUnit = {
   id: string;
   title: string;
   description: string;
-  imageUrl: string;
+  imageUrl?: string;
+  /** Path to an illustration under assets/ (repo root), uploaded at seed time. */
+  imageAsset?: string;
   lessons: SeedLesson[];
 };
 
@@ -55,289 +59,490 @@ export const seedUnits: SeedUnit[] = [
     id: "keuangan",
     title: "Keuangan",
     description: "Menabung, anggaran, cicilan, dan nilai waktu uang.",
-    imageUrl: "/unit/keuangan.webp",
+    imageAsset: "Batch 1/UI_Batch1_Card.png",
     lessons: [
       {
-        id: "nabung-awal",
-        title: "Kenapa Nabung Lebih Awal Jauh Lebih Untung",
-        description:
-          "Pahami kekuatan bunga bertabla dan mengapa waktu adalah aset terbesar dalam menabung.",
+        id: "arus-kas-dasar",
+        title: "Arus Kas Dasar",
+        description: "Bedakan uang masuk dan keluar, lalu hitung sisanya setiap bulan.",
+        imageAsset: "Batch 2/Keu_Cashflow.png",
         screens: [
           {
             type: "choice",
             prompt:
-              "Si A nabung 1 juta per bulan selama 10 tahun mulai umur 25, terus berhenti total. Si B nabung 1 juta per bulan selama 15 tahun tapi baru mulai umur 35. Di umur 60, siapa yang duitnya lebih banyak?",
+              "Budi gajian Rp 5.000.000. Ia menghabiskan Rp 4.200.000 untuk semua kebutuhan bulan itu. Berapa arus kas bersihnya?",
             options: [
-              { id: "a", label: "A" },
-              { id: "b", label: "B" },
-              { id: "c", label: "Sama aja" },
+              { id: "a", label: "Rp 800.000" },
+              { id: "b", label: "Rp 4.200.000" },
+              { id: "c", label: "Rp 9.200.000" },
             ],
             correctId: "a",
             explain:
-              "A cuma nyetor 120 juta, B nyetor 180 juta. Tapi duit A punya waktu 25 tahun buat berbunga, sementara B cuma 10 tahun.",
+              "5.000.000 dikurangi 4.200.000 sama dengan 800.000. Sisanya positif, jadi Budi surplus bulan ini.",
+          },
+          {
+            type: "numeric",
+            prompt:
+              "Penghasilanmu Rp 6.000.000, pengeluaranmu Rp 4.500.000. Berapa rupiah sisanya?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 1500000,
+            acceptRangeMax: 1500000,
+            explain: "6.000.000 dikurangi 4.500.000 sama dengan 1.500.000.",
           },
           {
             type: "concept",
             prompt:
-              "Yang bikin selisihnya besar tadi namanya bunga berbunga. Bunga tahun ini ikut kena bunga tahun depan, jadi makin lama makin cepat naiknya.",
+              "Dua orang gajinya sama. Yang satu selalu punya sisa, yang lain selalu habis sebelum gajian. Bedanya bukan gaji, tapi selisih antara uang masuk dan uang keluar.",
             explain:
-              "Yang bikin selisihnya besar tadi namanya bunga berbunga. Bunga tahun ini ikut kena bunga tahun depan, jadi makin lama makin cepat naiknya.",
+              "Itulah yang disebut Arus Kas (cashflow): uang masuk dikurangi uang keluar dalam satu periode. Positif berarti surplus, negatif berarti defisit.",
           },
           {
             type: "numeric",
             prompt:
-              "Kamu nabung 500 ribu per bulan dengan bunga 6% per tahun. Setelah 10 tahun, total tabungan kamu jadi berapa?",
-            numericUnit: "juta",
-            acceptRangeMin: 80,
-            acceptRangeMax: 84,
-            explain:
-              "Setoran kamu totalnya cuma 60 juta, tapi jadi sekitar 82 juta. Selisih 22 juta itu dari bunga.",
-          },
-          {
-            type: "numeric",
-            prompt:
-              "Kamu nabung 500 ribu per bulan dengan bunga 6% per tahun. Tapi kamu baru mulai 5 tahun lebih telat. Setelah 10 tahun, total tabungan kamu jadi berapa?",
-            numericUnit: "juta",
-            acceptRangeMin: 33,
-            acceptRangeMax: 36,
-            explain:
-              "Telat 5 tahun bikin hasilnya turun lebih dari setengah. Waktu itu bahan bakar utamanya.",
+              "Sisamu Rp 800.000 per bulan. Jika polanya sama, berapa total yang terkumpul dalam setahun?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 9600000,
+            acceptRangeMax: 9600000,
+            explain: "800.000 dikali 12 bulan sama dengan 9.600.000.",
           },
           {
             type: "allocation",
-            prompt:
-              "Gaji kamu 5 juta per bulan. Bagi ke tiga pos, dengan syarat tabungan minimal 20%.",
+            prompt: "Gaji Rp 5.000.000. Atur pembagiannya ke tiga pos ini:",
             categories: ["Kebutuhan", "Keinginan", "Tabungan"],
             rule: { type: "min", categoryId: "Tabungan", min: 20 },
             explain:
-              "20% dari 5 juta itu 1 juta per bulan. Dalam 10 tahun dengan bunga 6%, itu jadi sekitar 164 juta.",
+              "Sisihkan minimal 20% untuk tabungan sebelum membelanjakan sisanya.",
           },
           {
-            type: "choice",
-            prompt:
-              "Kamu dapat bonus 10 juta. Mana yang paling berpengaruh ke kondisi keuangan kamu 10 tahun lagi?",
-            options: [
-              { id: "a", label: "Beli HP baru" },
-              { id: "b", label: "Masukin ke tabungan jangka panjang" },
-              { id: "c", label: "Bayar cicilan kartu kredit yang bunganya 30% per tahun" },
-            ],
-            correctId: "c",
+            type: "allocation",
+            prompt: "Pengeluaran Rp 4.000.000. Atur pembagiannya:",
+            categories: ["Sewa", "Makan", "Transport", "Tabungan"],
+            rule: { type: "min", categoryId: "Tabungan", min: 10 },
             explain:
-              "Bunga utang 30% jauh lebih besar dari bunga tabungan 6%. Bayar utang mahal itu sama aja dapat untung 30%.",
+              "Sekecil apa pun, tabungan harus selalu dapat porsi. Minimal 10% dari pengeluaran.",
           },
         ],
       },
       {
-        id: "nilai-waktu-uang",
-        title: "Uang Sekarang vs Masa Depan",
-        description: "Kenapa 1 juta hari ini bernilai lebih dari 1 juta di masa depan.",
-        prerequisiteIds: ["nabung-awal"],
+        id: "anggaran",
+        title: "Anggaran & Prioritas",
+        description: "Bagi penghasilan ke pos-pos dengan porsi yang masuk akal.",
+        imageAsset: "Batch 2/Keu_Budget.png",
+        prerequisiteIds: ["arus-kas"],
         screens: [
+          {
+            type: "numeric",
+            prompt:
+              "Gaji Rp 7.500.000. Dengan aturan 50/30/20, berapa rupiah jatah kebutuhan (50%)?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 3750000,
+            acceptRangeMax: 3750000,
+            explain: "50% dari 7.500.000 sama dengan 3.750.000.",
+          },
           {
             type: "choice",
             prompt:
-              "Rp 100.000 hari ini bisa beli 20 nasi kotak. 10 tahun lagi, menurut kamu palingan cuma bisa beli berapa?",
+              "Pengeluaranmu overbudget bulan ini. Pos mana yang paling tepat dipotong duluan?",
             options: [
-              { id: "a", label: "Tetap 20" },
-              { id: "b", label: "Lebih banyak, 25" },
-              { id: "c", label: "Lebih sedikit, 10" },
+              { id: "a", label: "Langganan yang jarang dipakai" },
+              { id: "b", label: "Makan pokok" },
+              { id: "c", label: "Sewa kontrakan" },
             ],
-            correctId: "c",
+            correctId: "a",
             explain:
-              "Harga naik terus tiap tahun (inflasi). Uang yang sama, isinya berkurang. Rp 100.000 10 tahun lagi mungkin cuma setara Rp 60.000 hari ini.",
+              "Potong dulu pengeluaran yang tidak mengganggu hidup: langganan yang jarang dipakai.",
           },
           {
             type: "concept",
             prompt:
-              'Inflasi itu kenaikan harga barang dari waktu ke waktu. Rata-rata inflasi Indonesia sekitar 3-5% per tahun. Artinya, uang kamu "mengecil" tiap tahun kalau cuma didiemin.',
+              "Tanpa rencana, uang habis tanpa jejak setiap bulan. Dengan rencana, tiap rupiah punya tugas sebelum ia dibelanjakan.",
             explain:
-              "Inflasi adalah musuh tersembunyi. Uang yang tidak bertumbuh lebih lambat dari inflasi berarti nilainya mengecil.",
+              "Itulah gunanya Anggaran (budgeting): rencana pembagian penghasilan ke pos-pos kebutuhan, keinginan, dan tabungan.",
           },
           {
             type: "numeric",
-            prompt:
-              "Harga sekarang Rp 50.000. Kalau inflasi 5% per tahun, berapa harga barang yang sama 3 tahun lagi? (dalam ribuan)",
-            numericUnit: "ribu",
-            acceptRangeMin: 57,
-            acceptRangeMax: 59,
-            explain: "Rp 50.000 × 1.05 × 1.05 × 1.05 = Rp 57.889. Naik sekitar 8% dalam 3 tahun.",
-          },
-          {
-            type: "choice",
-            prompt: "Kamu punya Rp 10 juta. Mana yang nilainya paling terjaga 5 tahun lagi?",
-            options: [
-              { id: "a", label: "Ditaruh di bawah kasur" },
-              { id: "b", label: "Ditaruh di tabungan biasa (bunga 1%)" },
-              { id: "c", label: "Ditaruh di reksa dana pasar uang (bunga 5%)" },
-            ],
-            correctId: "c",
-            explain:
-              "Tabungan 1% kalah dari inflasi 5%. Reksa dana pasar uang setidaknya mendekati inflasi. Uang di kasur pasti kalah.",
+            prompt: "Dengan aturan yang sama, berapa rupiah jatah tabungan (20%)?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 1500000,
+            acceptRangeMax: 1500000,
+            explain: "20% dari 7.500.000 sama dengan 1.500.000.",
           },
           {
             type: "allocation",
-            prompt:
-              "Gaji kamu 8 juta per bulan. Alokasikan ke tiga pos ini. Tabungan harus minimal 20%.",
-            categories: ["Kebutuhan pokok", "Investasi", "Tabungan darurat"],
-            rule: { type: "min", categoryId: "Tabungan darurat", min: 20 },
-            explain:
-              "Tabungan darurat minimal 3-6 bulan pengeluaran. Setelah terpenuhi, lebih bisa dialihkan ke investasi.",
-          },
-          {
-            type: "numeric",
-            prompt:
-              "Kamu investasi Rp 2 juta per bulan dengan return 8% per tahun. Setelah 5 tahun, total uang kamu sekitar berapa? (dalam juta)",
-            numericUnit: "juta",
-            acceptRangeMin: 143,
-            acceptRangeMax: 150,
-            explain:
-              "Setoran total Rp 120 juta, tapi jadi sekitar 146 juta. Bunga berbunga bikin investasi tumbuh lebih cepat dari sekadar nabung.",
-          },
-        ],
-      },
-      {
-        id: "anggaran-bulanan",
-        title: "Membuat Anggaran Sederhana",
-        description: "Susun anggaran bulanan praktis yang bisa langsung kamu terapkan.",
-        prerequisiteIds: ["nilai-waktu-uang"],
-        screens: [
-          {
-            type: "choice",
-            prompt:
-              "Gaji kamu Rp 7 juta per bulan. Setelah bayar sewa, makan, dan transport, sisa Rp 1 juta. Sisa ini sebaiknya?",
-            options: [
-              { id: "a", label: "Beli barang yang lagi diskon" },
-              { id: "b", label: "Tabungan darurat dulu, sisanya baru investing" },
-              { id: "c", label: "Terserah, yang penting senang" },
-            ],
-            correctId: "b",
-            explain:
-              "Sebelum investasi, tabungan darurat harus terisi dulu. Minimal 3-6 bulan biaya hidup. Kalau ada kejadian mendadak, kamu gak perlu utang.",
-          },
-          {
-            type: "concept",
-            prompt:
-              "Aturan 50/30/20: 50% kebutuhan, 30% keinginan, 20% tabungan & investasi. Ini cara sederhana tapi efektif buat atur uang.",
-            explain:
-              "Anggaran gak harus rumit. Yang penting konsisten. Aturan 50/30/20 jadi framework dasar yang bisa disesuaikan.",
-          },
-          {
-            type: "numeric",
-            prompt:
-              "Gaji Rp 6 juta per bulan. Berdasarkan aturan 50/30/20, berapa maksimal untuk keinginan? (dalam juta)",
-            numericUnit: "juta",
-            acceptRangeMin: 1.7,
-            acceptRangeMax: 1.9,
-            explain:
-              "30% dari Rp 6 juta = Rp 1.8 juta. Itu batas untuk keinginan (nongkrong, hiburan, jajan).",
-          },
-          {
-            type: "allocation",
-            prompt:
-              "Gaji kamu Rp 10 juta. Alokasikan ke empat pos ini. Tabungan & investasi harus minimal 20%.",
-            categories: ["Kebutuhan", "Keinginan", "Tabungan", "Investasi"],
+            prompt: "Gaji Rp 7.500.000. Atur pembagiannya:",
+            categories: ["Kebutuhan", "Keinginan", "Tabungan"],
             rule: { type: "min", categoryId: "Tabungan", min: 20 },
-            explain:
-              "Tabungan dan investasi harus jadi prioritas, bukan sisa. Bayar diri sendiri dulu sebelum belanja.",
+            explain: "Ikuti aturan 50/30/20: kebutuhan 50%, keinginan 30%, tabungan 20%.",
           },
           {
-            type: "choice",
-            prompt: "Kamu punya cicilan Rp 1.5 juta per bulan dari gaji Rp 6 juta. Apakah aman?",
-            options: [
-              { id: "a", label: "Aman, masih 25% dari gaji" },
-              { id: "b", label: "Mepet, idealnya di bawah 20%" },
-              { id: "c", label: "Bahaya, karena 25% itu terlalu tinggi" },
-            ],
-            correctId: "c",
-            explain:
-              "Banyak pakar keuangan menyarankan cicilan maksimal 30% dari gaji. Tapi untuk gaji Rp 6 juta, 25% sudah cukup mepet karena kebutuhan pokok juga besar.",
-          },
-          {
-            type: "numeric",
-            prompt:
-              "Pengeluaran bulanan kamu Rp 4.5 juta dari gaji Rp 6 juta. Berapa persen uang yang tersimpan? (dalam persen)",
-            numericUnit: "persen",
-            acceptRangeMin: 24,
-            acceptRangeMax: 26,
-            explain: "(6 - 4.5) / 6 × 100 = 25%. Itu sudah bagus! Lebih dari 20% yang disarankan.",
+            type: "allocation",
+            prompt: "Uang jajan Rp 1.000.000. Atur pembagiannya:",
+            categories: ["Makan", "Hiburan", "Belanja", "Tabungan"],
+            rule: { type: "min", categoryId: "Tabungan", min: 15 },
+            explain: "Bahkan uang jajan pun perlu pos tabungan. Minimal 15%.",
           },
         ],
       },
       {
-        id: "hutang-cicilan",
-        title: "Memahami Bunga Pinjaman",
-        description: "Kenali cara kerja bunga pinjaman dan dampaknya terhadap keuangan kamu.",
-        prerequisiteIds: ["anggaran-bulanan"],
+        id: "dana-darurat",
+        title: "Dana Darurat",
+        description: "Siapkan bantalan 3–6 bulan pengeluaran untuk hal tak terduga.",
+        imageAsset: "Batch 2/Keu_Emergency.png",
+        prerequisiteIds: ["anggaran"],
         screens: [
           {
             type: "choice",
-            prompt:
-              "Kamu pinjam Rp 10 juta dengan bunga 2% per bulan. Setelah 1 tahun, berapa total yang harus kamu bayar?",
+            prompt: "Berapa dana darurat yang ideal untuk karyawan tetap?",
             options: [
-              { id: "a", label: "Rp 10 juta + bunga Rp 2.4 juta = Rp 12.4 juta" },
-              { id: "b", label: "Rp 10 juta + bunga Rp 2 juta = Rp 12 juta" },
-              { id: "c", label: "Rp 10 juta saja" },
+              { id: "a", label: "1 bulan pengeluaran" },
+              { id: "b", label: "3–6 bulan pengeluaran" },
+              { id: "c", label: "12 bulan penuh" },
             ],
-            correctId: "a",
+            correctId: "b",
             explain:
-              "Bunga 2% per bulan = 24% per tahun (simple). Rp 10 juta × 24% = Rp 2.4 juta. Total Rp 12.4 juta.",
-          },
-          {
-            type: "concept",
-            prompt:
-              "Bunga pinjaman itu kebalikan dari bunga tabungan. Kalau bunga tabungan bikin uangmu tumbuh, bunga pinjaman bikin utangmu membesar.",
-            explain:
-              "Prinsipnya sama: bunga berbunga. Tapi di sisi yang merugikan. Makin lama bayar, makin besar totalnya.",
+              "3–6 bulan pengeluaran cukup untuk menutup PHK atau sakit tanpa berutang.",
           },
           {
             type: "numeric",
             prompt:
-              "Kamu pinjam Rp 5 juta dengan bunga 10% per tahun. Setelah 2 tahun, berapa total utang kamu? (dalam juta)",
-            numericUnit: "juta",
-            acceptRangeMin: 6,
-            acceptRangeMax: 6.1,
-            explain:
-              "Rp 5 juta × 1.10 × 1.10 = Rp 6.05 juta. Bunga tahun kedua dihitung dari pokok + bunga tahun pertama.",
+              "Pengeluaranmu Rp 4.000.000 per bulan. Berapa target dana darurat 6 bulan?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 24000000,
+            acceptRangeMax: 24000000,
+            explain: "4.000.000 dikali 6 sama dengan 24.000.000.",
           },
           {
-            type: "choice",
+            type: "concept",
             prompt:
-              "Kamu punya utang Rp 3 juta (bunga 2% per bulan) dan tabungan Rp 3 juta (bunga 1% per bulan). Apakah lebih baik bayar utang dulu atau tetap nabung?",
-            options: [
-              { id: "a", label: "Bayar utang dulu" },
-              { id: "b", label: "Tetap nabung, jaga likuiditas" },
-              { id: "c", label: "Sama aja" },
-            ],
-            correctId: "a",
+              "Motor mogok, HP hilang, semuanya di bulan yang sama. Tanpa bantalan, satu kejadian saja bisa memaksamu berutang.",
             explain:
-              'Utang bunga 2% > tabungan bunga 1%. Setiap rupiah yang kamu bayar ke utang "menghemat" 2% per bulan. Lebih besar dari untung nabung.',
+              "Dana Darurat adalah simpanan khusus untuk kejadian tak terduga: 3–6 bulan pengeluaran, disimpan terpisah dan mudah dicairkan.",
+          },
+          {
+            type: "numeric",
+            prompt:
+              "Targetmu Rp 24.000.000 dan sudah terkumpul Rp 10.000.000. Berapa kekurangannya?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 14000000,
+            acceptRangeMax: 14000000,
+            explain: "24.000.000 dikurangi 10.000.000 sama dengan 14.000.000.",
           },
           {
             type: "allocation",
-            prompt:
-              "Gaji kamu Rp 8 juta. Kamu punya utang Rp 2 juta per bulan. Alokasikan sisanya. Tabungan darurat harus minimal 15%.",
-            categories: ["Kebutuhan", "Bayar utang ekstra", "Tabungan darurat"],
-            rule: { type: "min", categoryId: "Tabungan darurat", min: 15 },
+            prompt: "Dari Rp 2.000.000 per bulan, alokasikan untuk keamanan finansialmu:",
+            categories: ["Dana Darurat", "Investasi", "Hiburan"],
+            rule: { type: "min", categoryId: "Dana Darurat", min: 50 },
             explain:
-              "Kalau punya utang bunga tinggi, prioritas bayar utang. Tapi tabungan darurat tetap harus jalan supaya gak tambah utang kalau ada kejadian.",
+              "Sebelum berinvestasi, penuhi dulu dana darurat. Minimal setengahnya ke sana.",
+          },
+          {
+            type: "allocation",
+            prompt: "Alokasikan THR Rp 6.000.000:",
+            categories: ["Tabungan", "Dana Darurat", "Donasi"],
+            rule: { type: "min", categoryId: "Dana Darurat", min: 30 },
+            explain: "Uang kaget paling tepat mempercepat dana darurat. Minimal 30%.",
+          },
+        ],
+      },
+      {
+        id: "utang",
+        title: "Utang & Bunga",
+        description: "Pahami cara bunga membuat utang membesar dan cara melunasinya.",
+        imageAsset: "Batch 2/Keu_Debt.png",
+        prerequisiteIds: ["dana-darurat"],
+        screens: [
+          {
+            type: "numeric",
+            prompt:
+              "Utangmu Rp 10.000.000 dengan bunga 2% per bulan. Berapa rupiah bunganya di bulan pertama?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 200000,
+            acceptRangeMax: 200000,
+            explain: "2% dari 10.000.000 sama dengan 200.000.",
           },
           {
             type: "choice",
-            prompt:
-              "Kartu kreditmu bunga 2.5% per bulan. kamu bayar minimum Rp 200 ribu dari total utang Rp 2 juta. Berapa lama lunas kalau gak ditambah?",
+            prompt: "Punya dua utang. Mana yang dilunasi duluan?",
             options: [
-              { id: "a", label: "10 bulan" },
-              { id: "b", label: "Lebih dari 10 bulan" },
-              { id: "c", label: "Tidak akan lunas" },
+              { id: "a", label: "Yang bunganya tertinggi" },
+              { id: "b", label: "Yang nominalnya terbesar" },
+              { id: "c", label: "Yang bunganya terendah" },
+            ],
+            correctId: "a",
+            explain:
+              "Lunasi dulu utang berbunga tertinggi (metode avalanche) agar total bunga paling kecil.",
+          },
+          {
+            type: "concept",
+            prompt:
+              "Utang 10 juta bisa jadi 12 juta kalau dibiarkan. Kelebihannya bukan denda, tapi harga yang kamu bayar karena meminjam.",
+            explain:
+              "Itulah Bunga: biaya meminjam uang, dihitung sebagai persen dari sisa utang setiap periodenya.",
+          },
+          {
+            type: "numeric",
+            prompt:
+              "Cicilanmu Rp 1.000.000 per bulan dan Rp 300.000 di antaranya adalah bunga. Berapa pokok utang yang terbayar?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 700000,
+            acceptRangeMax: 700000,
+            explain: "1.000.000 dikurangi 300.000 sama dengan 700.000.",
+          },
+          {
+            type: "allocation",
+            prompt: "Gaji Rp 5.000.000 selagi masih punya utang:",
+            categories: ["Cicilan Utang", "Kebutuhan", "Tabungan"],
+            rule: { type: "min", categoryId: "Cicilan Utang", min: 30 },
+            explain: "Percepat pelunasan: minimal 30% penghasilan untuk cicilan.",
+          },
+          {
+            type: "allocation",
+            prompt: "Bagi Rp 3.000.000 untuk dua utang dan tabungan:",
+            categories: ["Utang Bunga Tinggi", "Utang Bunga Rendah", "Tabungan"],
+            rule: { type: "min", categoryId: "Utang Bunga Tinggi", min: 40 },
+            explain: "Fokuskan minimal 40% ke utang berbunga tinggi.",
+          },
+        ],
+      },
+      {
+        id: "bunga-berbunga",
+        title: "Bunga Berbunga",
+        description: "Biarkan waktu melipatgandakan uangmu lewat bunga berbunga.",
+        imageAsset: "Batch 2/Keu_Compound.png",
+        prerequisiteIds: ["utang"],
+        screens: [
+          {
+            type: "choice",
+            prompt:
+              "Rp 10.000.000 berkembang 10% per tahun selama 2 tahun dengan bunga berbunga. Berapa totalnya?",
+            options: [
+              { id: "a", label: "Rp 12.100.000" },
+              { id: "b", label: "Rp 12.000.000" },
+              { id: "c", label: "Rp 11.000.000" },
+            ],
+            correctId: "a",
+            explain:
+              "Tahun pertama jadi 11 juta, tahun kedua 10% dari 11 juta. Total 10 juta dikali 1,1 kuadrat sama dengan 12,1 juta.",
+          },
+          {
+            type: "numeric",
+            prompt:
+              "Rp 5.000.000 berkembang 10% dalam setahun. Berapa saldonya di akhir tahun pertama?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 5500000,
+            acceptRangeMax: 5500000,
+            explain: "5.000.000 ditambah 10% sama dengan 5.500.000.",
+          },
+          {
+            type: "concept",
+            prompt:
+              "Tahun pertama untung 500 ribu, tahun kedua 550 ribu, padahal persennya sama. Kelebihannya datang dari bunga yang ikut dibungakan.",
+            explain:
+              "Itulah Bunga Berbunga (compound interest): bunga ikut menghasilkan bunga, sehingga pertumbuhan makin cepat dari tahun ke tahun.",
+          },
+          {
+            type: "numeric",
+            prompt: "Lanjut ke tahun kedua dengan 10% lagi dari Rp 5.500.000. Berapa saldonya?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 6050000,
+            acceptRangeMax: 6050000,
+            explain: "5.500.000 ditambah 10% sama dengan 6.050.000.",
+          },
+          {
+            type: "allocation",
+            prompt: "Bagi Rp 4.000.000 agar uangmu ikut bertumbuh:",
+            categories: ["Belanja", "Tabungan Berbunga"],
+            rule: { type: "min", categoryId: "Tabungan Berbunga", min: 25 },
+            explain: "Minimal seperempat penghasilan masuk ke tempat yang berbunga.",
+          },
+          {
+            type: "allocation",
+            prompt: "Bagi Rp 10.000.000 untuk masa depan:",
+            categories: ["Kebutuhan", "Tabungan", "Investasi"],
+            rule: { type: "min", categoryId: "Investasi", min: 20 },
+            explain: "Investasi rutin adalah bahan bakar bunga berbunga. Minimal 20%.",
+          },
+        ],
+      },
+      {
+        id: "inflasi",
+        title: "Inflasi",
+        description: "Kenali musuh diam-diam yang menggerus daya beli uangmu.",
+        imageAsset: "Batch 2/Keu_Inflation.png",
+        prerequisiteIds: ["bunga-berbunga"],
+        screens: [
+          {
+            type: "numeric",
+            prompt:
+              "Harga barang Rp 100.000 dan inflasi 5%. Berapa harganya tahun depan?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 105000,
+            acceptRangeMax: 105000,
+            explain: "100.000 ditambah 5% sama dengan 105.000.",
+          },
+          {
+            type: "choice",
+            prompt: "Tabunganmu berbunga 2% sementara inflasi 5%. Apa yang terjadi pada uangmu?",
+            options: [
+              { id: "a", label: "Nilainya tetap" },
+              { id: "b", label: "Nilainya naik" },
+              { id: "c", label: "Daya belinya turun" },
+            ],
+            correctId: "c",
+            explain:
+              "Hasil bersih kira-kira 2% dikurangi 5% sama dengan minus 3%. Uangmu menyusut diam-diam.",
+          },
+          {
+            type: "concept",
+            prompt:
+              "Tahun lalu bakso 10 ribu, sekarang 12 ribu. Uangmu sama, tapi dapatnya makin sedikit.",
+            explain:
+              "Itulah Inflasi: kenaikan harga umum yang menggerus daya beli uang yang diam.",
+          },
+          {
+            type: "numeric",
+            prompt:
+              "Rp 10.000.000 didiamkan setahun dengan inflasi 4%. Kira-kira setara berapa daya belinya sekarang?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 9550000,
+            acceptRangeMax: 9650000,
+            explain: "10.000.000 dikali 96% sama dengan kira-kira 9.600.000.",
+          },
+          {
+            type: "allocation",
+            prompt: "Lindungi Rp 8.000.000 dari inflasi:",
+            categories: ["Kas", "Deposito", "Investasi"],
+            rule: { type: "min", categoryId: "Investasi", min: 20 },
+            explain: "Kas tergerus inflasi. Minimal 20% harus bekerja mengalahkannya.",
+          },
+          {
+            type: "allocation",
+            prompt: "Bagi Rp 5.000.000 agar tahan inflasi:",
+            categories: ["Tabungan", "Emas", "Saham"],
+            rule: { type: "min", categoryId: "Saham", min: 30 },
+            explain: "Aset produktif melawan inflasi. Minimal 30% ke saham.",
+          },
+        ],
+      },
+      {
+        id: "investasi",
+        title: "Menabung vs Investasi",
+        description: "Pilih kendaraan yang tepat sesuai jangka waktumu.",
+        imageAsset: "Batch 2/Keu_Invest.png",
+        prerequisiteIds: ["inflasi"],
+        screens: [
+          {
+            type: "choice",
+            prompt: "Tujuanmu 10 tahun lagi. Kendaraan mana yang paling cocok?",
+            options: [
+              { id: "a", label: "Kas di rumah" },
+              { id: "b", label: "Tabungan biasa" },
+              { id: "c", label: "Reksa dana saham" },
+            ],
+            correctId: "c",
+            explain:
+              "Jangka panjang menoleransi naik-turun saham demi hasil yang mengalahkan inflasi.",
+          },
+          {
+            type: "numeric",
+            prompt: "Kamu menyisihkan Rp 1.000.000 per bulan. Berapa setoran setahun?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 12000000,
+            acceptRangeMax: 12000000,
+            explain: "1.000.000 dikali 12 sama dengan 12.000.000.",
+          },
+          {
+            type: "concept",
+            prompt:
+              "Menabung menjaga uang tetap ada. Tapi ada cara membuat uang bekerja dan bertumbuh, dengan risiko yang sepadan.",
+            explain:
+              "Itulah Investasi: menaruh uang di aset yang diharapkan tumbuh nilainya, imbalannya sepadan dengan risikonya.",
+          },
+          {
+            type: "numeric",
+            prompt: "Investasimu Rp 10.000.000 untung 12%. Berapa rupiah keuntungannya?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 1200000,
+            acceptRangeMax: 1200000,
+            explain: "12% dari 10.000.000 sama dengan 1.200.000.",
+          },
+          {
+            type: "allocation",
+            prompt: "Bagi Rp 6.000.000 sesuai jangka waktu:",
+            categories: ["Tabungan", "Deposito", "Saham"],
+            rule: { type: "min", categoryId: "Saham", min: 20 },
+            explain: "Jangka panjang boleh agresif. Minimal 20% ke saham.",
+          },
+          {
+            type: "allocation",
+            prompt: "Bagi Rp 10.000.000 untuk tiga tujuan:",
+            categories: ["Kebutuhan", "Tabungan", "Investasi"],
+            rule: { type: "min", categoryId: "Investasi", min: 25 },
+            explain: "Sisihkan minimal seperempat untuk tujuan jangka panjang.",
+          },
+        ],
+      },
+      {
+        id: "diversifikasi",
+        title: "Diversifikasi",
+        description: "Sebar uang ke beberapa aset agar tetap aman.",
+        imageAsset: "Batch 2/Keu_Diversity.png",
+        prerequisiteIds: ["investasi"],
+        screens: [
+          {
+            type: "choice",
+            prompt: "Mana yang lebih aman: semua uang di 1 saham, atau dibagi ke 5 aset?",
+            options: [
+              { id: "a", label: "Semua di 1 saham" },
+              { id: "b", label: "Dibagi ke 5 aset" },
+              { id: "c", label: "Sama saja" },
             ],
             correctId: "b",
             explain:
-              "Bunga 2.5% × Rp 2 juta = Rp 50.000 per bulan. Bayar minimum Rp 200 ribu, pokok hanya turun Rp 150 ribu. Butuh 13+ bulan, dan bunga terus jalan.",
+              "Satu aset jatuh tidak menghancurkan semuanya kalau uang tersebar.",
+          },
+          {
+            type: "numeric",
+            prompt: "Rp 20.000.000 dibagi rata ke 4 aset. Berapa per aset?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 5000000,
+            acceptRangeMax: 5000000,
+            explain: "20.000.000 dibagi 4 sama dengan 5.000.000.",
+          },
+          {
+            type: "concept",
+            prompt:
+              "Satu saham jatuh 20%, seluruh uang ikut jatuh 20%. Padahal kejatuhan itu bisa ditahan kalau uangnya tersebar.",
+            explain:
+              "Itulah Diversifikasi: membagi uang ke beberapa aset agar satu kejatuhan tidak menghancurkan semuanya.",
+          },
+          {
+            type: "numeric",
+            prompt: "Satu aset Rp 5.000.000 turun 10%. Berapa rupiah kerugiannya?",
+            numericUnit: "Rupiah",
+            acceptRangeMin: 500000,
+            acceptRangeMax: 500000,
+            explain: "10% dari 5.000.000 sama dengan 500.000. Kecil karena porsinya kecil.",
+          },
+          {
+            type: "allocation",
+            prompt: "Bagi Rp 20.000.000 ke empat kelas aset:",
+            categories: ["Saham", "Obligasi", "Emas", "Kas"],
+            rule: { type: "min", categoryId: "Obligasi", min: 20 },
+            explain: "Obligasi menstabilkan portofolio. Minimal 20% di sana.",
+          },
+          {
+            type: "allocation",
+            prompt: "Bagi Rp 10.000.000 dengan aman:",
+            categories: ["Saham A", "Saham B", "Obligasi"],
+            rule: { type: "min", categoryId: "Obligasi", min: 30 },
+            explain: "Jangan semua saham. Minimal 30% di obligasi sebagai penyeimbang.",
           },
         ],
       },
     ],
   },
+
 
   // ── Akuntansi ───────────────────────────────────────────────────────────
   {

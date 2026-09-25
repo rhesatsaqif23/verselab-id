@@ -2,9 +2,13 @@
 // Usage: bun run --cwd apps/api seed:content
 
 import { eq } from "drizzle-orm";
+import { readFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { seedUnits } from "./content-seed-data.ts";
 import { getDb } from "../database/index.ts";
 import { contentUnits, contentLessons, contentScreens } from "../database/schema.ts";
+import { getStorage, mimeForKey } from "../libs/storage.ts";
 import { resolveUniqueSlug } from "../modules/content/slug.ts";
 
 type SeedChoiceScreen = {
@@ -29,6 +33,31 @@ type SeedAllocationScreen = {
   categories: string[];
   rule: { type: string; categoryId: string; min?: number; max?: number };
 };
+
+const ASSETS_ROOT = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "..",
+  "..",
+  "assets",
+);
+
+/**
+ * Upload an illustration from assets/ and return its public URL.
+ * Returns null (with a warning) when the file is missing or storage is
+ * not configured, so seeding never crashes on images.
+ */
+async function uploadAssetImage(relPath: string, key: string): Promise<string | null> {
+  try {
+    const buffer = await readFile(join(ASSETS_ROOT, relPath));
+    const mime = mimeForKey(relPath) ?? "image/png";
+    return await getStorage().put(key, buffer, mime);
+  } catch (err) {
+    console.warn(`[seed] Skipping image ${relPath}:`, err instanceof Error ? err.message : err);
+    return null;
+  }
+}
 
 async function seedContent() {
   const db = getDb();
@@ -59,7 +88,9 @@ async function seedContent() {
       title: unit.title,
       slug: unitSlug,
       description: unit.description,
-      imageUrl: unit.imageUrl,
+      imageUrl: unit.imageAsset
+        ? ((await uploadAssetImage(unit.imageAsset, `content/${unit.id}.png`)) ?? unit.imageUrl ?? null)
+        : (unit.imageUrl ?? null),
       sortOrder: unitIdx,
     });
     unitCount++;
@@ -82,6 +113,9 @@ async function seedContent() {
         slug: lessonSlug,
         description: lesson.description ?? null,
         icon: null,
+        imageUrl: lesson.imageAsset
+          ? await uploadAssetImage(lesson.imageAsset, `lessons/${lesson.id}.png`)
+          : null,
         prerequisiteIds: lesson.prerequisiteIds ?? null,
         sortOrder: lessonIdx,
       });
