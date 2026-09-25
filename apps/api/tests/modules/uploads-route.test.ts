@@ -1,28 +1,29 @@
-// GET /uploads/* serves local uploads (STORAGE_DRIVER=local).
-// Fixture files are created under ./uploads and removed afterwards.
-import { afterAll, beforeAll, describe, expect, it } from "bun:test";
-import { mkdir, rm, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+// GET /uploads/* streams stored bytes through the storage driver for any
+// backend (local disk or S3 via the API's credentials). Hermetic: the fake
+// driver stands in for the backend, so no S3 or disk fixture is touched.
+import { afterEach, describe, expect, it } from "bun:test";
 import { createApp } from "../../src/app.ts";
+import { setStorageFake } from "../../src/libs/storage.ts";
 
-const dir = join(process.cwd(), "uploads", "content");
-const fixture = join(dir, "__test-route.png");
 const bytes = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
   "base64",
 );
 
-beforeAll(async () => {
-  await mkdir(dir, { recursive: true });
-  await writeFile(fixture, bytes);
-});
-
-afterAll(async () => {
-  await rm(fixture, { force: true });
+afterEach(() => {
+  setStorageFake(null);
 });
 
 describe("GET /uploads/*", () => {
-  it("serves stored files with content type and cache headers", async () => {
+  it("streams stored bytes with content type and cache headers", async () => {
+    setStorageFake({
+      put: async () => "",
+      delete: async () => {},
+      read: async (key: string) => {
+        expect(key).toBe("content/__test-route.png");
+        return new Uint8Array(bytes);
+      },
+    });
     const app = createApp();
     const res = await app.handle(new Request("http://localhost/uploads/content/__test-route.png"));
 
@@ -32,9 +33,28 @@ describe("GET /uploads/*", () => {
     expect(new Uint8Array(await res.arrayBuffer())).toEqual(new Uint8Array(bytes));
   });
 
-  it("returns 404 for missing files", async () => {
+  it("returns 404 for missing objects", async () => {
+    setStorageFake({
+      put: async () => "",
+      delete: async () => {},
+      read: async () => null,
+    });
     const app = createApp();
     const res = await app.handle(new Request("http://localhost/uploads/content/__missing.png"));
+
+    expect(res.status).toBe(404);
+  });
+
+  it("returns 404 for traversal keys", async () => {
+    setStorageFake({
+      put: async () => "",
+      delete: async () => {},
+      read: async () => {
+        throw new Error("must not be called");
+      },
+    });
+    const app = createApp();
+    const res = await app.handle(new Request("http://localhost/uploads/../../etc/passwd"));
 
     expect(res.status).toBe(404);
   });

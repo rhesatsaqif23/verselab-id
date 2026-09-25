@@ -6,16 +6,18 @@
 // (STORAGE_DRIVER=local — writes under ./uploads, served by GET /uploads/*).
 // Local keeps the admin usable before the S3 secret lands; flipping to S3
 // later is one env change, no code or DB migration.
-import { mkdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { env } from "../config/env.ts";
 import { AppError } from "./errors.ts";
 
 export type StorageDriver = {
-  /** Upload bytes under key, returns the public URL. */
+  /** Upload bytes under key, returns the stored URL. */
   put(key: string, data: Buffer, contentType: string): Promise<string>;
   /** Delete the object under key. Missing keys are ignored. */
   delete(key: string): Promise<void>;
+  /** Read bytes under key, or null when the object does not exist. */
+  read(key: string): Promise<Uint8Array | null>;
 };
 
 let cached: StorageDriver | null = null;
@@ -91,14 +93,21 @@ function localDriver(): StorageDriver {
       const path = join(process.cwd(), "uploads", rel);
       await mkdir(dirname(path), { recursive: true });
       await writeFile(path, data);
-      // Version the URL so re-uploads bypass the browser cache (same key,
-      // immutable cache headers). Query strings are ignored when serving.
       return `/uploads/${rel}?t=${Date.now()}`;
     },
     delete: async (key) => {
       const rel = safeUploadPath(key);
       if (!rel) return;
       await rm(join(process.cwd(), "uploads", rel), { force: true });
+    },
+    read: async (key) => {
+      const rel = safeUploadPath(key);
+      if (!rel) return null;
+      try {
+        return await readFile(join(process.cwd(), "uploads", rel));
+      } catch {
+        return null;
+      }
     },
   };
 }
@@ -123,19 +132,32 @@ export function getStorage(): StorageDriver {
   });
   cached = {
     put: async (key, data, contentType) => {
+      const rel = safeUploadPath(key);
+      if (!rel) throw new AppError({ code: "BAD_REQUEST", message: "Invalid upload key" });
       try {
-        await client.write(key, data, { type: contentType });
+        await client.write(rel, data, { type: contentType });
       } catch (err) {
         throw toStorageError(err, "upload");
       }
-      const base = (env.S3_PUBLIC_BASE_URL ?? S3_ENDPOINT ?? "").replace(/\/$/, "");
-      return `${base}/${key}?t=${Date.now()}`;
+      return `/uploads/${rel}?t=${Date.now()}`;
     },
     delete: async (key) => {
       try {
         await client.delete(key);
       } catch (err) {
         throw toStorageError(err, "delete");
+      }
+    },
+    read: async (key) => {
+      const rel = safeUploadPath(key);
+      if (!rel) return null;
+      try {
+        const buf = await client.file(rel).arrayBuffer();
+        return new Uint8Array(buf);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        if (/NoSuchKey|NotExist|404|Not Found/i.test(msg)) return null;
+        throw toStorageError(err, "read");
       }
     },
   };
@@ -150,8 +172,13 @@ export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
  * clear AppErrors. Covers limits and throttling, missing buckets, bad
  * credentials, and connectivity loss.
  */
-export function toStorageError(err: unknown, action: "upload" | "delete"): AppError {
-  const verb = action === "upload" ? "mengunggah gambar" : "menghapus gambar";
+export function toStorageError(err: unknown, action: "upload" | "delete" | "read"): AppError {
+  const verb =
+    action === "upload"
+      ? "mengunggah gambar"
+      : action === "delete"
+        ? "menghapus gambar"
+        : "memuat gambar";
   const code =
     err && typeof err === "object"
       ? String((err as { code?: unknown }).code ?? (err as { name?: unknown }).name ?? "")
@@ -222,9 +249,14 @@ export async function checkStorageHealth(): Promise<StorageHealth> {
       await storage.delete(key).catch(() => {});
       return { ...base, writeOk: true, publicReadOk: null, publicUrl };
     }
+    const probeUrl = /^https?:/i.test(publicUrl)
+      ? publicUrl.split(/[?#]/)[0]
+      : `${(env.S3_PUBLIC_BASE_URL ?? env.S3_ENDPOINT ?? "").replace(/\/$/, "")}/${
+          keyFromUrl(publicUrl) ?? publicUrl.replace(/^\/uploads\//, "").split(/[?#]/)[0]
+        }`;
     let publicReadOk = false;
     try {
-      const res = await fetch(publicUrl.split(/[?#]/)[0]);
+      const res = await fetch(probeUrl);
       publicReadOk = res.ok;
     } catch {
       publicReadOk = false;

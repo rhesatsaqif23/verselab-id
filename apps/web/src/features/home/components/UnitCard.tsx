@@ -132,13 +132,17 @@ export default function UnitCard({ unit }: UnitCardProps) {
 
           {/* CTA button: Mulai opening current lesson directly */}
           {currentLesson ? (
-            <Button asChild size="lg" className="relative z-10 mt-1 w-full pointer-events-auto">
+            <Button
+              asChild
+              size="lg"
+              className="relative z-10 mt-1 w-full min-w-48 pointer-events-auto"
+            >
               <Link
                 to="/lesson/$lessonId"
                 params={{ lessonId: currentLesson.id }}
                 onMouseEnter={prefetchLesson}
               >
-                <PlayCircle className="mr-2 size-6" />
+                <PlayCircle className="mr-2 size-5" />
                 Mulai
               </Link>
             </Button>
@@ -146,9 +150,9 @@ export default function UnitCard({ unit }: UnitCardProps) {
             <Button
               size="lg"
               disabled
-              className="relative z-10 mt-1 w-full pointer-events-none opacity-50"
+              className="relative z-10 mt-1 w-full min-w-48 pointer-events-none opacity-50"
             >
-              <PlayCircle className="mr-2 size-6" />
+              <PlayCircle className="mr-2 size-5" />
               Mulai
             </Button>
           )}

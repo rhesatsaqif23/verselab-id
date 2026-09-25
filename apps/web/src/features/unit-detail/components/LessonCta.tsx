@@ -72,7 +72,7 @@ export default function LessonCta({ lesson, status, isVisible, allLessons = [] }
                   asChild={lesson.screens.length > 0}
                   size="lg"
                   disabled={hasNoScreens}
-                  className="w-full sm:w-auto text-base! font-bold! shadow-md"
+                  className="w-full sm:w-auto sm:min-w-48 text-base! font-bold! shadow-md"
                 >
                   {lesson.screens.length > 0 ? (
                     <Link
@@ -95,7 +95,7 @@ export default function LessonCta({ lesson, status, isVisible, allLessons = [] }
                   asChild={!hasNoScreens && !hasUnmetPrereqs}
                   size="lg"
                   disabled={hasNoScreens}
-                  className="w-full sm:w-auto text-base! font-bold! shadow-md"
+                  className="w-full sm:w-auto sm:min-w-48 text-base! font-bold! shadow-md"
                 >
                   {hasNoScreens ? (
                     <span>Belum ada soal</span>

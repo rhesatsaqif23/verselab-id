@@ -19,6 +19,7 @@ function recordingFake() {
     delete: async (key: string) => {
       deletedKeys.push(key);
     },
+    read: async () => null,
   };
 }
 
@@ -90,6 +91,7 @@ describe("contentUnitService.uploadImage", () => {
         return `https://cdn.test/${key}`;
       },
       delete: async (_key: string) => {},
+      read: async () => null,
     });
 
     const result = await contentUnitService.uploadImage("u-1", png());
@@ -108,6 +110,7 @@ describe("contentUnitService.uploadImage", () => {
         return `https://cdn.test/${key}`;
       },
       delete: async (_key: string) => {},
+      read: async () => null,
     });
     const file = new File([new Uint8Array(10)], "img.webp", { type: "image/webp" });
 
@@ -121,6 +124,7 @@ describe("contentUnitService.uploadImage", () => {
     setStorageFake({
       put: async (key) => `https://cdn.test/${key}`,
       delete: async (_key: string) => {},
+      read: async () => null,
     });
     const file = new File(["hello"], "note.txt", { type: "text/plain" });
 
@@ -136,6 +140,7 @@ describe("contentUnitService.uploadImage", () => {
     setStorageFake({
       put: async (key) => `https://cdn.test/${key}`,
       delete: async (_key: string) => {},
+      read: async () => null,
     });
 
     const err = await contentUnitService
@@ -188,6 +193,7 @@ describe("POST /content/units/:id/image", () => {
     setStorageFake({
       put: async (key) => `https://cdn.test/${key}`,
       delete: async (_key: string) => {},
+      read: async () => null,
     });
     const app = new Elysia().use(createContentController());
 
@@ -204,6 +210,7 @@ describe("POST /content/units/:id/image", () => {
     setStorageFake({
       put: async (key) => `https://cdn.test/${key}`,
       delete: async (_key: string) => {},
+      read: async () => null,
     });
     const app = new Elysia().use(createContentController());
 
@@ -218,6 +225,7 @@ describe("POST /content/units/:id/image", () => {
     setStorageFake({
       put: async (key) => `https://cdn.test/${key}`,
       delete: async (_key: string) => {},
+      read: async () => null,
     });
     const app = new Elysia().use(createContentController());
 

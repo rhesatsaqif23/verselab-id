@@ -19,6 +19,7 @@ function recordingFake() {
     delete: async (key: string) => {
       deletedKeys.push(key);
     },
+    read: async () => null,
   };
 }
 
@@ -90,6 +91,7 @@ describe("contentLessonService.uploadImage", () => {
         return `https://cdn.test/${key}`;
       },
       delete: async (_key: string) => {},
+      read: async () => null,
     });
 
     const result = await contentLessonService.uploadImage("l-1", png());
@@ -108,6 +110,7 @@ describe("contentLessonService.uploadImage", () => {
         return `https://cdn.test/${key}`;
       },
       delete: async (_key: string) => {},
+      read: async () => null,
     });
     const file = new File(["hello"], "note.txt", { type: "text/plain" });
 
@@ -122,6 +125,7 @@ describe("contentLessonService.uploadImage", () => {
     setStorageFake({
       put: async (key) => `https://cdn.test/${key}`,
       delete: async (_key: string) => {},
+      read: async () => null,
     });
 
     const err = await contentLessonService
@@ -173,6 +177,7 @@ describe("POST /content/lessons/:id/image", () => {
     setStorageFake({
       put: async (key) => `https://cdn.test/${key}`,
       delete: async (_key: string) => {},
+      read: async () => null,
     });
     const app = new Elysia().use(createContentController());
 
@@ -189,6 +194,7 @@ describe("POST /content/lessons/:id/image", () => {
     setStorageFake({
       put: async (key) => `https://cdn.test/${key}`,
       delete: async (_key: string) => {},
+      read: async () => null,
     });
     const app = new Elysia().use(createContentController());
 
@@ -203,6 +209,7 @@ describe("POST /content/lessons/:id/image", () => {
     setStorageFake({
       put: async (key) => `https://cdn.test/${key}`,
       delete: async (_key: string) => {},
+      read: async () => null,
     });
     const app = new Elysia().use(createContentController());
 

@@ -64,6 +64,21 @@ describe("local driver", () => {
       .catch((e) => e);
     expect(err.code).toBe("BAD_REQUEST");
   });
+
+  it("reads back written bytes and null for a missing key", async () => {
+    env.STORAGE_DRIVER = "local";
+    const path = join(process.cwd(), "uploads", "content", "__test-storage-read.png");
+    try {
+      const data = Buffer.from([9, 8, 7]);
+      await getStorage().put("content/__test-storage-read.png", data, "image/png");
+      const bytes = await getStorage().read("content/__test-storage-read.png");
+      expect(bytes).not.toBeNull();
+      expect(new Uint8Array(bytes as Uint8Array)).toEqual(new Uint8Array([9, 8, 7]));
+      expect(await getStorage().read("content/__missing.png")).toBeNull();
+    } finally {
+      await unlink(path).catch(() => {});
+    }
+  });
 });
 
 describe("toStorageError", () => {
@@ -136,6 +151,7 @@ describe("checkStorageHealth", () => {
       delete: async (key: string) => {
         deletes.push(key);
       },
+      read: async () => null,
     });
     mockFetch(200);
     try {
@@ -153,6 +169,7 @@ describe("checkStorageHealth", () => {
     setStorageFake({
       put: async (key) => `https://cdn.test/${key}`,
       delete: async (_key: string) => {},
+      read: async () => null,
     });
     mockFetch(403);
     try {
@@ -170,6 +187,7 @@ describe("checkStorageHealth", () => {
         throw new AppError({ code: "SERVICE_UNAVAILABLE", message: "down" });
       },
       delete: async (_key: string) => {},
+      read: async () => null,
     });
     try {
       const health = await checkStorageHealth();

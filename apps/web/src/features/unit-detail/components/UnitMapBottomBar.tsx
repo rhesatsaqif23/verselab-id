@@ -1,7 +1,7 @@
 // UnitMapBottomBar: Floating bottom status bar and CTA for whiteboard canvas matching reference design.
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { RotateCcw, Sparkles } from "lucide-react";
+import { PlayCircle, RotateCcw, Sparkles } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import type { Lesson, Unit } from "#/engine/types.ts";
 import type { LessonStatus } from "../types.ts";
@@ -85,7 +85,7 @@ export default function UnitMapBottomBar({
                 asChild={currentLesson.screens.length > 0}
                 size="lg"
                 disabled={hasNoScreens}
-                className="rounded-2xl px-6 sm:px-8 font-bold text-base"
+                className="min-w-48 px-8 font-bold text-base shadow-md"
               >
                 {currentLesson.screens.length > 0 ? (
                   <Link to="/lesson/$lessonId" params={{ lessonId: currentLesson.id }}>
@@ -104,7 +104,7 @@ export default function UnitMapBottomBar({
                 asChild={!hasNoScreens && !hasUnmetPrereqs}
                 size="lg"
                 disabled={hasNoScreens}
-                className="rounded-2xl px-6 sm:px-8 font-bold text-base"
+                className="min-w-48 px-8 font-bold text-base shadow-md"
               >
                 {hasNoScreens ? (
                   <span>Belum ada soal</span>
@@ -114,6 +114,7 @@ export default function UnitMapBottomBar({
                     params={{ lessonId: currentLesson.id }}
                     onClick={handleStartClick}
                   >
+                    <PlayCircle className="mr-2 size-5" />
                     Mulai Belajar
                   </Link>
                 )}
