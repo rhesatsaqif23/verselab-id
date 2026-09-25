@@ -3,7 +3,7 @@ import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
 import { contentLessons, contentScreens, contentUnits } from "../../database/schema.ts";
 import { AppError, mapUniqueViolation } from "../../libs/errors.ts";
-import { assertImage, extFor, getStorage } from "../../libs/storage.ts";
+import { assertImage, deleteOldImage, extFor, getStorage } from "../../libs/storage.ts";
 import { resolveUniqueSlug } from "./slug.ts";
 
 export type LessonData = typeof contentLessons.$inferSelect;
@@ -234,7 +234,11 @@ export const contentLessonService: ContentLessonService = {
   async updateLesson(id, input) {
     const db = getDb();
     const [existing] = await db
-      .select({ id: contentLessons.id, unitId: contentLessons.unitId })
+      .select({
+        id: contentLessons.id,
+        unitId: contentLessons.unitId,
+        imageUrl: contentLessons.imageUrl,
+      })
       .from(contentLessons)
       .where(eq(contentLessons.id, id))
       .limit(1);
@@ -270,12 +274,21 @@ export const contentLessonService: ContentLessonService = {
       mapUniqueViolation(err, DUP_TITLE_MESSAGE);
     }
     if (!row) throw new AppError({ code: "NOT_FOUND", message: "Lesson tidak ditemukan." });
+    if (input.imageUrl === null && existing.imageUrl) {
+      await deleteOldImage(existing.imageUrl);
+    }
     return row;
   },
 
   async deleteLesson(id) {
     const db = getDb();
+    const [lesson] = await db
+      .select({ imageUrl: contentLessons.imageUrl })
+      .from(contentLessons)
+      .where(eq(contentLessons.id, id))
+      .limit(1);
     await db.delete(contentLessons).where(eq(contentLessons.id, id));
+    await deleteOldImage(lesson?.imageUrl);
   },
 
   async reorderLessons(ids) {
@@ -292,15 +305,21 @@ export const contentLessonService: ContentLessonService = {
 
   async uploadImage(id, file) {
     assertImage(file);
+    const db = getDb();
+    const [existing] = await db
+      .select({ imageUrl: contentLessons.imageUrl })
+      .from(contentLessons)
+      .where(eq(contentLessons.id, id))
+      .limit(1);
     const key = `lessons/${id}.${extFor(file.type)}`;
     const buffer = Buffer.from(await file.arrayBuffer());
     const imageUrl = await getStorage().put(key, buffer, file.type);
-    const db = getDb();
     await db
       .update(contentLessons)
       .set({ imageUrl, updatedAt: new Date() })
       .where(eq(contentLessons.id, id));
 
+    await deleteOldImage(existing?.imageUrl, key);
     return { imageUrl };
   },
 };

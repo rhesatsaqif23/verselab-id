@@ -8,22 +8,43 @@ import { env } from "../../src/config/env.ts";
 const fakeAdmin = { id: "admin-1", name: "Admin", email: "admin@test.dev" };
 const updateCapture: { values?: unknown } = {};
 const putKeys: string[] = [];
+const deletedKeys: string[] = [];
 
-function makeDb(role: string | null) {
+function recordingFake() {
+  return {
+    put: async (key: string) => {
+      putKeys.push(key);
+      return `https://cdn.test/${key}`;
+    },
+    delete: async (key: string) => {
+      deletedKeys.push(key);
+    },
+  };
+}
+
+function makeDb(role: string | null, dataRows: any[] = []) {
+  const queryResult = () => {
+    const base = dataRows.length > 0 ? dataRows : role ? [{ role }] : [];
+    const r: any = [...base];
+    r.limit = async () => base;
+    return r;
+  };
   return {
     update: (_table: unknown) => ({
-      set: (values: unknown) => ({
-        where: async (_cond: unknown) => {
-          updateCapture.values = values;
-          return [];
-        },
-      }),
+      set: (values: unknown) => {
+        updateCapture.values = values;
+        const w: any = [];
+        w.returning = async () => [{ id: "u-1", ...(values as object) }];
+        return { where: (_cond?: unknown) => w };
+      },
+    }),
+    delete: (_table: unknown) => ({
+      where: async (_cond: unknown) => [],
     }),
     select: (_cols: unknown) => ({
       from: (_table: unknown) => ({
-        where: (_cond: unknown) => ({
-          limit: async (_n: number) => (role ? [{ role }] : []),
-        }),
+        where: (_cond: unknown) => queryResult(),
+        orderBy: (_cond: unknown) => ({ limit: async () => [] }),
       }),
     }),
   };
@@ -58,6 +79,7 @@ afterEach(() => {
   dbStub = makeDb("admin");
   delete updateCapture.values;
   putKeys.length = 0;
+  deletedKeys.length = 0;
 });
 
 describe("contentUnitService.uploadImage", () => {
@@ -67,6 +89,7 @@ describe("contentUnitService.uploadImage", () => {
         putKeys.push(key);
         return `https://cdn.test/${key}`;
       },
+      delete: async (_key: string) => {},
     });
 
     const result = await contentUnitService.uploadImage("u-1", png());
@@ -84,6 +107,7 @@ describe("contentUnitService.uploadImage", () => {
         putKeys.push(key);
         return `https://cdn.test/${key}`;
       },
+      delete: async (_key: string) => {},
     });
     const file = new File([new Uint8Array(10)], "img.webp", { type: "image/webp" });
 
@@ -94,7 +118,10 @@ describe("contentUnitService.uploadImage", () => {
   });
 
   it("rejects non-image files with 400", async () => {
-    setStorageFake({ put: async (key) => `https://cdn.test/${key}` });
+    setStorageFake({
+      put: async (key) => `https://cdn.test/${key}`,
+      delete: async (_key: string) => {},
+    });
     const file = new File(["hello"], "note.txt", { type: "text/plain" });
 
     const err = await contentUnitService.uploadImage("u-1", file).catch((e) => e);
@@ -106,7 +133,10 @@ describe("contentUnitService.uploadImage", () => {
   });
 
   it("rejects oversized files with 400", async () => {
-    setStorageFake({ put: async (key) => `https://cdn.test/${key}` });
+    setStorageFake({
+      put: async (key) => `https://cdn.test/${key}`,
+      delete: async (_key: string) => {},
+    });
 
     const err = await contentUnitService
       .uploadImage("u-1", png("big.png", MAX_IMAGE_BYTES + 1))
@@ -155,7 +185,10 @@ describe("POST /content/units/:id/image", () => {
   }
 
   it("admin upload returns the S3 public URL", async () => {
-    setStorageFake({ put: async (key) => `https://cdn.test/${key}` });
+    setStorageFake({
+      put: async (key) => `https://cdn.test/${key}`,
+      delete: async (_key: string) => {},
+    });
     const app = new Elysia().use(createContentController());
 
     const res = await app.handle(imageRequest("session_token=abc"));
@@ -168,7 +201,10 @@ describe("POST /content/units/:id/image", () => {
   });
 
   it("rejects unauthenticated uploads with 401", async () => {
-    setStorageFake({ put: async (key) => `https://cdn.test/${key}` });
+    setStorageFake({
+      put: async (key) => `https://cdn.test/${key}`,
+      delete: async (_key: string) => {},
+    });
     const app = new Elysia().use(createContentController());
 
     const res = await app.handle(imageRequest(""));
@@ -179,12 +215,91 @@ describe("POST /content/units/:id/image", () => {
 
   it("rejects non-admin uploads with 403", async () => {
     dbStub = makeDb("user");
-    setStorageFake({ put: async (key) => `https://cdn.test/${key}` });
+    setStorageFake({
+      put: async (key) => `https://cdn.test/${key}`,
+      delete: async (_key: string) => {},
+    });
     const app = new Elysia().use(createContentController());
 
     const res = await app.handle(imageRequest("session_token=abc"));
 
     expect(res.status).toBe(403);
     expect(putKeys).toEqual([]);
+  });
+});
+
+describe("unit image lifecycle", () => {
+  const prevBase = env.S3_PUBLIC_BASE_URL;
+
+  // keyFromUrl only recognizes our own bases — point it at the fake CDN.
+  function useFakeBase() {
+    (env as any).S3_PUBLIC_BASE_URL = "https://cdn.test";
+  }
+
+  function restoreBase() {
+    (env as any).S3_PUBLIC_BASE_URL = prevBase;
+  }
+
+  it("deletes the replaced object on different-ext re-upload", async () => {
+    useFakeBase();
+    try {
+      dbStub = makeDb("admin", [{ imageUrl: "https://cdn.test/content/u-1.jpg" }]);
+      setStorageFake(recordingFake());
+
+      const result = await contentUnitService.uploadImage("u-1", png());
+
+      expect(result.imageUrl).toMatch(/^https:\/\/cdn\.test\/content\/u-1\.png/);
+      expect(deletedKeys).toEqual(["content/u-1.jpg"]);
+    } finally {
+      restoreBase();
+    }
+  });
+
+  it("skips delete when re-uploading the same key", async () => {
+    useFakeBase();
+    try {
+      dbStub = makeDb("admin", [{ imageUrl: "https://cdn.test/content/u-1.png?t=1" }]);
+      setStorageFake(recordingFake());
+
+      await contentUnitService.uploadImage("u-1", png());
+
+      expect(deletedKeys).toEqual([]);
+    } finally {
+      restoreBase();
+    }
+  });
+
+  it("updateUnit with null imageUrl removes the stored object", async () => {
+    useFakeBase();
+    try {
+      dbStub = makeDb("admin", [{ id: "u-1", imageUrl: "https://cdn.test/content/u-1.png" }]);
+      setStorageFake(recordingFake());
+
+      await contentUnitService.updateUnit("u-1", { description: "x", imageUrl: null });
+
+      expect(deletedKeys).toEqual(["content/u-1.png"]);
+    } finally {
+      restoreBase();
+    }
+  });
+
+  it("deleteUnit removes unit and lesson images", async () => {
+    useFakeBase();
+    try {
+      dbStub = makeDb("admin", [
+        { imageUrl: "https://cdn.test/content/u-1.png" },
+        { imageUrl: "https://cdn.test/lessons/l-1.png" },
+        { imageUrl: "https://cdn.test/lessons/l-2.png" },
+      ]);
+      setStorageFake(recordingFake());
+
+      await contentUnitService.deleteUnit("u-1");
+
+      expect([...new Set(deletedKeys)].sort()).toEqual(
+        ["lessons/l-1.png", "lessons/l-2.png", "content/u-1.png"].sort(),
+      );
+    } finally {
+      restoreBase();
+    }
   });
 });

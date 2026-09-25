@@ -77,10 +77,7 @@ export function AllLessonsTable() {
   });
 
   const all: AdminLessonWithUnit[] = lessons ?? [];
-  const filterFn = useCallback(
-    (row: AdminLessonWithUnit) => `${row.title} ${row.unitTitle}`,
-    [],
-  );
+  const filterFn = useCallback((row: AdminLessonWithUnit) => `${row.title} ${row.unitTitle}`, []);
   const getValue = useCallback((row: AdminLessonWithUnit, key: LessonSortKey) => {
     if (key === "title") return row.title;
     if (key === "unitTitle") return row.unitTitle;

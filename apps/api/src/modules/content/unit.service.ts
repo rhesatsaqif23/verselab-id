@@ -3,7 +3,7 @@ import { asc, desc, eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
 import { contentUnits, contentLessons, contentScreens } from "../../database/schema.ts";
 import { AppError, mapUniqueViolation } from "../../libs/errors.ts";
-import { assertImage, extFor, getStorage } from "../../libs/storage.ts";
+import { assertImage, deleteOldImage, extFor, getStorage } from "../../libs/storage.ts";
 import { resolveUniqueSlug } from "./slug.ts";
 
 export type UnitData = typeof contentUnits.$inferSelect;
@@ -179,7 +179,7 @@ export const contentUnitService: ContentUnitService = {
   async updateUnit(id, input) {
     const db = getDb();
     const [existing] = await db
-      .select({ id: contentUnits.id })
+      .select({ id: contentUnits.id, imageUrl: contentUnits.imageUrl })
       .from(contentUnits)
       .where(eq(contentUnits.id, id))
       .limit(1);
@@ -212,12 +212,28 @@ export const contentUnitService: ContentUnitService = {
       mapUniqueViolation(err, DUP_TITLE_MESSAGE);
     }
     if (!row) throw new AppError({ code: "NOT_FOUND", message: "Unit tidak ditemukan." });
+    if (input.imageUrl === null && existing.imageUrl) {
+      await deleteOldImage(existing.imageUrl);
+    }
     return row;
   },
 
   async deleteUnit(id) {
     const db = getDb();
+    const [unit] = await db
+      .select({ imageUrl: contentUnits.imageUrl })
+      .from(contentUnits)
+      .where(eq(contentUnits.id, id))
+      .limit(1);
+    const lessons = await db
+      .select({ imageUrl: contentLessons.imageUrl })
+      .from(contentLessons)
+      .where(eq(contentLessons.unitId, id));
     await db.delete(contentUnits).where(eq(contentUnits.id, id));
+    // DB first (authoritative); storage cleanup best-effort after.
+    for (const imageUrl of [unit?.imageUrl, ...lessons.map((l) => l.imageUrl)]) {
+      await deleteOldImage(imageUrl);
+    }
   },
 
   async reorderUnits(ids) {
@@ -234,15 +250,21 @@ export const contentUnitService: ContentUnitService = {
 
   async uploadImage(id, file) {
     assertImage(file);
+    const db = getDb();
+    const [existing] = await db
+      .select({ imageUrl: contentUnits.imageUrl })
+      .from(contentUnits)
+      .where(eq(contentUnits.id, id))
+      .limit(1);
     const key = `content/${id}.${extFor(file.type)}`;
     const buffer = Buffer.from(await file.arrayBuffer());
     const imageUrl = await getStorage().put(key, buffer, file.type);
-    const db = getDb();
     await db
       .update(contentUnits)
       .set({ imageUrl, updatedAt: new Date() })
       .where(eq(contentUnits.id, id));
 
+    await deleteOldImage(existing?.imageUrl, key);
     return { imageUrl };
   },
 };

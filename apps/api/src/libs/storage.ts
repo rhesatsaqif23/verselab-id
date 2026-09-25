@@ -6,7 +6,7 @@
 // (STORAGE_DRIVER=local — writes under ./uploads, served by GET /uploads/*).
 // Local keeps the admin usable before the S3 secret lands; flipping to S3
 // later is one env change, no code or DB migration.
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { env } from "../config/env.ts";
 import { AppError } from "./errors.ts";
@@ -14,6 +14,8 @@ import { AppError } from "./errors.ts";
 export type StorageDriver = {
   /** Upload bytes under key, returns the public URL. */
   put(key: string, data: Buffer, contentType: string): Promise<string>;
+  /** Delete the object under key. Missing keys are ignored. */
+  delete(key: string): Promise<void>;
 };
 
 let cached: StorageDriver | null = null;
@@ -46,6 +48,41 @@ export function safeUploadPath(rel: string): string | null {
   return parts.join("/");
 }
 
+/**
+ * Extract the storage key from a stored image URL (S3 absolute or local
+ * relative), stripping ?t= versions. Null when the URL isn't ours.
+ */
+export function keyFromUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+  const clean = url.split(/[?#]/)[0];
+  const bases = [env.S3_PUBLIC_BASE_URL, env.S3_ENDPOINT]
+    .filter((b): b is string => !!b)
+    .map((b) => b.replace(/\/$/, ""));
+  for (const base of bases) {
+    if (clean.startsWith(`${base}/`)) return clean.slice(base.length + 1) || null;
+  }
+  if (clean.startsWith("/uploads/")) return clean.slice("/uploads/".length) || null;
+  return null;
+}
+
+/**
+ * Delete a previously stored image by its URL (replace/remove cleanup).
+ * Skips when the key equals keepKey (same object just overwritten).
+ * Best-effort: logs and swallows failures so DB writes stay authoritative.
+ */
+export async function deleteOldImage(
+  oldUrl: string | null | undefined,
+  keepKey?: string,
+): Promise<void> {
+  const oldKey = keyFromUrl(oldUrl);
+  if (!oldKey || oldKey === keepKey) return;
+  try {
+    await getStorage().delete(oldKey);
+  } catch (err) {
+    console.warn(`[storage] Failed to delete ${oldKey}:`, err instanceof Error ? err.message : err);
+  }
+}
+
 function localDriver(): StorageDriver {
   return {
     put: async (key, data) => {
@@ -57,6 +94,11 @@ function localDriver(): StorageDriver {
       // Version the URL so re-uploads bypass the browser cache (same key,
       // immutable cache headers). Query strings are ignored when serving.
       return `/uploads/${rel}?t=${Date.now()}`;
+    },
+    delete: async (key) => {
+      const rel = safeUploadPath(key);
+      if (!rel) return;
+      await rm(join(process.cwd(), "uploads", rel), { force: true });
     },
   };
 }
@@ -84,6 +126,9 @@ export function getStorage(): StorageDriver {
       await client.write(key, data, { type: contentType });
       const base = (env.S3_PUBLIC_BASE_URL ?? S3_ENDPOINT ?? "").replace(/\/$/, "");
       return `${base}/${key}?t=${Date.now()}`;
+    },
+    delete: async (key) => {
+      await client.delete(key);
     },
   };
   return cached;

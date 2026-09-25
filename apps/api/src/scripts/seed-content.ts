@@ -34,14 +34,7 @@ type SeedAllocationScreen = {
   rule: { type: string; categoryId: string; min?: number; max?: number };
 };
 
-const ASSETS_ROOT = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "..",
-  "..",
-  "..",
-  "..",
-  "assets",
-);
+const ASSETS_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..", "assets");
 
 /**
  * Upload an illustration from assets/ and return its public URL.
@@ -89,7 +82,9 @@ async function seedContent() {
       slug: unitSlug,
       description: unit.description,
       imageUrl: unit.imageAsset
-        ? ((await uploadAssetImage(unit.imageAsset, `content/${unit.id}.png`)) ?? unit.imageUrl ?? null)
+        ? ((await uploadAssetImage(unit.imageAsset, `content/${unit.id}.png`)) ??
+          unit.imageUrl ??
+          null)
         : (unit.imageUrl ?? null),
       sortOrder: unitIdx,
     });

@@ -110,8 +110,7 @@ export const seedUnits: SeedUnit[] = [
             prompt: "Gaji Rp 5.000.000. Atur pembagiannya ke tiga pos ini:",
             categories: ["Kebutuhan", "Keinginan", "Tabungan"],
             rule: { type: "min", categoryId: "Tabungan", min: 20 },
-            explain:
-              "Sisihkan minimal 20% untuk tabungan sebelum membelanjakan sisanya.",
+            explain: "Sisihkan minimal 20% untuk tabungan sebelum membelanjakan sisanya.",
           },
           {
             type: "allocation",
@@ -199,13 +198,11 @@ export const seedUnits: SeedUnit[] = [
               { id: "c", label: "12 bulan penuh" },
             ],
             correctId: "b",
-            explain:
-              "3–6 bulan pengeluaran cukup untuk menutup PHK atau sakit tanpa berutang.",
+            explain: "3–6 bulan pengeluaran cukup untuk menutup PHK atau sakit tanpa berutang.",
           },
           {
             type: "numeric",
-            prompt:
-              "Pengeluaranmu Rp 4.000.000 per bulan. Berapa target dana darurat 6 bulan?",
+            prompt: "Pengeluaranmu Rp 4.000.000 per bulan. Berapa target dana darurat 6 bulan?",
             numericUnit: "Rupiah",
             acceptRangeMin: 24000000,
             acceptRangeMax: 24000000,
@@ -232,8 +229,7 @@ export const seedUnits: SeedUnit[] = [
             prompt: "Dari Rp 2.000.000 per bulan, alokasikan untuk keamanan finansialmu:",
             categories: ["Dana Darurat", "Investasi", "Hiburan"],
             rule: { type: "min", categoryId: "Dana Darurat", min: 50 },
-            explain:
-              "Sebelum berinvestasi, penuhi dulu dana darurat. Minimal setengahnya ke sana.",
+            explain: "Sebelum berinvestasi, penuhi dulu dana darurat. Minimal setengahnya ke sana.",
           },
           {
             type: "allocation",
@@ -373,8 +369,7 @@ export const seedUnits: SeedUnit[] = [
         screens: [
           {
             type: "numeric",
-            prompt:
-              "Harga barang Rp 100.000 dan inflasi 5%. Berapa harganya tahun depan?",
+            prompt: "Harga barang Rp 100.000 dan inflasi 5%. Berapa harganya tahun depan?",
             numericUnit: "Rupiah",
             acceptRangeMin: 105000,
             acceptRangeMax: 105000,
@@ -396,8 +391,7 @@ export const seedUnits: SeedUnit[] = [
             type: "concept",
             prompt:
               "Tahun lalu bakso 10 ribu, sekarang 12 ribu. Uangmu sama, tapi dapatnya makin sedikit.",
-            explain:
-              "Itulah Inflasi: kenaikan harga umum yang menggerus daya beli uang yang diam.",
+            explain: "Itulah Inflasi: kenaikan harga umum yang menggerus daya beli uang yang diam.",
           },
           {
             type: "numeric",
@@ -498,8 +492,7 @@ export const seedUnits: SeedUnit[] = [
               { id: "c", label: "Sama saja" },
             ],
             correctId: "b",
-            explain:
-              "Satu aset jatuh tidak menghancurkan semuanya kalau uang tersebar.",
+            explain: "Satu aset jatuh tidak menghancurkan semuanya kalau uang tersebar.",
           },
           {
             type: "numeric",
@@ -542,7 +535,6 @@ export const seedUnits: SeedUnit[] = [
       },
     ],
   },
-
 
   // ── Akuntansi ───────────────────────────────────────────────────────────
   {
