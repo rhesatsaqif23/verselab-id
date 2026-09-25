@@ -387,6 +387,9 @@ export function translateAdminError(err: unknown, fallback: string): string {
   if (/500|INTERNAL|internal/i.test(key)) {
     return "Terjadi kesalahan server. Coba lagi nanti.";
   }
+  if (/503|SERVICE_UNAVAILABLE|UNAVAILABLE|sibuk/i.test(key)) {
+    return "Server sibuk. Coba lagi sebentar.";
+  }
   // Unknown envelope codes: show the message without the technical prefix.
   if (envelope) return msg !== "" ? msg : fallback;
   if (raw.trim() !== "" && !raw.startsWith("HTTP")) return raw;

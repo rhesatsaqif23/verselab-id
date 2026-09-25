@@ -6,6 +6,7 @@ export const appErrorMeta = {
   CONFLICT: { status: 409, message: "Conflict" },
   NOT_FOUND: { status: 404, message: "Not found" },
   FORBIDDEN: { status: 403, message: "Forbidden" },
+  SERVICE_UNAVAILABLE: { status: 503, message: "Service unavailable" },
   INTERNAL: { status: 500, message: "Internal server error" },
 } as const;
 

@@ -49,15 +49,7 @@ export default function LessonMapCard({
       {/* Top row: Icon box, Title, Topic count */}
       <div className="flex items-start gap-3.5">
         {/* Rounded icon box */}
-        <div
-          className={`flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border ${
-            status === "current"
-              ? "border-primary/30 bg-primary/10 text-primary"
-              : status === "previous"
-                ? "border-success/30 bg-success/10 text-success"
-                : "border-border/60 bg-muted/60 text-muted-foreground"
-          }`}
-        >
+        <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-primary/30 bg-primary/10 text-primary">
           <LessonVisual
             lesson={lesson}
             iconClassName="size-7 stroke-[2.2]"

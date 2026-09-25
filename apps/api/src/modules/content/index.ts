@@ -2,6 +2,7 @@ import { Elysia } from "elysia";
 import { authContext } from "../../middleware/auth.ts";
 import { requireAdmin } from "../../middleware/rbac.ts";
 import { ok } from "../../libs/response.ts";
+import { checkStorageHealth } from "../../libs/storage.ts";
 import { contentUnitService, type ContentUnitService } from "./unit.service.ts";
 import { contentLessonService, type ContentLessonService } from "./lesson.service.ts";
 import { contentScreenService, type ContentScreenService } from "./screen.service.ts";
@@ -95,6 +96,12 @@ export function createContentController(
       // ── Admin endpoints (auth + requireAdmin) ─────────────────────────
       .use(authContext)
       .use(requireAdmin)
+
+      .get("/storage-health", async () => ok(await checkStorageHealth()), {
+        admin: true,
+        tags: ["content"],
+        detail: { summary: "Check storage backend health (admin)" },
+      })
 
       // --- Unit CRUD ---
       .post("/units", async ({ body }) => ok(await unitSvc.createUnit(body)), {

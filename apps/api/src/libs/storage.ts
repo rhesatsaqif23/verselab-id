@@ -123,12 +123,20 @@ export function getStorage(): StorageDriver {
   });
   cached = {
     put: async (key, data, contentType) => {
-      await client.write(key, data, { type: contentType });
+      try {
+        await client.write(key, data, { type: contentType });
+      } catch (err) {
+        throw toStorageError(err, "upload");
+      }
       const base = (env.S3_PUBLIC_BASE_URL ?? S3_ENDPOINT ?? "").replace(/\/$/, "");
       return `${base}/${key}?t=${Date.now()}`;
     },
     delete: async (key) => {
-      await client.delete(key);
+      try {
+        await client.delete(key);
+      } catch (err) {
+        throw toStorageError(err, "delete");
+      }
     },
   };
   return cached;
@@ -136,6 +144,104 @@ export function getStorage(): StorageDriver {
 
 export const IMAGE_ALLOWLIST = ["image/jpeg", "image/png", "image/webp"] as const;
 export const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
+
+/**
+ * Translate storage backend failures (S3 API errors, network issues) into
+ * clear AppErrors. Covers limits and throttling, missing buckets, bad
+ * credentials, and connectivity loss.
+ */
+export function toStorageError(err: unknown, action: "upload" | "delete"): AppError {
+  const verb = action === "upload" ? "mengunggah gambar" : "menghapus gambar";
+  const code =
+    err && typeof err === "object"
+      ? String((err as { code?: unknown }).code ?? (err as { name?: unknown }).name ?? "")
+      : "";
+  const msg = err instanceof Error ? err.message : String(err ?? "");
+  const hay = `${code} ${msg}`;
+
+  if (/NoSuchBucket/i.test(hay)) {
+    return new AppError({
+      code: "INTERNAL",
+      message: "Bucket penyimpanan tidak ditemukan. Periksa konfigurasi S3.",
+    });
+  }
+  if (/InvalidAccessKeyId|SignatureDoesNotMatch|AccessDenied|Forbidden|InvalidSecret/i.test(hay)) {
+    return new AppError({
+      code: "INTERNAL",
+      message: "Akses penyimpanan ditolak. Periksa kredensial dan izin bucket S3.",
+    });
+  }
+  if (/SlowDown|RequestLimitExceeded|TooManyRequests|ServiceUnavailable|503/i.test(hay)) {
+    return new AppError({
+      code: "SERVICE_UNAVAILABLE",
+      message: "Penyimpanan sibuk. Coba lagi sebentar.",
+    });
+  }
+  if (/EntityTooLarge|MaxMessageLengthExceeded/i.test(hay)) {
+    return new AppError({ code: "BAD_REQUEST", message: "Ukuran gambar melebihi batas." });
+  }
+  if (/timeout|Timeout|ECONN|ENOTFOUND|EAI_AGAIN|fetch failed|network|Network/i.test(hay)) {
+    return new AppError({
+      code: "SERVICE_UNAVAILABLE",
+      message: `Tidak dapat terhubung ke penyimpanan saat ${verb}. Periksa koneksi lalu coba lagi.`,
+    });
+  }
+  return new AppError({
+    code: "INTERNAL",
+    message: `Gagal ${verb}. Coba lagi.`,
+  });
+}
+
+/**
+ * Probe the storage backend: write a tiny file, check anonymous public read
+ * (S3 only — local files are served by the app itself), then delete it.
+ * Never throws; failures are reported in the result.
+ */
+export type StorageHealth = {
+  driver: string;
+  bucket: string | null;
+  writeOk: boolean;
+  publicReadOk: boolean | null;
+  publicUrl: string | null;
+  checkedAt: string;
+  detail?: string;
+};
+
+export async function checkStorageHealth(): Promise<StorageHealth> {
+  const base = {
+    driver: env.STORAGE_DRIVER ?? "s3",
+    bucket: env.S3_BUCKET ?? null,
+    checkedAt: new Date().toISOString(),
+  };
+  const key = "health/__probe.txt";
+  const body = `verselab storage probe ${base.checkedAt}`;
+  try {
+    const storage = getStorage();
+    const publicUrl = await storage.put(key, Buffer.from(body), "text/plain");
+    if (env.STORAGE_DRIVER === "local") {
+      await storage.delete(key).catch(() => {});
+      return { ...base, writeOk: true, publicReadOk: null, publicUrl };
+    }
+    let publicReadOk = false;
+    try {
+      const res = await fetch(publicUrl.split(/[?#]/)[0]);
+      publicReadOk = res.ok;
+    } catch {
+      publicReadOk = false;
+    }
+    await storage.delete(key).catch(() => {});
+    return { ...base, writeOk: true, publicReadOk, publicUrl };
+  } catch (err) {
+    const mapped = err instanceof AppError ? err : toStorageError(err, "upload");
+    return {
+      ...base,
+      writeOk: false,
+      publicReadOk: false,
+      publicUrl: null,
+      detail: mapped.message,
+    };
+  }
+}
 
 /** Shared upload guards (reuse in both upload services). */
 export function assertImage(file: File): void {

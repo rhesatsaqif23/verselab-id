@@ -142,15 +142,7 @@ export default function UnitSidebar({
                 const isCompleted = completedLessons.includes(lesson.id);
                 const isSelected = selectedLessonId === lesson.id;
 
-                // Mirror the icon-box status colors used in LessonMapCard
-                const currentLesson = unit.lessons.find((l) => !completedLessons.includes(l.id));
-                const isCurrent = currentLesson?.id === lesson.id;
-
-                const iconBoxClass = isCompleted
-                  ? "border-success/30 bg-success/10 text-success"
-                  : isCurrent
-                    ? "border-primary/30 bg-primary/10 text-primary"
-                    : "border-border/60 bg-muted/10 text-muted-foreground";
+                const iconBoxClass = "border-primary/30 bg-primary/10 text-primary";
 
                 return (
                   <button
