@@ -26,12 +26,14 @@ interface ScreenEditPanelProps {
   activeScreen: AdminScreen | null;
   lessonId: string;
   onRegisterValidator?: (api: ScreenEditorApi) => void;
+  onSavedScreenId?: (id: string) => void;
 }
 
 export function ScreenEditPanel({
   activeScreen,
   lessonId,
   onRegisterValidator,
+  onSavedScreenId,
 }: ScreenEditPanelProps) {
   const queryClient = useQueryClient();
 
@@ -110,6 +112,7 @@ export function ScreenEditPanel({
           screen={activeScreen}
           lessonId={lessonId}
           onRegisterValidator={onRegisterValidator}
+          onSavedScreenId={onSavedScreenId}
         />
       </div>
 

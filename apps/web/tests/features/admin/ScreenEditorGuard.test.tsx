@@ -119,6 +119,19 @@ describe("ScreenEditor unsaved guard", () => {
     await screen.findByDisplayValue("Prompt dua");
   });
 
+  it("offers only Simpan and Buang in the guard dialog", async () => {
+    renderEditor();
+    fireEvent.change(await screen.findByDisplayValue("Prompt satu"), {
+      target: { value: "Prompt satu edited" },
+    });
+    fireEvent.click(screen.getByText("Prompt dua"));
+
+    await screen.findByText("Simpan perubahan?");
+    expect(screen.getByRole("button", { name: /simpan & pindah/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^buang$/i })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: /^batal$/i })).toBeNull();
+  });
+
   it("reports dirty state to the route blocker", async () => {
     renderEditor();
     expect(capturedBlocker.shouldBlockFn?.()).toBe(false);
@@ -146,7 +159,20 @@ describe("ScreenEditor unsaved guard", () => {
     expect(blockerStore.proceed).toHaveBeenCalledTimes(1);
   });
 
-  it("proceeds without saving on Buang for blocked routes, resets on Batal", async () => {
+  it("stops blocking after the edited screen is saved", async () => {
+    renderEditor();
+    fireEvent.change(await screen.findByDisplayValue("Prompt satu"), {
+      target: { value: "Prompt satu edited" },
+    });
+    expect(capturedBlocker.shouldBlockFn?.()).toBe(true);
+
+    fireEvent.click(screen.getByRole("button", { name: /^simpan$/i }));
+    await waitFor(() => expect(updateMock).toHaveBeenCalledTimes(1));
+
+    expect(capturedBlocker.shouldBlockFn?.()).toBe(false);
+  });
+
+  it("proceeds without saving on Buang for blocked routes", async () => {
     const { rerenderEditor } = renderEditor();
     fireEvent.change(await screen.findByDisplayValue("Prompt satu"), {
       target: { value: "Prompt satu edited" },
@@ -162,21 +188,18 @@ describe("ScreenEditor unsaved guard", () => {
     expect(blockerStore.proceed).toHaveBeenCalledTimes(1);
   });
 
-  it("cancels the blocked navigation on Batal and keeps editing", async () => {
-    const { rerenderEditor } = renderEditor();
+  it("keeps the dialog open when Simpan fails validation", async () => {
+    renderEditor();
     fireEvent.change(await screen.findByDisplayValue("Prompt satu"), {
-      target: { value: "Prompt satu edited" },
+      target: { value: "" },
     });
-
-    blockerStore.status = "blocked";
-    rerenderEditor();
+    fireEvent.click(screen.getByText("Prompt dua"));
     await screen.findByText("Simpan perubahan?");
 
-    fireEvent.click(screen.getByRole("button", { name: /^batal$/i }));
+    fireEvent.click(screen.getByRole("button", { name: /simpan & pindah/i }));
 
-    expect(blockerStore.reset).toHaveBeenCalledTimes(1);
-    expect(blockerStore.proceed).not.toHaveBeenCalled();
     expect(updateMock).not.toHaveBeenCalled();
-    expect(screen.getByDisplayValue("Prompt satu edited")).toBeInTheDocument();
+    expect(await screen.findByText("Simpan perubahan?")).toBeInTheDocument();
+    expect(screen.getByDisplayValue("")).toBeInTheDocument();
   });
 });

@@ -27,23 +27,14 @@ import {
   TableHeader,
   TableRow,
 } from "#/components/ui/table.tsx";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "#/components/ui/pagination.tsx";
 import { adminGetUnits, adminDeleteUnit, translateAdminError } from "#/libs/admin-content-fns.ts";
 import type { AdminUnit } from "#/libs/admin-content-fns.ts";
 import { UnitFormDialog } from "../components/UnitFormDialog.tsx";
 import { AdminQueryError } from "../components/QueryError.tsx";
+import { PaginationBar, DEFAULT_PAGE_SIZE } from "../components/PaginationBar.tsx";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
 import { isImageUploading, useImageUploadChanges } from "../hooks/useImageUpload.ts";
-
-const PAGE_SIZE = 10;
 
 type UnitSortKey = "title" | "description" | "createdAt";
 
@@ -51,6 +42,7 @@ export function UnitList() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
 
   useImageUploadChanges();
 
@@ -96,12 +88,17 @@ export function UnitList() {
     setPage(1);
   }, [filter, sort]);
 
-  const totalPages = Math.max(1, Math.ceil(processed.length / PAGE_SIZE));
-  const paged = processed.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(processed.length / pageSize));
+  const paged = processed.slice((page - 1) * pageSize, page * pageSize);
 
   useEffect(() => {
     if (page > totalPages) setPage(totalPages);
   }, [page, totalPages]);
+
+  function handlePageSizeChange(next: number) {
+    setPageSize(next);
+    setPage(1);
+  }
 
   if (isError && !isLoading) {
     return (
@@ -207,7 +204,7 @@ export function UnitList() {
                   }
                 >
                   <TableCell className="text-center tabular-nums text-muted-foreground">
-                    {(page - 1) * PAGE_SIZE + i + 1}
+                    {(page - 1) * pageSize + i + 1}
                   </TableCell>
                   <TableCell>
                     <div className="text-base font-semibold text-foreground">{unit.title}</div>
@@ -283,45 +280,14 @@ export function UnitList() {
         </Table>
       </div>
 
-      {totalPages > 1 && (
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setPage((p) => Math.max(1, p - 1));
-                }}
-                className={page <= 1 ? "pointer-events-none opacity-50" : ""}
-              />
-            </PaginationItem>
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <PaginationItem key={i}>
-                <PaginationLink
-                  href="#"
-                  isActive={page === i + 1}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setPage(i + 1);
-                  }}
-                >
-                  {i + 1}
-                </PaginationLink>
-              </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setPage((p) => Math.min(totalPages, p + 1));
-                }}
-                className={page >= totalPages ? "pointer-events-none opacity-50" : ""}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+      {processed.length > 0 && (
+        <PaginationBar
+          page={page}
+          totalPages={totalPages}
+          pageSize={pageSize}
+          onPageChange={setPage}
+          onPageSizeChange={handlePageSizeChange}
+        />
       )}
     </div>
   );

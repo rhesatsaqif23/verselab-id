@@ -15,7 +15,6 @@ import { AdminQueryError } from "../components/QueryError.tsx";
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -25,7 +24,11 @@ import {
 import { Button } from "#/components/ui/button.tsx";
 import { ScreenListPanel } from "../components/ScreenListPanel.tsx";
 import { ScreenEditPanel } from "../components/ScreenEditPanel.tsx";
-import type { ScreenEditorApi } from "../components/ScreenForm.tsx";
+import {
+  isScreenEmpty,
+  isScreenIncomplete,
+  type ScreenEditorApi,
+} from "../components/ScreenForm.tsx";
 
 interface ScreenEditorProps {
   lessonId: string;
@@ -45,10 +48,28 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
     queryFn: () => adminGetScreens({ data: { lessonId } }),
   });
 
+  const allScreens: AdminScreen[] = screens ?? [];
+
+  const [selectedScreenId, setSelectedScreenId] = useState<string | null>(null);
+  const [pendingScreenId, setPendingScreenId] = useState<string | null>(null);
+  const [switching, setSwitching] = useState(false);
+  const editorApiRef = useRef<ScreenEditorApi | null>(null);
+  // Screens created in this session are drafts the user is still filling in,
+  // so they are cleaned up on leave instead of on sight.
+  const newScreenIdsRef = useRef<Set<string>>(new Set());
+  // Screens confirmed saved at least once are never treated as trash.
+  const savedScreenIdsRef = useRef<Set<string>>(new Set());
+  const cleanedIdsRef = useRef<Set<string>>(new Set());
+  const abandonEmptyIdsRef = useRef<string[]>([]);
+
   const createMutation = useMutation({
     mutationFn: (data: Parameters<typeof adminCreateScreen>[0]["data"]) =>
       adminCreateScreen({ data }),
-    onSuccess: () => {
+    onSuccess: (created: AdminScreen | null | undefined) => {
+      if (created?.id) {
+        newScreenIdsRef.current.add(created.id);
+        setSelectedScreenId(created.id);
+      }
       queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
       toast.success("Screen berhasil ditambahkan");
     },
@@ -58,12 +79,19 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id: string) => adminDeleteScreen({ data: { id } }),
-    onSuccess: () => {
+    mutationFn: ({ id }: { id: string; silent?: boolean }) => adminDeleteScreen({ data: { id } }),
+    onSuccess: (_result, variables) => {
+      newScreenIdsRef.current.delete(variables.id);
+      savedScreenIdsRef.current.delete(variables.id);
       queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
-      toast.success("Screen berhasil dihapus");
+      if (!variables.silent) toast.success("Screen berhasil dihapus");
     },
-    onError: (err: Error) => {
+    onError: (err: Error, variables) => {
+      if (variables.silent) {
+        // Allow a later data refresh to retry silent trash cleanup.
+        cleanedIdsRef.current.delete(variables.id);
+        return;
+      }
       toast.error(translateAdminError(err, "Gagal menghapus screen"));
     },
   });
@@ -77,44 +105,57 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
     },
   });
 
-  const allScreens: AdminScreen[] = screens ?? [];
+  // The guard compares the live form against the last saved server response.
+  // A saved screen never blocks; only a real unsaved difference does. This
+  // covers sidebar, breadcrumb, header and browser back navigations.
+  function hasUnsavedChanges() {
+    return editorApiRef.current?.hasUnsaved() ?? false;
+  }
 
-  const [selectedScreenId, setSelectedScreenId] = useState<string | null>(null);
-  const [pendingScreenId, setPendingScreenId] = useState<string | null>(null);
-  const [switching, setSwitching] = useState(false);
-  const editorApiRef = useRef<ScreenEditorApi | null>(null);
-
-  // Block route-level navigation (sidebar, breadcrumb, back button) and page
-  // unload while the form has unsaved changes. Screen-to-screen switching is
-  // guarded separately via pendingScreenId below.
   const blocker = useBlocker({
-    shouldBlockFn: () => editorApiRef.current?.hasUnsaved() ?? false,
-    enableBeforeUnload: () => editorApiRef.current?.hasUnsaved() ?? false,
+    shouldBlockFn: hasUnsavedChanges,
+    enableBeforeUnload: hasUnsavedChanges,
     withResolver: true,
   });
   const routeBlocked = blocker.status === "blocked";
   const guardOpen = pendingScreenId !== null || routeBlocked;
 
+  function silentDelete(id: string) {
+    if (cleanedIdsRef.current.has(id)) return;
+    cleanedIdsRef.current.add(id);
+    deleteMutation.mutate({ id, silent: true });
+  }
+
+  /** An unsaved blank draft is trash when the user leaves it behind. */
+  function shouldDropOnLeave(screen: AdminScreen | undefined): screen is AdminScreen {
+    if (!screen) return false;
+    if (savedScreenIdsRef.current.has(screen.id)) return false;
+    return isScreenEmpty(screen);
+  }
+
   function handleSelectScreen(id: string) {
     if (id === selectedScreenId || id === pendingScreenId) return;
-    if (editorApiRef.current?.hasUnsaved()) {
+    if (hasUnsavedChanges()) {
       setPendingScreenId(id);
       return;
     }
+    const current = allScreens.find((s) => s.id === selectedScreenId);
+    if (shouldDropOnLeave(current)) silentDelete(current.id);
     setSelectedScreenId(id);
   }
 
   async function handleSaveAndProceed() {
     setSwitching(true);
     try {
+      const currentId = selectedScreenId;
       const saved = await editorApiRef.current?.save();
       if (!saved) {
-        // Validation errors already toasted by the form; release the route
-        // block (if any) but stay put.
-        setPendingScreenId(null);
-        if (blocker.status === "blocked") blocker.reset();
+        // Validation or save errors are already toasted by the form. Keep the
+        // two-option dialog open so the user can finish required fields and
+        // tap Simpan again, or choose Buang.
         return;
       }
+      if (currentId) handleSavedScreenId(currentId);
       if (blocker.status === "blocked") {
         setPendingScreenId(null);
         blocker.proceed();
@@ -131,6 +172,15 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   }
 
   function handleDiscardAndProceed() {
+    const leaving = allScreens.find((s) => s.id === selectedScreenId);
+    if (
+      leaving &&
+      isScreenIncomplete(leaving) &&
+      !savedScreenIdsRef.current.has(leaving.id) &&
+      (newScreenIdsRef.current.has(leaving.id) || isScreenEmpty(leaving))
+    ) {
+      silentDelete(leaving.id);
+    }
     if (blocker.status === "blocked") {
       setPendingScreenId(null);
       blocker.proceed();
@@ -140,12 +190,24 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
     setPendingScreenId(null);
   }
 
-  function handleCancelGuard() {
-    setPendingScreenId(null);
-    if (blocker.status === "blocked") blocker.reset();
+  function handleSavedScreenId(id: string) {
+    newScreenIdsRef.current.delete(id);
+    savedScreenIdsRef.current.add(id);
   }
 
   useEffect(() => {
+    // Remove existing blank rows on sight. New drafts are spared here because
+    // the user may still be filling them; they are dropped when abandoned.
+    for (const screen of allScreens) {
+      if (!isScreenEmpty(screen)) continue;
+      if (newScreenIdsRef.current.has(screen.id)) continue;
+      if (savedScreenIdsRef.current.has(screen.id)) continue;
+      if (screen.id === selectedScreenId && editorApiRef.current?.hasUnsaved()) continue;
+      silentDelete(screen.id);
+    }
+    abandonEmptyIdsRef.current = allScreens
+      .filter((screen) => isScreenEmpty(screen) && !savedScreenIdsRef.current.has(screen.id))
+      .map((screen) => screen.id);
     if (allScreens.length > 0) {
       if (!selectedScreenId) {
         if (initialScreenId && allScreens.some((s) => s.id === initialScreenId)) {
@@ -163,6 +225,26 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
 
   const activeScreen = allScreens.find((s) => s.id === selectedScreenId) ?? null;
 
+  useEffect(() => {
+    if (!activeScreen) editorApiRef.current = null;
+  }, [activeScreen]);
+
+  // Best-effort removal of an abandoned blank draft when leaving the editor
+  // without going through the guard (for example, closing the tab).
+  useEffect(
+    () => () => {
+      for (const id of abandonEmptyIdsRef.current) {
+        if (savedScreenIdsRef.current.has(id)) continue;
+        if (cleanedIdsRef.current.has(id)) continue;
+        cleanedIdsRef.current.add(id);
+        void Promise.resolve()
+          .then(() => adminDeleteScreen({ data: { id } }))
+          .catch(() => undefined);
+      }
+    },
+    [],
+  );
+
   function moveScreen(index: number, direction: "up" | "down") {
     const next = allScreens.map((s) => s.id);
     const swap = direction === "up" ? index - 1 : index + 1;
@@ -171,7 +253,7 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   }
 
   function handleDeleteScreen(id: string) {
-    deleteMutation.mutate(id);
+    deleteMutation.mutate({ id });
   }
 
   function handleCreateScreen(type: AdminScreen["type"]) {
@@ -253,6 +335,7 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
             onRegisterValidator={(api) => {
               editorApiRef.current = api;
             }}
+            onSavedScreenId={handleSavedScreenId}
           />
         </div>
       </div>
@@ -260,7 +343,9 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
       <AlertDialog
         open={guardOpen}
         onOpenChange={(open) => {
-          if (!open) handleCancelGuard();
+          // Only Simpan and Buang may resolve the guard. Ignore implicit
+          // dismissals so a failed save keeps the dialog open.
+          if (!open && guardOpen) return;
         }}
       >
         <AlertDialogContent size="sm">
@@ -272,7 +357,6 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel disabled={switching}>Batal</AlertDialogCancel>
             <Button
               type="button"
               variant="outline"
