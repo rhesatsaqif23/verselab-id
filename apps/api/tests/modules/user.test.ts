@@ -1,0 +1,91 @@
+import { describe, expect, it, mock } from "bun:test";
+import { Elysia } from "elysia";
+import type { Profile } from "@verselab/shared/schemas/profile";
+import type { User } from "better-auth/types";
+
+const fakeUser = { id: "u-1", name: "Tester", email: "t@test.dev" };
+
+mock.module("../../src/middleware/auth.ts", () => ({
+  authContext: new Elysia({ name: "auth-context-test" }).macro({
+    auth: {
+      resolve({ status, request }) {
+        if (!request.headers.get("cookie")) return status(401);
+        return { user: fakeUser, session: { createdAt: new Date() } };
+      },
+    },
+  }),
+}));
+
+const profile: Profile = {
+  userId: fakeUser.id,
+  displayName: "Tester",
+  avatarUrl: null,
+  startUnitId: "keuangan",
+  dailyGoal: "regular",
+  onboardedAt: "2026-09-12T00:00:00.000Z",
+};
+
+const stubService = {
+  getMe: async (user: User) => ({ user, profile, role: "user" }),
+  updateProfile: async () => profile,
+  uploadAvatar: async () => ({ avatarUrl: "/uploads/avatars/u-1.jpg" }),
+  listAllUsers: async () => [],
+};
+
+describe("user module", () => {
+  it("GET /me returns { user, profile, role } and passes the user to the service", async () => {
+    const { createUserController } = await import("../../src/modules/user/index.ts");
+    let calledWith: User | undefined;
+
+    const app = new Elysia().use(
+      createUserController({
+        ...stubService,
+        getMe: async (user) => {
+          calledWith = user;
+          return { user, profile, role: "user" };
+        },
+      }),
+    );
+
+    const res = await app.handle(
+      new Request("http://localhost/user/me", { headers: { cookie: "session_token=abc" } }),
+    );
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ ok: true, data: { user: fakeUser, profile, role: "user" } });
+    expect(calledWith).toMatchObject(fakeUser);
+  });
+
+  it("returns profile null when the user is not onboarded", async () => {
+    const { createUserController } = await import("../../src/modules/user/index.ts");
+    const app = new Elysia().use(
+      createUserController({
+        ...stubService,
+        getMe: async (user) => ({ user, profile: null, role: "user" }),
+      }),
+    );
+
+    const res = await app.handle(
+      new Request("http://localhost/user/me", { headers: { cookie: "session_token=abc" } }),
+    );
+
+    const body = (await res.json()) as { data: { profile: unknown; role: string } };
+    expect(res.status).toBe(200);
+    expect(body.data.profile).toBeNull();
+    expect(body.data.role).toBe("user");
+  });
+
+  it("rejects unauthenticated requests", async () => {
+    const { createUserController } = await import("../../src/modules/user/index.ts");
+    const app = new Elysia().use(
+      createUserController({
+        ...stubService,
+        getMe: async (user) => ({ user, profile: null, role: "user" }),
+      }),
+    );
+
+    const res = await app.handle(new Request("http://localhost/user/me"));
+
+    expect(res.status).toBe(401);
+  });
+});

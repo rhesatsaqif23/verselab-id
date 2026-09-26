@@ -1,244 +1,220 @@
-Welcome to your new TanStack Start app!
+# Verselab
 
-# Getting Started
+> **Interactive skill learning, gamified like Duolingo, visual like Brilliant.org.**  
+> Learn essential concepts through short interactive screens — concept, multiple choice, numeric calculation, and dynamic allocation — while earning XP and maintaining daily streaks.
 
-To run this application:
+Verselab ([verselab.id](https://verselab.id)) is an interactive learning web application designed around micro-learning and gamification. A **Bun workspace monorepo** serves a TanStack Start SSR web app (port 3000) and a Bun + Elysia API (port 3001) with PostgreSQL for accounts and learning profiles. In-game progress (XP, streak, mastery, curriculum edits) stays in the browser via `localStorage`.
 
-```bash
-npm install
-npm run dev
+While it launches with business and financial literacy materials (**Keuangan**, **Akuntansi**, **Manajemen Produk**, and **Kewirausahaan**), the core engine is completely domain-agnostic and built to support any future subject matter without architectural changes.
+
+---
+
+## Workspace layout
+
+```txt
+apps/web        TanStack Start + React 19 SSR app (port 3000)
+apps/api        Bun + Elysia + Better Auth + Drizzle/PostgreSQL API (port 3001)
+packages/shared shared Zod schemas/types reused by web and api
 ```
 
-# Building For Production
+---
 
-To build this application for production:
+## Key Features
 
-```bash
-npm run build
+### 1. Interactive Question Types
+
+The learning engine supports 4 interactive screen formats:
+
+- **`concept`**: Introduces core ideas, mental models, and definitions after the user has experienced the intuition.
+- **`choice`**: Multiple-choice scenario cards with instant feedback and explanations.
+- **`numeric`**: Dynamic numerical input with tolerances checked against math calculations (never hardcoded answers).
+- **`allocation`**: Interactive multi-slider controls that must sum to 100% and satisfy financial/budgeting constraints.
+
+### 2. Interactive Whiteboard Map Canvas (`/units/$unitId`)
+
+- Infinite-feel pannable and zoomable whiteboard canvas.
+- Automatically centers and positions the current lesson with comfortable viewport margins.
+- Visual sequential flow: dashed connector lines that become solid on completion with directional arrowheads.
+- Collapsible unit details sidebar with search, topic filtering, and completion tracking.
+- Floating bottom bar with progress percentage, XP rewards, and active lesson CTA.
+
+### 3. Gamification Engine
+
+- **XP System**: Earn XP for completing screens and lessons.
+- **Daily Streaks**: Maintain active streak counts with automated decay and recovery mechanics.
+- **Daily Goals**: Customizable daily target tracking (Casual, Regular, Serious).
+- **Mastery Levels**: Dynamic unit mastery calculated from retention and completion history.
+
+### 4. Accounts, Auth & Onboarding
+
+- Email + password authentication via **Better Auth** on the Elysia API.
+- Session relay through TanStack Start server functions with route guards.
+- Onboarding profile: display name, starting unit, and daily goal persisted in PostgreSQL.
+
+### 5. Curriculum Studio / Admin Mode (`/admin`)
+
+- Complete in-browser curriculum editor to manage units, lessons, and interactive screens.
+- Reorder screens with drag-and-drop or sequential buttons.
+- Real-time preview panel to test newly authored screens before publishing.
+
+### 6. Design & User Experience
+
+- **Tailwind CSS v4**: Theme tokens defined via `@theme inline` in CSS (zero hardcoded hex colors).
+- **Zero-FOUC Dark Mode**: Light, Dark, and Auto/System mode detection with pre-hydration theme script.
+- **Sticky Glassmorphic Header**: Elevated navigation with live streak and XP counter badges.
+- **High-Contrast Multi-Column Footer**: Streamlined navigation with direct deep-links to units and application routes.
+
+---
+
+## Curriculum Tracks
+
+| Unit                 | Focus & Learning Outcomes                                                      | Lessons   |
+| -------------------- | ------------------------------------------------------------------------------ | --------- |
+| **Keuangan**         | Personal finance, compound interest, time value of money, budgeting, and loans | 4 Lessons |
+| **Akuntansi**        | Balance sheet equation, double-entry bookkeeping, profit & loss, and cash flow | 4 Lessons |
+| **Manajemen Produk** | Problem discovery, feature prioritization, product metrics, and MVP validation | 4 Lessons |
+| **Kewirausahaan**    | Unit economics, break-even analysis, value-based pricing, and idea validation  | 4 Lessons |
+
+---
+
+## Tech Stack
+
+| Layer                    | Technology                                                                    | Details                                                     |
+| ------------------------ | ----------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| **Web framework**        | [TanStack Start](https://tanstack.com/start) + [React 19](https://react.dev/) | Full-stack React framework powered by Vite                  |
+| **Routing**              | [TanStack Router](https://tanstack.com/router)                                | 100% type-safe, file-based routing                          |
+| **API**                  | [Elysia](https://elysiajs.com/) + [Bun](https://bun.sh/)                      | HTTP server on port 3001                                    |
+| **Auth**                 | [Better Auth](https://better-auth.com/)                                       | Email + password, sessions in PostgreSQL                    |
+| **Database**             | [Drizzle ORM](https://orm.drizzle.team/) + PostgreSQL                         | Lazy `getDb()` access, kitchen migrations                   |
+| **Shared schemas**       | [Zod](https://zod.dev/)                                                       | Single source of truth in `packages/shared`                 |
+| **Styling**              | [Tailwind CSS v4](https://tailwindcss.com/)                                   | Pure CSS `@theme` configuration with semantic CSS variables |
+| **State**                | [Zustand](https://zustand.docs.pmnd.rs/)                                      | Client state with `persist` middleware to `localStorage`    |
+| **UI Components**        | [shadcn/ui](https://ui.shadcn.com/)                                           | New-York style primitives with Lucide icons                 |
+| **Linting & Formatting** | [Oxlint](https://oxc.rs/) & [Oxfmt](https://oxc.rs/)                          | High-performance Rust-based linter and formatter            |
+| **Testing**              | [Vitest](https://vitest.dev/) + Testing Library                               | Web unit tests mirroring application structure              |
+| **Design System**        | [Storybook](https://storybook.js.org/)                                        | Isolated component workbench (web only)                     |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- [Bun](https://bun.sh/docs/installation) ≥ 1.x
+- Docker (for local PostgreSQL)
+
+### Installation
+
+```sh
+# Clone repository
+git clone https://github.com/rhesatsaqif23/verselab-id.git
+cd verselab-id
+
+# Install dependencies (Bun workspaces)
+bun install
+
+# Copy environment templates
+cp apps/api/.env.example apps/api/.env
+cp apps/web/.env.example apps/web/.env
+
+# Start local PostgreSQL (Docker)
+docker start verselab-postgres   # create with: docker run -d --name verselab-postgres -p 5432:5432 -e POSTGRES_PASSWORD=postgres postgres:16
+
+# Apply migrations
+bun run --cwd apps/api db:migrate
+
+# Start the API and web app
+bun run dev:api                  # http://localhost:3001
+bun run dev                      # http://localhost:3000
 ```
 
-## Styling
+Open [http://localhost:3000](http://localhost:3000). See [DEVELOPMENT.md](DEVELOPMENT.md) for the full command and env-key reference, and [DATABASE-SCHEMA.md](DATABASE-SCHEMA.md) for the data model.
 
-This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
+---
 
-### Removing Tailwind CSS
+## Available Scripts
 
-If you prefer not to use Tailwind CSS:
+```sh
+# Development & Build
+bun run dev              # Web dev server on port 3000
+bun run dev:api          # API dev server on port 3001
+bun run build            # Production web build (vite build)
+bun run --cwd apps/web generate-routes  # Regenerate TanStack Router route tree (tsr generate)
 
-1. Remove the demo pages in `src/routes/demo/`
-2. Replace the Tailwind import in `src/styles.css` with your own styles
-3. Remove `tailwindcss()` from the plugins array in `vite.config.ts`
-4. Remove `@tailwindcss/vite` and `tailwindcss` from `package.json`
+# Database (Drizzle)
+bun run --cwd apps/api db:generate
+bun run --cwd apps/api db:migrate
+bun run --cwd apps/api db:push
+bun run --cwd apps/api db:studio
 
+# Quality & Verification
+bun run lint             # Run Oxlint
+bun run lint:fix         # Run Oxlint with automated fixes
+bun run fmt              # Format all files using Oxfmt
+bun run fmt:check        # Check formatting without writing (CI)
+bun run check-types      # Full TypeScript typecheck (api + web + shared)
+bun run test             # Run API (bun test) + web (vitest) tests
 
-## Deploy with Nitro
-
-This project uses Nitro as a generic server adapter, so it can run on any Node-compatible host.
-
-```bash
-npm run build
-node dist/server/index.mjs
+# Storybook
+bun run --cwd apps/web storybook   # Start Storybook on port 6006
+bun run --cwd apps/web build-storybook
 ```
 
-The build output is a self-contained Node server. To deploy, push the `dist/` directory to your host (Render, Fly.io, your own VPS, etc.) and run the server command above.
+---
 
-For host-specific presets (Vercel, Netlify, Cloudflare, AWS Lambda, etc.) and tuning, see https://v3.nitro.build/deploy.
+## Project Structure
 
-
-## Setting up Better Auth
-
-1. Generate and set the `BETTER_AUTH_SECRET` environment variable in your `.env.local`:
-
-   ```bash
-   npx -y @better-auth/cli secret
-   ```
-
-2. Visit the [Better Auth documentation](https://www.better-auth.com) to unlock the full potential of authentication in your app.
-
-### Adding a Database (Optional)
-
-Better Auth can work in stateless mode, but to persist user data, add a database:
-
-```typescript
-// src/lib/auth.ts
-import { betterAuth } from "better-auth";
-import { Pool } from "pg";
-
-export const auth = betterAuth({
-  database: new Pool({
-    connectionString: process.env.DATABASE_URL,
-  }),
-  // ... rest of config
-});
+```
+apps/
+├── api/                             # Bun + Elysia + Better Auth + Drizzle
+│   ├── src/
+│   │   ├── auth/                    # Better Auth instance
+│   │   ├── config/                  # Zod-parsed env
+│   │   ├── database/                # schema.ts, auth-schema.ts, lazy getDb()
+│   │   ├── libs/response.ts         # ok() / fail() envelope
+│   │   ├── middleware/auth.ts       # authContext macro ({ auth: true })
+│   │   ├── modules/                 # health, user, onboarding controllers
+│   │   └── plugins/logger.ts        # x-request-id + request/error logging
+│   └── drizzle/                     # Drizzle migrations
+└── web/                             # TanStack Start SSR app
+    └── src/
+        ├── engine/                  # Domain-agnostic learning engine (never references finance/business)
+        ├── domains/                 # personal-finance (math + screen renderers)
+        ├── features/                # home, lesson, unit-detail, admin, auth, onboarding, ...
+        ├── content/                 # Seeded curriculum data (4 units, 16 lessons)
+        ├── libs/                    # env.ts, session.ts (relay), auth-client.ts, utils, date, theme
+        ├── components/ui/           # shadcn/ui primitives
+        ├── routes/                  # Thin TanStack Router routes delegating to features
+        ├── stories/                 # Storybook stories
+        └── styles/                  # globals.css (semantic theme variables) & styles.css
+packages/
+└── shared/                          # Zod schemas/types (schemas/profile.ts)
 ```
 
-Then run migrations:
+---
 
-```bash
-npx -y @better-auth/cli migrate
-```
+## Architecture Rules & Principles
 
+1. **Engine / Domain Boundary**: Code inside `apps/web/src/engine/` must never contain subject-matter terms (money, interest, salary, accounting, etc.). The engine only handles question flow, validation callbacks, XP, and streaks.
+2. **Shared Zod Schemas**: DTOs live once in `packages/shared`; the API validates with them and the web types its forms from them. No duplication.
+3. **Server-side Accounts, Client-side Progress**: Auth, accounts, and the learning profile live in PostgreSQL; XP, streak, mastery, and curriculum edits persist to `localStorage` via Zustand (PRD §8.3).
+4. **Tailwind v4 Semantic Tokens**: Brand colors and component surfaces are defined using CSS variables in `apps/web/src/styles/globals.css` and mapped through `@theme inline`. Hardcoded Tailwind color utilities (e.g. `bg-blue-600`) are forbidden.
+5. **Tooling**: Formatting is powered by **Oxfmt** and linting by **Oxlint** (do not add Prettier or ESLint configs). Package manager is **Bun**.
 
-## Shadcn
+---
 
-Add components using the latest version of [Shadcn](https://ui.shadcn.com/).
+## Documentation
 
-```bash
-pnpm dlx shadcn@latest add button
-```
+- [PRD.md](PRD.md) — Product requirements document (Indonesian)
+- [CONCEPT.md](CONCEPT.md) — Conceptual model, learning philosophy, and core glossary
+- [ARCHITECTURE.md](ARCHITECTURE.md) — Technical architecture: engine/domain split, request lifecycle, data flow
+- [DATABASE-SCHEMA.md](DATABASE-SCHEMA.md) — PostgreSQL data model (ERD, tables, enums)
+- [DEVELOPMENT.md](DEVELOPMENT.md) — Commands, env keys, and local development
+- [AGENTS.md](AGENTS.md) — Guidelines and conventions for AI assistants and contributors
+- [docs/backend-refactor.md](docs/backend-refactor.md) — Backend refactor plan (target architecture)
 
+---
 
+## License
 
-## Routing
-
-This project uses [TanStack Router](https://tanstack.com/router) with file-based routing. Routes are managed as files in `src/routes`.
-
-### Adding A Route
-
-To add a new route to your application just add a new file in the `./src/routes` directory.
-
-TanStack will automatically generate the content of the route file for you.
-
-Now that you have two routes you can use a `Link` component to navigate between them.
-
-### Adding Links
-
-To use SPA (Single Page Application) navigation you will need to import the `Link` component from `@tanstack/react-router`.
-
-```tsx
-import { Link } from "@tanstack/react-router";
-```
-
-Then anywhere in your JSX you can use it like so:
-
-```tsx
-<Link to="/about">About</Link>
-```
-
-This will create a link that will navigate to the `/about` route.
-
-More information on the `Link` component can be found in the [Link documentation](https://tanstack.com/router/v1/docs/framework/react/api/router/linkComponent).
-
-### Using A Layout
-
-In the File Based Routing setup the layout is located in `src/routes/__root.tsx`. Anything you add to the root route will appear in all the routes. The route content will appear in the JSX where you render `{children}` in the `shellComponent`.
-
-Here is an example layout that includes a header:
-
-```tsx
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
-
-export const Route = createRootRoute({
-  head: () => ({
-    meta: [
-      { charSet: 'utf-8' },
-      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'My App' },
-    ],
-  }),
-  shellComponent: ({ children }) => (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        <header>
-          <nav>
-            <Link to="/">Home</Link>
-            <Link to="/about">About</Link>
-          </nav>
-        </header>
-        {children}
-        <Scripts />
-      </body>
-    </html>
-  ),
-})
-```
-
-More information on layouts can be found in the [Layouts documentation](https://tanstack.com/router/latest/docs/framework/react/guide/routing-concepts#layouts).
-
-## Server Functions
-
-TanStack Start provides server functions that allow you to write server-side code that seamlessly integrates with your client components.
-
-```tsx
-import { createServerFn } from '@tanstack/react-start'
-
-const getServerTime = createServerFn({
-  method: 'GET',
-}).handler(async () => {
-  return new Date().toISOString()
-})
-
-// Use in a component
-function MyComponent() {
-  const [time, setTime] = useState('')
-  
-  useEffect(() => {
-    getServerTime().then(setTime)
-  }, [])
-  
-  return <div>Server time: {time}</div>
-}
-```
-
-## API Routes
-
-You can create API routes by using the `server` property in your route definitions:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-import { json } from '@tanstack/react-start'
-
-export const Route = createFileRoute('/api/hello')({
-  server: {
-    handlers: {
-      GET: () => json({ message: 'Hello, World!' }),
-    },
-  },
-})
-```
-
-## Data Fetching
-
-There are multiple ways to fetch data in your application. You can use TanStack Query to fetch data from a server. But you can also use the `loader` functionality built into TanStack Router to load the data for a route before it's rendered.
-
-For example:
-
-```tsx
-import { createFileRoute } from '@tanstack/react-router'
-
-export const Route = createFileRoute('/people')({
-  loader: async () => {
-    const response = await fetch('https://swapi.dev/api/people')
-    return response.json()
-  },
-  component: PeopleComponent,
-})
-
-function PeopleComponent() {
-  const data = Route.useLoaderData()
-  return (
-    <ul>
-      {data.results.map((person) => (
-        <li key={person.name}>{person.name}</li>
-      ))}
-    </ul>
-  )
-}
-```
-
-Loaders simplify your data fetching logic dramatically. Check out more information in the [Loader documentation](https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#loader-parameters).
-
-
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-
-# Learn More
-
-You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
-
-For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+Private project. All rights reserved.

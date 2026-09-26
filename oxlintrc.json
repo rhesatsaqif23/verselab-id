@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["react", "typescript"],
+  "rules": {
+    "no-unused-vars": "warn",
+    "no-console": "warn",
+    "eqeqeq": "error",
+    "no-case-declarations": "error",
+    "no-self-compare": "error",
+    "default-case-last": "warn",
+    "typescript/no-explicit-any": "warn",
+    "typescript/no-non-null-assertion": "warn",
+    "react/jsx-key": "error",
+    "react/self-closing-comp": "warn",
+    "react/jsx-boolean-value": "warn"
+  }
+}

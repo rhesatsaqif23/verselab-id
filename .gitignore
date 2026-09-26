@@ -11,8 +11,10 @@ dist-ssr
 .vinxi
 __unconfig*
 todos.json
+uploads
 
 *storybook.log
 storybook-static
 docs
 stitch
+assets/

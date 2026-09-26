@@ -1,0 +1,430 @@
+:root {
+  --foreground: #1a1a1a;
+  --background: #f4f9fd;
+  --border: #e5e7eb;
+  --header-bg: rgba(255, 255, 255, 0.88);
+
+  --color-primary: #2c5ead;
+  --color-primary-light: #1591dc;
+  --color-primary-bright: #4bb8fa;
+  --color-primary-soft: #c4e2f5;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #dbe756;
+  --color-secondary-foreground: #1a1a1a;
+  --color-accent: #1591dc;
+  --color-accent-foreground: #ffffff;
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #ffffff;
+  --color-success: #22c55e;
+  --color-success-foreground: #ffffff;
+  --color-muted: #6b7280;
+  --color-muted-foreground: #6b7280;
+  --color-card: #ffffff;
+  --color-card-foreground: #1a1a1a;
+  --color-popover: #ffffff;
+  --color-popover-foreground: #1a1a1a;
+  --color-input: #e5e7eb;
+  --color-ring: #2c5ead;
+
+  --color-sidebar: #ffffff;
+  --color-sidebar-foreground: #1a1a1a;
+  --color-sidebar-primary: #2c5ead;
+  --color-sidebar-primary-foreground: #ffffff;
+  --color-sidebar-accent: #f1f5f9;
+  --color-sidebar-accent-foreground: #1a1a1a;
+  --color-sidebar-border: #e5e7eb;
+  --color-sidebar-ring: #2c5ead;
+
+  --radius: 0.75rem;
+
+  /* Button gradients — used by button.tsx */
+  --btn-from: #2c5ead;
+  --btn-to: #1591dc;
+  --btn-text: #ffffff;
+  --btn-shadow: #1a3a6e;
+  --btn-destructive-from: #ef4444;
+  --btn-destructive-via: #f87171;
+  --btn-destructive-to: #fca5a5;
+  --btn-destructive-text: #ffffff;
+  --btn-destructive-shadow: #b91c1c;
+  --btn-outline-border: #d1d5db;
+  --btn-outline-shadow: #9ca3af;
+  --btn-outline-from: transparent;
+  --btn-outline-to: transparent;
+  --btn-outline-text: var(--foreground);
+  --btn-secondary-from: #f3f4f6;
+  --btn-secondary-via: #fafafa;
+  --btn-secondary-to: #ffffff;
+  --btn-secondary-text: #1a1a1a;
+  --btn-ghost-text: var(--color-muted);
+  --btn-ghost-hover: rgba(44, 94, 173, 0.08);
+  --btn-ghost-active: rgba(44, 94, 173, 0.14);
+  --btn-ghost-hover-text: var(--color-primary);
+  --btn-ghost-shadow: #9ca3af;
+
+  /* Premium card — used by index.tsx */
+  --premium-card-from: rgba(44, 94, 173, 0.1);
+  --premium-card-via: rgba(21, 145, 220, 0.08);
+  --premium-card-to: rgba(196, 226, 245, 0.15);
+  --premium-icon-from: var(--color-primary);
+  --premium-icon-to: var(--color-accent);
+
+  /* Lesson controls — used by LessonControls.tsx */
+  --lesson-border-idle: var(--border);
+  --lesson-border-correct: var(--color-success);
+  --lesson-border-wrong: var(--color-destructive);
+  --lesson-btn-disabled-bg: #e5e7eb;
+  --lesson-btn-disabled-shadow: #9ca3af;
+  --lesson-btn-disabled-text: var(--color-muted);
+
+  /* Fire / streak */
+  --color-fire-light: #fff3e0;
+  --color-fire: #f97316;
+  --color-fire-dark: #783d0d;
+
+  /* Badge screen-type colors (3rd & 4th) */
+  --color-numeric: #f97316;
+  --color-numeric-soft: #fff3e0;
+  --color-allocation: #16a34a;
+  --color-allocation-soft: #dcfce7;
+
+  /* Misc surface */
+  --color-feature-hover: #d4cfc4;
+
+  /* Illustration palette — Lampiran A (light) */
+  --illustration-ink: #141b2d;
+  --illustration-paper: #f6f7f9;
+  --illustration-sand: #e8e2d6;
+  --illustration-surface: #ffffff;
+  --track-petrol: #146b63;
+  --track-indigo: #3446c4;
+  --track-ochre: #a9720e;
+  --track-moss: #4a6b2a;
+  --track-plum: #7c3a6e;
+}
+
+.dark {
+  --foreground: #f5f5f5;
+  --background: #1a1f2e;
+  --border: #2a3040;
+  --header-bg: rgba(26, 31, 46, 0.88);
+
+  --color-primary: #4bb8fa;
+  --color-primary-light: #1591dc;
+  --color-primary-bright: #4bb8fa;
+  --color-primary-soft: #c4e2f5;
+  --color-primary-foreground: #1a1a1a;
+  --color-secondary: #dbe756;
+  --color-secondary-foreground: #1a1a1a;
+  --color-accent: #4bb8fa;
+  --color-accent-foreground: #1a1a1a;
+  --color-destructive: #f87171;
+  --color-destructive-foreground: #1a1a1a;
+  --color-success: #4ade80;
+  --color-success-foreground: #1a1a1a;
+  --color-muted: #9ca3af;
+  --color-muted-foreground: #9ca3af;
+  --color-card: #212736;
+  --color-card-foreground: #f5f5f5;
+  --color-popover: #212736;
+  --color-popover-foreground: #f5f5f5;
+  --color-input: #2a3040;
+  --color-ring: #4bb8fa;
+
+  --color-sidebar: #1a1f2e;
+  --color-sidebar-foreground: #f5f5f5;
+  --color-sidebar-primary: #4bb8fa;
+  --color-sidebar-primary-foreground: #1a1a1a;
+  --color-sidebar-accent: #212736;
+  --color-sidebar-accent-foreground: #f5f5f5;
+  --color-sidebar-border: #2a3040;
+  --color-sidebar-ring: #4bb8fa;
+
+  --radius: 0.75rem;
+
+  --btn-from: #1591dc;
+  --btn-to: #4bb8fa;
+  --btn-text: #ffffff;
+  --btn-shadow: #0d5a8a;
+  --btn-destructive-from: #f87171;
+  --btn-destructive-via: #fca5a5;
+  --btn-destructive-to: #fecaca;
+  --btn-destructive-text: #1a1a1a;
+  --btn-destructive-shadow: #7f1d1d;
+  --btn-outline-border: var(--border);
+  --btn-outline-from: transparent;
+  --btn-outline-to: transparent;
+  --btn-outline-text: var(--foreground);
+  --btn-secondary-from: #2d2d2d;
+  --btn-secondary-via: #1f1f1f;
+  --btn-secondary-to: #1a1a1a;
+  --btn-secondary-text: #f5f5f5;
+  --btn-ghost-text: var(--color-muted);
+  --btn-ghost-hover: rgba(75, 184, 250, 0.12);
+  --btn-ghost-active: rgba(75, 184, 250, 0.2);
+  --btn-ghost-hover-text: var(--color-primary);
+
+  --premium-card-from: rgba(75, 184, 250, 0.15);
+  --premium-card-via: rgba(21, 145, 220, 0.1);
+  --premium-card-to: rgba(44, 94, 173, 0.1);
+  --premium-icon-from: var(--color-primary);
+  --premium-icon-to: var(--color-accent);
+
+  --lesson-border-idle: var(--border);
+  --lesson-border-correct: var(--color-success);
+  --lesson-border-wrong: var(--color-destructive);
+  --lesson-btn-disabled-bg: #2a3040;
+  --lesson-btn-disabled-shadow: #1a1f2e;
+  --lesson-btn-disabled-text: var(--color-muted);
+
+  /* Fire / streak */
+  --color-fire-light: rgba(120, 53, 15, 0.4);
+  --color-fire: #f97316;
+  --color-fire-dark: #783d0d;
+
+  /* Badge screen-type colors (3rd & 4th) */
+  --color-numeric: #fb923c;
+  --color-numeric-soft: rgba(249, 115, 22, 0.15);
+  --color-allocation: #4ade80;
+  --color-allocation-soft: rgba(34, 197, 94, 0.15);
+
+  /* Misc surface */
+  --color-feature-hover: #403c36;
+
+  /* Illustration palette — Lampiran A (dark) */
+  --illustration-ink: #edeff4;
+  --illustration-paper: #141b2d;
+  --illustration-sand: #3a3730;
+  --illustration-surface: #1e2533;
+  --track-petrol: #2fa095;
+  --track-indigo: #7488f0;
+  --track-ochre: #d9a23c;
+  --track-moss: #86ad5c;
+  --track-plum: #b573a5;
+}
+
+@theme inline {
+  --font-sans: "CoFo Brilliant", "Manrope", ui-sans-serif, system-ui, sans-serif;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--color-card);
+  --color-card-foreground: var(--color-card-foreground);
+  --color-popover: var(--color-popover);
+  --color-popover-foreground: var(--color-popover-foreground);
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-primary-bright: var(--color-primary-bright);
+  --color-primary-soft: var(--color-primary-soft);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+  --color-accent: var(--color-accent);
+  --color-accent-foreground: var(--color-accent-foreground);
+  --color-destructive: var(--color-destructive);
+  --color-destructive-foreground: var(--color-destructive-foreground);
+  --color-success: var(--color-success);
+  --color-success-foreground: var(--color-success-foreground);
+  --color-border: var(--border);
+  --color-input: var(--color-input);
+  --color-ring: var(--color-ring);
+  --color-sidebar: var(--color-sidebar);
+  --color-sidebar-foreground: var(--color-sidebar-foreground);
+  --color-sidebar-primary: var(--color-sidebar-primary);
+  --color-sidebar-primary-foreground: var(--color-sidebar-primary-foreground);
+  --color-sidebar-accent: var(--color-sidebar-accent);
+  --color-sidebar-accent-foreground: var(--color-sidebar-accent-foreground);
+  --color-sidebar-border: var(--color-sidebar-border);
+  --color-sidebar-ring: var(--color-sidebar-ring);
+  --color-chart-1: var(--color-primary);
+  --color-chart-2: var(--color-accent);
+  --color-chart-3: var(--color-primary-bright);
+  --color-chart-4: var(--color-primary-soft);
+  --color-chart-5: var(--color-secondary);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  /* Illustration palette — Tailwind utilities (bg-ink, bg-track-petrol, etc.) */
+  --color-ink: var(--illustration-ink);
+  --color-paper: var(--illustration-paper);
+  --color-sand: var(--illustration-sand);
+  --color-surface: var(--illustration-surface);
+  --color-track-petrol: var(--track-petrol);
+  --color-track-indigo: var(--track-indigo);
+  --color-track-ochre: var(--track-ochre);
+  --color-track-moss: var(--track-moss);
+  --color-track-plum: var(--track-plum);
+  /* Fire / streak */
+  --color-fire-light: var(--color-fire-light);
+  --color-fire: var(--color-fire);
+  --color-fire-dark: var(--color-fire-dark);
+  /* Badge screen-type (3rd & 4th) */
+  --color-numeric: var(--color-numeric);
+  --color-numeric-soft: var(--color-numeric-soft);
+  --color-allocation: var(--color-allocation);
+  --color-allocation-soft: var(--color-allocation-soft);
+  /* Misc */
+  --color-feature-hover: var(--color-feature-hover);
+}
+
+/* --- base --- */
+
+body {
+  font-weight: 500; /* font-medium as global default */
+}
+
+/* --- animations --- */
+
+@keyframes slide-up-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-slide-up-enter {
+  animation: slide-up-enter 0.3s ease-out both;
+}
+
+@keyframes slide-up-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+}
+.animate-slide-up-exit {
+  animation: slide-up-exit 0.2s ease-in both;
+}
+
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.animate-slide-in-right {
+  animation: slide-in-right 0.35s ease-out both;
+}
+
+@keyframes slide-out-left {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+}
+.animate-slide-out-left {
+  animation: slide-out-left 0.25s ease-in both;
+}
+
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+.animate-progress-fill {
+  animation: progress-fill 0.4s ease-out both;
+  transform-origin: left;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+.animate-shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0% {
+    box-shadow: 0 0 0 0 var(--color-success);
+  }
+  70% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 0.6s ease-out;
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+.animate-bounce-in {
+  animation: bounce-in 0.3s ease-out;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Normalize input[type=number] height to match regular inputs */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  height: 100%;
+  opacity: 1;
+}
+input[type="number"] {
+  padding-block: 0;
+}

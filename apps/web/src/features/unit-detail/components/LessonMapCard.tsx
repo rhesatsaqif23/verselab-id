@@ -1,0 +1,126 @@
+// LessonMapCard: detailed lesson card for whiteboard canvas matching reference design.
+import { Check } from "lucide-react";
+import type { Lesson } from "#/engine/types.ts";
+import type { LessonStatus } from "../types.ts";
+import { LessonVisual } from "./LessonVisual.tsx";
+
+type LessonMapCardProps = {
+  lesson: Lesson;
+  index: number;
+  status: LessonStatus;
+  isSelected: boolean;
+  onSelect: () => void;
+};
+
+export default function LessonMapCard({
+  lesson,
+  index,
+  status,
+  isSelected,
+  onSelect,
+}: LessonMapCardProps) {
+  // Status-dependent progress percentage and bar color
+  const progressPercent = status === "previous" ? 100 : status === "current" ? 35 : 0;
+
+  const cardBorderClass = isSelected
+    ? "border-primary ring-4 ring-primary/20 shadow-xl"
+    : status === "current"
+      ? "border-primary/70 shadow-lg"
+      : status === "previous"
+        ? "border-border shadow-md"
+        : "border-border/70 shadow-sm";
+
+  return (
+    <div
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect();
+      }}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
+      className={`group relative flex w-[320px] sm:w-90 flex-col rounded-3xl border-2 bg-card p-5 select-none transition-all duration-200 cursor-pointer ${cardBorderClass}`}
+    >
+      {/* Top row: Icon box, Title, Topic count */}
+      <div className="flex items-start gap-3.5">
+        {/* Rounded icon box */}
+        <div className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-primary/30 bg-primary/10 text-primary">
+          <LessonVisual
+            lesson={lesson}
+            iconClassName="size-7 stroke-[2.2]"
+            imageClassName="size-full object-cover"
+          />
+        </div>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="truncate text-lg sm:text-xl font-bold tracking-tight text-foreground">
+              {lesson.title}
+            </h3>
+            {status === "previous" && (
+              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-success text-white">
+                <Check className="size-3.5 stroke-3" />
+              </span>
+            )}
+          </div>
+          <span className="text-sm font-medium text-muted-foreground pt-1">
+            Topik #{index + 1} &bull; {lesson.screens.length} soal
+          </span>
+        </div>
+      </div>
+
+      {/* Middle row: Lesson description snippet */}
+      <div className="mt-3.5 min-h-9">
+        {lesson.description ? (
+          <p className="line-clamp-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
+            {lesson.description}
+          </p>
+        ) : (
+          <p className="line-clamp-2 text-xs sm:text-sm leading-relaxed text-muted-foreground">
+            Pahami konsep dan latihan interaktif untuk menguasai topik ini.
+          </p>
+        )}
+      </div>
+
+      {/* Bottom row: Progress bar + label */}
+      <div className="mt-4 flex flex-col gap-1.5 pt-2">
+        <div className="flex items-center justify-between text-xs font-semibold">
+          <span className="text-sm font-semibold text-muted-foreground">Progress</span>
+          <span
+            className={
+              status === "previous"
+                ? "text-success font-bold"
+                : status === "current"
+                  ? "text-primary font-bold"
+                  : "text-muted-foreground"
+            }
+          >
+            {progressPercent}%
+          </span>
+        </div>
+
+        {/* Progress track */}
+        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
+          <div
+            className="h-full rounded-full transition-all duration-300"
+            style={{
+              width: `${progressPercent}%`,
+              backgroundColor:
+                status === "previous"
+                  ? "var(--color-success)"
+                  : status === "current"
+                    ? "var(--color-primary)"
+                    : "var(--color-muted-foreground)",
+              opacity: status === "unlocked" ? 0.3 : 1,
+            }}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
