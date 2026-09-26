@@ -1,0 +1,1 @@
+ALTER TABLE "content_lessons" ADD COLUMN "prerequisite" text;

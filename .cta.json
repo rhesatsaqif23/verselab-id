@@ -17,11 +17,5 @@
   "routerOnly": false,
   "version": 1,
   "framework": "react",
-  "chosenAddOns": [
-    "nitro",
-    "drizzle",
-    "storybook",
-    "better-auth",
-    "shadcn"
-  ]
+  "chosenAddOns": ["nitro", "drizzle", "storybook", "better-auth", "shadcn"]
 }

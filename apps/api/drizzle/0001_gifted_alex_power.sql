@@ -1,0 +1,2 @@
+CREATE TYPE "public"."purpose" AS ENUM('karier', 'pendidikan', 'investasi', 'wirausaha', 'pengembangan-diri', 'lainnya');--> statement-breakpoint
+ALTER TABLE "user_profiles" ADD COLUMN "purpose" "purpose";

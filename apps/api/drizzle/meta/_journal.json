@@ -1,0 +1,90 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1788851104143,
+      "tag": "0000_light_gwen_stacy",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1789448090745,
+      "tag": "0001_gifted_alex_power",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789531399733,
+      "tag": "0002_numerous_shatterstar",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789531615443,
+      "tag": "0003_third_epoch",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789538370721,
+      "tag": "0004_romantic_captain_marvel",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789542862805,
+      "tag": "0005_colossal_rumiko_fujikawa",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789546150317,
+      "tag": "0006_tan_newton_destine",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1789627393687,
+      "tag": "0007_rich_norman_osborn",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789627556173,
+      "tag": "0008_chilly_adam_warlock",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1789637467602,
+      "tag": "0009_bitter_golden_guardian",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1789739300685,
+      "tag": "0010_ambitious_multiple_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1789745699010,
+      "tag": "0011_fine_harrier",
+      "breakpoints": true
+    }
+  ]
+}

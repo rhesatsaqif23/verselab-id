@@ -1,0 +1,114 @@
+// Tests for the global progress store.
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  MASTERY_CORRECT,
+  MASTERY_MAX,
+  MASTERY_MIN,
+  XP_PER_LESSON,
+  XP_PER_SCREEN,
+  useProgressStore,
+} from "#/engine/progress/progressStore.ts";
+
+vi.mock("#/engine/progress/sync.ts", () => ({
+  scheduleSync: vi.fn(),
+}));
+
+vi.mock("#/libs/api.ts", () => ({
+  getProgress: vi.fn().mockResolvedValue(null),
+  putProgress: vi.fn().mockResolvedValue(null),
+  updateDailyGoal: vi.fn().mockResolvedValue(null),
+}));
+
+const store = () => useProgressStore.getState();
+
+beforeEach(() => {
+  localStorage.clear();
+  useProgressStore.setState({
+    xp: 0,
+    dailyGoalMinutes: 10,
+    streak: 0,
+    streakFreeze: 0,
+    lastActiveDate: null,
+    mastery: {},
+    masteryUpdatedAt: {},
+  });
+});
+
+describe("useProgressStore", () => {
+  it("awardXp increases xp", () => {
+    store().awardXp(10);
+    expect(store().xp).toBe(10);
+  });
+
+  it("awardXp never goes below zero", () => {
+    store().awardXp(-100);
+    expect(store().xp).toBe(0);
+  });
+
+  it("awardScreenResult(true) adds XP and raises mastery from 0", () => {
+    store().awardScreenResult("unit-a", true);
+    expect(store().xp).toBe(XP_PER_SCREEN);
+    expect(store().mastery["unit-a"]).toBe(MASTERY_CORRECT);
+  });
+
+  it("awardScreenResult(true) caps mastery at 100", () => {
+    useProgressStore.setState({ mastery: { "unit-a": MASTERY_MAX } });
+    store().awardScreenResult("unit-a", true);
+    expect(store().mastery["unit-a"]).toBe(MASTERY_MAX);
+  });
+
+  it("awardScreenResult(false) lowers mastery without touching XP", () => {
+    store().awardScreenResult("unit-a", false);
+    expect(store().xp).toBe(0);
+    expect(store().mastery["unit-a"]).toBe(0);
+  });
+
+  it("awardScreenResult(false) floors mastery at 0", () => {
+    useProgressStore.setState({ mastery: { "unit-a": MASTERY_MIN } });
+    store().awardScreenResult("unit-a", false);
+    expect(store().mastery["unit-a"]).toBe(MASTERY_MIN);
+  });
+
+  it("awardScreenResult records the updatedAt date", () => {
+    store().awardScreenResult("unit-a", true);
+    expect(store().masteryUpdatedAt["unit-a"]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it("awardLessonCompletion adds the bonus XP and registers activity", () => {
+    store().awardLessonCompletion("unit-a", "lesson-a");
+    expect(store().xp).toBe(XP_PER_LESSON);
+    expect(store().streak).toBe(1);
+    expect(store().lastActiveDate).not.toBeNull();
+    expect(store().mastery["unit-a"]).toBe(50);
+  });
+
+  it("awardLessonCompletion seeds mastery only when the unit is not started", () => {
+    useProgressStore.setState({ mastery: { "unit-a": 60 } });
+    store().awardLessonCompletion("unit-a", "lesson-a");
+    expect(store().mastery["unit-a"]).toBe(60);
+  });
+
+  it("awardLessonCompletion records the updatedAt date", () => {
+    store().awardLessonCompletion("unit-a", "lesson-a");
+    expect(store().masteryUpdatedAt["unit-a"]).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it("setDailyGoal updates the setting", () => {
+    store().setDailyGoal(20);
+    expect(store().dailyGoalMinutes).toBe(20);
+  });
+
+  it("normalizes server ISO timestamps to YYYY-MM-DD on hydration", () => {
+    store().hydrateFromServer({
+      xp: 10,
+      streak: 1,
+      streakFreeze: 0,
+      lastActiveDate: "2026-09-26",
+      completedLessons: [],
+      units: [{ unitId: "unit-a", mastery: 50, masteryUpdatedAt: "2026-09-26T08:54:00.000Z" }],
+      recentActivity: [],
+      dailyGoalMinutes: 10,
+    });
+    expect(store().masteryUpdatedAt["unit-a"]).toBe("2026-09-26");
+  });
+});
