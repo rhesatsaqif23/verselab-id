@@ -95,14 +95,35 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
       ]);
       return { previous };
     },
-    onSuccess: (_created, variables) => {
-      const id = variables.id;
-      if (id) {
-        newScreenIdsRef.current.add(id);
-        setSelectedScreenId(id);
+    onSuccess: (created: AdminScreen, variables) => {
+      const draftId = variables.id;
+      const serverId = created?.id ?? draftId;
+      let abandoned = false;
+      if (draftId) {
+        abandoned = cleanedIdsRef.current.delete(draftId);
+        newScreenIdsRef.current.delete(draftId);
+      }
+      if (serverId) {
+        newScreenIdsRef.current.add(serverId);
+        // Follow the server id, but never steal the selection back if the
+        // user already moved on while the create was in flight.
+        setSelectedScreenId((current) =>
+          current === draftId || current === null ? serverId : current,
+        );
+        if (draftId && serverId !== draftId) {
+          queryClient.setQueryData<AdminScreen[]>(["admin-screens", lessonId], (old) =>
+            old ? old.map((r) => (r.id === draftId ? { ...r, id: serverId } : r)) : old,
+          );
+        }
+        if (abandoned) cleanedIdsRef.current.add(serverId);
       }
       queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
       toast.success("Screen berhasil ditambahkan");
+      // The draft was left blank while the create was still in flight; now
+      // that the row exists it can actually be removed — no ghost rows.
+      if (serverId && abandoned) {
+        deleteMutation.mutate({ id: serverId, silent: true });
+      }
     },
     onError: (err: Error, variables, context) => {
       if (context?.previous) {
@@ -122,13 +143,28 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
 
   const deleteMutation = useMutation({
     mutationFn: ({ id }: { id: string; silent?: boolean }) => adminDeleteScreen({ data: { id } }),
+    onMutate: async ({ id }) => {
+      // Remove the row locally instead of invalidating. A refetch here could
+      // race a pending create (snapshot without the new row) and make the
+      // freshly added screen vanish from the list.
+      await queryClient.cancelQueries({ queryKey: ["admin-screens", lessonId] });
+      const previous = queryClient.getQueryData<AdminScreen[]>(["admin-screens", lessonId]);
+      queryClient.setQueryData<AdminScreen[]>(["admin-screens", lessonId], (old) =>
+        old ? old.filter((r) => r.id !== id) : old,
+      );
+      return { previous };
+    },
     onSuccess: (_result, variables) => {
       newScreenIdsRef.current.delete(variables.id);
       savedScreenIdsRef.current.delete(variables.id);
-      queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
       if (!variables.silent) toast.success("Screen berhasil dihapus");
     },
-    onError: (err: Error, variables) => {
+    onError: (err: Error, variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["admin-screens", lessonId], context.previous);
+      }
+      // Reconcile with the server after a failed delete.
+      queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
       if (variables.silent) {
         // Allow a later data refresh to retry silent trash cleanup.
         cleanedIdsRef.current.delete(variables.id);
@@ -165,6 +201,9 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   function silentDelete(id: string) {
     if (cleanedIdsRef.current.has(id)) return;
     cleanedIdsRef.current.add(id);
+    // A draft whose create is still in flight cannot be deleted yet — the row
+    // may not exist on the server. Defer to createMutation.onSuccess.
+    if (createMutation.isPending && newScreenIdsRef.current.has(id)) return;
     deleteMutation.mutate({ id, silent: true });
   }
 
@@ -192,9 +231,10 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
       const currentId = selectedScreenId;
       const saved = await editorApiRef.current?.save();
       if (!saved) {
-        // Validation or save errors are already toasted by the form. Keep the
-        // two-option dialog open so the user can finish required fields and
-        // tap Simpan again, or choose Buang.
+        // Validation errors are already toasted by the form. Close the dialog
+        // so the user can fill the required field on the now-visible form;
+        // the guard reopens on the next navigation attempt.
+        handleCancelGuard();
         return;
       }
       if (currentId) handleSavedScreenId(currentId);
@@ -235,6 +275,12 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   function handleSavedScreenId(id: string) {
     newScreenIdsRef.current.delete(id);
     savedScreenIdsRef.current.add(id);
+  }
+
+  /** X / close: cancel the pending navigation, keep the edits and selection. */
+  function handleCancelGuard() {
+    setPendingScreenId(null);
+    if (blocker.status === "blocked") blocker.reset();
   }
 
   useEffect(() => {
@@ -405,7 +451,7 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
           if (!open && guardOpen) return;
         }}
       >
-        <AlertDialogContent size="sm">
+        <AlertDialogContent size="sm" onCloseClick={handleCancelGuard}>
           <AlertDialogHeader>
             <AlertDialogTitle>Simpan perubahan?</AlertDialogTitle>
             <AlertDialogDescription>

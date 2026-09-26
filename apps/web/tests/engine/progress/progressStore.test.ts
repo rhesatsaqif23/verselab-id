@@ -97,4 +97,18 @@ describe("useProgressStore", () => {
     store().setDailyGoal(20);
     expect(store().dailyGoalMinutes).toBe(20);
   });
+
+  it("normalizes server ISO timestamps to YYYY-MM-DD on hydration", () => {
+    store().hydrateFromServer({
+      xp: 10,
+      streak: 1,
+      streakFreeze: 0,
+      lastActiveDate: "2026-09-26",
+      completedLessons: [],
+      units: [{ unitId: "unit-a", mastery: 50, masteryUpdatedAt: "2026-09-26T08:54:00.000Z" }],
+      recentActivity: [],
+      dailyGoalMinutes: 10,
+    });
+    expect(store().masteryUpdatedAt["unit-a"]).toBe("2026-09-26");
+  });
 });

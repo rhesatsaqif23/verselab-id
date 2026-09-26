@@ -2,6 +2,7 @@
 "use client";
 
 import * as React from "react";
+import { XIcon } from "lucide-react";
 import { AlertDialog as AlertDialogPrimitive } from "radix-ui";
 
 import { cn } from "#/libs/utils.ts";
@@ -39,10 +40,16 @@ function AlertDialogOverlay({
 
 function AlertDialogContent({
   className,
+  children,
   size = "default",
+  showCloseButton = true,
+  onCloseClick,
   ...props
 }: React.ComponentProps<typeof AlertDialogPrimitive.Content> & {
   size?: "default" | "sm";
+  showCloseButton?: boolean;
+  /** Runs before the built-in close flow; lets callers add custom cancel logic. */
+  onCloseClick?: (event: React.MouseEvent) => void;
 }) {
   return (
     <AlertDialogPortal>
@@ -55,7 +62,19 @@ function AlertDialogContent({
           className,
         )}
         {...props}
-      />
+      >
+        {children}
+        {showCloseButton && (
+          <AlertDialogPrimitive.Cancel
+            data-slot="alert-dialog-close"
+            onClick={onCloseClick}
+            className="absolute top-6 right-6 cursor-pointer rounded-xs text-foreground opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5"
+          >
+            <XIcon />
+            <span className="sr-only">Close</span>
+          </AlertDialogPrimitive.Cancel>
+        )}
+      </AlertDialogPrimitive.Content>
     </AlertDialogPortal>
   );
 }

@@ -35,6 +35,30 @@ type SeedAllocationScreen = {
 };
 
 const ASSETS_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", "..", "assets");
+const WEB_PUBLIC_ROOT = join(
+  dirname(fileURLToPath(import.meta.url)),
+  "..",
+  "..",
+  "..",
+  "web",
+  "public",
+);
+
+function extOf(path: string): string {
+  return path.split(".").pop()?.toLowerCase() ?? "png";
+}
+
+/** Upload a file from disk and return its stored URL, or null on failure. */
+async function uploadImageFile(absPath: string, key: string): Promise<string | null> {
+  try {
+    const buffer = await readFile(absPath);
+    const mime = mimeForKey(absPath) ?? "image/png";
+    return await getStorage().put(key, buffer, mime);
+  } catch (err) {
+    console.warn(`[seed] Skipping image ${absPath}:`, err instanceof Error ? err.message : err);
+    return null;
+  }
+}
 
 /**
  * Upload an illustration from assets/ and return its public URL.
@@ -42,14 +66,36 @@ const ASSETS_ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..", ".
  * not configured, so seeding never crashes on images.
  */
 async function uploadAssetImage(relPath: string, key: string): Promise<string | null> {
-  try {
-    const buffer = await readFile(join(ASSETS_ROOT, relPath));
-    const mime = mimeForKey(relPath) ?? "image/png";
-    return await getStorage().put(key, buffer, mime);
-  } catch (err) {
-    console.warn(`[seed] Skipping image ${relPath}:`, err instanceof Error ? err.message : err);
-    return null;
+  return uploadImageFile(join(ASSETS_ROOT, relPath), key);
+}
+
+/**
+ * Resolve a unit's image URL, always preferring storage (S3) over static
+ * web assets. Covers both seed forms: `imageAsset` (repo assets/) and
+ * `imageUrl: "/unit/*.webp"` (files under apps/web/public/) — the latter is
+ * uploaded to storage so a fresh seed never points at web public files.
+ * Static fallbacks are kept only when upload fails (storage not configured).
+ */
+async function resolveUnitImage(unit: {
+  id: string;
+  imageAsset?: string;
+  imageUrl?: string;
+}): Promise<string | null> {
+  if (unit.imageAsset) {
+    const uploaded = await uploadAssetImage(
+      unit.imageAsset,
+      `content/${unit.id}.${extOf(unit.imageAsset)}`,
+    );
+    return uploaded ?? unit.imageUrl ?? null;
   }
+  if (unit.imageUrl?.startsWith("/unit/")) {
+    const uploaded = await uploadImageFile(
+      join(WEB_PUBLIC_ROOT, unit.imageUrl),
+      `content/${unit.id}.${extOf(unit.imageUrl)}`,
+    );
+    return uploaded ?? unit.imageUrl;
+  }
+  return unit.imageUrl ?? null;
 }
 
 async function seedContent() {
@@ -81,11 +127,7 @@ async function seedContent() {
       title: unit.title,
       slug: unitSlug,
       description: unit.description,
-      imageUrl: unit.imageAsset
-        ? ((await uploadAssetImage(unit.imageAsset, `content/${unit.id}.png`)) ??
-          unit.imageUrl ??
-          null)
-        : (unit.imageUrl ?? null),
+      imageUrl: await resolveUnitImage(unit),
       sortOrder: unitIdx,
     });
     unitCount++;
@@ -109,7 +151,10 @@ async function seedContent() {
         description: lesson.description ?? null,
         icon: null,
         imageUrl: lesson.imageAsset
-          ? await uploadAssetImage(lesson.imageAsset, `lessons/${lesson.id}.png`)
+          ? await uploadAssetImage(
+              lesson.imageAsset,
+              `lessons/${lesson.id}.${extOf(lesson.imageAsset)}`,
+            )
           : null,
         prerequisiteIds: lesson.prerequisiteIds ?? null,
         sortOrder: lessonIdx,

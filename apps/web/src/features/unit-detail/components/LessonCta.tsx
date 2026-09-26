@@ -84,7 +84,7 @@ export default function LessonCta({ lesson, status, isVisible, allLessons = [] }
                       Main Lagi
                     </Link>
                   ) : (
-                    <span>
+                    <span className="inline-flex items-center">
                       <RotateCcw className="mr-2 size-5" />
                       Main Lagi
                     </span>
@@ -92,7 +92,7 @@ export default function LessonCta({ lesson, status, isVisible, allLessons = [] }
                 </Button>
               ) : (
                 <Button
-                  asChild={!hasNoScreens && !hasUnmetPrereqs}
+                  asChild={!hasNoScreens}
                   size="lg"
                   disabled={hasNoScreens}
                   className="w-full sm:w-auto sm:min-w-48 text-base! font-bold! shadow-md"

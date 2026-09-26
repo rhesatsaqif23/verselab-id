@@ -4,6 +4,7 @@ import { join } from "node:path";
 import { env } from "../../src/config/env.ts";
 import {
   getStorage,
+  isMissingObjectError,
   mimeForKey,
   safeUploadPath,
   setStorageFake,
@@ -126,6 +127,26 @@ describe("toStorageError", () => {
     const err = toStorageError(new Error("weird"), "delete");
     expect(err.status).toBe(500);
     expect(err.message).toContain("menghapus");
+  });
+});
+
+describe("isMissingObjectError", () => {
+  it("treats S3 missing-object messages as null, not failures", () => {
+    // Bun's S3Client message for a missing key.
+    expect(isMissingObjectError(new Error("The specified key does not exist."))).toBe(true);
+    expect(isMissingObjectError(new Error("NoSuchKey"))).toBe(true);
+    expect(isMissingObjectError(new Error("NoSuchKey: The specified key does not exist."))).toBe(
+      true,
+    );
+    const coded = new Error("not found");
+    (coded as Error & { code?: string }).code = "NotFound";
+    expect(isMissingObjectError(coded)).toBe(true);
+  });
+
+  it("keeps real failures as failures", () => {
+    expect(isMissingObjectError(new Error("Access Denied"))).toBe(false);
+    expect(isMissingObjectError(new Error("Connection reset by peer"))).toBe(false);
+    expect(isMissingObjectError(null)).toBe(false);
   });
 });
 

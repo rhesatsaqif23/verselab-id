@@ -2,7 +2,7 @@
 // Server-synced via sync.ts; hydrated on login.
 import { create } from "zustand";
 import type { ServerProgress } from "@verselab/shared/schemas/progress";
-import { todayString } from "#/libs/date.ts";
+import { dateOnly, todayString } from "#/libs/date.ts";
 import { streakOnActivity } from "./streak.ts";
 import { scheduleSync } from "./sync.ts";
 import { getProgress, updateDailyGoal } from "#/libs/api.ts";
@@ -55,8 +55,10 @@ const hydrateFromServer = (set: any, data: ServerProgress): void => {
     activeDays: data.recentActivity,
     dailyGoalMinutes: data.dailyGoalMinutes as DailyGoalMinutes,
     mastery: Object.fromEntries(data.units.map((u: any) => [u.unitId, u.mastery])),
+    // The server sends ISO timestamps; the store keeps YYYY-MM-DD so decay
+    // math never parses "2026-09-26T08:54:00.000ZT00:00:00" into NaN.
     masteryUpdatedAt: Object.fromEntries(
-      data.units.map((u: any) => [u.unitId, u.masteryUpdatedAt]),
+      data.units.map((u: any) => [u.unitId, dateOnly(u.masteryUpdatedAt)]),
     ),
   });
 };
@@ -186,7 +188,7 @@ const refreshFromServer = (set: any): void => {
         dailyGoalMinutes: serverData.dailyGoalMinutes as DailyGoalMinutes,
         mastery: Object.fromEntries(serverData.units.map((u: any) => [u.unitId, u.mastery])),
         masteryUpdatedAt: Object.fromEntries(
-          serverData.units.map((u: any) => [u.unitId, u.masteryUpdatedAt]),
+          serverData.units.map((u: any) => [u.unitId, dateOnly(u.masteryUpdatedAt)]),
         ),
       });
     }

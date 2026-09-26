@@ -16,5 +16,8 @@ export function decayedMastery(
 ): number {
   if (mastery == null || Number.isNaN(mastery)) return 0;
   if (updatedAt == null) return mastery;
-  return Math.max(0, mastery - fullWeeksSince(updatedAt, now) * DECAY_PER_WEEK);
+  const weeks = fullWeeksSince(updatedAt, now);
+  // Unparsable dates (bad timestamps) must never surface as NaN% in the UI.
+  if (Number.isNaN(weeks)) return mastery;
+  return Math.max(0, mastery - weeks * DECAY_PER_WEEK);
 }

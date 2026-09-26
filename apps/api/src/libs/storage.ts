@@ -112,6 +112,18 @@ function localDriver(): StorageDriver {
   };
 }
 
+/**
+ * True when an S3 error means "object does not exist" rather than a real
+ * failure. Covers Bun's message ("The specified key does not exist.") and
+ * S3 error codes (NoSuchKey / NotFound), so read() returns null instead of
+ * throwing a 500 for missing objects.
+ */
+export function isMissingObjectError(err: unknown): boolean {
+  const msg = err instanceof Error ? err.message : String(err ?? "");
+  const code = err && typeof err === "object" ? String((err as { code?: unknown }).code ?? "") : "";
+  return /NoSuchKey|NotFound|NotExist|404|Not Found|does not exist/i.test(`${code} ${msg}`);
+}
+
 export function getStorage(): StorageDriver {
   if (fake) return fake;
   if (cached) return cached;
@@ -155,8 +167,7 @@ export function getStorage(): StorageDriver {
         const buf = await client.file(rel).arrayBuffer();
         return new Uint8Array(buf);
       } catch (err) {
-        const msg = err instanceof Error ? err.message : String(err);
-        if (/NoSuchKey|NotExist|404|Not Found/i.test(msg)) return null;
+        if (isMissingObjectError(err)) return null;
         throw toStorageError(err, "read");
       }
     },

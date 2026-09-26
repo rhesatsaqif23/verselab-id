@@ -34,6 +34,12 @@ const { navigateMock, updateMock, mockScreens, blockerStore, capturedBlocker } =
   };
 });
 
+// Like the real blocker, reset() returns the status to idle so the guarded
+// component re-renders and closes its dialog.
+blockerStore.reset.mockImplementation(() => {
+  blockerStore.status = "idle";
+});
+
 vi.mock("#/libs/admin-content-fns.ts", () => ({
   adminGetScreens: vi.fn().mockResolvedValue(mockScreens),
   adminCreateScreen: vi.fn(),
@@ -188,7 +194,7 @@ describe("ScreenEditor unsaved guard", () => {
     expect(blockerStore.proceed).toHaveBeenCalledTimes(1);
   });
 
-  it("keeps the dialog open when Simpan fails validation", async () => {
+  it("closes the dialog when Simpan fails validation so the field can be filled", async () => {
     renderEditor();
     fireEvent.change(await screen.findByDisplayValue("Prompt satu"), {
       target: { value: "" },
@@ -198,8 +204,61 @@ describe("ScreenEditor unsaved guard", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /simpan & pindah/i }));
 
+    // Nothing saved, dialog closed, and the form is editable again so the
+    // user can fill the required field. The guard reopens on next navigation.
+    await waitFor(() => expect(screen.queryByText("Simpan perubahan?")).toBeNull());
     expect(updateMock).not.toHaveBeenCalled();
-    expect(await screen.findByText("Simpan perubahan?")).toBeInTheDocument();
     expect(screen.getByDisplayValue("")).toBeInTheDocument();
+    expect(capturedBlocker.shouldBlockFn?.()).toBe(true);
+  });
+
+  it("offers a close X in the dialog corner", async () => {
+    renderEditor();
+    fireEvent.change(await screen.findByDisplayValue("Prompt satu"), {
+      target: { value: "Prompt satu edited" },
+    });
+    fireEvent.click(screen.getByText("Prompt dua"));
+
+    await screen.findByText("Simpan perubahan?");
+    const close = screen.getByRole("button", { name: /close/i });
+    expect(close.className).toContain("right-6");
+    expect(close.className).toContain("top-6");
+  });
+
+  it("cancels the switch without saving on X", async () => {
+    renderEditor();
+    const prompt = await screen.findByDisplayValue("Prompt satu");
+    fireEvent.change(prompt, { target: { value: "Prompt satu edited" } });
+    fireEvent.click(screen.getByText("Prompt dua"));
+    await screen.findByText("Simpan perubahan?");
+
+    fireEvent.click(screen.getByRole("button", { name: /close/i }));
+
+    // Dialog closed, still on screen one with the edits intact.
+    expect(screen.queryByText("Simpan perubahan?")).toBeNull();
+    expect(updateMock).not.toHaveBeenCalled();
+    expect(screen.getByDisplayValue("Prompt satu edited")).toBeInTheDocument();
+    expect(blockerStore.reset).not.toHaveBeenCalled();
+  });
+
+  it("resets the route blocker on X", async () => {
+    const { rerenderEditor } = renderEditor();
+    fireEvent.change(await screen.findByDisplayValue("Prompt satu"), {
+      target: { value: "Prompt satu edited" },
+    });
+
+    blockerStore.status = "blocked";
+    rerenderEditor();
+    await screen.findByText("Simpan perubahan?");
+
+    fireEvent.click(screen.getByRole("button", { name: /close/i }));
+
+    expect(blockerStore.reset).toHaveBeenCalledTimes(1);
+    expect(blockerStore.proceed).not.toHaveBeenCalled();
+
+    // The real blocker re-renders the route after reset(); the mock needs one.
+    rerenderEditor();
+    expect(blockerStore.status).toBe("idle");
+    expect(screen.queryByText("Simpan perubahan?")).toBeNull();
   });
 });

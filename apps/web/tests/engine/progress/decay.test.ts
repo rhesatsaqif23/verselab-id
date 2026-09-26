@@ -25,6 +25,11 @@ describe("daysBetween", () => {
   it("returns 0 when now is before updatedAt (future-dated)", () => {
     expect(daysBetween("2026-08-20", "2026-08-13")).toBe(-7);
   });
+
+  it("accepts ISO timestamps (server masteryUpdatedAt)", () => {
+    expect(daysBetween("2026-08-05T08:54:00.000Z", "2026-08-13")).toBe(8);
+    expect(daysBetween("2026-08-13", "2026-08-13T23:59:59.000Z")).toBe(0);
+  });
 });
 
 describe("fullWeeksSince", () => {
@@ -64,5 +69,19 @@ describe("decayedMastery", () => {
 
   it("returns mastery unchanged when updatedAt is undefined", () => {
     expect(decayedMastery(60, undefined, TODAY)).toBe(60);
+  });
+
+  it("does not produce NaN for an ISO timestamp updatedAt", () => {
+    const value = decayedMastery(60, "2026-08-13T08:54:00.000Z", TODAY);
+    expect(Number.isNaN(value)).toBe(false);
+    expect(value).toBe(60);
+  });
+
+  it("decays from an ISO timestamp updatedAt", () => {
+    expect(decayedMastery(60, "2026-08-05T08:54:00.000Z", TODAY)).toBe(60 - DECAY_PER_WEEK);
+  });
+
+  it("returns mastery unchanged for an unparsable updatedAt", () => {
+    expect(decayedMastery(60, "not-a-date", TODAY)).toBe(60);
   });
 });

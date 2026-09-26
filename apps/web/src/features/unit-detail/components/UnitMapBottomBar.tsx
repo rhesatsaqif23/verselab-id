@@ -93,7 +93,7 @@ export default function UnitMapBottomBar({
                     Main Lagi
                   </Link>
                 ) : (
-                  <span>
+                  <span className="inline-flex items-center">
                     <RotateCcw className="mr-2 size-5" />
                     Main Lagi
                   </span>
@@ -101,7 +101,7 @@ export default function UnitMapBottomBar({
               </Button>
             ) : (
               <Button
-                asChild={!hasNoScreens && !hasUnmetPrereqs}
+                asChild={!hasNoScreens}
                 size="lg"
                 disabled={hasNoScreens}
                 className="min-w-48 px-8 font-bold text-base shadow-md"

@@ -23,9 +23,18 @@ export function toDateString(d: Date): string {
   return `${y}-${m}-${day}`;
 }
 
+/**
+ * Normalize a date-like string (YYYY-MM-DD or ISO timestamp) to YYYY-MM-DD.
+ * Values without a recognizable date prefix are returned unchanged.
+ */
+export function dateOnly(value: string): string {
+  const m = /^(\d{4}-\d{2}-\d{2})/.exec(value);
+  return m ? m[1] : value;
+}
+
 export function daysBetween(from: string, to: string): number {
-  const a = new Date(from + "T00:00:00").getTime();
-  const b = new Date(to + "T00:00:00").getTime();
+  const a = new Date(`${dateOnly(from)}T00:00:00`).getTime();
+  const b = new Date(`${dateOnly(to)}T00:00:00`).getTime();
   return Math.round((b - a) / (1000 * 60 * 60 * 24));
 }
 
