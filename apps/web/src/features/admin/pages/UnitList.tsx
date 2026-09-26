@@ -41,6 +41,7 @@ import { UnitFormDialog } from "../components/UnitFormDialog.tsx";
 import { AdminQueryError } from "../components/QueryError.tsx";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
+import { isImageUploading, useImageUploadChanges } from "../hooks/useImageUpload.ts";
 
 const PAGE_SIZE = 10;
 
@@ -50,6 +51,8 @@ export function UnitList() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+
+  useImageUploadChanges();
 
   const {
     data: units,
@@ -216,7 +219,9 @@ export function UnitList() {
                     </p>
                   </TableCell>
                   <TableCell className="text-center">
-                    {unit.imageUrl ? (
+                    {isImageUploading(unit.id) && !unit.imageUrl ? (
+                      <Skeleton className="mx-auto size-12 rounded-lg" />
+                    ) : unit.imageUrl ? (
                       <img
                         src={resolveImageUrl(unit.imageUrl)}
                         alt={unit.title}

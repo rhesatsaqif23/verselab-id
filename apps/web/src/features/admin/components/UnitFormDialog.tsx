@@ -22,6 +22,7 @@ import {
   translateAdminError,
   type AdminUnit,
 } from "#/libs/admin-content-fns.ts";
+import { trackImageUpload } from "../hooks/useImageUpload.ts";
 
 interface UnitFormDialogProps {
   trigger: React.ReactNode;
@@ -136,13 +137,15 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
       if (file && targetId) {
         try {
           const base64 = await fileToBase64(file);
-          await imageMutation.mutateAsync({
-            id: targetId,
-            file: base64,
-            filename: filename ?? "",
-            fileType: fileType ?? "image/png",
-          });
-          toast.success("Gambar berhasil diunggah");
+          await trackImageUpload(
+            targetId,
+            imageMutation.mutateAsync({
+              id: targetId,
+              file: base64,
+              filename: filename ?? "",
+              fileType: fileType ?? "image/png",
+            }),
+          );
         } catch (imgErr) {
           toast.error(translateAdminError(imgErr, "Unit tersimpan, tetapi gambar gagal diunggah"));
         }

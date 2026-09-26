@@ -45,6 +45,7 @@ import { AdminQueryError } from "../components/QueryError.tsx";
 import { LessonFormDialog } from "../components/LessonFormDialog.tsx";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
+import { isImageUploading, useImageUploadChanges } from "../hooks/useImageUpload.ts";
 
 const PAGE_SIZE = 10;
 
@@ -54,6 +55,8 @@ export function AllLessonsTable() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
+
+  useImageUploadChanges();
 
   const {
     data: lessons,
@@ -199,7 +202,9 @@ export function AllLessonsTable() {
                     <span className="text-sm text-muted-foreground">{lesson.unitTitle}</span>
                   </TableCell>
                   <TableCell className="text-center">
-                    {resolveImageUrl(lesson.imageUrl) ? (
+                    {isImageUploading(lesson.id) && !lesson.imageUrl ? (
+                      <Skeleton className="mx-auto size-12 rounded" />
+                    ) : resolveImageUrl(lesson.imageUrl) ? (
                       <img
                         src={resolveImageUrl(lesson.imageUrl)}
                         alt={lesson.title}

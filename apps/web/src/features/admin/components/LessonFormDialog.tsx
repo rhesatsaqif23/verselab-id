@@ -22,6 +22,7 @@ import {
   translateAdminError,
   type AdminLesson,
 } from "#/libs/admin-content-fns.ts";
+import { trackImageUpload } from "../hooks/useImageUpload.ts";
 
 interface LessonFormDialogProps {
   trigger: React.ReactNode;
@@ -118,7 +119,10 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
   const imageMutation = useMutation({
     mutationFn: (data: { id: string; file: string; filename: string; fileType: string }) =>
       adminUploadLessonImage({ data }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-all-lessons"] });
+    },
   });
 
   function reset() {
@@ -190,13 +194,15 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
       if (file && targetId) {
         try {
           const base64 = await fileToBase64(file);
-          await imageMutation.mutateAsync({
-            id: targetId,
-            file: base64,
-            filename: filename ?? "",
-            fileType: fileType ?? "image/png",
-          });
-          toast.success("Gambar berhasil diunggah");
+          await trackImageUpload(
+            targetId,
+            imageMutation.mutateAsync({
+              id: targetId,
+              file: base64,
+              filename: filename ?? "",
+              fileType: fileType ?? "image/png",
+            }),
+          );
         } catch (imgErr) {
           toast.error(
             translateAdminError(imgErr, "Lesson tersimpan, tetapi gambar gagal diunggah"),

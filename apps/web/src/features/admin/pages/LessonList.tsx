@@ -37,6 +37,7 @@ import { AdminQueryError } from "../components/QueryError.tsx";
 import { LessonFormDialog } from "../components/LessonFormDialog.tsx";
 import { SortableHead } from "../components/SortableHead.tsx";
 import { useSortFilter } from "../hooks/useSortFilter.ts";
+import { isImageUploading, useImageUploadChanges } from "../hooks/useImageUpload.ts";
 
 type LessonSortKey = "title" | "createdAt";
 
@@ -48,6 +49,8 @@ interface LessonListProps {
 export function LessonList({ unitId, unitSlug }: LessonListProps) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+
+  useImageUploadChanges();
 
   const {
     data: lessons,
@@ -184,7 +187,9 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
                     <div className="text-xs text-muted-foreground">{lesson.slug}</div>
                   </TableCell>
                   <TableCell className="text-center">
-                    {resolveImageUrl(lesson.imageUrl) ? (
+                    {isImageUploading(lesson.id) && !lesson.imageUrl ? (
+                      <Skeleton className="mx-auto size-12 rounded" />
+                    ) : resolveImageUrl(lesson.imageUrl) ? (
                       <img
                         src={resolveImageUrl(lesson.imageUrl)}
                         alt={lesson.title}
