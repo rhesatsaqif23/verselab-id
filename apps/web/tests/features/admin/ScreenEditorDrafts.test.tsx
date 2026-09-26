@@ -5,7 +5,11 @@ import "@testing-library/jest-dom/vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ScreenEditor } from "#/features/admin/pages/ScreenEditor.tsx";
-import { isScreenEmpty, validateScreenFields } from "#/features/admin/components/ScreenForm.tsx";
+import {
+  isScreenEmpty,
+  snapshotScreenForm,
+  validateScreenFields,
+} from "#/features/admin/components/ScreenForm.tsx";
 
 type DraftRow = {
   id: string;
@@ -55,11 +59,15 @@ const { store, api, capturedBlocker } = vi.hoisted(() => {
   const api = {
     getScreens: vi.fn(async () => store.rows),
     createScreen: vi.fn(
-      async ({ data }: { data: { lessonId: string; prompt: string; explain: string } }) => {
+      async ({
+        data,
+      }: {
+        data: { id?: string; lessonId: string; prompt: string; explain: string };
+      }) => {
         const row: DraftRow = {
           ...valid,
-          id: "s-new",
-          slug: "s-new",
+          id: data.id ?? "s-new",
+          slug: data.id ?? "s-new",
           lessonId: data.lessonId,
           prompt: data.prompt,
           explain: data.explain,
@@ -116,6 +124,8 @@ async function createBlankDraft() {
   await screen.findByText("Tambah Screen Baru");
   fireEvent.click(screen.getByRole("button", { name: /buat screen/i }));
   await waitFor(() => expect(api.createScreen).toHaveBeenCalledTimes(1));
+  const call = api.createScreen.mock.calls[0]?.[0] as { data: { id: string } };
+  return call.data.id;
 }
 
 beforeEach(() => {
@@ -137,6 +147,29 @@ describe("ScreenEditor blank drafts", () => {
     expect(validateScreenFields(valid)).toHaveLength(0);
   });
 
+  it("treats database key order the same as form key order", () => {
+    const blank = store.rows.find((s) => s.id === "s-blank");
+    expect(blank).toBeDefined();
+    if (!blank) return;
+
+    // Form builds rule as { type, categoryId, min }; Postgres jsonb reads it
+    // back reordered by key length. Same values must compare equal.
+    const formSide = {
+      ...blank,
+      type: "allocation" as const,
+      prompt: "Alokasi?",
+      explain: "Atur.",
+      categories: ["A", "B"],
+      rule: { type: "min", categoryId: "A", min: 20 },
+    };
+    const serverSide = {
+      ...formSide,
+      rule: JSON.parse('{"min":20,"type":"min","categoryId":"A"}'),
+    };
+    expect(validateScreenFields(formSide)).toHaveLength(0);
+    expect(snapshotScreenForm(formSide)).toBe(snapshotScreenForm(serverSide));
+  });
+
   it("deletes a pre-existing blank screen automatically", async () => {
     renderEditor();
     await screen.findByDisplayValue("Prompt satu");
@@ -145,17 +178,41 @@ describe("ScreenEditor blank drafts", () => {
     expect(store.rows.some((s) => s.id === "s-blank")).toBe(false);
   });
 
+  it("keeps the open blank draft until the user leaves it", async () => {
+    const blank = store.rows.find((s) => s.id === "s-blank");
+    const valid = store.rows.find((s) => s.id === "s-1");
+    expect(blank).toBeDefined();
+    expect(valid).toBeDefined();
+    if (!blank || !valid) return;
+    store.rows = [blank, valid];
+
+    renderEditor();
+    // The blank draft is selected on open and must not vanish on sight.
+    await screen.findByText("Daftar Screen (2)");
+    expect(api.deleteScreen).not.toHaveBeenCalled();
+
+    // Leaving it pristine for another screen trashes it without any dialog.
+    fireEvent.click(screen.getByText("Prompt satu"));
+
+    await waitFor(() => expect(api.deleteScreen).toHaveBeenCalledWith({ data: { id: "s-blank" } }));
+    expect(screen.queryByText("Simpan perubahan?")).toBeNull();
+    await screen.findByDisplayValue("Prompt satu");
+  });
+
   it("leaves a pristine blank draft without showing the guard, then deletes it", async () => {
     renderEditor();
     await screen.findByDisplayValue("Prompt satu");
-    await createBlankDraft();
+    const draftId = await createBlankDraft();
+
+    // The blank draft is selected and editable immediately, before any refetch.
+    expect(screen.getAllByDisplayValue("")).toHaveLength(2);
 
     // No unsaved difference yet, so navigation must not ask Simpan/Buang.
     expect(capturedBlocker.shouldBlockFn?.()).toBe(false);
 
     fireEvent.click(screen.getByText("Prompt satu"));
 
-    await waitFor(() => expect(api.deleteScreen).toHaveBeenCalledWith({ data: { id: "s-new" } }));
+    await waitFor(() => expect(api.deleteScreen).toHaveBeenCalledWith({ data: { id: draftId } }));
     expect(screen.queryByText("Simpan perubahan?")).toBeNull();
     await screen.findByDisplayValue("Prompt satu");
   });
@@ -163,7 +220,7 @@ describe("ScreenEditor blank drafts", () => {
   it("deletes a half-filled new draft when Buang is chosen", async () => {
     renderEditor();
     await screen.findByDisplayValue("Prompt satu");
-    await createBlankDraft();
+    const draftId = await createBlankDraft();
 
     const prompts = screen.getAllByDisplayValue("");
     fireEvent.change(prompts[0], { target: { value: "Draft setengah" } });
@@ -172,7 +229,7 @@ describe("ScreenEditor blank drafts", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /^buang$/i }));
 
-    await waitFor(() => expect(api.deleteScreen).toHaveBeenCalledWith({ data: { id: "s-new" } }));
+    await waitFor(() => expect(api.deleteScreen).toHaveBeenCalledWith({ data: { id: draftId } }));
     expect(api.updateScreen).not.toHaveBeenCalled();
     await screen.findByDisplayValue("Prompt satu");
   });

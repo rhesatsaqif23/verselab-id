@@ -45,7 +45,8 @@ export function createUserController(service: UserService = userService) {
         tags: ["user"],
         detail: {
           summary: "Upload avatar",
-          description: "Uploads an avatar image (JPEG/PNG, max 2MB) for the authenticated user.",
+          description:
+            "Uploads an avatar image (JPEG/PNG/WebP, max 2MB) for the authenticated user.",
         },
       },
     )

@@ -76,19 +76,35 @@ export function isScreenEmpty(s: AdminScreen): boolean {
   return true;
 }
 
+/** Deep-sort object keys so snapshots ignore key order (Postgres jsonb
+ * reorders keys on read — without this, a saved screen looks dirty forever). */
+function canonicalize(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(canonicalize);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>)
+        .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+        .map(([key, entry]) => [key, canonicalize(entry)]),
+    );
+  }
+  return value;
+}
+
 /** Normalized snapshot for dirty-checking (trims text, nulls blanks). */
 export function snapshotScreenForm(s: AdminScreen): string {
-  return JSON.stringify({
-    prompt: s.prompt.trim(),
-    explain: s.explain.trim(),
-    options: s.options ?? null,
-    correctId: s.correctId ?? null,
-    numericUnit: s.numericUnit?.trim() || null,
-    acceptRangeMin: s.acceptRangeMin ?? null,
-    acceptRangeMax: s.acceptRangeMax ?? null,
-    categories: s.categories ?? null,
-    rule: s.rule ?? null,
-  });
+  return JSON.stringify(
+    canonicalize({
+      prompt: s.prompt.trim(),
+      explain: s.explain.trim(),
+      options: s.options ?? null,
+      correctId: s.correctId ?? null,
+      numericUnit: s.numericUnit?.trim() || null,
+      acceptRangeMin: s.acceptRangeMin ?? null,
+      acceptRangeMax: s.acceptRangeMax ?? null,
+      categories: s.categories ?? null,
+      rule: s.rule ?? null,
+    }),
+  );
 }
 
 interface ScreenFormProps {

@@ -65,15 +65,57 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   const createMutation = useMutation({
     mutationFn: (data: Parameters<typeof adminCreateScreen>[0]["data"]) =>
       adminCreateScreen({ data }),
-    onSuccess: (created: AdminScreen | null | undefined) => {
-      if (created?.id) {
-        newScreenIdsRef.current.add(created.id);
-        setSelectedScreenId(created.id);
+    onMutate: async (data) => {
+      // Show the blank draft instantly so the user can fill it before the
+      // server round-trip finishes. The id is client-generated, so tracking
+      // never depends on the create response shape.
+      await queryClient.cancelQueries({ queryKey: ["admin-screens", lessonId] });
+      const previous = queryClient.getQueryData<AdminScreen[]>(["admin-screens", lessonId]);
+      const draft: AdminScreen = {
+        id: data.id ?? crypto.randomUUID(),
+        lessonId,
+        type: data.type,
+        slug: data.id ?? "",
+        prompt: data.prompt ?? "",
+        explain: data.explain ?? "",
+        options: data.options ?? null,
+        correctId: data.correctId ?? null,
+        numericUnit: data.numericUnit ?? null,
+        acceptRangeMin: data.acceptRangeMin ?? null,
+        acceptRangeMax: data.acceptRangeMax ?? null,
+        categories: data.categories ?? null,
+        rule: data.rule ?? null,
+        sortOrder: previous?.length ?? 0,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      queryClient.setQueryData<AdminScreen[]>(["admin-screens", lessonId], (old) => [
+        ...(old ?? []),
+        draft,
+      ]);
+      return { previous };
+    },
+    onSuccess: (_created, variables) => {
+      const id = variables.id;
+      if (id) {
+        newScreenIdsRef.current.add(id);
+        setSelectedScreenId(id);
       }
       queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
       toast.success("Screen berhasil ditambahkan");
     },
-    onError: (err: Error) => {
+    onError: (err: Error, variables, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["admin-screens", lessonId], context.previous);
+      }
+      const failedId = variables.id;
+      if (failedId) {
+        newScreenIdsRef.current.delete(failedId);
+        cleanedIdsRef.current.delete(failedId);
+        setSelectedScreenId((current) =>
+          current === failedId ? (context?.previous?.[0]?.id ?? null) : current,
+        );
+      }
       toast.error(translateAdminError(err, "Gagal menambahkan screen"));
     },
   });
@@ -196,31 +238,39 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   }
 
   useEffect(() => {
-    // Remove existing blank rows on sight. New drafts are spared here because
-    // the user may still be filling them; they are dropped when abandoned.
+    // Establish the selection first so the trash pass below knows what the
+    // user is looking at. A blank draft is trashed only when the user leaves
+    // it for another screen or page while it is still blank — never on sight.
+    let currentId = selectedScreenId;
+    if (allScreens.length > 0) {
+      if (!currentId) {
+        currentId =
+          initialScreenId && allScreens.some((s) => s.id === initialScreenId)
+            ? initialScreenId
+            : allScreens[0].id;
+        setSelectedScreenId(currentId);
+      } else if (!allScreens.some((s) => s.id === currentId)) {
+        // A freshly created draft stays selected until its row arrives; only
+        // fall back when the selection is genuinely gone.
+        if (!newScreenIdsRef.current.has(currentId)) {
+          currentId = allScreens[0].id;
+          setSelectedScreenId(currentId);
+        }
+      }
+    } else {
+      currentId = null;
+      setSelectedScreenId(null);
+    }
     for (const screen of allScreens) {
       if (!isScreenEmpty(screen)) continue;
+      if (screen.id === currentId) continue;
       if (newScreenIdsRef.current.has(screen.id)) continue;
       if (savedScreenIdsRef.current.has(screen.id)) continue;
-      if (screen.id === selectedScreenId && editorApiRef.current?.hasUnsaved()) continue;
       silentDelete(screen.id);
     }
     abandonEmptyIdsRef.current = allScreens
       .filter((screen) => isScreenEmpty(screen) && !savedScreenIdsRef.current.has(screen.id))
       .map((screen) => screen.id);
-    if (allScreens.length > 0) {
-      if (!selectedScreenId) {
-        if (initialScreenId && allScreens.some((s) => s.id === initialScreenId)) {
-          setSelectedScreenId(initialScreenId);
-        } else {
-          setSelectedScreenId(allScreens[0].id);
-        }
-      } else if (!allScreens.some((s) => s.id === selectedScreenId)) {
-        setSelectedScreenId(allScreens[0].id);
-      }
-    } else {
-      setSelectedScreenId(null);
-    }
   }, [allScreens, selectedScreenId, initialScreenId]);
 
   const activeScreen = allScreens.find((s) => s.id === selectedScreenId) ?? null;
@@ -257,6 +307,13 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   }
 
   function handleCreateScreen(type: AdminScreen["type"]) {
+    // The draft id is generated up front so the new row is tracked, selected
+    // and rendered before the server responds — it can never look like trash.
+    const draftId = crypto.randomUUID();
+    newScreenIdsRef.current.add(draftId);
+    cleanedIdsRef.current.delete(draftId);
+    setSelectedScreenId(draftId);
+
     let data: Parameters<typeof adminCreateScreen>[0]["data"];
 
     if (type === "concept") {
@@ -294,7 +351,7 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
       };
     }
 
-    createMutation.mutate(data);
+    createMutation.mutate({ ...data, id: draftId });
   }
 
   if (isLoading) {

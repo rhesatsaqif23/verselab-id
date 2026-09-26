@@ -4,6 +4,7 @@ import { eq } from "drizzle-orm";
 import { getDb } from "../../database/index.ts";
 import { userProfiles } from "../../database/schema.ts";
 import { user as authUserTable } from "../../database/auth-schema.ts";
+import { assertImage, deleteOldImage, extFor, getStorage } from "../../libs/storage.ts";
 
 export type AdminUser = {
   id: string;
@@ -85,21 +86,24 @@ export const userService: UserService = {
   },
 
   async uploadAvatar(userId, file) {
-    const ext = file.type === "image/png" ? "png" : "jpg";
+    assertImage(file);
+    const ext = extFor(file.type);
+    const key = `avatars/${userId}.${ext}`;
     const buffer = Buffer.from(await file.arrayBuffer());
-    const path = `${process.cwd()}/uploads/avatars/${userId}.${ext}`;
-
-    const fs = await import("node:fs/promises");
-    await fs.mkdir(`${process.cwd()}/uploads/avatars`, { recursive: true });
-    await fs.writeFile(path, buffer);
-
-    const avatarUrl = `/uploads/avatars/${userId}.${ext}`;
     const db = getDb();
+    const [existing] = await db
+      .select({ avatarUrl: userProfiles.avatarUrl })
+      .from(userProfiles)
+      .where(eq(userProfiles.userId, userId))
+      .limit(1);
+
+    const avatarUrl = await getStorage().put(key, buffer, file.type);
     await db
       .update(userProfiles)
       .set({ avatarUrl, updatedAt: new Date() })
       .where(eq(userProfiles.userId, userId));
 
+    await deleteOldImage(existing?.avatarUrl, key);
     return { avatarUrl };
   },
 
