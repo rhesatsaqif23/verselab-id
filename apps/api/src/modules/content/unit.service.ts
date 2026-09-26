@@ -4,6 +4,7 @@ import { getDb } from "../../database/index.ts";
 import { contentUnits, contentLessons, contentScreens } from "../../database/schema.ts";
 import { AppError, mapUniqueViolation } from "../../libs/errors.ts";
 import { assertImage, deleteOldImage, extFor, getStorage } from "../../libs/storage.ts";
+import { removePrerequisiteReferences } from "./lesson.service.ts";
 import { resolveUniqueSlug } from "./slug.ts";
 
 export type UnitData = typeof contentUnits.$inferSelect;
@@ -226,10 +227,13 @@ export const contentUnitService: ContentUnitService = {
       .where(eq(contentUnits.id, id))
       .limit(1);
     const lessons = await db
-      .select({ imageUrl: contentLessons.imageUrl })
+      .select({ id: contentLessons.id, imageUrl: contentLessons.imageUrl })
       .from(contentLessons)
       .where(eq(contentLessons.unitId, id));
     await db.delete(contentUnits).where(eq(contentUnits.id, id));
+    // Lessons cascade with the unit; scrub prerequisite references so
+    // surviving lessons (in other units) never point at deleted ids.
+    await removePrerequisiteReferences(lessons.map((l) => l.id));
     // DB first (authoritative); storage cleanup best-effort after.
     for (const imageUrl of [unit?.imageUrl, ...lessons.map((l) => l.imageUrl)]) {
       await deleteOldImage(imageUrl);

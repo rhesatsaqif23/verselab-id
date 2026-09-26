@@ -73,7 +73,10 @@ export function AllScreensTable() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => adminDeleteScreen({ data: { id } }),
     onSuccess: () => {
+      // The lesson's own screen editor caches ["admin-screens", lessonId] —
+      // invalidate the prefix so it never shows the deleted screen.
       queryClient.invalidateQueries({ queryKey: ["admin-all-screens"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-screens"] });
       toast.success("Layar berhasil dihapus");
     },
     onError: (err: Error) => {

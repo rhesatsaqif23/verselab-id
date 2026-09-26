@@ -52,6 +52,9 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
 
   const [selectedScreenId, setSelectedScreenId] = useState<string | null>(null);
   const [pendingScreenId, setPendingScreenId] = useState<string | null>(null);
+  // A screen creation requested while the form is dirty waits behind the
+  // guard so unsaved edits are saved or discarded first — never silently lost.
+  const [pendingCreateType, setPendingCreateType] = useState<AdminScreen["type"] | null>(null);
   const [switching, setSwitching] = useState(false);
   const editorApiRef = useRef<ScreenEditorApi | null>(null);
   // Screens created in this session are drafts the user is still filling in,
@@ -118,6 +121,7 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
         if (abandoned) cleanedIdsRef.current.add(serverId);
       }
       queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-all-screens"] });
       toast.success("Screen berhasil ditambahkan");
       // The draft was left blank while the create was still in flight; now
       // that the row exists it can actually be removed — no ghost rows.
@@ -157,6 +161,8 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
     onSuccess: (_result, variables) => {
       newScreenIdsRef.current.delete(variables.id);
       savedScreenIdsRef.current.delete(variables.id);
+      // The global Layar table lists every screen, so a delete here is stale there.
+      queryClient.invalidateQueries({ queryKey: ["admin-all-screens"] });
       if (!variables.silent) toast.success("Screen berhasil dihapus");
     },
     onError: (err: Error, variables, context) => {
@@ -196,7 +202,7 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
     withResolver: true,
   });
   const routeBlocked = blocker.status === "blocked";
-  const guardOpen = pendingScreenId !== null || routeBlocked;
+  const guardOpen = pendingScreenId !== null || pendingCreateType !== null || routeBlocked;
 
   function silentDelete(id: string) {
     if (cleanedIdsRef.current.has(id)) return;
@@ -240,6 +246,7 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
       if (currentId) handleSavedScreenId(currentId);
       if (blocker.status === "blocked") {
         setPendingScreenId(null);
+        setPendingCreateType(null);
         blocker.proceed();
         return;
       }
@@ -247,6 +254,11 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
       if (target) {
         setSelectedScreenId(target);
         setPendingScreenId(null);
+      }
+      const createType = pendingCreateType;
+      if (createType) {
+        setPendingCreateType(null);
+        startCreateScreen(createType);
       }
     } finally {
       setSwitching(false);
@@ -265,11 +277,17 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
     }
     if (blocker.status === "blocked") {
       setPendingScreenId(null);
+      setPendingCreateType(null);
       blocker.proceed();
       return;
     }
     if (pendingScreenId) setSelectedScreenId(pendingScreenId);
     setPendingScreenId(null);
+    const createType = pendingCreateType;
+    if (createType) {
+      setPendingCreateType(null);
+      startCreateScreen(createType);
+    }
   }
 
   function handleSavedScreenId(id: string) {
@@ -277,9 +295,10 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
     savedScreenIdsRef.current.add(id);
   }
 
-  /** X / close: cancel the pending navigation, keep the edits and selection. */
+  /** X / close: cancel the pending navigation or creation, keep the edits. */
   function handleCancelGuard() {
     setPendingScreenId(null);
+    setPendingCreateType(null);
     if (blocker.status === "blocked") blocker.reset();
   }
 
@@ -353,6 +372,16 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
   }
 
   function handleCreateScreen(type: AdminScreen["type"]) {
+    if (hasUnsavedChanges()) {
+      // Switching selection to a new draft would silently discard the edits.
+      // Queue the creation behind the guard instead; Simpan / Buang resolves it.
+      setPendingCreateType(type);
+      return;
+    }
+    startCreateScreen(type);
+  }
+
+  function startCreateScreen(type: AdminScreen["type"]) {
     // The draft id is generated up front so the new row is tracked, selected
     // and rendered before the server responds — it can never look like trash.
     const draftId = crypto.randomUUID();
@@ -428,6 +457,7 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
             onSelectScreen={handleSelectScreen}
             onMoveScreen={moveScreen}
             onDeleteScreen={handleDeleteScreen}
+            reorderPending={reorderMutation.isPending}
           />
         </div>
 
@@ -446,8 +476,8 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
       <AlertDialog
         open={guardOpen}
         onOpenChange={(open) => {
-          // Only Simpan and Buang may resolve the guard. Ignore implicit
-          // dismissals so a failed save keeps the dialog open.
+          // Only Simpan, Buang, and the close X may resolve the guard, so
+          // outside clicks and Esc never discard edits by accident.
           if (!open && guardOpen) return;
         }}
       >

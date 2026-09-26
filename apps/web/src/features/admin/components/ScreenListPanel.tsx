@@ -20,6 +20,8 @@ interface ScreenListPanelProps {
   onSelectScreen: (id: string) => void;
   onMoveScreen: (index: number, direction: "up" | "down") => void;
   onDeleteScreen: (id: string) => void;
+  /** Blocks the move buttons while a reorder request is in flight. */
+  reorderPending?: boolean;
 }
 
 export function ScreenListPanel({
@@ -28,6 +30,7 @@ export function ScreenListPanel({
   onSelectScreen,
   onMoveScreen,
   onDeleteScreen,
+  reorderPending = false,
 }: ScreenListPanelProps) {
   return (
     <div className="rounded-md border bg-card">
@@ -64,7 +67,7 @@ export function ScreenListPanel({
                 <Button
                   variant="shadowless"
                   size="icon-sm"
-                  disabled={index === 0}
+                  disabled={index === 0 || reorderPending}
                   onClick={() => onMoveScreen(index, "up")}
                   aria-label="Pindah ke atas"
                 >
@@ -73,7 +76,7 @@ export function ScreenListPanel({
                 <Button
                   variant="shadowless"
                   size="icon-sm"
-                  disabled={index === screens.length - 1}
+                  disabled={index === screens.length - 1 || reorderPending}
                   onClick={() => onMoveScreen(index, "down")}
                   aria-label="Pindah ke bawah"
                 >
@@ -95,7 +98,13 @@ export function ScreenListPanel({
                     <AlertDialogHeader>
                       <AlertDialogTitle>Hapus screen?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        Tindakan ini tidak dapat dibatalkan.
+                        Screen{" "}
+                        <span className="font-medium text-foreground">
+                          {screen.prompt.trim()
+                            ? `"${screen.prompt.trim().slice(0, 60)}${screen.prompt.trim().length > 60 ? "…" : ""}"`
+                            : "(belum diisi)"}
+                        </span>{" "}
+                        akan dihapus permanen beserta isinya.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>

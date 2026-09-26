@@ -41,6 +41,7 @@ export function ScreenEditPanel({
     mutationFn: (id: string) => adminDeleteScreen({ data: { id } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-all-screens"] });
       toast.success("Screen berhasil dihapus");
     },
     onError: (err: Error) => {
@@ -90,7 +91,13 @@ export function ScreenEditPanel({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Hapus screen?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Tindakan ini tidak dapat dibatalkan.
+                    Screen{" "}
+                    <span className="font-medium text-foreground">
+                      {activeScreen.prompt.trim()
+                        ? `"${activeScreen.prompt.trim().slice(0, 60)}${activeScreen.prompt.trim().length > 60 ? "…" : ""}"`
+                        : "(belum diisi)"}
+                    </span>{" "}
+                    akan dihapus permanen. Perubahan yang belum disimpan ikut hilang.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

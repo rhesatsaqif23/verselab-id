@@ -67,6 +67,9 @@ export function reachesPrerequisite(
 export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogProps) {
   const queryClient = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
+  // Same-tick double submits (double click / double Enter) fire before React
+  // re-renders the disabled button, so guard with a ref.
+  const submittingRef = useRef(false);
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -157,10 +160,13 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (submittingRef.current) return;
     if (!title.trim()) {
       toast.error("Judul Lesson wajib diisi");
       return;
     }
+
+    submittingRef.current = true;
 
     try {
       let targetId: string | undefined;
@@ -211,6 +217,8 @@ export function LessonFormDialog({ trigger, unitId, lesson }: LessonFormDialogPr
       }
     } catch (err) {
       toast.error(translateAdminError(err, "Gagal menyimpan lesson"));
+    } finally {
+      submittingRef.current = false;
     }
   }
 

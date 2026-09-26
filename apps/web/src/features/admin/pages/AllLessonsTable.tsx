@@ -63,7 +63,11 @@ export function AllLessonsTable() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => adminDeleteLesson({ data: { id } }),
     onSuccess: () => {
+      // Screens cascade with the lesson, and the per-unit lesson lists are a
+      // different query key — invalidate both prefixes too.
       queryClient.invalidateQueries({ queryKey: ["admin-all-lessons"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-lessons"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-all-screens"] });
       toast.success("Pelajaran berhasil dihapus");
     },
     onError: (err: Error) => {

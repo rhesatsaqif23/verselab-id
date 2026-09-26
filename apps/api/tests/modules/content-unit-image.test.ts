@@ -43,10 +43,14 @@ function makeDb(role: string | null, dataRows: any[] = []) {
       where: async (_cond: unknown) => [],
     }),
     select: (_cols: unknown) => ({
-      from: (_table: unknown) => ({
-        where: (_cond: unknown) => queryResult(),
-        orderBy: (_cond: unknown) => ({ limit: async () => [] }),
-      }),
+      from: (_table: unknown) => {
+        // removePrerequisiteReferences awaits .from() directly — drizzle query
+        // builders are thenable, so the mock must be too.
+        const chain: any = Promise.resolve(queryResult());
+        chain.where = (_cond: unknown) => queryResult();
+        chain.orderBy = (_cond: unknown) => ({ limit: async () => [] });
+        return chain;
+      },
     }),
   };
 }

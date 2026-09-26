@@ -6,14 +6,22 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ScreenEditor } from "#/features/admin/pages/ScreenEditor.tsx";
 
-const { navigateMock, updateMock, mockScreens, blockerStore, capturedBlocker } = vi.hoisted(() => {
+const {
+  navigateMock,
+  updateMock,
+  createMock,
+  mockScreens,
+  resetScreens,
+  blockerStore,
+  capturedBlocker,
+} = vi.hoisted(() => {
   const mk = (id: string, prompt: string) => ({
     id,
     lessonId: "l-1",
     type: "concept",
     slug: id,
     prompt,
-    explain: "Explain",
+    explain: prompt ? "Explain" : "",
     options: null,
     correctId: null,
     numericUnit: null,
@@ -25,10 +33,28 @@ const { navigateMock, updateMock, mockScreens, blockerStore, capturedBlocker } =
     createdAt: "2026-09-24T00:00:00.000Z",
     updatedAt: "2026-09-24T00:00:00.000Z",
   });
+  // Server-shaped state: a create must stick, so the invalidation refetch
+  // after onSuccess sees the new row instead of reverting the list.
+  const seed = () => [mk("s-1", "Prompt satu"), mk("s-2", "Prompt dua")];
+  const mockScreens = seed();
+  const createMock = vi.fn(
+    async (input: { data: { id?: string; prompt?: string; type?: string; lessonId?: string } }) => {
+      const id = input.data.id ?? `s-new-${mockScreens.length}`;
+      const row = {
+        ...mk(id, input.data.prompt ?? ""),
+        type: input.data.type ?? "concept",
+        lessonId: input.data.lessonId ?? "l-1",
+      };
+      mockScreens.push(row);
+      return row;
+    },
+  );
   return {
     navigateMock: vi.fn(),
     updateMock: vi.fn(),
-    mockScreens: [mk("s-1", "Prompt satu"), mk("s-2", "Prompt dua")],
+    createMock,
+    mockScreens,
+    resetScreens: () => mockScreens.splice(0, mockScreens.length, ...seed()),
     blockerStore: { status: "idle" as string, proceed: vi.fn(), reset: vi.fn() },
     capturedBlocker: {} as { shouldBlockFn?: () => boolean },
   };
@@ -41,8 +67,8 @@ blockerStore.reset.mockImplementation(() => {
 });
 
 vi.mock("#/libs/admin-content-fns.ts", () => ({
-  adminGetScreens: vi.fn().mockResolvedValue(mockScreens),
-  adminCreateScreen: vi.fn(),
+  adminGetScreens: vi.fn(async () => mockScreens.map((r) => ({ ...r }))),
+  adminCreateScreen: createMock,
   adminDeleteScreen: vi.fn(),
   adminReorderScreens: vi.fn(),
   adminUpdateScreen: updateMock,
@@ -78,6 +104,8 @@ function renderEditor() {
 
 beforeEach(() => {
   updateMock.mockClear();
+  createMock.mockClear();
+  resetScreens();
   blockerStore.proceed.mockClear();
   blockerStore.reset.mockClear();
   blockerStore.status = "idle";
@@ -260,5 +288,44 @@ describe("ScreenEditor unsaved guard", () => {
     rerenderEditor();
     expect(blockerStore.status).toBe("idle");
     expect(screen.queryByText("Simpan perubahan?")).toBeNull();
+  });
+
+  it("queues screen creation behind the guard when the form is dirty", async () => {
+    renderEditor();
+    fireEvent.change(await screen.findByDisplayValue("Prompt satu"), {
+      target: { value: "Prompt satu edited" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /tambah screen/i }));
+    await screen.findByText("Tambah Screen Baru");
+    fireEvent.click(screen.getByRole("button", { name: /buat screen/i }));
+
+    // Nothing created yet: the unsaved edits resolve first, so the edit is
+    // never silently discarded by switching selection to the new draft.
+    await screen.findByText("Simpan perubahan?");
+    expect(createMock).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: /simpan & pindah/i }));
+    await waitFor(() => expect(updateMock).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(createMock).toHaveBeenCalledTimes(1));
+    await screen.findByText("Daftar Screen (3)");
+  });
+
+  it("creates the screen and discards edits when Buang is chosen", async () => {
+    renderEditor();
+    fireEvent.change(await screen.findByDisplayValue("Prompt satu"), {
+      target: { value: "Prompt satu edited" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /tambah screen/i }));
+    await screen.findByText("Tambah Screen Baru");
+    fireEvent.click(screen.getByRole("button", { name: /buat screen/i }));
+    await screen.findByText("Simpan perubahan?");
+
+    fireEvent.click(screen.getByRole("button", { name: /^buang$/i }));
+
+    expect(updateMock).not.toHaveBeenCalled();
+    await waitFor(() => expect(createMock).toHaveBeenCalledTimes(1));
+    await screen.findByText("Daftar Screen (3)");
   });
 });

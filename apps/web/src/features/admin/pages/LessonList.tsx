@@ -65,8 +65,11 @@ export function LessonList({ unitId, unitSlug }: LessonListProps) {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => adminDeleteLesson({ data: { id } }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin-lessons", unitId] });
+      // Lesson delete cascades to screens; other units' lists keep their own
+      // cached pages, so invalidate the whole prefix.
+      queryClient.invalidateQueries({ queryKey: ["admin-lessons"] });
       queryClient.invalidateQueries({ queryKey: ["admin-all-lessons"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-all-screens"] });
       toast.success("Lesson berhasil dihapus");
     },
     onError: (err: Error) => {

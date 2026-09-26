@@ -59,7 +59,12 @@ export function UnitList() {
   const deleteMutation = useMutation({
     mutationFn: (id: string) => adminDeleteUnit({ data: { id } }),
     onSuccess: () => {
+      // The unit cascades to its lessons and screens, so every content list
+      // that could show them is stale now.
       queryClient.invalidateQueries({ queryKey: ["admin-units"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-lessons"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-all-lessons"] });
+      queryClient.invalidateQueries({ queryKey: ["admin-all-screens"] });
       toast.success("Unit berhasil dihapus");
     },
     onError: (err: Error) => {

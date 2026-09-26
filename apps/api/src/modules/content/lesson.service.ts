@@ -91,6 +91,29 @@ async function assertNoPrerequisiteCycle(
   }
 }
 
+/**
+ * Drop references to deleted lessons from every surviving lesson's
+ * prerequisiteIds. Without this, a lesson whose prerequisite was deleted can
+ * never unlock again (learners check completedLessons against ids that no
+ * longer exist). Used by lesson delete and by unit delete (cascade).
+ */
+export async function removePrerequisiteReferences(deletedIds: string[]): Promise<void> {
+  if (deletedIds.length === 0) return;
+  const db = getDb();
+  const lessons = await db
+    .select({ id: contentLessons.id, prerequisiteIds: contentLessons.prerequisiteIds })
+    .from(contentLessons);
+  for (const lesson of lessons) {
+    const current = lesson.prerequisiteIds ?? [];
+    const next = current.filter((id) => !deletedIds.includes(id));
+    if (next.length === current.length) continue;
+    await db
+      .update(contentLessons)
+      .set({ prerequisiteIds: next.length > 0 ? next : null, updatedAt: new Date() })
+      .where(eq(contentLessons.id, lesson.id));
+  }
+}
+
 export const contentLessonService: ContentLessonService = {
   async listLessons(unitId) {
     const db = getDb();
@@ -288,6 +311,7 @@ export const contentLessonService: ContentLessonService = {
       .where(eq(contentLessons.id, id))
       .limit(1);
     await db.delete(contentLessons).where(eq(contentLessons.id, id));
+    await removePrerequisiteReferences([id]);
     await deleteOldImage(lesson?.imageUrl);
   },
 

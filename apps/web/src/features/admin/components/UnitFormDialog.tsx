@@ -48,6 +48,9 @@ function fileToBase64(file: File): Promise<string> {
 export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
   const queryClient = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
+  // Same-tick double submits (double click / double Enter) fire before React
+  // re-renders the disabled button, so guard with a ref.
+  const submittingRef = useRef(false);
   const [open, setOpen] = useState(false);
   const [title, setTitle] = useState(EMPTY_TITLE);
   const [description, setDescription] = useState(EMPTY_DESCRIPTION);
@@ -101,12 +104,14 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (submittingRef.current) return;
     if (!title.trim()) {
       toast.error("Judul Unit wajib diisi");
       return;
     }
 
     const isEdit = !!unit;
+    submittingRef.current = true;
 
     try {
       let targetId: string | undefined;
@@ -152,6 +157,8 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
       }
     } catch (err) {
       toast.error(translateAdminError(err, "Gagal menyimpan unit"));
+    } finally {
+      submittingRef.current = false;
     }
   }
 

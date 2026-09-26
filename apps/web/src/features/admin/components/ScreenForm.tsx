@@ -123,6 +123,8 @@ export function ScreenForm({
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState<AdminScreen>(() => screen);
   const baselineRef = useRef<string>(snapshotScreenForm(screen));
+  // Same-tick double clicks on Simpan fire before the disabled state renders.
+  const savingRef = useRef(false);
 
   useEffect(() => {
     baselineRef.current = snapshotScreenForm(screen);
@@ -138,6 +140,7 @@ export function ScreenForm({
       baselineRef.current = snapshotScreenForm(updated);
       onSavedScreenId?.(updated.id);
       queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
+      queryClient.invalidateQueries({ queryKey: ["admin-all-screens"] });
       toast.success("Screen berhasil disimpan");
     },
     onError: (err: Error) => {
@@ -158,15 +161,18 @@ export function ScreenForm({
   }
 
   function handleSave() {
+    if (savingRef.current) return;
     const errors = validateForm();
     if (errors.length > 0) {
       errors.forEach((msg) => toast.error(msg));
       return;
     }
 
-    saveMutation.mutate({ id: screen.id, ...buildPatch() } as Parameters<
-      typeof adminUpdateScreen
-    >[0]["data"]);
+    savingRef.current = true;
+    saveMutation.mutate(
+      { id: screen.id, ...buildPatch() } as Parameters<typeof adminUpdateScreen>[0]["data"],
+      { onSettled: () => (savingRef.current = false) },
+    );
   }
 
   function buildPatch(): Partial<AdminScreen> {
