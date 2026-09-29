@@ -14,5 +14,6 @@ export const Route = createFileRoute("/_home/units/$unitSlug")({
 
 function UnitDetailRoute() {
   const { unit } = Route.useLoaderData();
-  return <UnitDetailPage unit={unit} />;
+  const { units } = Route.useRouteContext();
+  return <UnitDetailPage unit={unit} allUnits={units} />;
 }

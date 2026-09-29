@@ -127,7 +127,7 @@ export const seedUnits: SeedUnit[] = [
         title: "Anggaran & Prioritas",
         description: "Bagi penghasilan ke pos-pos dengan porsi yang masuk akal.",
         imageAsset: "Batch 2/Keu_Budget.png",
-        prerequisiteIds: ["arus-kas"],
+        prerequisiteIds: ["arus-kas-dasar"],
         screens: [
           {
             type: "numeric",

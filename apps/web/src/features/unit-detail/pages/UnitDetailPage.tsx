@@ -10,10 +10,14 @@ import UnitSidebar from "../components/UnitSidebar.tsx";
 import WhiteboardMapCanvas from "../components/WhiteboardMapCanvas.tsx";
 import UnitMapBottomBar from "../components/UnitMapBottomBar.tsx";
 
-type Props = { unit: Unit };
+type Props = { unit: Unit; allUnits?: Unit[] };
 
-export default function UnitDetailPage({ unit }: Props) {
+export default function UnitDetailPage({ unit, allUnits }: Props) {
   const completedLessons = useProgressStore((s) => s.completedLessons);
+
+  // Prerequisites may point at a lesson from another unit, so resolve titles
+  // and completion against every lesson, not just the ones in this unit.
+  const allLessons = (allUnits ?? [unit]).flatMap((u) => u.lessons);
 
   // Sidebar toggle state
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -100,7 +104,7 @@ export default function UnitDetailPage({ unit }: Props) {
           completedLessons={completedLessons}
           selectedLesson={selectedLesson}
           status={selectedStatus}
-          allLessons={[...unit.lessons]}
+          allLessons={allLessons}
         />
       </div>
     </div>

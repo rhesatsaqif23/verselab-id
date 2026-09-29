@@ -5,7 +5,7 @@ import { PlayCircle, RotateCcw, Sparkles } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import type { Lesson, Unit } from "#/engine/types.ts";
 import type { LessonStatus } from "../types.ts";
-import { PrerequisiteDialog } from "./PrerequisiteDialog.tsx";
+import { PrerequisiteDialog, unmetPrerequisites } from "./PrerequisiteDialog.tsx";
 
 type UnitMapBottomBarProps = {
   unit: Unit;
@@ -35,7 +35,7 @@ export default function UnitMapBottomBar({
 
   const hasNoScreens = currentLesson.screens.length === 0;
   const hasUnmetPrereqs =
-    currentLesson.prerequisiteIds?.some((id) => !completedLessons.includes(id)) ?? false;
+    unmetPrerequisites(currentLesson, allLessons, completedLessons).length > 0;
 
   function handleStartClick(e: React.MouseEvent) {
     if (hasUnmetPrereqs && status !== "previous") {
