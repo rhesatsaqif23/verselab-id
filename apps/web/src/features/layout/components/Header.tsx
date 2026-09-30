@@ -1,12 +1,12 @@
 // Header: sticky top nav with streak/XP badges and animated active indicator.
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import ThemeToggle from "./ThemeToggle";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
-import { Flame, ShieldCheck } from "lucide-react";
-import { navItems } from "../constants.ts";
-import { resolveSession } from "#/libs/session.ts";
+import { Flame } from "lucide-react";
+import { adminNavItem, isNavItemActive, navItems } from "../constants.ts";
+import { useIsAdmin } from "../hooks/useIsAdmin.ts";
 
 function NavItem({
   to,
@@ -51,24 +51,9 @@ function NavItem({
 
 export default function Header() {
   const location = useLocation();
-  const isActive = (path: string) => location.pathname === path;
   const streak = useProgressStore((s) => s.streak);
   const xp = useProgressStore((s) => s.xp);
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    let active = true;
-    resolveSession()
-      .then((s) => {
-        if (active && s.status === "authenticated" && s.role === "admin") {
-          setIsAdmin(true);
-        }
-      })
-      .catch(() => {});
-    return () => {
-      active = false;
-    };
-  }, []);
+  const isAdmin = useIsAdmin();
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card">
@@ -79,14 +64,18 @@ export default function Header() {
 
         <div className="flex h-full items-center gap-8">
           {navItems.map(({ to, label, icon }) => (
-            <NavItem key={to} to={to} label={label} icon={icon} isActive={isActive(to)} />
+            <NavItem
+              key={to}
+              to={to}
+              label={label}
+              icon={icon}
+              isActive={isNavItemActive(to, location.pathname)}
+            />
           ))}
           {isAdmin && (
             <NavItem
-              to="/admin"
-              label="Admin"
-              icon={ShieldCheck}
-              isActive={location.pathname.startsWith("/admin")}
+              {...adminNavItem}
+              isActive={isNavItemActive(adminNavItem.to, location.pathname)}
             />
           )}
         </div>

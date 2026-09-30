@@ -2,8 +2,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { render, screen } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
 import Header from "#/features/layout/components/Header.tsx";
+
+vi.mock("#/libs/session.ts", () => ({
+  resolveSession: async () => ({ status: "anonymous" as const }),
+}));
+
+function renderWithClient(ui: React.ReactNode) {
+  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+  return render(<QueryClientProvider client={client}>{ui}</QueryClientProvider>);
+}
 
 beforeEach(() => {
   vi.stubGlobal(
@@ -46,18 +56,18 @@ beforeEach(() => {
 describe("Header", () => {
   it("renders real streak from the progress store", () => {
     useProgressStore.setState({ streak: 7 });
-    render(<Header />);
+    renderWithClient(<Header />);
     expect(screen.getByText("7")).toBeInTheDocument();
   });
 
   it("renders real XP from the progress store", () => {
     useProgressStore.setState({ xp: 120 });
-    render(<Header />);
+    renderWithClient(<Header />);
     expect(screen.getByText("120")).toBeInTheDocument();
   });
 
   it("shows zero streak and XP for a fresh user", () => {
-    render(<Header />);
+    renderWithClient(<Header />);
     expect(screen.getAllByText("0")).toHaveLength(2);
   });
 });

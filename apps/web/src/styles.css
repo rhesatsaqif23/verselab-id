@@ -45,7 +45,6 @@ body {
       var(--background) 40%,
       var(--background) 100%
     );
-  overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
