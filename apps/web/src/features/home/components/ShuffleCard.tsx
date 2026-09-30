@@ -248,7 +248,7 @@ export default function ShuffleCard() {
   const frontTransition = turning || (!dragging && !animating) ? CSS_TRANSITION : "none";
 
   return (
-    <div className="grid overflow-hidden px-6 pt-2 pb-8">
+    <div className="grid min-w-0 grid-cols-1 overflow-hidden px-0 pt-2 pb-8 lg:px-6">
       {order.map((unitId, i) => {
         const unit = units.find((u) => u.id === unitId);
         if (!unit) return null;

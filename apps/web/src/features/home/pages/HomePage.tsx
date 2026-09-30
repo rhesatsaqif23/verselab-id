@@ -8,12 +8,12 @@ export default function HomePage() {
   return (
     <main className="page-wrap px-4 pb-16 pt-8">
       <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           <StreakTracker />
           <DailyGoalCard />
         </div>
 
-        <div className="flex flex-col gap-1">
+        <div className="flex min-w-0 flex-col gap-1">
           <ShuffleCard />
           <UnitGrid />
         </div>
