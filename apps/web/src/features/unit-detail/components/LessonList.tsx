@@ -66,7 +66,7 @@ export default function LessonList({
           onClickCapture={handleTrackClickCapture}
           onDragStart={(e) => e.preventDefault()}
           className={`relative flex w-full flex-nowrap items-start justify-start sm:justify-center gap-6 sm:gap-8 md:gap-10 overflow-x-auto py-8 px-6 md:px-8 lesson-track-scroll touch-pan-x touch-pan-y select-none ${
-            isDragging ? "cursor-grabbing [&_*]:cursor-grabbing!" : "cursor-grab"
+            isDragging ? "cursor-grabbing **:cursor-grabbing!" : "cursor-grab"
           }`}
         >
           {/* Background connecting path line */}

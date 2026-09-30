@@ -169,6 +169,22 @@ function listedPrompts(): string[] {
     .filter((text) => text.startsWith("Prompt"));
 }
 
+/** jsdom has no layout; give a list row a fake vertical geometry for hit-testing. */
+function mockRowRect(el: Element, top: number, height = 60) {
+  el.getBoundingClientRect = () =>
+    ({
+      top,
+      height,
+      bottom: top + height,
+      left: 0,
+      right: 0,
+      width: 0,
+      x: 0,
+      y: top,
+      toJSON: () => ({}),
+    }) as DOMRect;
+}
+
 beforeAll(() => {
   // jsdom lacks the pointer-capture and scrolling APIs Radix Select relies on.
   const proto = window.HTMLElement.prototype as unknown as Record<string, unknown>;
@@ -442,7 +458,7 @@ describe("ScreenEditor CRUD", () => {
     expect(toastMock.error).toHaveBeenCalledWith("Penjelasan wajib diisi");
   });
 
-  it("reorders screens through the move buttons", async () => {
+  it("reorders screens by dragging the grip handle", async () => {
     seedScreens([
       mkScreen("s-1", "concept", "Prompt satu"),
       mkScreen("s-2", "concept", "Prompt dua"),
@@ -450,7 +466,36 @@ describe("ScreenEditor CRUD", () => {
     renderEditor();
     await screen.findByText("Daftar Screen (2)");
 
-    fireEvent.click(screen.getAllByRole("button", { name: "Pindah ke bawah" })[0]);
+    // s-1 occupies y 0-60, s-2 occupies y 60-120.
+    const rows = screen.getAllByTestId("screen-row");
+    expect(rows).toHaveLength(2);
+    mockRowRect(rows[0], 0);
+    mockRowRect(rows[1], 60);
+
+    const grips = screen.getAllByRole("button", { name: /seret untuk menyusun/i });
+    fireEvent.pointerDown(grips[0], { clientX: 10, clientY: 10, button: 0, pointerType: "mouse" });
+    fireEvent.pointerMove(grips[0], { clientX: 10, clientY: 100, pointerType: "mouse" });
+
+    // The order updates live, before the drop persists it.
+    expect(listedPrompts()[0]).toBe("Prompt dua");
+
+    fireEvent.pointerUp(grips[0]);
+    await waitFor(() =>
+      expect(reorderMock).toHaveBeenCalledWith({ data: { ids: ["s-2", "s-1"] } }),
+    );
+    await waitFor(() => expect(listedPrompts()[0]).toBe("Prompt dua"));
+  });
+
+  it("reorders screens with the grip keyboard controls", async () => {
+    seedScreens([
+      mkScreen("s-1", "concept", "Prompt satu"),
+      mkScreen("s-2", "concept", "Prompt dua"),
+    ]);
+    renderEditor();
+    await screen.findByText("Daftar Screen (2)");
+
+    const grips = screen.getAllByRole("button", { name: /seret untuk menyusun/i });
+    fireEvent.keyDown(grips[0], { key: "ArrowDown" });
 
     await waitFor(() =>
       expect(reorderMock).toHaveBeenCalledWith({ data: { ids: ["s-2", "s-1"] } }),
