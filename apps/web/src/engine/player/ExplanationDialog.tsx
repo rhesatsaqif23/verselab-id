@@ -10,7 +10,7 @@ type ExplanationDialogProps = {
 export default function ExplanationDialog({ open, onOpenChange, text }: ExplanationDialogProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="p-4 sm:p-6 sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Penjelasan</DialogTitle>
         </DialogHeader>

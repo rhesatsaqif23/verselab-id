@@ -82,7 +82,7 @@ export function AddScreenDialog({ onAdd, pending = false }: AddScreenDialogProps
           <Plus className="size-4" /> Tambah Screen
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>Tambah Screen Baru</DialogTitle>
         </DialogHeader>

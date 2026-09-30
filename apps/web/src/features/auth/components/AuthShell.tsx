@@ -20,7 +20,7 @@ export function AuthShell({
   footer?: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-border/80 bg-background/85 px-4 backdrop-blur-md transition-all md:px-16">
         <Link to="/" className="flex items-center gap-2.5 no-underline">
           <div className="flex size-9 items-center justify-center rounded-lg bg-linear-to-br from-primary to-accent font-black text-white shadow-xs">
@@ -33,7 +33,7 @@ export function AuthShell({
         <ThemeToggle />
       </header>
 
-      <main className="flex flex-1 items-center justify-center px-4 py-12">
+      <main className="flex flex-1 items-start justify-center px-4 py-8 sm:items-center sm:py-12">
         <Card className="island-shell w-full max-w-md">
           <CardContent className="flex flex-col gap-6 px-6 pt-8 pb-6 sm:px-8">
             {Icon && (

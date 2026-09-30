@@ -74,7 +74,7 @@ export default function EditProfileDialog({ open, onOpenChange, session, onUpdat
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="p-4 sm:p-6 sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="text-lg">Edit Profil</DialogTitle>
         </DialogHeader>
