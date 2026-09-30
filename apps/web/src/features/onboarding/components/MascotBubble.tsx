@@ -11,7 +11,7 @@ export default function MascotBubble({
 }) {
   return (
     <div className={cn("flex items-start gap-3", className)}>
-      <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-accent text-2xl font-black text-white shadow-md animate-bounce-in">
+      <div className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-linear-to-br from-primary to-accent text-lg font-black text-white shadow-md animate-bounce-in sm:size-14 sm:text-2xl">
         V
       </div>
       {message && (

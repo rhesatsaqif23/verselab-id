@@ -96,7 +96,7 @@ export default function UnitCard({ unit }: UnitCardProps) {
           </div>
 
           {/* Unit title */}
-          <h2 className="relative line-clamp-2 h-14 text-2xl font-black leading-snug text-foreground sm:text-2xl">
+          <h2 className="relative line-clamp-2 min-h-14 text-lg font-black leading-snug text-foreground sm:text-2xl">
             {unit.title}
           </h2>
 
@@ -135,7 +135,7 @@ export default function UnitCard({ unit }: UnitCardProps) {
             <Button
               asChild
               size="lg"
-              className="relative z-10 mt-1 w-full min-w-48 pointer-events-auto"
+              className="relative z-10 mt-1 w-full min-w-0 pointer-events-auto sm:min-w-48"
             >
               <Link
                 to="/lesson/$lessonId"
@@ -150,7 +150,7 @@ export default function UnitCard({ unit }: UnitCardProps) {
             <Button
               size="lg"
               disabled
-              className="relative z-10 mt-1 w-full min-w-48 pointer-events-none opacity-50"
+              className="relative z-10 mt-1 w-full min-w-0 pointer-events-none opacity-50 sm:min-w-48"
             >
               <PlayCircle className="mr-2 size-5" />
               Mulai

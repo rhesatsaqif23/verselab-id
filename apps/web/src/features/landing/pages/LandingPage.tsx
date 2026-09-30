@@ -31,13 +31,20 @@ export function LandingPage() {
           <div className="flex size-9 items-center justify-center rounded-lg bg-linear-to-br from-primary to-accent font-black text-white shadow-xs">
             V
           </div>
-          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
+          <span className="text-lg sm:text-3xl font-black tracking-tight text-foreground">
             Verselab
           </span>
         </Link>
         <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <Button asChild variant="default" size="lg" className="font-bold">
+          <div className="hidden sm:block">
+            <ThemeToggle />
+          </div>
+          <Button
+            asChild
+            variant="default"
+            size="sm"
+            className="font-bold sm:h-12 sm:px-8 sm:text-base sm:has-[>svg]:px-6"
+          >
             <Link to="/home">
               Mulai belajar
               <ArrowRight className="size-4" />

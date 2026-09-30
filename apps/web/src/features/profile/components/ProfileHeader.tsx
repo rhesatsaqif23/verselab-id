@@ -41,7 +41,7 @@ export default function ProfileHeader() {
 
   return (
     <>
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-4">
         <Avatar className="size-16 border-2 border-border">
           <AvatarImage src={resolveImageUrl(profile?.avatarUrl)} alt={user.name} />
           <AvatarFallback className="bg-linear-to-br from-primary to-accent text-xl font-black text-white">
@@ -53,24 +53,31 @@ export default function ProfileHeader() {
           <p className="text-base text-muted truncate">{user.email}</p>
           {joinDate && <p className="text-sm text-muted mt-0.5">Bergabung {joinDate}</p>}
         </div>
-        <Button variant="outline" size="sm" onClick={() => setEditOpen(true)} className="shrink-0">
-          <Pencil className="mr-1.5 size-4" />
-          Edit
-        </Button>
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={signOut}
-          disabled={pending}
-          className="shrink-0 hover:bg-destructive/10"
-        >
-          {pending ? (
-            <Loader2 className="mr-1.5 size-4 animate-spin" />
-          ) : (
-            <LogOut className="mr-1.5 size-4" />
-          )}
-          Keluar
-        </Button>
+        <div className="flex w-full items-center gap-4 sm:w-auto sm:shrink-0">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setEditOpen(true)}
+            className="shrink-0"
+          >
+            <Pencil className="mr-1.5 size-4" />
+            Edit
+          </Button>
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={signOut}
+            disabled={pending}
+            className="shrink-0 hover:bg-destructive/10"
+          >
+            {pending ? (
+              <Loader2 className="mr-1.5 size-4 animate-spin" />
+            ) : (
+              <LogOut className="mr-1.5 size-4" />
+            )}
+            Keluar
+          </Button>
+        </div>
       </div>
 
       <EditProfileDialog
