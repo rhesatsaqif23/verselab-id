@@ -99,7 +99,7 @@ export default function WhiteboardMapCanvas({
       />
 
       {/* Top-left: map hint banner */}
-      <div className="pointer-events-none absolute left-6 top-5 z-10 flex items-center gap-2 rounded-lg border border-border/80 bg-card/85 px-4 py-2 shadow-xs backdrop-blur-xs">
+      <div className="pointer-events-none absolute left-6 top-5 z-10 hidden items-center gap-2 rounded-lg border border-border/80 bg-card/85 px-4 py-2 shadow-xs backdrop-blur-xs md:flex">
         <Move className="size-4 text-primary" />
         <span className="text-xs sm:text-sm font-bold text-foreground">
           Peta Belajar &bull; {unit.title}

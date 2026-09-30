@@ -37,8 +37,10 @@ export default function UnitSidebar({
     <>
       {/* Sidebar container */}
       <aside
-        className={`relative z-20 flex h-full flex-col border-r border-border bg-card transition-all duration-300 ease-in-out ${
-          isOpen ? "w-80 md:w-88" : "w-0 overflow-hidden border-r-0"
+        className={`z-30 flex h-full flex-col bg-card transition-all duration-300 ease-in-out ${
+          isOpen
+            ? "absolute inset-y-0 left-0 w-80 border-r border-border shadow-xl md:relative md:z-20 md:w-88 md:shadow-none"
+            : "relative w-0 overflow-hidden border-r-0"
         }`}
       >
         <div className="flex h-full w-80 md:w-88 flex-col p-5">
@@ -185,6 +187,15 @@ export default function UnitSidebar({
           </div>
         </div>
       </aside>
+
+      {isOpen && (
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-label="Tutup sidebar"
+          className="absolute inset-0 z-20 bg-foreground/30 md:hidden"
+        />
+      )}
 
       {/* Toggle button when sidebar is closed */}
       {!isOpen && (

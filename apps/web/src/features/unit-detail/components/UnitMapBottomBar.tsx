@@ -47,8 +47,8 @@ export default function UnitMapBottomBar({
 
   return (
     <>
-      <div className="pointer-events-none absolute bottom-5 inset-x-0 z-30 flex justify-center px-4 sm:px-8">
-        <div className="pointer-events-auto flex w-full max-w-3xl items-center justify-between gap-4 rounded-3xl border-2 border-border bg-card/95 p-3.5 sm:px-6 shadow-2xl backdrop-blur-md">
+      <div className="pointer-events-none absolute inset-x-0 bottom-20 z-30 flex justify-center px-4 md:bottom-5 sm:px-8">
+        <div className="pointer-events-auto flex w-full max-w-3xl flex-col gap-3 rounded-3xl border-2 border-border bg-card/95 p-3.5 shadow-2xl backdrop-blur-md sm:flex-row sm:items-center sm:justify-between sm:gap-4 sm:px-6">
           {/* Left: Unit Progress summary */}
           <div className="flex items-center gap-3.5">
             {/* Circular progress badge */}
@@ -65,7 +65,7 @@ export default function UnitMapBottomBar({
                   {currentLesson.description}
                 </span>
               )}
-              <div className="mt-0.5 flex items-center gap-2 text-sm font-semibold text-primary">
+              <div className="mt-0.5 flex flex-wrap items-center gap-2 text-sm font-semibold text-primary">
                 <span className="flex items-center gap-1">
                   <Sparkles className="size-3" />
                   {currentLesson.screens.length * 10} XP
@@ -79,13 +79,13 @@ export default function UnitMapBottomBar({
           </div>
 
           {/* Right: Mulai CTA Button */}
-          <div className="flex items-center shrink-0">
+          <div className="flex w-full items-center sm:w-auto sm:shrink-0">
             {status === "previous" ? (
               <Button
                 asChild={currentLesson.screens.length > 0}
                 size="lg"
                 disabled={hasNoScreens}
-                className="min-w-48 px-8 font-bold text-base shadow-md"
+                className="w-full px-6 font-bold text-base shadow-md sm:w-auto sm:min-w-48 sm:px-8"
               >
                 {currentLesson.screens.length > 0 ? (
                   <Link to="/lesson/$lessonId" params={{ lessonId: currentLesson.id }}>
@@ -104,7 +104,7 @@ export default function UnitMapBottomBar({
                 asChild={!hasNoScreens}
                 size="lg"
                 disabled={hasNoScreens}
-                className="min-w-48 px-8 font-bold text-base shadow-md"
+                className="w-full px-6 font-bold text-base shadow-md sm:w-auto sm:min-w-48 sm:px-8"
               >
                 {hasNoScreens ? (
                   <span>Belum ada soal</span>

@@ -1,10 +1,11 @@
 // UnitDetailPage: Interactive full-screen whiteboard lesson map with free-drag canvas and unit sidebar.
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { BookOpen } from "lucide-react";
 import { Button } from "#/components/ui/button";
 import type { Unit } from "#/engine/types.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
+import { useIsMobile } from "#/libs/hooks/use-mobile.ts";
 import type { LessonStatus } from "../types.ts";
 import UnitSidebar from "../components/UnitSidebar.tsx";
 import WhiteboardMapCanvas from "../components/WhiteboardMapCanvas.tsx";
@@ -19,8 +20,14 @@ export default function UnitDetailPage({ unit, allUnits }: Props) {
   // and completion against every lesson, not just the ones in this unit.
   const allLessons = (allUnits ?? [unit]).flatMap((u) => u.lessons);
 
-  // Sidebar toggle state
+  // Sidebar toggle state: a fixed w-80 panel would leave a phone with ~40px of
+  // canvas, so it starts closed on mobile and opens as an overlay instead.
+  const isMobile = useIsMobile();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  useEffect(() => {
+    if (isMobile) setIsSidebarOpen(false);
+  }, [isMobile]);
 
   // Active / Selected lesson selection
   const currentLesson =
@@ -50,7 +57,7 @@ export default function UnitDetailPage({ unit, allUnits }: Props) {
   // message instead of an empty canvas and bottom bar.
   if (unit.lessons.length === 0) {
     return (
-      <div className="relative flex h-[calc(100vh-64px)] w-full overflow-hidden bg-background">
+      <div className="relative flex h-[calc(100dvh-128px)] w-full overflow-hidden bg-background md:h-[calc(100dvh-64px)]">
         <UnitSidebar
           unit={unit}
           completedLessons={completedLessons}
@@ -78,7 +85,7 @@ export default function UnitDetailPage({ unit, allUnits }: Props) {
   }
 
   return (
-    <div className="relative flex h-[calc(100vh-64px)] w-full overflow-hidden bg-background">
+    <div className="relative flex h-[calc(100dvh-128px)] w-full overflow-hidden bg-background md:h-[calc(100dvh-64px)]">
       {/* Left Collapsible Sidebar */}
       <UnitSidebar
         unit={unit}
