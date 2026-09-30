@@ -57,12 +57,14 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card">
-      <nav className="flex h-16 items-center gap-8 px-4 md:px-16">
+      <nav className="flex h-16 items-center gap-3 px-4 md:gap-8 md:px-16">
         <Link to="/" className="flex items-center gap-2 no-underline">
-          <span className="text-3xl font-bold tracking-tight text-foreground">Verselab</span>
+          <span className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+            Verselab
+          </span>
         </Link>
 
-        <div className="flex h-full items-center gap-8">
+        <div className="hidden h-full items-center gap-6 md:flex md:gap-8">
           {navItems.map(({ to, label, icon }) => (
             <NavItem
               key={to}
@@ -80,13 +82,13 @@ export default function Header() {
           )}
         </div>
 
-        <div className="ml-auto flex items-center gap-3">
-          <div className="flex items-center gap-1.5 rounded-full border-2 border-border px-4 py-2 text-base font-semibold text-foreground">
+        <div className="ml-auto flex shrink-0 items-center gap-2 md:gap-3">
+          <div className="flex items-center gap-1.5 rounded-full border-2 border-border px-3 py-1.5 text-sm font-semibold text-foreground md:px-4 md:py-2 md:text-base">
             <span>{streak}</span>
             <Flame className="h-5 w-5 fill-fire text-fire" />
           </div>
 
-          <div className="flex items-center gap-1.5 rounded-full border-2 border-border px-4 py-2 text-base font-semibold text-foreground">
+          <div className="hidden items-center gap-1.5 rounded-full border-2 border-border px-3 py-1.5 text-sm font-semibold text-foreground sm:flex md:px-4 md:py-2 md:text-base">
             <span>{xp}</span>
             <span className="text-sm font-bold text-muted">XP</span>
           </div>
