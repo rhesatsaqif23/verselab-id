@@ -428,3 +428,13 @@ input[type="number"]::-webkit-outer-spin-button {
 input[type="number"] {
   padding-block: 0;
 }
+
+/* The materi lesson track uses a custom always-visible scrollbar (see
+   LessonList), so the native bar is hidden on every engine. */
+.lesson-track-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.lesson-track-scroll::-webkit-scrollbar {
+  display: none;
+}
