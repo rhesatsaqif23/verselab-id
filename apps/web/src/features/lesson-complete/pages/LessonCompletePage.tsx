@@ -37,36 +37,38 @@ export default function LessonCompletePage() {
       : null;
 
   return (
-    <main className="flex min-h-screen w-full flex-col px-8 py-8">
+    <main className="flex min-h-dvh w-full flex-col px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+1.25rem)] sm:px-6 sm:py-8 sm:pb-[calc(env(safe-area-inset-bottom)+2rem)] md:px-8">
       {/* Content — vertically centered like lesson screen renderer */}
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col">
-        <div className="my-auto flex flex-col items-center gap-8 px-6 py-4 text-center">
+        <div className="my-auto flex flex-col items-center gap-8 px-4 py-3 text-center sm:px-6 sm:py-4">
           {/* Celebratory star asset */}
           <img
             src="/lesson-complete-star.png"
             alt="Lesson selesai"
-            className="h-28 w-28 object-contain"
+            className="h-24 w-24 object-contain sm:h-28 sm:w-28"
           />
 
           {/* Title */}
-          <h1 className="text-4xl font-black text-foreground">Lesson selesai!</h1>
+          <h1 className="text-3xl font-black text-foreground sm:text-4xl">Lesson selesai!</h1>
 
           {/* Stats */}
           <div className="flex w-full max-w-md gap-4">
-            <Card className="flex-1 border-2 border-border p-6 text-center">
+            <Card className="flex-1 border-2 border-border p-4 text-center sm:p-6">
               <CardContent className="p-0">
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-5xl font-black text-foreground">{summary.xpEarned}</span>
+                  <span className="text-4xl font-black text-foreground sm:text-5xl">
+                    {summary.xpEarned}
+                  </span>
                   <span className="text-base font-bold text-muted">XP</span>
                 </div>
                 <p className="mt-2 text-xs font-bold uppercase tracking-widest text-muted">Total</p>
               </CardContent>
             </Card>
 
-            <Card className="flex-1 border-2 border-border p-6 text-center">
+            <Card className="flex-1 border-2 border-border p-4 text-center sm:p-6">
               <CardContent className="p-0">
                 <div className="flex items-baseline justify-center gap-0.5">
-                  <span className="text-5xl font-black text-foreground">
+                  <span className="text-4xl font-black text-foreground sm:text-5xl">
                     {summary.correctCount}
                   </span>
                   <span className="text-xl font-bold text-muted">/{summary.totalScreens}</span>
@@ -81,7 +83,9 @@ export default function LessonCompletePage() {
             <Card className="w-full max-w-sm border-2 border-border p-4 text-center">
               <CardContent className="p-0">
                 <p className="text-base font-bold text-muted">Mastery {summary.unitName}</p>
-                <p className="mt-2 text-4xl font-black text-foreground">{displayAfter}%</p>
+                <p className="mt-2 text-3xl font-black text-foreground sm:text-4xl">
+                  {displayAfter}%
+                </p>
               </CardContent>
             </Card>
           )}

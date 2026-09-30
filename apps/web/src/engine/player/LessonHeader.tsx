@@ -12,13 +12,13 @@ type LessonHeaderProps = {
 
 export default function LessonHeader({ current, total, xpEarned, onExit }: LessonHeaderProps) {
   return (
-    <div className="flex gap-4 md:gap-16">
+    <div className="flex items-center gap-3 md:gap-16">
       <Button
         variant="shadowless"
         size="icon"
         onClick={onExit}
         aria-label="Keluar"
-        className="shrink-0 text-foreground/70 hover:text-foreground [&_svg]:size-6"
+        className="size-10 shrink-0 text-foreground/70 hover:text-foreground sm:size-9 [&_svg]:size-6"
       >
         <X className="size-6 stroke-2" />
       </Button>

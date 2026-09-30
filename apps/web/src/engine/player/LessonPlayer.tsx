@@ -94,7 +94,7 @@ export default function LessonPlayer({
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col gap-4 px-8 py-8">
+    <div className="flex min-h-dvh w-full flex-col gap-4 px-4 py-5 pb-[calc(env(safe-area-inset-bottom)+1.25rem)] sm:px-6 sm:py-8 sm:pb-[calc(env(safe-area-inset-bottom)+2rem)] md:px-8">
       <LessonHeader current={index + 1} total={total} xpEarned={xpEarned} onExit={handleExit} />
 
       <div
@@ -110,7 +110,7 @@ export default function LessonPlayer({
         <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col">
           <div
             key={index}
-            className="my-auto flex w-full flex-col justify-center px-6 py-4 animate-slide-in-right"
+            className="my-auto flex w-full flex-col justify-center px-4 py-3 animate-slide-in-right sm:px-6 sm:py-4"
           >
             {renderScreen(
               screen,
