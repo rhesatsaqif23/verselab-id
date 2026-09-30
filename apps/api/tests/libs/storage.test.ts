@@ -9,6 +9,8 @@ import {
   safeUploadPath,
   setStorageFake,
   toStorageError,
+  publicUrl,
+  keyFromUrl,
   checkStorageHealth,
 } from "../../src/libs/storage.ts";
 import { AppError } from "../../src/libs/errors.ts";
@@ -218,5 +220,42 @@ describe("checkStorageHealth", () => {
     } finally {
       restoreFetch();
     }
+  });
+});
+
+describe("publicUrl", () => {
+  const prevBase = env.S3_PUBLIC_BASE_URL;
+  const prevEndpoint = env.S3_ENDPOINT;
+
+  afterEach(() => {
+    env.S3_PUBLIC_BASE_URL = prevBase;
+    env.S3_ENDPOINT = prevEndpoint;
+  });
+
+  it("prefers the configured public base URL", () => {
+    env.S3_PUBLIC_BASE_URL = "https://nos.example.com/verselab/";
+    expect(publicUrl("lessons/a.png")).toMatch(
+      /^https:\/\/nos\.example\.com\/verselab\/lessons\/a\.png\?t=\d+$/,
+    );
+  });
+
+  it("derives one from the endpoint and bucket when no public base is set", () => {
+    env.S3_PUBLIC_BASE_URL = undefined;
+    env.S3_ENDPOINT = "https://s3.example.com/";
+    expect(publicUrl("lessons/a.png")).toMatch(
+      /^https:\/\/s3\.example\.com\/verselab\/lessons\/a\.png\?t=\d+$/,
+    );
+  });
+
+  it("falls back to the API proxy path with no S3 origin", () => {
+    env.S3_PUBLIC_BASE_URL = undefined;
+    env.S3_ENDPOINT = undefined;
+    expect(publicUrl("lessons/a.png")).toMatch(/^\/uploads\/lessons\/a\.png\?t=\d+$/);
+  });
+
+  it("round-trips through keyFromUrl", () => {
+    env.S3_PUBLIC_BASE_URL = "https://nos.example.com/verselab";
+    env.S3_ENDPOINT = undefined;
+    expect(keyFromUrl(publicUrl("lessons/a.png"))).toBe("lessons/a.png");
   });
 });

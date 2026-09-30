@@ -476,8 +476,10 @@ describe("ScreenEditor CRUD", () => {
     fireEvent.pointerDown(grips[0], { clientX: 10, clientY: 10, button: 0, pointerType: "mouse" });
     fireEvent.pointerMove(grips[0], { clientX: 10, clientY: 100, pointerType: "mouse" });
 
-    // The order updates live, before the drop persists it.
-    expect(listedPrompts()[0]).toBe("Prompt dua");
+    // The order updates live, before the drop persists it. React Query
+    // notifies subscribers in a microtask, so the optimistic write is awaited.
+    await waitFor(() => expect(listedPrompts()[0]).toBe("Prompt dua"));
+    expect(reorderMock).not.toHaveBeenCalled();
 
     fireEvent.pointerUp(grips[0]);
     await waitFor(() =>

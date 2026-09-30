@@ -56,10 +56,13 @@ export function useDragReorder({
   const suppressClick = useRef(false);
   const [draggingId, setDraggingId] = useState<string | null>(null);
 
-  const registerRow = useCallback((id: string) => (el: HTMLDivElement | null) => {
-    if (el) rowEls.current.set(id, el);
-    else rowEls.current.delete(id);
-  }, []);
+  const registerRow = useCallback(
+    (id: string) => (el: HTMLDivElement | null) => {
+      if (el) rowEls.current.set(id, el);
+      else rowEls.current.delete(id);
+    },
+    [],
+  );
 
   // A drag ending over a row must not trigger that row's click action.
   const suppressPostDragClick = useCallback((e: React.SyntheticEvent) => {

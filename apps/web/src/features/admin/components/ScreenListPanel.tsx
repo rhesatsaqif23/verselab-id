@@ -74,7 +74,7 @@ export function ScreenListPanel({
                 {...getHandleProps(screen.id, index)}
                 disabled={reorderPending}
                 title="Seret untuk menyusun"
-                className="flex shrink-0 cursor-grab touch-none items-center self-stretch px-1 text-muted-foreground select-none hover:text-foreground active:cursor-grabbing disabled:cursor-default disabled:opacity-40"
+                className="flex shrink-0 cursor-grab touch-none items-center self-stretch pr-3.5 pl-1 text-muted-foreground select-none hover:text-foreground active:cursor-grabbing disabled:cursor-default disabled:opacity-40"
               >
                 <GripVertical className="size-4" />
               </button>

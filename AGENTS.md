@@ -279,6 +279,19 @@ Do not add ESLint/Prettier configs.
 
 Follow Conventional Commits: `<type>(<scope>): <summary>`. Use `feat`, `fix`, `refactor`, `style`, `chore`, `docs`, `test`, `perf`. Scopes: `api`, `web`, `shared`, `db`, `docs`. No quotes, no emoji. Body describes what changed (why belongs in a PR).
 
+Bodies are a short blank line followed by one line per change, each starting with `- `:
+
+```txt
+fix(api): store uploads at their public S3 URL
+
+- return the public URL from put() instead of the local /uploads path
+- write objects with a public-read ACL, bucket denies anonymous GET
+- re-point the 17 existing rows to https://nos.wjv-1.neo.id/verselab/
+- widen the admin screen grip handle away from the content column
+```
+
+Keep every bullet to a single line. No prose paragraphs in the body, no nested bullets, no `**` markers. Propose the message to the user in one fenced code block.
+
 ## What not to add
 
 - No ESLint/Prettier configs (Oxfmt and Oxlint are used instead). Delete stray `.prettierignore` if found.
