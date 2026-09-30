@@ -86,7 +86,7 @@ export function AllocationFields({ screen, onChange }: AllocationFieldsProps) {
 
       <div className="space-y-3 border-t pt-2">
         <Label className="text-base">Validasi Aturan (Rule)</Label>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
           <div className="col-span-1 flex flex-col gap-1.5">
             <Label htmlFor="rule-category" className="text-sm">
               Kategori <span className="text-destructive">*</span>
