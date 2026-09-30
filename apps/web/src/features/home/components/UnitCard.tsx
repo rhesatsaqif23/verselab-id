@@ -82,7 +82,7 @@ export default function UnitCard({ unit }: UnitCardProps) {
       onMouseEnter={prefetchUnit}
     >
       <CardContent className="p-0">
-        <div className="relative flex flex-col items-center gap-5 px-8 py-8 text-center">
+        <div className="relative flex flex-col items-center gap-5 px-4 py-6 text-center sm:px-8 sm:py-8">
           {/* Soft radial bg decoration */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(21,145,220,0.10)_0%,transparent_70%)]" />
 

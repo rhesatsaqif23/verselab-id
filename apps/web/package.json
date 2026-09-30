@@ -12,8 +12,9 @@
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test": "vitest run",
-    "check-types": "tsc --noEmit"
+    "test": "vitest run && bun scripts/responsive-audit.ts",
+    "check-types": "tsc --noEmit",
+    "audit:responsive": "bun scripts/responsive-audit.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.7.1",
