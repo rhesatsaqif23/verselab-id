@@ -26,11 +26,14 @@ export default function LessonList({
     return "unlocked";
   }
 
-  // Zigzag via padding-top so the container height adapts to content (transforms are layout-invisible)
+  // Horizontal stagger only at lg+; below lg the track is a vertical list.
   const getZigzagOffset = (idx: number) => {
-    const pattern = ["pt-0", "pt-28", "pt-6", "pt-36"];
+    const pattern = ["lg:pt-0", "lg:pt-28", "lg:pt-6", "lg:pt-36"];
     return pattern[idx % pattern.length];
   };
+
+  // Below lg every row spans the track and alternates side instead of scrolling.
+  const columnAligns = ["justify-start", "justify-end"];
 
   const {
     trackRef,
@@ -65,15 +68,18 @@ export default function LessonList({
           onPointerCancel={handleTrackPointerUp}
           onClickCapture={handleTrackClickCapture}
           onDragStart={(e) => e.preventDefault()}
-          className={`relative flex w-full flex-nowrap items-start justify-start sm:justify-center gap-6 sm:gap-8 md:gap-10 overflow-x-auto py-8 px-6 md:px-8 lesson-track-scroll touch-pan-x touch-pan-y select-none ${
-            isDragging ? "cursor-grabbing **:cursor-grabbing!" : "cursor-grab"
+          className={`relative flex w-full flex-col items-start justify-start gap-6 overflow-x-hidden px-0 py-8 sm:gap-8 md:gap-10 lesson-track-scroll touch-pan-y select-none lg:flex-row lg:flex-nowrap lg:justify-center lg:overflow-x-auto lg:px-8 lg:touch-pan-x ${
+            isDragging ? "cursor-grabbing **:cursor-grabbing!" : "lg:cursor-grab"
           }`}
         >
           {/* Background connecting path line */}
-          <div className="pointer-events-none absolute left-16 right-16 top-1/2 -z-10 h-1 -translate-y-4 bg-border border-t-2 border-dashed border-border" />
+          <div className="pointer-events-none absolute left-16 right-16 top-1/2 -z-10 hidden h-1 -translate-y-4 border-t-2 border-dashed border-border bg-border lg:block" />
 
           {unit.lessons.map((lesson, idx) => (
-            <div key={lesson.id} className="relative shrink-0">
+            <div
+              key={lesson.id}
+              className={`relative flex w-full shrink-0 lg:w-auto ${columnAligns[idx % columnAligns.length]}`}
+            >
               <LessonRow
                 lesson={lesson}
                 index={idx}
