@@ -6,6 +6,7 @@ import { AdminBreadcrumb } from "#/features/admin/components/AdminBreadcrumb.tsx
 import { AdminSidebar } from "#/features/admin/components/AdminSidebar.tsx";
 import { useSignOut } from "#/features/auth/hooks/useSignOut.ts";
 import { LogOut } from "lucide-react";
+import BottomNav from "#/features/layout/components/BottomNav.tsx";
 
 export const Route = createFileRoute("/admin")({
   beforeLoad: async () => {
@@ -36,7 +37,7 @@ function AdminLayout() {
                 size="sm"
                 className="text-[15px] font-semibold text-foreground hover:text-primary gap-2"
               >
-                Lihat Situs
+                Kembali
               </Button>
             </Link>
             <Button
@@ -51,10 +52,11 @@ function AdminLayout() {
             </Button>
           </div>
         </header>
-        <main className="flex-1 overflow-auto p-4 md:p-6">
+        <main className="flex-1 overflow-auto p-4 pb-16 md:p-6">
           <Outlet />
         </main>
       </SidebarInset>
+      <BottomNav />
     </SidebarProvider>
   );
 }
