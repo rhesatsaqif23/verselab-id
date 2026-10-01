@@ -35,7 +35,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <main className="page-wrap px-4 pb-16 pt-8">
+    <main className="page-wrap pb-16 pt-8">
       <div className="mx-auto max-w-6xl space-y-8">
         <ProfileHeader />
 

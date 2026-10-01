@@ -23,7 +23,7 @@ export const Route = createRootRoute({
 
 function NotFound() {
   return (
-    <main className="page-wrap flex min-h-screen flex-col items-center justify-center px-4">
+    <main className="page-wrap flex min-h-screen flex-col items-center justify-center">
       <h1 className="text-4xl font-bold text-foreground">404</h1>
       <p className="mt-4 text-lg text-muted">Halaman tidak ditemukan</p>
     </main>

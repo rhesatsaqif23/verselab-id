@@ -54,7 +54,7 @@ export function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="page-wrap px-4 pb-16 pt-14 text-center sm:pt-20">
+        <section className="page-wrap pb-16 pt-14 text-center sm:pt-20">
           <p className="text-base font-bold mb-4 tracking-wider uppercase">
             Interactive skill learning
           </p>
@@ -84,7 +84,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="page-wrap grid gap-6 px-4 pb-20 pt-8 sm:grid-cols-3">
+        <section className="page-wrap grid gap-6 pb-20 pt-8 sm:grid-cols-3">
           {features.map(({ icon: Icon, title, desc }) => (
             <div key={title} className="feature-card rounded-2xl p-6">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-(--premium-icon-from) to-(--premium-icon-to)">

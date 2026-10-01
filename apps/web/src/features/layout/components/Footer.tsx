@@ -6,7 +6,7 @@ export default function Footer() {
 
   return (
     <footer className="mt-20 border-t-2 border-border bg-card text-foreground shadow-lg">
-      <div className="page-wrap px-4 py-16">
+      <div className="page-wrap py-16">
         {/* Main Footer Grid */}
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 lg:gap-12">
           {/* Brand & Value Proposition Column */}
@@ -15,10 +15,12 @@ export default function Footer() {
               <div className="flex size-10 items-center justify-center rounded-lg bg-linear-to-br from-primary to-accent font-black text-white shadow-sm">
                 V
               </div>
-              <span className="text-3xl font-black tracking-tight text-foreground">Verselab</span>
+              <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
+                Verselab
+              </span>
             </Link>
 
-            <p className="text-base font-semibold leading-relaxed text-foreground/75 max-w-sm">
+            <p className="text-sm sm:text-base font-semibold leading-relaxed text-foreground/75 max-w-sm">
               Platform belajar interaktif berbasis visual dan micro-learning. Kuasai berbagai materi
               esensial lewat latihan interaktif dan simulasi langsung di browser.
             </p>
@@ -26,13 +28,15 @@ export default function Footer() {
 
           {/* Materi Belajar Column */}
           <div className="flex flex-col gap-3 md:col-span-3">
-            <h3 className="text-lg font-black tracking-tight text-foreground uppercase">Materi</h3>
+            <h3 className="text-base sm:text-lg font-black tracking-tight text-foreground uppercase">
+              Materi
+            </h3>
             <ul className="flex flex-col gap-2.5 list-none p-0 m-0">
               <li>
                 <Link
                   to="/units/$unitSlug"
                   params={{ unitSlug: "keuangan" }}
-                  className="text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
+                  className="text-sm sm:text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
                 >
                   Keuangan
                 </Link>
@@ -41,7 +45,7 @@ export default function Footer() {
                 <Link
                   to="/units/$unitSlug"
                   params={{ unitSlug: "akuntansi" }}
-                  className="text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
+                  className="text-sm sm:text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
                 >
                   Akuntansi
                 </Link>
@@ -50,7 +54,7 @@ export default function Footer() {
                 <Link
                   to="/units/$unitSlug"
                   params={{ unitSlug: "manajemen-produk" }}
-                  className="text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
+                  className="text-sm sm:text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
                 >
                   Manajemen Produk
                 </Link>
@@ -59,7 +63,7 @@ export default function Footer() {
                 <Link
                   to="/units/$unitSlug"
                   params={{ unitSlug: "kewirausahaan" }}
-                  className="text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
+                  className="text-sm sm:text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
                 >
                   Kewirausahaan
                 </Link>
@@ -69,14 +73,14 @@ export default function Footer() {
 
           {/* Eksplorasi & Navigasi Column */}
           <div className="flex flex-col gap-3 md:col-span-3">
-            <h3 className="text-lg font-black tracking-tight text-foreground uppercase">
+            <h3 className="text-base sm:text-lg font-black tracking-tight text-foreground uppercase">
               Navigasi
             </h3>
             <ul className="flex flex-col gap-2.5 list-none p-0 m-0">
               <li>
                 <Link
                   to="/home"
-                  className="text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
+                  className="text-sm sm:text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
                 >
                   Beranda
                 </Link>
@@ -84,7 +88,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/material"
-                  className="text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
+                  className="text-sm sm:text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
                 >
                   Peta Kurikulum
                 </Link>
@@ -92,7 +96,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/profile"
-                  className="text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
+                  className="text-sm sm:text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
                 >
                   Profil & Statistik
                 </Link>
@@ -100,7 +104,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/admin"
-                  className="text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
+                  className="text-sm sm:text-base font-semibold text-foreground/75 transition-colors hover:text-primary hover:underline underline-offset-4"
                 >
                   Mode Admin
                 </Link>
@@ -111,10 +115,10 @@ export default function Footer() {
 
         {/* Bottom Bar with Medium/Dark Grey Text */}
         <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t-2 border-border pt-8 text-center sm:flex-row sm:text-left">
-          <p className="text-sm sm:text-base font-semibold text-foreground/70">
+          <p className="text-xs sm:text-base font-semibold text-foreground/70">
             &copy; {year} Verselab. Belajar interaktif tanpa batas.
           </p>
-          <p className="text-sm sm:text-base font-semibold text-muted-foreground flex items-center gap-2">
+          <p className="text-xs sm:text-base font-semibold text-muted-foreground flex items-center gap-2">
             <span>Dibuat untuk pembelajaran yang menyenangkan</span>
           </p>
         </div>

@@ -66,7 +66,7 @@ export default function MateriPage() {
   const allLessons = units.flatMap((u) => u.lessons);
 
   return (
-    <main className="relative mx-auto flex min-h-[calc(100vh-140px)] w-full max-w-6xl flex-col gap-12 px-4 py-8 sm:px-6 lg:px-8">
+    <main className="page-wrap relative flex min-h-[calc(100vh-140px)] flex-col gap-12 py-8">
       {units.map((unit) => (
         <section
           key={unit.id}

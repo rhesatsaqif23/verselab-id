@@ -15,7 +15,7 @@ export default function LessonCompletePage() {
 
   if (!summary) {
     return (
-      <main className="page-wrap px-4 pb-16 pt-8">
+      <main className="page-wrap pb-16 pt-8">
         <Card className="mx-auto max-w-xl p-8">
           <CardContent className="p-0 text-center">
             <p className="text-lg font-semibold text-muted">Belum ada lesson yang selesai</p>

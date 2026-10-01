@@ -6,7 +6,7 @@ import UnitGrid from "../components/UnitGrid";
 
 export default function HomePage() {
   return (
-    <main className="page-wrap px-4 pb-16 pt-8">
+    <main className="page-wrap pb-16 pt-8">
       <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
         <div className="min-w-0 space-y-4">
           <StreakTracker />
