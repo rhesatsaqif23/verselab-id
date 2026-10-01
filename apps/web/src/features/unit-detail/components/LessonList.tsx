@@ -78,9 +78,9 @@ export default function LessonList({
           {unit.lessons.map((lesson, idx) => (
             <div
               key={lesson.id}
-              className={`relative flex w-full shrink-0 lg:w-auto ${columnAligns[idx % columnAligns.length]} ${
-                idx === 0 ? "" : "-mt-[76px] sm:-mt-[86px] lg:mt-0"
-              }`}
+              className={`relative flex min-h-[172px] w-full shrink-0 sm:min-h-[196px] lg:min-h-0 lg:w-auto ${
+                columnAligns[idx % columnAligns.length]
+              } ${idx === 0 ? "" : "-mt-[86px] sm:-mt-[98px] lg:mt-0"}`}
             >
               <LessonRow
                 lesson={lesson}
