@@ -68,7 +68,7 @@ export default function LessonList({
           onPointerCancel={handleTrackPointerUp}
           onClickCapture={handleTrackClickCapture}
           onDragStart={(e) => e.preventDefault()}
-          className={`relative flex w-full flex-col items-start justify-start gap-6 overflow-x-hidden px-0 py-8 sm:gap-8 md:gap-10 lesson-track-scroll touch-pan-y select-none lg:flex-row lg:flex-nowrap lg:justify-center lg:overflow-x-auto lg:px-8 lg:touch-pan-x ${
+          className={`relative flex w-full flex-col items-start justify-start gap-0 overflow-x-hidden px-0 py-8 lg:gap-10 lesson-track-scroll touch-pan-y select-none lg:flex-row lg:flex-nowrap lg:justify-center lg:overflow-x-auto lg:px-8 lg:touch-pan-x ${
             isDragging ? "cursor-grabbing **:cursor-grabbing!" : "lg:cursor-grab"
           }`}
         >
@@ -78,7 +78,9 @@ export default function LessonList({
           {unit.lessons.map((lesson, idx) => (
             <div
               key={lesson.id}
-              className={`relative flex w-full shrink-0 lg:w-auto ${columnAligns[idx % columnAligns.length]}`}
+              className={`relative flex w-full shrink-0 lg:w-auto ${columnAligns[idx % columnAligns.length]} ${
+                idx === 0 ? "" : "-mt-[76px] sm:-mt-[86px] lg:mt-0"
+              }`}
             >
               <LessonRow
                 lesson={lesson}
