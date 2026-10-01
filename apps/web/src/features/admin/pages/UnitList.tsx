@@ -143,7 +143,13 @@ export function UnitList() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-12 text-center font-bold">#</TableHead>
-              <SortableHead label="Unit" sortKey="title" sort={sort} onToggle={toggleSort} />
+              <SortableHead
+                label="Unit"
+                sortKey="title"
+                sort={sort}
+                onToggle={toggleSort}
+                className="min-w-64 max-w-96"
+              />
               <SortableHead
                 label="Deskripsi"
                 sortKey="description"
@@ -211,9 +217,11 @@ export function UnitList() {
                   <TableCell className="text-center tabular-nums text-muted-foreground">
                     {(page - 1) * pageSize + i + 1}
                   </TableCell>
-                  <TableCell>
-                    <div className="text-base font-semibold text-foreground">{unit.title}</div>
-                    <div className="text-xs text-muted-foreground">{unit.id}</div>
+                  <TableCell className="whitespace-normal">
+                    <div className="min-w-64 max-w-96 break-words">
+                      <div className="text-base font-semibold text-foreground">{unit.title}</div>
+                      <div className="text-xs text-muted-foreground">{unit.id}</div>
+                    </div>
                   </TableCell>
                   <TableCell>
                     <p className="line-clamp-2 text-sm text-muted-foreground">
