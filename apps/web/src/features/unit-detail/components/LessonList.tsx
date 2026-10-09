@@ -68,7 +68,7 @@ export default function LessonList({
           onPointerCancel={handleTrackPointerUp}
           onClickCapture={handleTrackClickCapture}
           onDragStart={(e) => e.preventDefault()}
-          className={`relative flex w-full flex-col items-start justify-start gap-0 overflow-x-hidden px-0 py-8 lg:gap-10 lesson-track-scroll touch-pan-y select-none lg:flex-row lg:flex-nowrap lg:justify-center lg:overflow-x-auto lg:px-8 lg:touch-pan-x ${
+          className={`relative mx-auto flex w-full max-w-xs flex-col items-start justify-start gap-0 overflow-x-hidden px-2 py-8 select-none sm:max-w-sm sm:px-4 md:max-w-md lg:mx-0 lg:max-w-none lg:flex-row lg:flex-nowrap lg:justify-start lg:gap-10 lg:overflow-x-auto lg:px-8 lg:touch-pan-x lesson-track-scroll touch-pan-y ${
             isDragging ? "cursor-grabbing **:cursor-grabbing!" : "lg:cursor-grab"
           }`}
         >

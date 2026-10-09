@@ -140,6 +140,21 @@ describe("LessonList custom scrollbar", () => {
     fireEvent.keyDown(bar, { key: "End" });
     expect((track as HTMLElement & { scrollLeft: number }).scrollLeft).toBe(600);
   });
+
+  it("aligns the track to start on desktop to keep the first lesson visible", () => {
+    const { track } = renderList();
+    expect(track.className).toContain("lg:justify-start");
+    expect(track.className).not.toContain("lg:justify-center");
+  });
+
+  it("constrains and centers the vertical track below desktop for responsive spacing", () => {
+    const { track } = renderList();
+    expect(track.className).toContain("mx-auto");
+    expect(track.className).toContain("max-w-xs");
+    expect(track.className).toContain("sm:max-w-sm");
+    expect(track.className).toContain("md:max-w-md");
+    expect(track.className).toContain("lg:max-w-none");
+  });
 });
 
 describe("LessonList drag-to-scroll", () => {
