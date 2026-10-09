@@ -11,9 +11,9 @@ import UnitSidebar from "../components/UnitSidebar.tsx";
 import WhiteboardMapCanvas from "../components/WhiteboardMapCanvas.tsx";
 import UnitMapBottomBar from "../components/UnitMapBottomBar.tsx";
 
-type Props = { unit: Unit; allUnits?: Unit[] };
+type Props = { unit: Unit; allUnits?: Unit[]; initialLessonId?: string };
 
-export default function UnitDetailPage({ unit, allUnits }: Props) {
+export default function UnitDetailPage({ unit, allUnits, initialLessonId }: Props) {
   const completedLessons = useProgressStore((s) => s.completedLessons);
 
   // Prerequisites may point at a lesson from another unit, so resolve titles
@@ -29,13 +29,16 @@ export default function UnitDetailPage({ unit, allUnits }: Props) {
     if (isMobile) setIsSidebarOpen(false);
   }, [isMobile]);
 
-  // Active / Selected lesson selection
+  // Active / Selected lesson selection: prefer initialLessonId (from search param)
   const currentLesson =
     unit.lessons.find((l) => !completedLessons.includes(l.id)) ?? unit.lessons[0];
 
-  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(
-    currentLesson?.id ?? null,
-  );
+  const resolvedInitial =
+    (initialLessonId && unit.lessons.find((l) => l.id === initialLessonId)?.id) ??
+    currentLesson?.id ??
+    null;
+
+  const [selectedLessonId, setSelectedLessonId] = useState<string | null>(resolvedInitial);
 
   function getStatus(lessonId: string): LessonStatus {
     if (completedLessons.includes(lessonId)) return "previous";

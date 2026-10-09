@@ -1,6 +1,6 @@
 // WhiteboardMapCanvas: presentation-only whiteboard viewport.
 // All pan/zoom logic lives in useCanvasPan; layout math lives in lessonLayout.
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { RotateCcw, ZoomIn, ZoomOut, Move } from "lucide-react";
 import type { Unit } from "#/engine/types.ts";
 import type { LessonStatus } from "../types.ts";
@@ -15,6 +15,7 @@ type WhiteboardMapCanvasProps = {
   completedLessons: string[];
   selectedLessonId: string | null;
   onSelectLesson: (lessonId: string) => void;
+  onPanToLesson?: (panFn: (lessonId: string) => void) => void;
 };
 
 export default function WhiteboardMapCanvas({
@@ -22,6 +23,7 @@ export default function WhiteboardMapCanvas({
   completedLessons,
   selectedLessonId,
   onSelectLesson,
+  onPanToLesson,
 }: WhiteboardMapCanvasProps) {
   const {
     containerRef,
@@ -36,6 +38,7 @@ export default function WhiteboardMapCanvas({
     zoomIn,
     zoomOut,
     recenter,
+    animatedPanTo,
   } = useCanvasPan();
 
   const currentLesson =
@@ -50,30 +53,64 @@ export default function WhiteboardMapCanvas({
   const nodes = buildNodes(unit.lessons.map((l) => l.id));
   const connections = buildConnections(nodes, completedLessons);
 
-  // Compute the pan offset that centres the active lesson card in the viewport
-  const computeCenteredPan = useCallback(() => {
-    const activeIdx = unit.lessons.findIndex((l) => l.id === currentLesson?.id);
-    const targetIdx = activeIdx >= 0 ? activeIdx : 0;
-    const node = nodes[targetIdx];
-    const el = containerRef.current;
+  // Compute the pan offset that centres the target lesson card in the viewport.
+  // Prefer selectedLessonId (may come from an initialLessonId / search param);
+  // fall back to the current (first incomplete) lesson.
+  const computeCenteredPan = useCallback(
+    (targetId?: string | null) => {
+      const resolvedId = targetId ?? selectedLessonId ?? currentLesson?.id;
+      const targetIdx = resolvedId
+        ? unit.lessons.findIndex((l) => l.id === resolvedId)
+        : unit.lessons.findIndex((l) => l.id === currentLesson?.id);
+      const idx = targetIdx >= 0 ? targetIdx : 0;
+      const node = nodes[idx];
+      const el = containerRef.current;
 
-    if (node && el) {
-      return {
-        x: Math.max(40, el.clientWidth * 0.05) - node.x,
-        y: Math.max(100, el.clientHeight * 0.22) - node.y,
-      };
-    }
-    return { x: 40, y: 120 };
-  }, [currentLesson?.id, nodes, unit.lessons, containerRef]);
+      if (node && el) {
+        return {
+          x: el.clientWidth / 2 - (node.x + CARD_WIDTH / 2),
+          y: Math.max(100, el.clientHeight * 0.22) - node.y,
+        };
+      }
+      return { x: 40, y: 120 };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentLesson?.id, selectedLessonId, nodes, unit.lessons, containerRef],
+  );
 
-  // Centre on mount — defer one frame so containerRef has real dimensions
+  // Track whether the initial mount effect has fired so subsequent
+  // selectedLessonId changes animate instead of hard-jumping.
+  const isMountedRef = useRef(false);
+
+  // Centre on mount — defer one frame so containerRef has real dimensions.
+  // Pass selectedLessonId so the canvas opens on the chosen lesson when
+  // navigated from /material with ?lessonId=...
   useEffect(() => {
     const raf = requestAnimationFrame(() => {
-      recenter(computeCenteredPan());
+      recenter(computeCenteredPan(selectedLessonId));
+      isMountedRef.current = true;
     });
     return () => cancelAnimationFrame(raf);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // After mount: smoothly animate the canvas whenever the selected lesson changes
+  // (e.g. user clicks a row in the sidebar "Daftar Topik").
+  useEffect(() => {
+    if (!isMountedRef.current) return;
+    animatedPanTo(computeCenteredPan(selectedLessonId));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLessonId]);
+
+  // Register a programmatic panTo function with the parent so UnitDetailPage
+  // can trigger animated navigation from outside the canvas.
+  useEffect(() => {
+    if (!onPanToLesson) return;
+    onPanToLesson((lessonId: string) => {
+      animatedPanTo(computeCenteredPan(lessonId));
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onPanToLesson]);
 
   return (
     <div
@@ -132,7 +169,7 @@ export default function WhiteboardMapCanvas({
           <Button
             variant="shadowless"
             size="icon-sm"
-            onClick={() => recenter(computeCenteredPan())}
+            onClick={() => recenter(computeCenteredPan(selectedLessonId))}
             className="rounded-lg text-muted-foreground hover:text-foreground"
             title="Pusatkan Peta (Recenter)"
           >

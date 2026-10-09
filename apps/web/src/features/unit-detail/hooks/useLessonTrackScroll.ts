@@ -75,12 +75,15 @@ export function useLessonTrackScroll(lessonCount: number): UseLessonTrackScrollR
   }, [updateScrollState, lessonCount]);
 
   // Mouse drag-to-scroll on the track; touch keeps its native scroll behavior.
+  // NOTE: We intentionally do NOT call setPointerCapture here — capturing the
+  // pointer on the track div prevents click events from reaching child lesson
+  // cards (LessonRow). The track is wide enough that pointer-move keeps firing
+  // without capture in all practical scenarios.
   const handleTrackPointerDown = useCallback((e: React.PointerEvent) => {
     if (e.pointerType !== "mouse" || e.button !== 0) return;
     const el = trackRef.current;
     if (!el) return;
     drag.current = { startX: e.clientX, startScrollLeft: el.scrollLeft };
-    capturePointer(e);
   }, []);
 
   const handleTrackPointerMove = useCallback((e: React.PointerEvent) => {
