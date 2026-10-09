@@ -27,13 +27,17 @@ export function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-border/80 bg-background/85 px-4 backdrop-blur-md transition-all md:px-16">
-        <Link to="/" className="flex items-center gap-2.5 no-underline">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-linear-to-br from-primary to-accent font-black text-white shadow-xs">
-            V
-          </div>
-          <span className="text-lg sm:text-3xl font-black tracking-tight text-foreground">
-            Verselab
-          </span>
+        <Link to="/" className="flex items-center no-underline">
+          <img
+            src="/assets/horizontal_logo_dark.svg"
+            alt="Verselab"
+            className="h-8 w-auto dark:hidden sm:h-9"
+          />
+          <img
+            src="/assets/horizontal_logo_light.svg"
+            alt="Verselab"
+            className="hidden h-8 w-auto dark:block sm:h-9"
+          />
         </Link>
         <div className="flex items-center gap-3">
           <div className="hidden sm:block">

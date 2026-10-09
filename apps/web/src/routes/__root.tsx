@@ -15,7 +15,10 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Verselab - Interactive Skill Learning" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/svg+xml", href: "/assets/logo_only_dark.svg" },
+    ],
   }),
   shellComponent: RootDocument,
   notFoundComponent: NotFound,

@@ -40,16 +40,35 @@ export function AdminSidebar() {
             to="/home"
             className={cn(
               "flex items-center no-underline transition-all duration-200",
-              isCollapsed ? "justify-center gap-0" : "gap-2.5",
+              isCollapsed ? "justify-center" : "px-1",
             )}
           >
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-base font-bold text-white shadow-sm">
-              V
-            </span>
-            {!isCollapsed && (
-              <span className="text-xl font-extrabold tracking-tight text-foreground whitespace-nowrap">
-                Verselab
-              </span>
+            {isCollapsed ? (
+              <>
+                <img
+                  src="/assets/logo_only_dark.svg"
+                  alt="Verselab"
+                  className="size-8 object-contain dark:hidden"
+                />
+                <img
+                  src="/assets/logo_only_light.svg"
+                  alt="Verselab"
+                  className="hidden size-8 object-contain dark:block"
+                />
+              </>
+            ) : (
+              <>
+                <img
+                  src="/assets/horizontal_logo_dark.svg"
+                  alt="Verselab"
+                  className="h-8 w-auto dark:hidden"
+                />
+                <img
+                  src="/assets/horizontal_logo_light.svg"
+                  alt="Verselab"
+                  className="hidden h-8 w-auto dark:block"
+                />
+              </>
             )}
           </Link>
         </SidebarHeader>

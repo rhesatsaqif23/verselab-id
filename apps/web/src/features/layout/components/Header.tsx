@@ -58,10 +58,17 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card">
       <nav className="flex h-16 items-center gap-3 px-4 md:gap-8 md:px-16">
-        <Link to="/" className="flex items-center gap-2 no-underline">
-          <span className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">
-            Verselab
-          </span>
+        <Link to="/" className="flex items-center no-underline">
+          <img
+            src="/assets/horizontal_logo_dark.svg"
+            alt="Verselab"
+            className="h-8 w-auto dark:hidden"
+          />
+          <img
+            src="/assets/horizontal_logo_light.svg"
+            alt="Verselab"
+            className="hidden h-8 w-auto dark:block"
+          />
         </Link>
 
         <div className="hidden h-full items-center gap-6 md:flex md:gap-8">

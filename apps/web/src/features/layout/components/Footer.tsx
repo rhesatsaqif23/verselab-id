@@ -11,13 +11,17 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-10 md:grid-cols-12 lg:gap-12">
           {/* Brand & Value Proposition Column */}
           <div className="flex flex-col gap-4 md:col-span-6">
-            <Link to="/" className="flex items-center gap-2.5 w-fit no-underline">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-linear-to-br from-primary to-accent font-black text-white shadow-sm">
-                V
-              </div>
-              <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
-                Verselab
-              </span>
+            <Link to="/" className="flex items-center w-fit no-underline">
+              <img
+                src="/assets/horizontal_logo_dark.svg"
+                alt="Verselab"
+                className="h-9 w-auto dark:hidden"
+              />
+              <img
+                src="/assets/horizontal_logo_light.svg"
+                alt="Verselab"
+                className="hidden h-9 w-auto dark:block"
+              />
             </Link>
 
             <p className="text-sm sm:text-base font-semibold leading-relaxed text-foreground/75 max-w-sm">
