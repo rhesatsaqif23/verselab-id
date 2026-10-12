@@ -51,7 +51,7 @@ export default function LessonRow({
     }`;
   })();
 
-  const titleClass = `text-sm sm:text-base text-center max-w-[180px] line-clamp-2 ${
+  const titleClass = `text-sm sm:text-base text-center max-w-[128px] sm:max-w-[180px] line-clamp-2 ${
     status === "previous" || isSelected
       ? "font-semibold text-foreground"
       : "font-medium text-muted-foreground"

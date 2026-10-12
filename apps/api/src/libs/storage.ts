@@ -124,6 +124,23 @@ export function isMissingObjectError(err: unknown): boolean {
   return /NoSuchKey|NotFound|NotExist|404|Not Found|does not exist/i.test(`${code} ${msg}`);
 }
 
+/**
+ * Public URL for an object key once it lives in S3.
+ *
+ * Prefers S3_PUBLIC_BASE_URL (the bucket's public origin, e.g.
+ * https://cdn.example.com/bucket), then derives one from S3_ENDPOINT+bucket.
+ * Falls back to the relative /uploads/ path so the object stays reachable
+ * through the API's upload proxy when no public origin is configured.
+ */
+export function publicUrl(rel: string): string {
+  const base = (env.S3_PUBLIC_BASE_URL ?? "").replace(/\/$/, "");
+  if (base) return `${base}/${rel}?t=${Date.now()}`;
+  const endpoint = (env.S3_ENDPOINT ?? "").replace(/\/$/, "");
+  const bucket = env.S3_BUCKET ?? "verselab";
+  if (endpoint) return `${endpoint}/${bucket}/${rel}?t=${Date.now()}`;
+  return `/uploads/${rel}?t=${Date.now()}`;
+}
+
 export function getStorage(): StorageDriver {
   if (fake) return fake;
   if (cached) return cached;
@@ -147,11 +164,14 @@ export function getStorage(): StorageDriver {
       const rel = safeUploadPath(key);
       if (!rel) throw new AppError({ code: "BAD_REQUEST", message: "Invalid upload key" });
       try {
-        await client.write(rel, data, { type: contentType });
+        // Images are public by design (rendered in <img> tags), and the
+        // bucket denies anonymous GetObject otherwise — without the ACL every
+        // stored URL would 403 for visitors.
+        await client.write(rel, data, { type: contentType, acl: "public-read" });
       } catch (err) {
         throw toStorageError(err, "upload");
       }
-      return `/uploads/${rel}?t=${Date.now()}`;
+      return publicUrl(rel);
     },
     delete: async (key) => {
       try {

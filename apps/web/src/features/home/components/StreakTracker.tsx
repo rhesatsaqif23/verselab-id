@@ -45,7 +45,7 @@ export default function StreakTracker() {
         </div>
 
         {/* Weekly day checklist */}
-        <div className="mt-5 grid grid-cols-7 gap-1">
+        <div className="mt-5 grid grid-cols-7 gap-0.5 sm:gap-1">
           {weekDates.map((date, i) => {
             const dateStr = toDateString(date);
             const isToday = dateStr === todayStr;
@@ -54,14 +54,19 @@ export default function StreakTracker() {
             return (
               <div key={dateStr} className="flex flex-col items-center gap-1.5">
                 {/* Day label */}
-                <span className={cn("text-xs font-bold", isToday ? "text-primary" : "text-muted")}>
+                <span
+                  className={cn(
+                    "text-[10px] font-bold sm:text-xs",
+                    isToday ? "text-primary" : "text-muted",
+                  )}
+                >
                   {dayLabels[i]}
                 </span>
 
                 {/* Day circle */}
                 <div
                   className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full border-2 transition-colors",
+                    "flex size-7 items-center justify-center rounded-full border-2 transition-colors sm:size-8",
                     isDone
                       ? "border-fire bg-fire-light"
                       : isToday

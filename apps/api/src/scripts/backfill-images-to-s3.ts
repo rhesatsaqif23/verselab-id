@@ -61,42 +61,59 @@ async function backfill(apply: boolean): Promise<void> {
     }
     const mime = mimeForKey(key);
     const localPath = join(process.cwd(), "uploads", key);
-    if (!mime || !existsSync(localPath)) {
-      console.log(
-        `[backfill] SKIP ${row.kind} ${row.id}: ${!mime ? "unsupported type" : "missing file"} (${row.url})`,
-      );
+    if (!mime) {
+      console.log(`[backfill] SKIP ${row.kind} ${row.id}: unsupported type (${row.url})`);
       skipped++;
       continue;
     }
     if (!apply) {
-      console.log(`[backfill] WOULD upload ${row.kind} ${row.id}: ${row.url} -> s3:${key}`);
+      const source = existsSync(localPath) ? "local file" : "S3 (already uploaded)";
+      console.log(
+        `[backfill] WOULD fix ${row.kind} ${row.id}: ${row.url} -> s3:${key} [${source}]`,
+      );
       continue;
     }
-    const buffer = readFileSync(localPath);
-    const publicUrl = await getStorage().put(key, buffer, mime);
     const db = getDb();
+    // Prefer the local bytes when they still exist. Otherwise the object is
+    // already in S3 (the driver used to store it under a relative URL), so we
+    // read it back and re-put it: that both applies the public-read ACL and
+    // returns the new public URL in one step.
+    let newUrl: string;
+    if (existsSync(localPath)) {
+      newUrl = await getStorage().put(key, readFileSync(localPath), mime);
+    } else {
+      const bytes = await getStorage().read(key);
+      if (!bytes) {
+        console.log(
+          `[backfill] SKIP ${row.kind} ${row.id}: missing file locally and in S3 (${row.url})`,
+        );
+        skipped++;
+        continue;
+      }
+      newUrl = await getStorage().put(key, Buffer.from(bytes), mime);
+    }
     if (row.kind === "unit") {
       await db
         .update(contentUnits)
-        .set({ imageUrl: publicUrl, updatedAt: new Date() })
+        .set({ imageUrl: newUrl, updatedAt: new Date() })
         .where(eq(contentUnits.id, row.id));
     } else if (row.kind === "lesson") {
       await db
         .update(contentLessons)
-        .set({ imageUrl: publicUrl, updatedAt: new Date() })
+        .set({ imageUrl: newUrl, updatedAt: new Date() })
         .where(eq(contentLessons.id, row.id));
     } else {
       await db
         .update(userProfiles)
-        .set({ avatarUrl: publicUrl, updatedAt: new Date() })
+        .set({ avatarUrl: newUrl, updatedAt: new Date() })
         .where(eq(userProfiles.userId, row.id));
     }
-    console.log(`[backfill] Uploaded ${row.kind} ${row.id} -> ${publicUrl}`);
+    console.log(`[backfill] Repointed ${row.kind} ${row.id} -> ${newUrl}`);
     uploaded++;
   }
 
   console.log(
-    `[backfill] Done! ${apply ? `Uploaded ${uploaded}, skipped ${skipped}.` : `Dry run — no writes. ${rows.length - skipped} row(s) would upload, ${skipped} skipped.`}`,
+    `[backfill] Done! ${apply ? `Updated ${uploaded}, skipped ${skipped}.` : `Dry run — no writes. ${rows.length - skipped} row(s) would upload, ${skipped} skipped.`}`,
   );
 }
 

@@ -21,6 +21,7 @@ export type UseCanvasPanReturn = {
   zoomIn: () => void;
   zoomOut: () => void;
   recenter: (targetPan: Point) => void;
+  animatedPanTo: (targetPan: Point, durationMs?: number) => void;
 };
 
 const DRAG_THRESHOLD_PX = 4;
@@ -44,6 +45,7 @@ export function useCanvasPan({
   const currentScaleRef = useRef(1);
   const hasMovedRef = useRef(false);
   const hasCapturedRef = useRef(false);
+  const animationRafRef = useRef<number | null>(null);
 
   const applyTransform = useCallback((p: Point, s: number) => {
     const el = canvasRef.current;
@@ -119,11 +121,59 @@ export function useCanvasPan({
 
   const recenter = useCallback(
     (targetPan: Point) => {
+      if (animationRafRef.current !== null) {
+        cancelAnimationFrame(animationRafRef.current);
+        animationRafRef.current = null;
+      }
       currentPanRef.current = targetPan;
       currentScaleRef.current = 1;
       setPan(targetPan);
       setScale(1);
       applyTransform(targetPan, 1);
+    },
+    [applyTransform],
+  );
+
+  // Smoothly animate the canvas to targetPan with an ease-out-cubic curve.
+  const animatedPanTo = useCallback(
+    (targetPan: Point, durationMs = 350) => {
+      // Cancel any in-flight animation
+      if (animationRafRef.current !== null) {
+        cancelAnimationFrame(animationRafRef.current);
+        animationRafRef.current = null;
+      }
+
+      const fromPan = { ...currentPanRef.current };
+      const fromScale = currentScaleRef.current;
+      const startTime = performance.now();
+
+      const tick = (now: number) => {
+        const elapsed = now - startTime;
+        const raw = Math.min(elapsed / durationMs, 1);
+        // ease-out cubic: t^3 deceleration
+        const t = 1 - (1 - raw) * (1 - raw) * (1 - raw);
+
+        const nextPan = {
+          x: fromPan.x + (targetPan.x - fromPan.x) * t,
+          y: fromPan.y + (targetPan.y - fromPan.y) * t,
+        };
+        // Animate scale back to 1 if zoomed
+        const nextScale = fromScale + (1 - fromScale) * t;
+
+        currentPanRef.current = nextPan;
+        currentScaleRef.current = nextScale;
+        applyTransform(nextPan, nextScale);
+
+        if (raw < 1) {
+          animationRafRef.current = requestAnimationFrame(tick);
+        } else {
+          animationRafRef.current = null;
+          setPan(targetPan);
+          setScale(1);
+        }
+      };
+
+      animationRafRef.current = requestAnimationFrame(tick);
     },
     [applyTransform],
   );
@@ -141,5 +191,6 @@ export function useCanvasPan({
     zoomIn,
     zoomOut,
     recenter,
+    animatedPanTo,
   };
 }

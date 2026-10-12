@@ -1,6 +1,7 @@
 import { Outlet, createFileRoute, redirect, useRouterState } from "@tanstack/react-router";
 import Header from "#/features/layout/components/Header";
 import Footer from "#/features/layout/components/Footer";
+import BottomNav from "#/features/layout/components/BottomNav";
 import { resolveSession } from "#/libs/session.ts";
 import { loadProgress } from "#/engine/progress/sync.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
@@ -32,10 +33,11 @@ function HomeLayout() {
   const isUnitMap = pathname.startsWith("/units/");
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-dvh flex-col pb-16 md:pb-0">
       <Header />
       <Outlet />
       {!isUnitMap && <Footer />}
+      <BottomNav />
     </div>
   );
 }
