@@ -82,7 +82,7 @@ export default function UnitCard({ unit }: UnitCardProps) {
       onMouseEnter={prefetchUnit}
     >
       <CardContent className="p-0">
-        <div className="relative flex flex-col items-center gap-5 px-8 py-8 text-center">
+        <div className="relative flex flex-col items-center gap-5 px-4 py-6 text-center sm:px-8 sm:py-8">
           {/* Soft radial bg decoration */}
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(21,145,220,0.10)_0%,transparent_70%)]" />
 
@@ -96,7 +96,7 @@ export default function UnitCard({ unit }: UnitCardProps) {
           </div>
 
           {/* Unit title */}
-          <h2 className="relative line-clamp-2 h-14 text-2xl font-black leading-snug text-foreground sm:text-2xl">
+          <h2 className="relative line-clamp-2 min-h-14 text-lg font-black leading-snug text-foreground sm:text-2xl">
             {unit.title}
           </h2>
 
@@ -135,7 +135,7 @@ export default function UnitCard({ unit }: UnitCardProps) {
             <Button
               asChild
               size="lg"
-              className="relative z-10 mt-1 w-full min-w-48 pointer-events-auto"
+              className="relative z-10 mt-1 w-full min-w-0 pointer-events-auto sm:min-w-48"
             >
               <Link
                 to="/lesson/$lessonId"
@@ -150,7 +150,7 @@ export default function UnitCard({ unit }: UnitCardProps) {
             <Button
               size="lg"
               disabled
-              className="relative z-10 mt-1 w-full min-w-48 pointer-events-none opacity-50"
+              className="relative z-10 mt-1 w-full min-w-0 pointer-events-none opacity-50 sm:min-w-48"
             >
               <PlayCircle className="mr-2 size-5" />
               Mulai

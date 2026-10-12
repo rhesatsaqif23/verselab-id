@@ -18,7 +18,7 @@ function subscribe(callback: () => void): () => void {
 
 function emit() {
   version += 1;
-  for (const callback of [...listeners]) callback();
+  for (const callback of listeners) callback();
 }
 
 /**

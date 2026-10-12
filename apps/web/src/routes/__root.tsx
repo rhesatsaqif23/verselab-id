@@ -15,7 +15,10 @@ export const Route = createRootRoute({
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Verselab - Interactive Skill Learning" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/svg+xml", href: "/assets/logo_only_dark.svg" },
+    ],
   }),
   shellComponent: RootDocument,
   notFoundComponent: NotFound,
@@ -23,7 +26,7 @@ export const Route = createRootRoute({
 
 function NotFound() {
   return (
-    <main className="page-wrap flex min-h-screen flex-col items-center justify-center px-4">
+    <main className="page-wrap flex min-h-screen flex-col items-center justify-center">
       <h1 className="text-4xl font-bold text-foreground">404</h1>
       <p className="mt-4 text-lg text-muted">Halaman tidak ditemukan</p>
     </main>

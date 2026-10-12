@@ -8,7 +8,7 @@ import type { Lesson } from "#/engine/types.ts";
 import type { LessonStatus } from "../types.ts";
 import { getLesson } from "#/libs/content-fns.ts";
 import { useProgressStore } from "#/engine/progress/progressStore.ts";
-import { PrerequisiteDialog } from "./PrerequisiteDialog.tsx";
+import { PrerequisiteDialog, unmetPrerequisites } from "./PrerequisiteDialog.tsx";
 
 const LESSON_STALE = 5 * 60 * 1000;
 
@@ -25,8 +25,7 @@ export default function LessonCta({ lesson, status, isVisible, allLessons = [] }
   const [showPrereqDialog, setShowPrereqDialog] = useState(false);
 
   const hasNoScreens = lesson.screens.length === 0;
-  const hasUnmetPrereqs =
-    lesson.prerequisiteIds?.some((id) => !completedLessons.includes(id)) ?? false;
+  const hasUnmetPrereqs = unmetPrerequisites(lesson, allLessons, completedLessons).length > 0;
 
   const prefetchLesson = useCallback(() => {
     queryClient.prefetchQuery({

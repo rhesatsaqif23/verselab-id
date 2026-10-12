@@ -182,9 +182,20 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
 
   const reorderMutation = useMutation({
     mutationFn: (ids: string[]) => adminReorderScreens({ data: { ids } }),
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ["admin-screens", lessonId] });
+      const previous = queryClient.getQueryData<AdminScreen[]>(["admin-screens", lessonId]);
+      return { previous };
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] }),
-    onError: (err: Error) => {
-      queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
+    onError: (err: Error, _variables, context) => {
+      // Roll back the optimistic reorder; fall back to a refetch when there
+      // is no snapshot (e.g. a keyboard move raced a refetch).
+      if (context?.previous) {
+        queryClient.setQueryData(["admin-screens", lessonId], context.previous);
+      } else {
+        queryClient.invalidateQueries({ queryKey: ["admin-screens", lessonId] });
+      }
       toast.error(translateAdminError(err, "Gagal menyusun ulang screen"));
     },
   });
@@ -360,11 +371,22 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
     [],
   );
 
-  function moveScreen(index: number, direction: "up" | "down") {
-    const next = allScreens.map((s) => s.id);
-    const swap = direction === "up" ? index - 1 : index + 1;
-    [next[index], next[swap]] = [next[swap], next[index]];
-    reorderMutation.mutate(next);
+  // Live reorder: the list updates instantly while dragging; the order is
+  // persisted once the drag (or keyboard move) finishes.
+  function reorderScreens(fromIndex: number, toIndex: number) {
+    if (reorderMutation.isPending) return;
+    const key = ["admin-screens", lessonId];
+    const current = queryClient.getQueryData<AdminScreen[]>(key) ?? [];
+    if (fromIndex === toIndex || !current[fromIndex]) return;
+    const next = [...current];
+    const [moved] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, moved);
+    queryClient.setQueryData(key, next);
+  }
+
+  function persistScreenOrder() {
+    const current = queryClient.getQueryData<AdminScreen[]>(["admin-screens", lessonId]) ?? [];
+    reorderMutation.mutate(current.map((s) => s.id));
   }
 
   function handleDeleteScreen(id: string) {
@@ -455,7 +477,8 @@ export function ScreenEditor({ lessonId, initialScreenId }: ScreenEditorProps) {
             screens={allScreens}
             selectedScreenId={selectedScreenId}
             onSelectScreen={handleSelectScreen}
-            onMoveScreen={moveScreen}
+            onReorderScreen={reorderScreens}
+            onPersistOrder={persistScreenOrder}
             onDeleteScreen={handleDeleteScreen}
             reorderPending={reorderMutation.isPending}
           />

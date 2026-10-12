@@ -27,17 +27,28 @@ export function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-50 flex h-20 items-center justify-between border-b border-border/80 bg-background/85 px-4 backdrop-blur-md transition-all md:px-16">
-        <Link to="/" className="flex items-center gap-2.5 no-underline">
-          <div className="flex size-9 items-center justify-center rounded-lg bg-linear-to-br from-primary to-accent font-black text-white shadow-xs">
-            V
-          </div>
-          <span className="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
-            Verselab
-          </span>
+        <Link to="/" className="flex items-center no-underline">
+          <img
+            src="/assets/horizontal_logo_dark.svg"
+            alt="Verselab"
+            className="h-8 w-auto dark:hidden sm:h-9"
+          />
+          <img
+            src="/assets/horizontal_logo_light.svg"
+            alt="Verselab"
+            className="hidden h-8 w-auto dark:block sm:h-9"
+          />
         </Link>
         <div className="flex items-center gap-3">
-          <ThemeToggle />
-          <Button asChild variant="default" size="lg" className="font-bold">
+          <div className="hidden sm:block">
+            <ThemeToggle />
+          </div>
+          <Button
+            asChild
+            variant="default"
+            size="sm"
+            className="font-bold sm:h-12 sm:px-8 sm:text-base sm:has-[>svg]:px-6"
+          >
             <Link to="/home">
               Mulai belajar
               <ArrowRight className="size-4" />
@@ -47,7 +58,7 @@ export function LandingPage() {
       </header>
 
       <main className="flex-1">
-        <section className="page-wrap px-4 pb-16 pt-14 text-center sm:pt-20">
+        <section className="page-wrap pb-16 pt-14 text-center sm:pt-20">
           <p className="text-base font-bold mb-4 tracking-wider uppercase">
             Interactive skill learning
           </p>
@@ -77,7 +88,7 @@ export function LandingPage() {
           </div>
         </section>
 
-        <section className="page-wrap grid gap-6 px-4 pb-20 pt-8 sm:grid-cols-3">
+        <section className="page-wrap grid gap-6 pb-20 pt-8 sm:grid-cols-3">
           {features.map(({ icon: Icon, title, desc }) => (
             <div key={title} className="feature-card rounded-2xl p-6">
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-(--premium-icon-from) to-(--premium-icon-to)">

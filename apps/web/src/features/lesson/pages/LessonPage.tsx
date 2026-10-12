@@ -32,7 +32,7 @@ export default function LessonPage({ lessonId, lesson: lessonProp }: LessonPageP
 
   if (!found) {
     return (
-      <div className="page-wrap flex min-h-screen items-center justify-center px-4">
+      <div className="page-wrap flex min-h-screen items-center justify-center">
         <p className="text-lg text-muted">Lesson tidak ditemukan</p>
       </div>
     );

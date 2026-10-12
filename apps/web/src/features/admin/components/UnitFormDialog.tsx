@@ -181,7 +181,7 @@ export function UnitFormDialog({ trigger, unit }: UnitFormDialogProps) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent className="p-4 sm:p-6" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{isEdit ? "Edit Unit" : "Tambah Unit"}</DialogTitle>
         </DialogHeader>
